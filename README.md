@@ -41,7 +41,7 @@
 ## Project 簡介
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/8a29d13f-5058-4c4e-ada1-b0689add5675" width="70%">
+  <img src="https://github.com/user-attachments/assets/8a29d13f-5058-4c4e-ada1-b0689add5675">
 <p align="right">
 
 driver-box 旨在加快安裝大量硬件軀動的時間。用家可以將不同類型的軀動程式加入到本程式中。之後每次只需選擇合適的軀動程式即可。<br>
@@ -101,7 +101,7 @@ driver-box 旨在加快安裝大量硬件軀動的時間。用家可以將不同
 <!-- USAGE EXAMPLES -->
 ## 使用
 
-<img src="https://github.com/user-attachments/assets/bd0b0832-3b24-4d74-b4bb-fc84a64bda73" width="50%">
+<img src="https://github.com/user-attachments/assets/bd0b0832-3b24-4d74-b4bb-fc84a64bda73">
 
 driver-box 最細的執行單位為軀動程式。所謂軀動程式並不限於硬件軀動程式。
 因為 driver-box 是透過作業系統的殼層（Shell）執行所輸入的程式，任何執行檔（.exe）、腳本（script）及殼層命令（Shell command）都以透過 driver-box 執行。
@@ -110,7 +110,7 @@ driver-box 最細的執行單位為軀動程式。所謂軀動程式並不限於
 
 ### 加入、編輯軀動程式
 
-<img src="https://github.com/user-attachments/assets/53cec03b-69ed-4894-9d20-0f1bcced4184" width="50%">
+<img src="https://github.com/user-attachments/assets/53cec03b-69ed-4894-9d20-0f1bcced4184">
 
 #### 軀動路徑
 軀動程式的路徑。你亦可以在此輸入 Shell command 或其他在 `PATH` 內的程式。
@@ -127,7 +127,7 @@ driver-box 最細的執行單位為軀動程式。所謂軀動程式並不限於
 我們十分建議輸入相關的執行參數，令加入的軀動能以自動模式安裝。
 
 driver-box 已提供常見軀動的安裝參數。<br>
-<img src="https://github.com/user-attachments/assets/34c0fbe7-26da-4101-9158-adafc285dea2" width="50%">
+<img src="https://github.com/user-attachments/assets/34c0fbe7-26da-4101-9158-adafc285dea2">
 
 | 選項           	| 適用的程式                                                                                                                                                       	|
 |----------------	|------------------------------------------------------------------------------------------------------------------------------------------------------------------	|
@@ -148,7 +148,7 @@ driver-box 已提供常見軀動的安裝參數。<br>
 
 ### 安裝
 
-<img src="https://github.com/user-attachments/assets/f028262a-b39f-41d4-9969-1638ae6f6ca5" width="50%">
+<img src="https://github.com/user-attachments/assets/f028262a-b39f-41d4-9969-1638ae6f6ca5">
 
 *在所有工作執行完成前，執行狀態視窗不能夠被關閉。*
 
