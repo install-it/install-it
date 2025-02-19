@@ -91,7 +91,9 @@ def replace_executable(version: str, binary_type: str, webview: bool):
                 z.extract(archive.filename, str(tmpdir))
 
         print('Updating...')
-        for path in map(Path, ('driver-box.exe', 'bin')):
+
+        paths = ('driver-box.exe', 'bin') if webview else ('driver-box.exe',)
+        for path in map(Path, paths):
             if path.exists():
                 path.unlink()
             if tmpdir.joinpath(path).exists():
