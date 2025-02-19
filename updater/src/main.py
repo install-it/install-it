@@ -138,6 +138,7 @@ if __name__ == '__main__':
         print('| {:13s}{:^13s} |'.format('Update From', str(version_from)))
         print('| {:13s}{:^13s} |'.format('Update To', str(version_to)))
         print('| {:13s}{:^13s} |'.format('Binary', args.binary_type))
+        print('| {:13s}{:^13s} |'.format('WebView2', 'Yes' if args.webview else 'No'))
         print('+', '-'*26, '+', end='\n\n')
 
         replace_executable(str(version_to), args.binary_type, args.webview)
