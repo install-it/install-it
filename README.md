@@ -91,7 +91,7 @@ driver-box 旨在加快安裝大量硬件軀動的時間。用家可以將不同
 
 - Build Executable
   ```sh
-  wails build -ldflags "-X main.buildVersion=<version> -X main.binaryType=<binary type>"
+  wails build -ldflags "-X main.buildVersion=<version number>"
   ```
   
 <p align="right">(<a href="#readme-top">回到最頂</a>)</p>
