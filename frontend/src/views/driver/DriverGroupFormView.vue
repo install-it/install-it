@@ -106,18 +106,18 @@ function handleSubmit(event: SubmitEvent) {
     .then(() => {
       $toast.success(t('toast.updated'))
 
-      if (event.submitter?.id != 'driver-submit-btn') {
-        $router.back()
-      } else {
-        groupManager.Get(group.value.id).then(g => {
-          group.value = g
-          groupOriginal = structuredClone(g)
+      groupManager.Get(group.value.id).then(g => {
+        group.value = g
+        groupOriginal = structuredClone(g)
 
+        if (event.submitter?.id != 'driver-submit-btn') {
+          $router.back()
+        } else {
           getNotExistDrivers(g.drivers).then(result => {
             notExistDrivers.value = result
           })
-        })
-      }
+        }
+      })
     })
     .catch(reason => {
       $toast.error(reason)
