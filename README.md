@@ -101,16 +101,16 @@ driver-box 旨在加快安裝大量硬件軀動的時間。用家可以將不同
 <!-- USAGE EXAMPLES -->
 ## 使用
 
-<img src="https://github.com/user-attachments/assets/bd0b0832-3b24-4d74-b4bb-fc84a64bda73">
+<img src="https://github.com/user-attachments/assets/8fb85b19-133e-4cbf-9ee4-21e5237c9089">
 
-driver-box 最細的執行單位為軀動程式。所謂軀動程式並不限於硬件軀動程式。
-因為 driver-box 是透過作業系統的殼層（Shell）執行所輸入的程式，任何執行檔（.exe）、腳本（script）及殼層命令（Shell command）都以透過 driver-box 執行。
+driver-box 最細的執行單位為執行檔。因此你可利用 driver-box 來進行安裝硬件的軀動程式外的工作，例如透過 `cmd` 或 `powershell` 來執行任何腳本（script）或殼層命令（Shell command）。
 
 而你可以將多個軀動程式加至同一個「組合」中。所有加至同一個組合的軀動程式會一同執行。
 
 ### 加入、編輯軀動程式
 
-<img src="https://github.com/user-attachments/assets/53cec03b-69ed-4894-9d20-0f1bcced4184">
+<img src="https://github.com/user-attachments/assets/65d2b1fc-6138-4e81-95d6-605cecd14128">
+
 
 #### 軀動路徑
 軀動程式的路徑。你亦可以在此輸入 Shell command 或其他在 `PATH` 內的程式。
@@ -127,9 +127,8 @@ driver-box 最細的執行單位為軀動程式。所謂軀動程式並不限於
 我們十分建議輸入相關的執行參數，令加入的軀動能以自動模式安裝。
 
 driver-box 已提供常見軀動的安裝參數。<br>
-<img src="https://github.com/user-attachments/assets/34c0fbe7-26da-4101-9158-adafc285dea2">
 
-| 選項           	| 適用的程式                                                                                                                                                       	|
+| 選項           	| 適用程式                                                                                                                                                         	|
 |----------------	|------------------------------------------------------------------------------------------------------------------------------------------------------------------	|
 | Intel LAN      	| [Intel® Ethernet Adapter Complete Driver Pack](https://www.intel.com/content/www/us/en/download/15084/intel-ethernet-adapter-complete-driver-pack.html)          	|
 | Realtek LAN    	| [Realtek PCIe FE / GBE / 2.5G / 5G Ethernet Family Controller Software](https://www.realtek.com/Download/List?cate_id=584)                                       	|
@@ -140,7 +139,7 @@ driver-box 已提供常見軀動的安裝參數。<br>
 | Intel BT       	| [Intel® Wireless Bluetooth® Drivers](https://www.intel.com/content/www/us/en/download/18649/intel-wireless-bluetooth-drivers-for-windows-10-and-windows-11.html) 	|
 | Intel Chipset  	| [Chipset INF Utility](https://www.intel.com/content/www/us/en/support/products/1145/software/chipset-software/intel-chipset-software-installation-utility.html)  	|
 | AMD Chipset    	| [AMD Chipset Drivers](https://www.amd.com/en/support/download/drivers.html)                                                                                      	|
-    
+
 不在預設集上的軀動可嘗試在網上以 `軀動名稱` + `silent`／`unattended`／`command line install` 搜尋，或利用 [Silent Install Builder](https://www.silentinstall.org/) 等類似的軟件自行製作。
 
 #### 不能同時安裝
