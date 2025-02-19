@@ -47,9 +47,9 @@
     "path": "Path",
     "search": "Search...",
     "selectAll": "Sellect All",
+    "selectedWithCount": "Selected: {count}",
     "selectFile": "Select",
     "selectNone": "Select None",
-    "selectedWithCount": "Selected: {count}",
     "type": "Driver Type",
     "view": "View"
   },
@@ -64,6 +64,7 @@
     "exitCode": "Exit Code: {code}",
     "failed": "FAIL",
     "fileNotExist": "File/Path not exist.",
+    "forceComplete": "Force Complete",
     "pending": "WAIT",
     "running": "RUN",
     "speeded": "FAIL",

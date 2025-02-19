@@ -183,6 +183,29 @@ function handleAbort(process: Process) {
             <TaskStatus :process="process" @abort="handleAbort(process)"></TaskStatus>
           </template>
         </div>
+
+        <div
+          class="flex justify-end pb-2 px-4"
+          v-show="
+            processes.every(p => p.status.includes('ed')) &&
+            processes.some(p => p.status != 'completed')
+          "
+        >
+          <button
+            class="flex rounded px-1 text-white bg-half-baked-600"
+            @click="
+              event => {
+                $emit('completed')
+                $toast.success(t('toast.finished'), { position: 'bottom-right' })
+
+                // @ts-ignore
+                event.currentTarget?.remove()
+              }
+            "
+          >
+            {{ $t('executeStatus.forceComplete') }}
+          </button>
+        </div>
       </div>
     </div>
   </ModalFrame>
