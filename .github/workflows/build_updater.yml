@@ -38,13 +38,63 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Build Files
-          path: updater.windows64
+          name: executables
+          path: dist/updater.windows64.exe
 
-      - name: Update resources
-        uses: JamesIves/github-pages-deploy-action@v4
+  build-windows32:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-            folder: dist
-            commit-message: Update resources
-            branch: data
-            clean: false
+          ref: updater
+        
+      - name: Setup Python environment
+        uses: actions/setup-python@v5
+        with:
+            python-version: '3.12'
+            architecture: 'x32'
+            cache: 'pip'
+            cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r ./requirements.txt
+
+      - name: Build the executable
+        run: |
+          pyinstaller .\src\main.py -cDF -n updater.windows32 -i .\icon.ico;
+
+      - name: Upload outputs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: executables
+          path: dist/updater.windows32.exe
+            
+  commit-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: updater
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: executables
+          merge-multiple: true
+                
+      - name: Create "dist" directory
+        run: mkdir -p dist
+      
+      - name: Move downloaded artifacts to "dist"
+        run: mv updater.*.exe dist
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+            branch: updater
+            commit_message: Create new executable for Windows64
+            file_pattern: 'dist/*'
