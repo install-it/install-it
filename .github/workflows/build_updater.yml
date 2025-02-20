@@ -72,5 +72,5 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
             branch: updater
-            commit_message: Create new executable for Windows64
+            commit_message: Upload new Windows executables
             file_pattern: 'dist/*'
