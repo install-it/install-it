@@ -41,15 +41,6 @@ jobs:
           name: Build Files
           path: updater.windows64
 
-      - name: Create "dist" directory
-        run: mkdir dist
-
-      - name: Copy output to "build" directory
-        run: |
-          cp \
-          updater.windows64.json \
-          dist/
-
       - name: Update resources
         uses: JamesIves/github-pages-deploy-action@v4
         with:
