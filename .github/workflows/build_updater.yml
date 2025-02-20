@@ -9,7 +9,15 @@ permissions:
   contents: write
 
 jobs:
-  build-windows64:
+  build:
+    strategy:
+      matrix:
+        include:
+          - architecture: x86
+            name: windows32
+          - architecture: x64
+            name: windows64
+  
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -21,7 +29,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
             python-version: '3.12'
-            architecture: 'x64'
+            architecture: '${{ matrix.architecture }}'
             cache: 'pip'
             cache-dependency-path: requirements.txt
 
@@ -30,65 +38,38 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r ./requirements.txt
 
+      - name: Install UPX
+        uses: crazy-max/ghaction-upx@v3
+        with:
+          install-only: true
+
       - name: Build the executable
         run: |
-          pyinstaller .\src\main.py -cDF -n updater.windows64 -i .\icon.ico;
+          pyinstaller .\src\main.py -cDF -n updater.${{ matrix.name }} -i .\icon.ico;
 
       - name: Upload outputs
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: executables
-          path: dist/updater.windows64.exe
-
-  build-windows32:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: updater
-        
-      - name: Setup Python environment
-        uses: actions/setup-python@v5
-        with:
-            python-version: '3.12'
-            architecture: 'x86'
-            cache: 'pip'
-            cache-dependency-path: requirements.txt
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r ./requirements.txt
-
-      - name: Build the executable
-        run: |
-          pyinstaller .\src\main.py -cDF -n updater.windows32 -i .\icon.ico;
-
-      - name: Upload outputs
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: executables
-          path: dist/updater.windows32.exe
+          path: dist/updater.${{ matrix.name }}.exe
             
   commit-and-push:
-    needs: [build-windows32,  build-windows64]
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           ref: updater
+                
+      - name: Remove and create "dist" directory
+        run: rm -rf dist && mkdir -p dist
 
       - uses: actions/download-artifact@v4
         with:
-          path: executables
+          path: dist/
           merge-multiple: true
-                
-      - name: Create "dist" directory
-        run: mkdir -p dist
       
       - name: Move downloaded artifacts to "dist"
         run: mv updater.*.exe dist
