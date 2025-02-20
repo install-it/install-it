@@ -103,13 +103,11 @@ def migrate_config(from_: version.Version, to: version.Version):
     if from_.major == to.major:
         return
     if from_.major < to.major:
-        raise ValueError('replacing newer verion to older version')
+        raise NotImplementedError(f'downgrading from v{from_.major} to v{to.major}')
 
-    conf_dir = Path('conf')
-
-    if from_.major == 1 and to.major == 2:
+    if from_.major == 1 and to.major == 2 or to.major >= 3:
         raise NotImplementedError()
-
+    return
 
 if __name__ == '__main__':
     print(r'''
