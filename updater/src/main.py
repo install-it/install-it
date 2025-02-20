@@ -33,11 +33,11 @@ def temporary_directory(dir: str = None, delete: bool = True):
 
 
 def backup():
-    os.mkdir('.backup')
-    for path in ('driver-box.exe', 'bin', 'conf'):
-        if not (filepath := Path(path)).exists():
+    os.mkdir(BACKUP)
+    for filename in ('driver-box.exe', 'bin', 'conf'):
+        if not (path := Path(filename)).exists():
             continue
-        filepath.rename(Path('.').parent.joinpath('.backup').joinpath(path))
+        path.rename(BACKUP.joinpath(filename))
 
 
 def cleanup(restore: bool):
