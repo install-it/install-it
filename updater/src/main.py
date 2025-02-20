@@ -120,6 +120,18 @@ if __name__ == '__main__':
  \__,_|_|  |_| \_/ \___|_|       |_.__/ \___/_/\_\  \__,_| .__/ \__,_|\__,_|\__\___|_|   
                                                          |_|                             
 ''')
+    
+    argparser = argparse.ArgumentParser(description='')
+    argparser.add_argument('-d', '--app-directory', type=str,
+                        help='Root directory of driver-box')
+    argparser.add_argument('-s', '--version-from', type=str,
+                        required=True, help='Update from which verion')
+    argparser.add_argument('-t', '--version-to', type=str,
+                        required=True, help='Update to which version')
+    argparser.add_argument('-b', '--binary-type', type=str,
+                        required=True, help='Binary target')
+    argparser.add_argument('-w', '--webview', action='store_true',
+                            help='Download built-in WebView2 verion')
 
     args = argparser.parse_args()
     if args.app_directory:
