@@ -12,22 +12,7 @@ import requests
 import tqdm
 from packaging import version
 
-argparser = argparse.ArgumentParser(description='')
-
-argparser.add_argument('-d', '--app-directory', type=str,
-                       help='Root directory of driver-box')
-
-argparser.add_argument('-s', '--version-from', type=str,
-                       required=True, help='Update from which verion')
-
-argparser.add_argument('-t', '--version-to', type=str,
-                       required=True, help='Update to which version')
-
-argparser.add_argument('-b', '--binary-type', type=str,
-                       required=True, help='Binary target')
-
-argparser.add_argument('-w', '--webview', action='store_true',
-                        help='Download built-in WebView2 verion')
+BACKUP = Path('.', '.backup')
 
 
 @contextlib.contextmanager
@@ -58,11 +43,21 @@ def backup():
 def cleanup(restore: bool):
     if not restore:
         print('Removing backups...')
-        shutil.rmtree('.backup', True)
+        shutil.rmtree(BACKUP, True)
     else:
         print('Restoring states...')
-        pass
+        for filename in ('driver-box.exe', 'bin', 'conf'):
+            if not BACKUP.joinpath(filename).exists():
+                continue
+            
+            if (newfile := Path(filename)).exists():
+                if newfile.is_dir():
+                    shutil.rmtree(newfile, True)
+                else:
+                    newfile.unlink()
 
+            BACKUP.joinpath(filename).rename(filename)
+            
 
 def replace_executable(version: str, binary_type: str, webview: bool):
     filename = f'driver-box.{binary_type}-wv2.zip' if webview else f'driver-box.{binary_type}.zip'
