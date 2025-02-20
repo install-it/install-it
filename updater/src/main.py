@@ -104,7 +104,7 @@ def replace_executable(version: str, binary_type: str, webview: bool):
                 tmpdir.joinpath(path).rename(path)
 
 
-def replace_config(from_: version.Version, to: version.Version):
+def migrate_config(from_: version.Version, to: version.Version):
     if from_.major == to.major:
         return
     if from_.major < to.major:
@@ -147,7 +147,7 @@ if __name__ == '__main__':
 
         replace_executable(str(version_to), args.binary_type, args.webview)
 
-        replace_config(version_from, version_to)
+        migrate_config(version_from, version_to)
     except Exception as e:
         print(f'Error occures: {e}')
         cleanup(True)
