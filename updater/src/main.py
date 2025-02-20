@@ -95,7 +95,11 @@ def replace_executable(version: str, binary_type: str, webview: bool):
         paths = ('driver-box.exe', 'bin') if webview else ('driver-box.exe',)
         for path in map(Path, paths):
             if path.exists():
-                path.unlink()
+                if path.is_dir():
+                    shutil.rmtree(path, True)
+                else:
+                    path.unlink()
+
             if tmpdir.joinpath(path).exists():
                 tmpdir.joinpath(path).rename(path)
 
