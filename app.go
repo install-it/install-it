@@ -108,7 +108,7 @@ func (a App) Update(from string, to string, builtinWebview bool) error {
 	defer file.Close()
 
 	response, err := http.Get(
-		fmt.Sprintf("https://github.com/markmybytes/driver-box/releases/download/v%s/updater.exe", to))
+		fmt.Sprintf("https://raw.githubusercontent.com/markmybytes/driver-box/updater/dist/updater.%s.exe", a.AppBinaryType()))
 	if err != nil {
 		return err
 	}
