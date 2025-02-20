@@ -32,7 +32,6 @@ jobs:
 
       - name: Build the executable
         run: |
-          set -o xtrace
           pyinstaller .\src\main.py -cDF -n updater.windows64 -i .\icon.ico;
 
       - name: Upload outputs
@@ -43,7 +42,7 @@ jobs:
           path: updater.windows64
 
       - name: Create "dist" directory
-        run: mkdir -p dist
+        run: mkdir dist
 
       - name: Copy output to "build" directory
         run: |
