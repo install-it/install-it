@@ -1,0 +1,93 @@
+name: Create Release
+
+on: 
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        goarch: ['368', 'amd64']
+        include:
+          - goarch: '368'
+            build-name: 'windows32'
+            wv2arch: 'x86'
+          - goarch: amd64
+            build-name: 'windows64'
+            wv2arch: 'x64'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Set up Go environment
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.24'
+
+    - name: Install Wails CLI
+      run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+
+    - name: Set up Node.js environment
+      uses: actions/setup-node@v4
+      with:
+        node-version: 'lts/Jod'
+
+    - name: Install NPM dependencies
+      run: |
+        cd frontend
+        npm install
+
+    - name: Install UPX
+      uses: crazy-max/ghaction-upx@v3
+      with:
+        install-only: true
+    
+    - name: Build binary for Windows (${{ matrix.goarch }})
+      run: |
+        set GOARCH=${{ matrix.goarch }}
+        wails build -upx -ldflags "-X main.binaryVersion=${{ github.ref_name }}"
+    
+    - name: Download and extract WebView2 runtime
+      run: |
+        cd build\bin
+        curl -o webview2.cab -L https://github.com/westinyang/WebView2RuntimeArchive/releases/download/132.0.2957.140/Microsoft.WebView2.FixedVersionRuntime.132.0.2957.140.${{ matrix.wv2arch }}.cab
+        mkdir bin
+        expand -r webview2.cab -F:* bin
+        move bin\Microsoft.WebView2.FixedVersionRuntime.* bin\WebView2
+    
+    - name: Bundle binary and WebView2 files into ZIP
+      run: |
+        cd build\bin
+        7z a driver-box.${{ matrix.build-name }}.zip driver-box.exe -mx9
+        7z a driver-box.${{ matrix.build-name }}-wv2.zip driver-box.exe bin -mx9
+    
+    - name: Collect artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: binary-${{ matrix.goarch }}
+        path: build/bin/*.zip
+    
+  draft-release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+          path: dist/
+          merge-multiple: true
+    
+    - name: Create GitHub release
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "dist/*"
+        draft: true
