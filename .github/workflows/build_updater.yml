@@ -1,5 +1,5 @@
 name: Build Updater
-on: 
+on:
   push:
     tags:
       - "*"
@@ -12,26 +12,27 @@ jobs:
   build:
     strategy:
       matrix:
+        architecture: [x86, x64]
         include:
           - architecture: x86
-            name: windows32
+            build-name: windows-x86
           - architecture: x64
-            name: windows64
-  
+            build-name: windows-x64
+
     runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           ref: updater
-        
+
       - name: Setup Python environment
         uses: actions/setup-python@v5
         with:
-            python-version: '3.12'
-            architecture: '${{ matrix.architecture }}'
-            cache: 'pip'
-            cache-dependency-path: requirements.txt
+          python-version: "3.12"
+          architecture: "${{ matrix.architecture }}"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
 
       - name: Install dependencies
         run: |
@@ -45,15 +46,15 @@ jobs:
 
       - name: Build the executable
         run: |
-          pyinstaller .\src\main.py -cDF -n updater.${{ matrix.name }} -i .\icon.ico;
+          pyinstaller .\src\main.py -cDF -n updater.${{ matrix.build-name }} -i .\icon.ico;
 
       - name: Upload outputs
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Windows (${{ matrix.architecture }})
-          path: dist/updater.${{ matrix.name }}.exe
-            
+          path: dist/updater.${{ matrix.build-name }}.exe
+
   commit-and-push:
     needs: [build]
     runs-on: ubuntu-latest
@@ -71,6 +72,6 @@ jobs:
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-            branch: updater
-            commit_message: Upload new Windows executables
-            file_pattern: 'dist/*'
+          branch: updater
+          commit_message: Upload new Windows executables
+          file_pattern: "dist/*"
