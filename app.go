@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"math/bits"
 	"net/http"
 	"os"
 	"os/exec"
@@ -96,7 +95,14 @@ func (a App) AppVersion() string {
 }
 
 func (a App) AppBinaryType() string {
-	return fmt.Sprintf("%s%d", runtime.GOOS, bits.UintSize)
+	arch := runtime.GOARCH
+	if arch == "amd64" {
+		arch = "x64"
+	} else if arch == "368" {
+		arch = "x86"
+	}
+
+	return fmt.Sprintf("%s-%s", runtime.GOOS, arch)
 }
 
 func (a App) Update(from string, to string, builtinWebview bool) error {
