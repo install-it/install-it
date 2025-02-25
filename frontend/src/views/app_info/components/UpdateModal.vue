@@ -9,7 +9,7 @@ import { useLoading } from 'vue-loading-overlay'
 
 const frame = useTemplateRef('frame')
 
-const proprs = defineProps<{
+const props = defineProps<{
   app: { version: string; binaryType: string; builtinWebview: boolean }
 }>()
 
@@ -25,7 +25,7 @@ const $loading = useLoading({ lockScroll: true })
 
 const releaseInfo = ref<Awaited<ReturnType<typeof latestRelease>>>()
 
-const webviewVersion = ref(!proprs.app.builtinWebview)
+const webviewVersion = ref(!props.app.builtinWebview)
 </script>
 
 <template>
