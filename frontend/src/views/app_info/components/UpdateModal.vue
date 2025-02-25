@@ -9,13 +9,12 @@ import { useLoading } from 'vue-loading-overlay'
 
 const frame = useTemplateRef('frame')
 
-const props = defineProps<{
-  app: { version: string; binaryType: string; builtinWebview: boolean }
-}>()
+defineProps<{ app: { version: string; binaryType: string } }>()
 
 defineExpose({
-  show: (releaseInfo_: typeof releaseInfo.value) => {
+  show: (releaseInfo_: typeof releaseInfo.value, isWebview: boolean) => {
     releaseInfo.value = releaseInfo_
+    webviewVersion.value = isWebview
     frame.value?.show()
   },
   hide: frame.value?.hide || (() => {})
@@ -25,7 +24,7 @@ const $loading = useLoading({ lockScroll: true })
 
 const releaseInfo = ref<Awaited<ReturnType<typeof latestRelease>>>()
 
-const webviewVersion = ref(!props.app.builtinWebview)
+const webviewVersion = ref(false)
 </script>
 
 <template>

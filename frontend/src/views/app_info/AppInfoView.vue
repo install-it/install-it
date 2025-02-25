@@ -85,7 +85,7 @@ function checkUpdate() {
   latestRelease(info.value.app.version)
     .then(release => {
       if (release.hasUpdate) {
-        modal.value?.show(release)
+        modal.value?.show(release, !['', 'na'].includes(info.value.webview.location))
       } else {
         $toast.info(t('toast.noUpdate'))
       }
@@ -207,8 +207,7 @@ function checkUpdate() {
   <UpdateModal
     :app="{
       version: info.app.version,
-      binaryType: info.app.binaryType,
-      builtinWebview: ['', 'na'].includes(info.webview.location)
+      binaryType: info.app.binaryType
     }"
     ref="modal"
   ></UpdateModal>
