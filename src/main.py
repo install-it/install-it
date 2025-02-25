@@ -42,7 +42,7 @@ def backup():
     for filename in ('driver-box.exe', 'bin', 'conf'):
         if not (path := Path(filename)).exists():
             continue
-        path.rename(BACKUP.joinpath(filename))
+        shutil.copy(path, BACKUP.joinpath(filename))
 
 
 def cleanup(restore: bool):
@@ -92,7 +92,6 @@ def replace_executable(version: str, binary_type: str, webview: bool):
                 z.extract(archive.filename, str(tmpdir))
 
         print('Updating...')
-
         paths = ('driver-box.exe', 'bin') if webview else ('driver-box.exe',)
         for path in map(Path, paths):
             if path.exists():
