@@ -73,7 +73,7 @@ const filterGroups = computed(() => {
           <button
             type="button"
             class="p-3 text-sm text-gray-400 hover:text-gray-900 bg-transparent hover:bg-gray-100 rounded-lg"
-            @click="$refs.frame?.hide()"
+            @click="frame?.hide()"
           >
             <CrossIcon></CrossIcon>
           </button>
@@ -101,7 +101,7 @@ const filterGroups = computed(() => {
                   })
                 )
 
-                $refs.frame?.hide()
+                frame?.hide()
               }
             "
           >

@@ -168,7 +168,7 @@ function handleAbort(process: Process) {
           <button
             type="button"
             class="inline-flex justify-center items-center h-8 w-8 ms-auto text-sm text-gray-400 enabled:hover:text-gray-900 bg-transparent enabled:hover:bg-gray-200 rounded-lg"
-            @click="$refs.frame?.hide()"
+            @click="frame?.hide()"
             :disabled="
               processes.some(cmd => ['pending', 'running', 'aborting'].includes(cmd.status))
             "

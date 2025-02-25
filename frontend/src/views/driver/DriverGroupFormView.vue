@@ -25,6 +25,8 @@ const $toast = useToast({ position: 'top-right' })
 
 const questionModal = useTemplateRef('questionModal')
 
+const inputModal = useTemplateRef('inputModal')
+
 const notExistDrivers = ref<Array<string>>([])
 
 const group = ref<store.DriverGroup>(
@@ -221,7 +223,7 @@ function handleSubmit(event: SubmitEvent) {
 
             <div>
               <div class="flex gap-x-2">
-                <button type="button" @click="$refs.inputModal?.show(d)">
+                <button type="button" @click="inputModal?.show(d)">
                   <PencilSquareIcon></PencilSquareIcon>
                 </button>
                 <button type="button" @click="group.drivers.splice(i, 1)">
@@ -250,7 +252,7 @@ function handleSubmit(event: SubmitEvent) {
         <button
           type="button"
           class="h-8 px-2 text-sm font-medium text-white bg-powder-blue-800 hover:bg-powder-blue-600 rounded-lg"
-          @click="$refs.inputModal?.show()"
+          @click="inputModal?.show()"
         >
           <PlusSquareIcon></PlusSquareIcon>
         </button>
@@ -286,8 +288,7 @@ function handleSubmit(event: SubmitEvent) {
             id: `new:${group.drivers.length + 1}` // assign a temporary ID for editing
           })
         }
-
-        $refs.inputModal?.hide()
+        inputModal?.hide()
       }
     "
     ref="inputModal"

@@ -378,7 +378,7 @@ async function handleSubmit() {
             class="px-3 py-1.5 text-white text-sm bg-rose-700 hover:bg-rose-600 rounded-sm"
             @click="
               () => {
-                $refs.form.reset()
+                form?.reset()
                 appManager.Read().then(s => (settings = s))
               }
             "

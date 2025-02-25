@@ -43,7 +43,7 @@ const webviewVersion = ref(false)
             class="p-3 text-sm text-gray-400 hover:text-gray-900 bg-transparent hover:bg-gray-100 rounded-lg"
             @click="
               () => {
-                $refs.frame?.hide()
+                frame?.hide()
               }
             "
           >

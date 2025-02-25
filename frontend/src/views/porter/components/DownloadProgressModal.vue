@@ -126,7 +126,7 @@ function toastErrMsg(err: string) {
                 if (progress?.status == 'completed') {
                   runtime.WindowReloadApp()
                 } else {
-                  $refs.frame?.hide()
+                  frame?.hide()
                 }
               }
             "

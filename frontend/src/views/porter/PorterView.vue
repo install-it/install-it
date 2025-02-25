@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref, useTemplateRef } from 'vue'
 
 import { Cwd, SelectFile, SelectFolder } from '@/wailsjs/go/main/App'
 import * as appManager from '@/wailsjs/go/store/AppSettingManager'
@@ -7,6 +7,8 @@ import { useI18n } from 'vue-i18n'
 import DownloadProgressModal from './components/DownloadProgressModal.vue'
 
 const { t } = useI18n()
+
+const progressModal = useTemplateRef('progressModal')
 
 const exportDirectory = ref('')
 
@@ -83,7 +85,7 @@ onBeforeMount(() => {
               if (!exportDirectory) {
                 $toast.warning($t('toast.enterExportPath'), { position: 'bottom-right' })
               } else {
-                $refs.progressModal?.export(exportDirectory)
+                progressModal?.export(exportDirectory)
               }
             }
           "
@@ -182,7 +184,7 @@ onBeforeMount(() => {
           type="button"
           class="mt-3 py-1 w-28 text-white bg-half-baked-600 hover:bg-half-baked-500 rounded-sm"
           @click="
-            $refs.progressModal?.import(
+            progressModal?.import(
               importInput.from,
               importInput.from == 'file' ? importInput.filePath : importInput.url,
               importInput.ignoreAppSetting
