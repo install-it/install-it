@@ -2,7 +2,7 @@ name: Build Updater
 on:
   push:
     tags:
-      - "*"
+      - v*
   workflow_dispatch:
 
 permissions:
