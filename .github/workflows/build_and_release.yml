@@ -14,14 +14,17 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        goarch: ["368", "amd64"]
+        goarch: ["368", amd64, arm64]
         include:
           - goarch: "368"
-            build-name: "windows-x86"
-            wv2arch: "x86"
+            build-name: windows-x86
+            wv2arch: x86
           - goarch: amd64
-            build-name: "windows-x64"
-            wv2arch: "x64"
+            build-name: windows-x64
+            wv2arch: x64
+          - goarch: arm64
+            build-name: windows-arm64
+            wv2arch: "arm64"
 
     steps:
       - name: Checkout repository

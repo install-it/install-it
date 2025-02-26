@@ -12,11 +12,13 @@ jobs:
   build:
     strategy:
       matrix:
-        architecture: [x86, x64]
+        architecture: [x86, x64, arm64]
         include:
           - architecture: x86
             build-name: windows-x86
           - architecture: x64
+            build-name: windows-x64
+          - architecture: arm64
             build-name: windows-x64
 
     runs-on: windows-latest
