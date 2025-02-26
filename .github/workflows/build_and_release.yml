@@ -41,7 +41,7 @@ jobs:
       - name: Set up Node.js environment
         uses: actions/setup-node@v4
         with:
-          node-version: "lts/Jod"
+          node-version: lts/Jod
 
       - name: Install NPM dependencies
         run: |
@@ -92,5 +92,5 @@ jobs:
       - name: Create GitHub release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "dist/*"
+          artifacts: dist/*
           draft: true

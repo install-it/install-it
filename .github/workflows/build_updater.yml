@@ -32,8 +32,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          architecture: "${{ matrix.architecture }}"
-          cache: "pip"
+          architecture: ${{ matrix.architecture }}
+          cache: pip
           cache-dependency-path: requirements.txt
 
       - name: Install dependencies
@@ -76,4 +76,4 @@ jobs:
         with:
           branch: updater
           commit_message: Upload new Windows executables
-          file_pattern: "dist/*"
+          file_pattern: dist/*
