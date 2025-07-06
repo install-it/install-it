@@ -1,5 +1,6 @@
 <a id="readme-top"></a>
 
+
 <!-- PROJECT SHIELDS -->
 <div align="center">
   
@@ -12,6 +13,7 @@
   
 </div>
 
+
 <!-- PROJECT LOGO -->
 <div align="center">
   <a href="https://github.com/markmybytes/driver-box">
@@ -21,7 +23,7 @@
   <h3 align="center">driver-box</h3>
 
   <p align="center">
-    Program/Driver Installation Tool
+    程式／軀動安裝工具
     <br>
     <a href="https://github.com/markmybytes/driver-box/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
@@ -35,21 +37,20 @@
   </p>
 </div>
 
+
 <!-- ABOUT THE PROJECT -->
-## About The Project
+## Project 簡介
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/8a29d13f-5058-4c4e-ada1-b0689add5675">
-</p>
 <p align="right">
 
-driver-box aims to speed up the installation of a large number of hardware drivers. Users can add different types of drivers to this program. Then, each time, they only need to select the appropriate drivers.<br>
-In addition to installing drivers, you can also use driver-box to install other programs or execute commands.
+driver-box 旨在加快安裝大量硬件軀動的時間。用家可以將不同類型的軀動程式加入到本程式中。之後每次只需選擇合適的軀動程式即可。<br>
+除了安裝軀動程式，你亦可以利用 driver-box 來安裝其他程式或執行指令。
 
-</p>
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#readme-top">回到最頂</a>)</p>
 
-### Built With
+### 第三方工具使用
 
 [<img src="https://img.shields.io/badge/bootstrap%20icons-7532fa?style=for-the-badge&logo=bootstrap&logoColor=white">](https://icons.getbootstrap.com/)
 [<img src="https://img.shields.io/badge/go-01add8?style=for-the-badge&logo=go&logoColor=white">](https://go.dev/)
@@ -57,19 +58,18 @@ In addition to installing drivers, you can also use driver-box to install other 
 [<img src="https://img.shields.io/badge/vue.js-41b883?style=for-the-badge&logo=vue.js&logoColor=white">](https://vuejs.org/)
 [<img src="https://img.shields.io/badge/wails-d32a2d?style=for-the-badge&logo=wails&logoColor=white">](https://wails.io/)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#readme-top">回到最頂</a>)</p>
+
 
 <!-- GETTING STARTED -->
-## Getting Started
+## 開發
 
-### Prerequisites
+### 所需軟件
 
 - Go https://go.dev/doc/install
 - Node 22 https://nodejs.org/en/download/package-manager
 
-### Setup
-
-#### Install dependencies
+### 安裝 Dependency
 
 - Wails
   ```sh
@@ -81,7 +81,7 @@ In addition to installing drivers, you can also use driver-box to install other 
   npm install
   ```
 
-#### Commands
+### 常用指令
 
 - Debug run
 
@@ -94,37 +94,39 @@ In addition to installing drivers, you can also use driver-box to install other 
   wails build -ldflags "-X main.buildVersion=<version number>"
   ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#readme-top">回到最頂</a>)</p>
+
 
 <!-- USAGE EXAMPLES -->
-## Usage
+## 使用
 
 <img src="https://github.com/user-attachments/assets/8fb85b19-133e-4cbf-9ee4-21e5237c9089">
 
-The smallest execution unit in driver-box is an executable file. Therefore, you can use driver-box for tasks beyond installing hardware drivers, such as executing any scripts or shell commands via `cmd` or `powershell`.
+driver-box 最細的執行單位為執行檔。因此你可利用 driver-box 來進行安裝硬件的軀動程式外的工作，例如透過 `cmd` 或 `powershell` 來執行任何腳本（script）或殼層命令（Shell command）。
 
-You can add multiple drivers to a single "group". All drivers added to the same group will be executed together.
+而你可以將多個軀動程式加至同一個「組合」中。所有加至同一個組合的軀動程式會一同執行。
 
-### Add and Edit Drivers
+### 加入、編輯軀動程式
 
 <img src="https://github.com/user-attachments/assets/65d2b1fc-6138-4e81-95d6-605cecd14128">
 
-#### Path
+#### 軀動路徑
 
-The path to the driver. You can also enter shell commands or other programs in the OS `PATH`.
+軀動程式的路徑。你亦可以在此輸入 Shell command 或其他在 `PATH` 內的程式。
 
-By design, driver-box assumes that all drivers are placed in the `drivers` folder, as copying the driver files (executables `.exe` or folders) to the program's `drivers/<category>/` folder facilitates management and transfer (e.g., copying the program to a USB drive). Therefore, files selected via the "Select File" button will be represented with relative paths. However, you can also enter absolute paths.
+設計上，driver-box 是預設所有軀動程都放置 `drivers` 資料夾內，因為將軀動程式的檔案（執行檔 `.exe` 或資料夾）複製到程式的 `drivers/<分類>/` 資料夾內可以方便管理及轉移（例如複製程式到 USB 上）。
+因此透過「選擇檔案」按鈕選擇的檔案將會以相對路徑表示。但你亦可以輸入絕對路徑。
 
-#### Install Option
+#### 執行參數
 
-[Execution parameters](https://en.wikipedia.org/wiki/Command-line_interface#Arguments) are generally used in command-line interfaces to modify program execution settings or input data into the program.
+[執行參數](https://en.wikipedia.org/wiki/Command-line_interface#Arguments)一般用於命令列介面（Command Line）上，以修改程式執行設定或輸入資料至程式中。
 
-Many installation programs support silent installation, where the program installs automatically without any user input.<br>
-We highly recommend entering the appropriate execution parameters to enable the added drivers to install in silent mode.
+不少安裝程序都會支援以自動模式安裝（silent install），用戶無需進行任何輸入，相關程式便會自行安裝。<br>
+我們十分建議輸入相關的執行參數，令加入的軀動能以自動模式安裝。
 
-driver-box provides installation parameters for common drivers.<br>
+driver-box 已提供常見軀動的安裝參數。<br>
 
-| Option         | Applicable Program                                                                                                                                               |
+| 選項           | 適用程式                                                                                                                                                         |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Intel LAN      | [Intel® Ethernet Adapter Complete Driver Pack](https://www.intel.com/content/www/us/en/download/15084/intel-ethernet-adapter-complete-driver-pack.html)          |
 | Realtek LAN    | [Realtek PCIe FE / GBE / 2.5G / 5G Ethernet Family Controller Software](https://www.realtek.com/Download/List?cate_id=584)                                       |
@@ -136,30 +138,30 @@ driver-box provides installation parameters for common drivers.<br>
 | Intel Chipset  | [Chipset INF Utility](https://www.intel.com/content/www/us/en/support/products/1145/software/chipset-software/intel-chipset-software-installation-utility.html)  |
 | AMD Chipset    | [AMD Chipset Drivers](https://www.amd.com/en/support/download/drivers.html)                                                                                      |
 
-For drivers not in the default set, you can try searching online for `driver name` + `silent`/`unattended`/`command line install`, or use software like [Silent Install Builder](https://www.silentinstall.org/) to create them yourself.
+不在預設集上的軀動可嘗試在網上以 `軀動名稱` + `silent`／`unattended`／`command line install` 搜尋，或利用 [Silent Install Builder](https://www.silentinstall.org/) 等類似的軟件自行製作。
 
-#### Incompatible With
+#### 不能同時安裝
 
-When selected, in "synchronous installation" mode, the relevant drivers will not be executed at the same time.
+勺選後，在使用「同步安裝」模式時，有關的軀動程式將不會在同一時間執行。
 
-### Installation
+### 安裝
 
 <img src="https://github.com/user-attachments/assets/f028262a-b39f-41d4-9969-1638ae6f6ca5">
 
-Please note that, by design, driver-box uses the exit status code after the program or command execution to determine whether it was successful. Some programs may return a status code indicating success (e.g., `0`), but in reality, the execution was not successful or completed.
+請注意，設計上，driver-box 是利用程式／指令執行完成後的狀態碼來判斷是否成功執行。一些程式會回應表示執行成功的狀態碼（例如 `0`），但實際上並非執行成功／完成執行。
 
-_Until all tasks are completed, the execution status window cannot be closed._
+_在所有工作執行完成前，執行狀態視窗不能夠被關閉。_
 
-#### Shutdown Option
+#### 關機設定
 
-Shutdown option will only be executed after all tasks are successfully completed and drivers are installed successfully.
+關機設定只會在所有工作執行成功及軀動安裝成功後才會執行。
 
-#### Cancel Execution
+#### 取消執行
 
-Only tasks in "waiting" or "running" status can be canceled.<br>
-Click the "Cancel" button for the relevant task. However, note that the program does not guarantee that the task can be terminated.
+只有處於「等待中」或「執行中」的工作才能取消執行。<br>
+按下相關工作的「取消」按鈕即可。但注意，程式並不保證相關工作能夠被終止執行。
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#readme-top">回到最頂</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
