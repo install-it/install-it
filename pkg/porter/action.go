@@ -241,12 +241,12 @@ func (p Porter) backup() error {
 	p.tracker.messages <- "Creating backups..."
 
 	for _, d := range []string{p.DirConf, p.DirDriver} {
-		if err := os.Rename(d, fmt.Sprintf("%s_BAK", d)); err != nil {
+		if err := os.Rename(d, fmt.Sprintf("%s_old", d)); err != nil {
 			p.tracker.Fail("backup", err)
 			return err
 		}
 
-		p.tracker.messages <- fmt.Sprintf("%[1]s -> %[1]s_BAK", d)
+		p.tracker.messages <- fmt.Sprintf("%[1]s -> %[1]s_old", d)
 		p.tracker.Accumulate("backup", 1)
 	}
 	return nil
@@ -260,33 +260,33 @@ func (p Porter) cleanup(restore bool) error {
 
 		for _, d := range []string{p.DirConf, p.DirDriver} {
 			if err := os.RemoveAll(d); err != nil {
+				p.tracker.messages <- err.Error()
 				p.tracker.Fail("cleanup", err)
 				return err
 			}
 
-			if err := os.Rename(fmt.Sprintf("%s_BAK", d), d); err != nil {
+			if err := os.Rename(fmt.Sprintf("%s_old", d), d); err != nil {
+				p.tracker.messages <- err.Error()
 				p.tracker.Fail("cleanup", err)
 				return err
 			}
 
-			p.tracker.messages <- fmt.Sprintf("%[1]s_BAK -> %[1]s", d)
+			p.tracker.messages <- fmt.Sprintf("%[1]s_old -> %[1]s", d)
 			p.tracker.Accumulate("cleanup", 1)
 		}
-
 		return nil
 	} else {
 		p.tracker.messages <- "Cleaning up backups..."
 
 		for _, d := range []string{p.DirConf, p.DirDriver} {
-			if err := os.RemoveAll(fmt.Sprintf("%s_BAK", d)); err != nil {
-				p.tracker.messages <- err.Error()
+			p.tracker.messages <- fmt.Sprintf("Removing: %s_old", d)
+			if err := os.RemoveAll(fmt.Sprintf("%s_old", d)); err != nil {
 				// not able to removing backup is not a critical problem
+				p.tracker.messages <- err.Error()
 			} else {
-				p.tracker.messages <- fmt.Sprintf("Removing: %s_BAK", d)
 				p.tracker.Accumulate("cleanup", 1)
 			}
 		}
-
 		return nil
 	}
 }

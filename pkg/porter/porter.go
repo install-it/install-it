@@ -157,7 +157,7 @@ func (p *Porter) ImportFromFile(orig string, igoreSetting bool) error {
 	err := fromZip(p.tracker, orig, p.DirRoot)
 	if err == nil && igoreSetting {
 		os.Rename(
-			filepath.Join(p.DirConf+"_BAK", "setting.json"),
+			filepath.Join(p.DirConf+"_old", "setting.json"),
 			filepath.Join(p.DirConf, "setting.json"))
 	}
 
