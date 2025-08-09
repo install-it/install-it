@@ -57,17 +57,16 @@ func some[T any](ts []T, pred func(T) bool) bool {
 func toZip(tracker *ProgressTracker, dest string, directories ...string) error {
 	var total int64 = 0
 	for _, directory := range directories {
-		size, err := dirSize(directory, false)
-		if err != nil {
-			break
+		if size, err := dirSize(directory, false); err == nil {
+			total += size
 		}
-		total += size
 	}
 
 	tracker.Start("compression", total)
 
 	file, err := os.Create(path.Join(dest, "driver-box.zip"))
 	if err != nil {
+		tracker.messages <- err.Error()
 		tracker.Fail("compression", err)
 		return err
 	}
@@ -114,6 +113,7 @@ func toZip(tracker *ProgressTracker, dest string, directories ...string) error {
 		})
 
 		if err != nil {
+			tracker.messages <- err.Error()
 			tracker.Fail("compression", err)
 			return err
 		}

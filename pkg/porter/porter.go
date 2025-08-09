@@ -14,6 +14,7 @@ type Porter struct {
 	DirRoot    string
 	DirConf    string
 	DirDriver  string
+	Targets    []string
 	tracker    *ProgressTracker
 	cancelFunc context.CancelFunc
 }
@@ -123,20 +124,18 @@ func (p *Porter) Export(dest string) error {
 		}
 	}
 
-	relDirConf, err := filepath.Rel(cwd, p.DirConf)
-	if err != nil {
-		return err
-	}
-
-	relDirDir, err := filepath.Rel(cwd, p.DirDriver)
-	if err != nil {
-		return err
+	relpaths := []string{}
+	for _, dir := range p.Targets {
+		if rel, err := filepath.Rel(cwd, dir); err != nil {
+			return err
+		} else {
+			relpaths = append(relpaths, rel)
+		}
 	}
 
 	p.tracker.Complete("initialisation")
 
-	return toZip(p.tracker, dest, relDirConf, relDirDir)
-
+	return toZip(p.tracker, dest, relpaths...)
 }
 
 func (p *Porter) ImportFromFile(orig string, igoreSetting bool) error {
