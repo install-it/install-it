@@ -222,13 +222,13 @@ func download(tracker *ProgressTracker, url string, dest string) error {
 	tracker.Start("download", response.ContentLength)
 	tracker.messages <- "Downloading..."
 
-	if progress, err := tracker.Get("download"); err == nil {
+	if progress, ok := tracker.progs["download"]; ok {
 		if _, err = io.Copy(file, io.TeeReader(response.Body, progress)); err != nil {
 			tracker.Fail("download", err)
 			return err
 		}
 	} else {
-		panic(err)
+		// panic(err)
 	}
 
 	tracker.Complete("download")

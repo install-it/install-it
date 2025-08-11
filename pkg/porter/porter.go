@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"golang.org/x/exp/maps"
 )
 
 type Porter struct {
@@ -25,18 +27,18 @@ func (p Porter) Status() string {
 	}
 
 	if p.tracker.ctx.Err() == context.Canceled {
-		if some(p.tracker.progresses, func(p *Progress) bool {
+		if some(maps.Values(p.tracker.progs), func(p *Progress) bool {
 			return p.Status == "pending" || p.Status == "running"
 		}) {
 			return "aborting"
 		} else {
 			return "aborted"
 		}
-	} else if all(p.tracker.progresses, func(p *Progress) bool { return p.Status == "pending" }) {
+	} else if all(maps.Values(p.tracker.progs), func(p *Progress) bool { return p.Status == "pending" }) {
 		return "pending"
-	} else if all(p.tracker.progresses, func(p *Progress) bool { return p.Status == "completed" }) {
+	} else if all(maps.Values(p.tracker.progs), func(p *Progress) bool { return p.Status == "completed" }) {
 		return "completed"
-	} else if all(p.tracker.progresses, func(p *Progress) bool { return p.Status != "failed" }) {
+	} else if all(maps.Values(p.tracker.progs), func(p *Progress) bool { return p.Status != "failed" }) {
 		// "aborting" and "aborted" is eliminated in the above conditions
 		return "running"
 	} else {
@@ -79,7 +81,7 @@ func (p Porter) Progress() (Progresses, error) {
 	}
 
 	tasks := make([]Progress, 0)
-	for _, t := range p.tracker.progresses {
+	for _, t := range p.tracker.progs {
 		tasks = append(tasks, *t)
 	}
 
@@ -100,13 +102,13 @@ func (p *Porter) Export(dest string) error {
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	p.cancelFunc = cancelFunc
 
-	p.tracker = NewProgressTracker(ctx, []*Progress{
-		{Name: "initialisation", Status: "pending"},
-		{Name: "compression", Status: "pending"},
+	p.tracker = NewProgressTracker(ctx, map[string]*Progress{
+		"initialisation": {Status: "pending"},
+		"compression":    {Status: "pending"},
 	})
-	defer p.tracker.SkipAllPendings()
+	defer p.tracker.Exit()
 
-	p.tracker.Start("initialisation", 1)
+	p.tracker.progs["initialisation"].Start(1)
 
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -133,7 +135,7 @@ func (p *Porter) Export(dest string) error {
 		}
 	}
 
-	p.tracker.Complete("initialisation")
+	p.tracker.progs["initialisation"].Complete()
 
 	return toZip(p.tracker, dest, relpaths...)
 }
@@ -142,12 +144,12 @@ func (p *Porter) ImportFromFile(orig string, igoreSetting bool) error {
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	p.cancelFunc = cancelFunc
 
-	p.tracker = NewProgressTracker(ctx, []*Progress{
-		{Name: "backup", Status: "pending"},
-		{Name: "decompression", Status: "pending"},
-		{Name: "cleanup", Status: "pending"},
+	p.tracker = NewProgressTracker(ctx, map[string]*Progress{
+		"backup":        {Status: "pending"},
+		"decompression": {Status: "pending"},
+		"cleanup":       {Status: "pending"},
 	})
-	defer p.tracker.SkipAllPendings()
+	defer p.tracker.Exit()
 
 	if err := p.backup(); err != nil {
 		return err
@@ -167,16 +169,16 @@ func (p *Porter) ImportFromURL(url string, igoreSetting bool) error {
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	p.cancelFunc = cancelFunc
 
-	p.tracker = NewProgressTracker(ctx, []*Progress{
-		{Name: "initialisation", Status: "pending"},
-		{Name: "backup", Status: "pending"},
-		{Name: "download", Status: "pending"},
-		{Name: "decompression", Status: "pending"},
-		{Name: "cleanup", Status: "pending"},
+	p.tracker = NewProgressTracker(ctx, map[string]*Progress{
+		"initialisation": {Status: "pending"},
+		"backup":         {Status: "pending"},
+		"download":       {Status: "pending"},
+		"decompression":  {Status: "pending"},
+		"cleanup":        {Status: "pending"},
 	})
-	defer p.tracker.SkipAllPendings()
+	defer p.tracker.Exit()
 
-	p.tracker.Start("initialisation", 1)
+	p.tracker.progs["initialisation"].Start(1)
 
 	var filename string
 	for {
@@ -191,7 +193,7 @@ func (p *Porter) ImportFromURL(url string, igoreSetting bool) error {
 		filename = fmt.Sprintf("%s%s.zip", os.TempDir(), hex.EncodeToString(rb))
 	}
 
-	p.tracker.Complete("initialisation")
+	p.tracker.progs["initialisation"].Complete()
 
 	if err := p.backup(); err != nil {
 		return err

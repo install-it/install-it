@@ -1,8 +1,8 @@
 module driver-box
 
-go 1.23
+go 1.23.0
 
-toolchain go1.23.2
+toolchain go1.23.3
 
 require (
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d
@@ -45,6 +45,7 @@ require (
 	github.com/wailsapp/go-webview2 v1.0.19
 	github.com/wailsapp/mimetype v1.4.1 // indirect
 	golang.org/x/crypto v0.32.0 // indirect
+	golang.org/x/exp v0.0.0-20250808145144-a408d31f581a
 	golang.org/x/net v0.34.0
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
