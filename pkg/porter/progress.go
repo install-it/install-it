@@ -8,11 +8,12 @@ import (
 // Progress counts the number of bytes written to it.
 // It implements to the io.Writer interface and we can pass this into io.TeeReader() which will report Progress on each write cycle.
 type Progress struct {
-	Status  string    `json:"status"`
-	Total   int64     `json:"total"`
-	Current int64     `json:"current"`
-	StartAt time.Time `json:"startAt"`
-	Error   error     `json:"error"`
+	Status   string    `json:"status"`
+	Total    int64     `json:"total"`
+	Current  int64     `json:"current"`
+	StartAt  time.Time `json:"startAt"`
+	Error    error     `json:"error"`
+	Messages chan string
 }
 
 func (p *Progress) Write(b []byte) (int, error) {

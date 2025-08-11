@@ -75,14 +75,15 @@ func (p Porter) Progress() (Progresses, error) {
 		return Progresses{}, errors.New("porter: no started porting job")
 	}
 
-	messages := make([]string, len(p.tracker.messages))
-	for range len(p.tracker.messages) {
-		messages = append(messages, <-p.tracker.messages)
-	}
+	messages := make([]string, 0)
+	tasks := make([]Progress, 0, len(p.tracker.progs))
 
-	tasks := make([]Progress, 0)
 	for _, t := range p.tracker.progs {
 		tasks = append(tasks, *t)
+
+		for range len(t.Messages) {
+			messages = append(messages, <-t.Messages)
+		}
 	}
 
 	var error_str string
