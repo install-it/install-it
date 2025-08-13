@@ -28,12 +28,12 @@ export namespace execute {
 export namespace porter {
 	
 	export class Progress {
-	    name: string;
 	    status: string;
 	    total: number;
 	    current: number;
 	    // Go type: time
 	    startAt: any;
+	    error: any;
 	
 	    static createFrom(source: any = {}) {
 	        return new Progress(source);
@@ -41,11 +41,11 @@ export namespace porter {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.name = source["name"];
 	        this.status = source["status"];
 	        this.total = source["total"];
 	        this.current = source["current"];
 	        this.startAt = this.convertValues(source["startAt"], null);
+	        this.error = source["error"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -107,16 +107,16 @@ export namespace porter {
 
 export namespace store {
 	
+	export enum DriverType {
+	    NETWORK = "network",
+	    DISPLAY = "display",
+	    MISCELLANEOUS = "miscellaneous",
+	}
 	export enum SuccessAction {
 	    NOTHING = "nothing",
 	    REBOOT = "reboot",
 	    SHUTDOWN = "shutdown",
 	    FIRMWARE = "firmware",
-	}
-	export enum DriverType {
-	    NETWORK = "network",
-	    DISPLAY = "display",
-	    MISCELLANEOUS = "miscellaneous",
 	}
 	export class AppSetting {
 	    create_partition: boolean;

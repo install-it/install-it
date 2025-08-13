@@ -2,52 +2,48 @@ package porter
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/hex"
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
-
-	"golang.org/x/exp/maps"
 )
 
 type Porter struct {
 	DirRoot    string
-	DirConf    string
-	DirDriver  string
 	Targets    []string
-	tracker    *ProgressTracker
+	Message    chan string
+	progresses []*Progress
 	cancelFunc context.CancelFunc
 }
 
 func (p Porter) Status() string {
-	if p.tracker == nil {
+	if len(p.progresses) == 0 {
 		return "pending"
 	}
 
-	if p.tracker.ctx.Err() == context.Canceled {
-		if some(maps.Values(p.tracker.progs), func(p *Progress) bool {
+	if some(p.progresses, func(p *Progress) bool { return p.Error == context.Canceled }) {
+		if some(p.progresses, func(p *Progress) bool {
 			return p.Status == "pending" || p.Status == "running"
 		}) {
 			return "aborting"
 		} else {
 			return "aborted"
 		}
-	} else if all(maps.Values(p.tracker.progs), func(p *Progress) bool { return p.Status == "pending" }) {
-		return "pending"
-	} else if all(maps.Values(p.tracker.progs), func(p *Progress) bool { return p.Status == "completed" }) {
-		return "completed"
-	} else if all(maps.Values(p.tracker.progs), func(p *Progress) bool { return p.Status != "failed" }) {
-		// "aborting" and "aborted" is eliminated in the above conditions
-		return "running"
-	} else {
-		return "failed"
 	}
+
+	if all(p.progresses, func(p *Progress) bool { return p.Status == "pending" }) {
+		return "pending"
+	}
+	if all(p.progresses, func(p *Progress) bool { return p.Status == "completed" }) {
+		return "completed"
+	}
+	if all(p.progresses, func(p *Progress) bool { return p.Status != "failed" }) {
+		return "running"
+	}
+	return "failed"
 }
 
 func (p Porter) Abort() error {
-	if p.tracker == nil {
+	if len(p.progresses) == 0 {
 		return errors.New("porter: no started porting job")
 	}
 
@@ -59,43 +55,35 @@ func (p Porter) Abort() error {
 		return errors.New("porter: no running porting job")
 	}
 
-	if p.tracker.ctx.Err() == context.Canceled {
+	if p.Status() == "aborted" {
 		return errors.New("porter: already aborted")
 	}
 
-	p.tracker.messages <- "Cancelling..."
-
+	p.Message <- "Cancelling..."
 	p.cancelFunc()
-
 	return nil
 }
 
 func (p Porter) Progress() (Progresses, error) {
-	if p.tracker == nil {
+	if len(p.progresses) == 0 {
 		return Progresses{}, errors.New("porter: no started porting job")
 	}
 
-	messages := make([]string, 0)
-	tasks := make([]Progress, 0, len(p.tracker.progs))
-
-	for _, t := range p.tracker.progs {
-		tasks = append(tasks, *t)
-
-		for range len(t.Messages) {
-			messages = append(messages, <-t.Messages)
-		}
+	messageses := make([]string, 0, len(p.Message))
+	for range len(p.Message) {
+		messageses = append(messageses, <-p.Message)
 	}
 
-	var error_str string
-	if p.tracker.err != nil {
-		error_str = p.tracker.err.Error()
+	progresses := make([]Progress, 0, len(p.progresses))
+	for _, prog := range p.progresses {
+		progresses = append(progresses, *prog)
 	}
 
 	return Progresses{
-		Progresses: tasks,
-		Messages:   messages,
+		Progresses: progresses,
+		Messages:   messageses,
 		Status:     p.Status(),
-		Error:      error_str,
+		Error:      "",
 	}, nil
 }
 
@@ -103,107 +91,103 @@ func (p *Porter) Export(dest string) error {
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	p.cancelFunc = cancelFunc
 
-	p.tracker = NewProgressTracker(ctx, map[string]*Progress{
-		"initialisation": {Status: "pending"},
-		"compression":    {Status: "pending"},
-	})
-	defer p.tracker.Exit()
+	p.progresses = []*Progress{
+		{context: ctx, message: p.Message, Name: "initialisation", Status: "pending"},
+		{context: ctx, message: p.Message, Name: "compression", Status: "pending"},
+	}
+	defer p.exit()
 
-	p.tracker.progs["initialisation"].Start(1)
+	cwd, paths, err := func(tracker *Progress) (cwd string, paths []string, err error) {
+		tracker.Start(1)
+		defer updateProgress(tracker, err)
 
-	cwd, err := os.Getwd()
+		if cwd, err := os.Getwd(); err != nil {
+			return "", []string{}, err
+		} else {
+			if pathExe, err := os.Executable(); err != nil {
+				return "", []string{}, err
+			} else {
+				root := filepath.Dir(pathExe)
+				if cwd != root {
+					os.Chdir(root)
+					// defer func() { os.Chdir(cwd) }()
+				}
+
+				relpaths := []string{}
+				for _, dir := range p.Targets {
+					if rel, err := filepath.Rel(root, dir); err != nil {
+						return cwd, []string{}, err
+					} else {
+						relpaths = append(relpaths, rel)
+					}
+				}
+				return cwd, relpaths, nil
+			}
+		}
+	}(p.progresses[0])
+
+	defer func() {
+		if cwd != "" {
+			os.Chdir(cwd)
+		}
+	}()
+
 	if err != nil {
 		return err
 	}
 
-	if pathExe, err := os.Executable(); err != nil {
-		return err
-	} else {
-		if cwd != filepath.Dir(pathExe) {
-			os.Chdir(filepath.Dir(pathExe))
-			defer os.Chdir(cwd)
+	return toZip(p.progresses[1], dest, paths...)
 
-			cwd = filepath.Dir(pathExe)
-		}
-	}
-
-	relpaths := []string{}
-	for _, dir := range p.Targets {
-		if rel, err := filepath.Rel(cwd, dir); err != nil {
-			return err
-		} else {
-			relpaths = append(relpaths, rel)
-		}
-	}
-
-	p.tracker.progs["initialisation"].Complete()
-
-	return toZip(p.tracker, dest, relpaths...)
 }
 
-func (p *Porter) ImportFromFile(orig string, igoreSetting bool) error {
+func (p *Porter) ImportFromFile(orig string) error {
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	p.cancelFunc = cancelFunc
 
-	p.tracker = NewProgressTracker(ctx, map[string]*Progress{
-		"backup":        {Status: "pending"},
-		"decompression": {Status: "pending"},
-		"cleanup":       {Status: "pending"},
-	})
-	defer p.tracker.Exit()
+	p.progresses = []*Progress{
+		{context: ctx, message: p.Message, Name: "backup", Status: "pending"},
+		{context: ctx, message: p.Message, Name: "decompression", Status: "pending"},
+		{context: ctx, message: p.Message, Name: "cleanup", Status: "pending"},
+	}
+	defer p.exit()
 
-	if err := p.backup(); err != nil {
+	if err := backup(p.progresses[0], p.Targets); err != nil {
 		return err
 	}
 
-	err := fromZip(p.tracker, orig, p.DirRoot)
-	if err == nil && igoreSetting {
-		os.Rename(
-			filepath.Join(p.DirConf+"_old", "setting.json"),
-			filepath.Join(p.DirConf, "setting.json"))
-	}
+	err := fromZip(p.progresses[1], orig, p.DirRoot)
 
-	return errors.Join(err, p.cleanup(err != nil))
+	return errors.Join(err, cleanup(p.progresses[2], p.Targets, err != nil))
 }
 
-func (p *Porter) ImportFromURL(url string, igoreSetting bool) error {
+func (p *Porter) ImportFromURL(url string) error {
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	p.cancelFunc = cancelFunc
 
-	p.tracker = NewProgressTracker(ctx, map[string]*Progress{
-		"initialisation": {Status: "pending"},
-		"backup":         {Status: "pending"},
-		"download":       {Status: "pending"},
-		"decompression":  {Status: "pending"},
-		"cleanup":        {Status: "pending"},
-	})
-	defer p.tracker.Exit()
-
-	p.tracker.progs["initialisation"].Start(1)
-
-	var filename string
-	for {
-		if filename != "" {
-			if _, err := os.Stat(filename); err != nil {
-				break
-			}
-		}
-
-		rb := make([]byte, 4)
-		rand.Read(rb)
-		filename = fmt.Sprintf("%s%s.zip", os.TempDir(), hex.EncodeToString(rb))
+	p.progresses = []*Progress{
+		{context: ctx, message: p.Message, Name: "backup", Status: "pending"},
+		{context: ctx, message: p.Message, Name: "download", Status: "pending"},
+		{context: ctx, message: p.Message, Name: "decompression", Status: "pending"},
+		{context: ctx, message: p.Message, Name: "cleanup", Status: "pending"},
 	}
+	defer p.exit()
 
-	p.tracker.progs["initialisation"].Complete()
-
-	if err := p.backup(); err != nil {
+	if err := backup(p.progresses[0], p.Targets); err != nil {
 		return err
 	}
 
-	if err := download(p.tracker, url, filename); err != nil {
-		return errors.Join(err, p.cleanup(true))
+	if filename, err := download(p.progresses[1], url); err != nil {
+		return errors.Join(err, cleanup(p.progresses[3], p.Targets, true))
 	} else {
-		err = fromZip(p.tracker, filename, p.DirRoot)
-		return errors.Join(err, p.cleanup(err != nil))
+		err = fromZip(p.progresses[2], filename, p.DirRoot)
+		return errors.Join(err, cleanup(p.progresses[3], p.Targets, err != nil))
+	}
+}
+
+func (p *Porter) exit() {
+	for _, p := range p.progresses {
+		if p.Status == "pending" {
+			p.Status = "skiped"
+		}
 	}
 }

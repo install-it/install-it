@@ -10,12 +10,12 @@ export function Export(arg1) {
   return window['go']['porter']['Porter']['Export'](arg1);
 }
 
-export function ImportFromFile(arg1, arg2) {
-  return window['go']['porter']['Porter']['ImportFromFile'](arg1, arg2);
+export function ImportFromFile(arg1) {
+  return window['go']['porter']['Porter']['ImportFromFile'](arg1);
 }
 
-export function ImportFromURL(arg1, arg2) {
-  return window['go']['porter']['Porter']['ImportFromURL'](arg1, arg2);
+export function ImportFromURL(arg1) {
+  return window['go']['porter']['Porter']['ImportFromURL'](arg1);
 }
 
 export function Progress() {

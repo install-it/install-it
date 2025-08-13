@@ -6,9 +6,9 @@ export function Abort():Promise<void>;
 
 export function Export(arg1:string):Promise<void>;
 
-export function ImportFromFile(arg1:string,arg2:boolean):Promise<void>;
+export function ImportFromFile(arg1:string):Promise<void>;
 
-export function ImportFromURL(arg1:string,arg2:boolean):Promise<void>;
+export function ImportFromURL(arg1:string):Promise<void>;
 
 export function Progress():Promise<porter.Progresses>;
 
