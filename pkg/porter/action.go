@@ -13,15 +13,13 @@ import (
 )
 
 // Calculates the total size of a directory and its subdirectories.
-//
-// exclDir is a boolean flag indicating whether to exclude directories from the size calculation.
+// If exclDir is true, directory sizes are excluded from the total.
 func dirSize(target string, exclDir bool) (int64, error) {
 	var size int64
 	err := filepath.Walk(target, func(_ string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-
 		if !info.IsDir() || (!exclDir && info.IsDir()) {
 			size += info.Size()
 		}
@@ -30,7 +28,7 @@ func dirSize(target string, exclDir bool) (int64, error) {
 	return size, err
 }
 
-// Return True if all elements tested by pred is true.
+// Returns true if all elements in the slice satisfy the predicate.
 func all[T any](ts []T, pred func(T) bool) bool {
 	for _, t := range ts {
 		if !pred(t) {
@@ -40,7 +38,7 @@ func all[T any](ts []T, pred func(T) bool) bool {
 	return true
 }
 
-// Return True if some elements tested by pred is true.
+// Returns true if at least one element in the slice satisfies the predicate.
 func some[T any](ts []T, pred func(T) bool) bool {
 	for _, t := range ts {
 		if pred(t) {
@@ -50,30 +48,31 @@ func some[T any](ts []T, pred func(T) bool) bool {
 	return false
 }
 
+// Finalises the progress tracker based on the presence of an error.
 func updateProgress(progress *Progress, err error) {
 	if err != nil {
-		progress.message <- err.Error()
+		if err != context.Canceled {
+			progress.message <- err.Error()
+		}
 		progress.Fail(err)
 	} else {
 		progress.Complete()
 	}
 }
 
+// Compresses the specified directories into a single ZIP file at the destination path.
 func toZip(tracker *Progress, dest string, directories ...string) (err error) {
-	var total int64 = 0
-	for _, directory := range directories {
-		if size, err := dirSize(directory, false); err == nil {
-			total += size
+	tracker.Start(0)
+	defer func() { updateProgress(tracker, err) }()
+
+	for _, dir := range directories {
+		if size, err := dirSize(dir, false); err == nil {
+			tracker.Total += size
 		}
 	}
 
-	tracker.Start(total)
-	defer updateProgress(tracker, err)
-
 	file, err := os.Create(path.Join(dest, "driver-box.zip"))
 	if err != nil {
-		tracker.message <- err.Error()
-		tracker.Fail(err)
 		return err
 	}
 	defer file.Close()
@@ -81,36 +80,34 @@ func toZip(tracker *Progress, dest string, directories ...string) (err error) {
 	zwriter := zip.NewWriter(file)
 	defer zwriter.Close()
 
-	for _, path := range directories {
-		err = filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+	for _, dir := range directories {
+		err = filepath.Walk(dir, func(filePath string, info os.FileInfo, err error) error {
 			if tracker.context.Err() == context.Canceled {
 				return tracker.context.Err()
 			}
-
 			if err != nil {
 				return err
 			}
 
-			tracker.message <- fmt.Sprintf("Packing: %s", path)
+			tracker.message <- fmt.Sprintf("Packing: %s", filePath)
 
 			if info.IsDir() {
 				tracker.Accumulate(info.Size())
 				return nil
 			}
 
-			file, err := os.Open(path)
+			srcFile, err := os.Open(filePath)
 			if err != nil {
 				return err
 			}
-			defer file.Close()
+			defer srcFile.Close()
 
-			f, err := zwriter.Create(path)
+			zipEntry, err := zwriter.Create(filePath)
 			if err != nil {
 				return err
 			}
 
-			_, err = io.Copy(f, file)
-			if err != nil {
+			if _, err = io.Copy(zipEntry, srcFile); err != nil {
 				return err
 			}
 
@@ -119,8 +116,6 @@ func toZip(tracker *Progress, dest string, directories ...string) (err error) {
 		})
 
 		if err != nil {
-			tracker.message <- err.Error()
-			tracker.Fail(err)
 			return err
 		}
 	}
@@ -129,14 +124,15 @@ func toZip(tracker *Progress, dest string, directories ...string) (err error) {
 	return nil
 }
 
-// Reference: https://stackoverflow.com/a/24792688
-func fromZip(tracker *Progress, orig string, dest string) error {
+// fromZip extracts a ZIP archive to the specified destination directory.
+func fromZip(tracker *Progress, orig string, dest string) (err error) {
+	tracker.Start(0)
+	defer func() { updateProgress(tracker, err) }()
+
 	zreader, err := zip.OpenReader(orig)
 	if err != nil {
-		tracker.Fail(err)
 		return err
 	}
-
 	defer zreader.Close()
 
 	os.MkdirAll(dest, os.ModePerm)
@@ -153,91 +149,81 @@ func fromZip(tracker *Progress, orig string, dest string) error {
 		}
 		defer zfreader.Close()
 
-		path := filepath.Join(dest, zf.Name)
+		extractPath := filepath.Join(dest, zf.Name)
 
-		// Check for ZipSlip (Directory traversal)
-		if !strings.HasPrefix(path, filepath.Clean(dest)+string(os.PathSeparator)) {
-			return fmt.Errorf("porting: illegal file path: %s", path)
+		// Prevent ZipSlip vulnerability
+		if !strings.HasPrefix(extractPath, filepath.Clean(dest)+string(os.PathSeparator)) {
+			return fmt.Errorf("porting: illegal file path: %s", extractPath)
 		}
 
 		tracker.message <- fmt.Sprintf("Unpacking: %s", zf.Name)
 
 		if zf.FileInfo().IsDir() {
-			os.MkdirAll(path, zf.Mode())
-		} else {
-			os.MkdirAll(filepath.Dir(path), zf.Mode())
-
-			f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, zf.Mode())
-			if err != nil {
-				return err
-			}
-			defer f.Close()
-
-			_, err = io.Copy(f, zfreader)
-			if err != nil {
-				return err
-			}
+			return os.MkdirAll(extractPath, zf.Mode())
 		}
-		return nil
-	}
 
-	var total int64 = 0
-	for _, zf := range zreader.File {
-		total += zf.FileInfo().Size()
-	}
-
-	tracker.Start(total)
-
-	for _, f := range zreader.File {
-		if err := extractAndWriteFile(f); err != nil {
-			tracker.Fail(err)
+		os.MkdirAll(filepath.Dir(extractPath), zf.Mode())
+		outFile, err := os.OpenFile(extractPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, zf.Mode())
+		if err != nil {
 			return err
 		}
-		tracker.Accumulate(f.FileInfo().Size())
+		defer outFile.Close()
+
+		_, err = io.Copy(outFile, zfreader)
+		return err
+	}
+
+	for _, zf := range zreader.File {
+		tracker.Total += zf.FileInfo().Size()
+	}
+
+	for _, zf := range zreader.File {
+		if err := extractAndWriteFile(zf); err != nil {
+			return err
+		}
+		tracker.Accumulate(zf.FileInfo().Size())
 	}
 
 	tracker.Complete()
 	return nil
 }
 
+// Fetches a ZIP file from the given URL and saves it to a temporary file.
 func download(tracker *Progress, url string) (path string, err error) {
-	tracker.Start(1) // placeholder value before establish connection to URL
-	defer updateProgress(tracker, err)
+	tracker.Start(0)
+	defer func() { updateProgress(tracker, err) }()
 
-	request, err := http.NewRequestWithContext(tracker.context, "GET", url, nil)
+	req, err := http.NewRequestWithContext(tracker.context, "GET", url, nil)
 	if err != nil {
-		tracker.Fail(err)
 		return "", err
 	}
 
-	response, err := http.DefaultClient.Do(request)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		tracker.Fail(err)
 		return "", err
 	}
-	defer response.Body.Close()
+	defer resp.Body.Close()
 
-	file, err := os.CreateTemp("", "*.zip")
+	tmpFile, err := os.CreateTemp("", "*.zip")
 	if err != nil {
-		tracker.Fail(err)
 		return "", err
 	}
-	defer file.Close()
+	defer tmpFile.Close()
 
-	tracker.Start(response.ContentLength)
+	tracker.Total = resp.ContentLength
 	tracker.message <- "Downloading..."
 
-	if _, err = io.Copy(file, io.TeeReader(response.Body, tracker)); err != nil {
-		tracker.Fail(err)
+	if _, err = io.Copy(tmpFile, io.TeeReader(resp.Body, tracker)); err != nil {
 		return "", err
 	}
 
-	return filepath.Abs(file.Name())
+	return filepath.Abs(tmpFile.Name())
 }
 
+// Renames each target directory by appending "_old" to create a backup.
 func backup(tracker *Progress, targets []string) (err error) {
 	tracker.Start(2)
-	defer updateProgress(tracker, err)
+	defer func() { updateProgress(tracker, err) }()
 
 	tracker.message <- "Creating backups..."
 
@@ -251,18 +237,17 @@ func backup(tracker *Progress, targets []string) (err error) {
 	return nil
 }
 
+// Removes or restores backup directories based on the restore flag.
 func cleanup(tracker *Progress, targets []string, restore bool) (err error) {
-	tracker.Start(2)
-	defer updateProgress(tracker, err)
+	tracker.Start(int64(len(targets)))
+	defer func() { updateProgress(tracker, err) }()
 
 	if restore {
 		tracker.message <- "Restoring backups..."
-
 		for _, d := range targets {
 			if err := os.RemoveAll(d); err != nil {
 				return err
 			}
-
 			if err := os.Rename(fmt.Sprintf("%s_old", d), d); err != nil {
 				return err
 			}
@@ -270,19 +255,19 @@ func cleanup(tracker *Progress, targets []string, restore bool) (err error) {
 			tracker.message <- fmt.Sprintf("%[1]s_old -> %[1]s", d)
 			tracker.Accumulate(1)
 		}
-		return nil
 	} else {
-		tracker.message <- "Cleaning up backups..."
-
+		tracker.message <- "Removing backups..."
 		for _, d := range targets {
-			tracker.message <- fmt.Sprintf("Removing: %s_old", d)
-			if err := os.RemoveAll(fmt.Sprintf("%s_old", d)); err != nil {
-				// not able to removing backup is not a critical problem
+			path := fmt.Sprintf("%s_old", d)
+			tracker.message <- fmt.Sprintf("Removing: %s", path)
+
+			if err := os.RemoveAll(path); err != nil {
 				tracker.message <- err.Error()
+				tracker.message <- fmt.Sprintf("⚠️ Unable to remove backup \"%s\", please consider removing it manually", d)
 			} else {
 				tracker.Accumulate(1)
 			}
 		}
-		return nil
 	}
+	return nil
 }

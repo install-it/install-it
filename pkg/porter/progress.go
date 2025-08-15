@@ -5,46 +5,48 @@ import (
 	"time"
 )
 
-// Progress counts the number of bytes written to it.
-// It implements to the io.Writer interface and we can pass this into io.TeeReader() which will report Progress on each write cycle.
+// Progress tracks the status and metrics of a single task.
+// It implements io.Writer to allow tracking of byte-based progress (e.g., during downloads).
 type Progress struct {
-	Name    string    `json:"name"`
-	Status  string    `json:"status"`
-	Total   int64     `json:"total"`
-	Current int64     `json:"current"`
-	StartAt time.Time `json:"startAt"`
-	Error   error     `json:"error"`
-	message chan string
-	context context.Context
+	Name    string          `json:"name"`   // Name of the task
+	Status  string          `json:"status"` // Current status: "pending", "running", "completed", "failed", "aborted"
+	Total   int64           `json:"total"`
+	Current int64           `json:"current"`
+	StartAt time.Time       `json:"startAt"` // Timestamp when the task started
+	Error   error           `json:"error"`   // Error encountered during execution, if any
+	message chan string     // Channel for sending progress messages
+	context context.Context // Context for cancellation and timeout control
 }
 
+// Implements the io.Writer interface.
+// It updates the Current progress based on the number of bytes written.
 func (p *Progress) Write(b []byte) (int, error) {
 	n := len(b)
 	p.Current += int64(n)
 	return n, nil
 }
 
+// Initializes the progress tracking with a total byte count.
 func (p *Progress) Start(total int64) {
 	p.StartAt = time.Now()
 	p.Status = "running"
 	p.Total = total
 }
 
+// Adds a given number of bytes to the current progress.
 func (p *Progress) Accumulate(current int64) {
 	p.Current += current
-	if p.Total == p.Current {
-		p.Status = "completed"
-	}
 }
 
+// Marks the progress as completed and sets Current to Total.
 func (p *Progress) Complete() {
 	p.Current = p.Total
 	p.Status = "completed"
 }
 
+// Marks the progress as failed or aborted depending on the error type.
 func (p *Progress) Fail(err error) {
 	p.Error = err
-
 	if err == context.Canceled {
 		p.Status = "aborted"
 	} else {
@@ -54,8 +56,8 @@ func (p *Progress) Fail(err error) {
 
 // Type binding to the frontend progress query
 type Progresses struct {
-	Progresses []Progress `json:"tasks"`
-	Messages   []string   `json:"message"`
-	Status     string     `json:"status"`
-	Error      string     `json:"error"`
+	Progresses []Progress `json:"tasks"`   // List of individual task progress
+	Messages   []string   `json:"message"` // Collected messages from all tasks
+	Status     string     `json:"status"`  // Overall status of the porting process
+	Error      string     `json:"error"`   // Summary error message, if any
 }

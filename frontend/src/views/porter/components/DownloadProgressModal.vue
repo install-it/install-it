@@ -70,8 +70,6 @@ const progress = ref<porter.Progresses | null>(null)
 
 function updateProgress() {
   return programPorter.Progress().then(p => {
-    console.log(p)
-
     let scroll = false
     if (
       messageBox.value!.scrollTop + messageBox.value!.clientHeight >=

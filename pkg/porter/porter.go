@@ -7,14 +7,16 @@ import (
 	"path/filepath"
 )
 
+// Porter manages the porting process including export, import, and progress tracking.
 type Porter struct {
-	DirRoot    string
-	Targets    []string
-	Message    chan string
-	progresses []*Progress
-	cancelFunc context.CancelFunc
+	DirRoot    string             // Root directory for import/export operations
+	Targets    []string           // Target directories to be backed up or compressed
+	Message    chan string        // Channel for progress messages
+	progresses []*Progress        // Slice of progress trackers for each step
+	cancelFunc context.CancelFunc // Function to cancel ongoing operations
 }
 
+// Returns the current status of the porting process.
 func (p Porter) Status() string {
 	if len(p.progresses) == 0 {
 		return "pending"
@@ -25,9 +27,8 @@ func (p Porter) Status() string {
 			return p.Status == "pending" || p.Status == "running"
 		}) {
 			return "aborting"
-		} else {
-			return "aborted"
 		}
+		return "aborted"
 	}
 
 	if all(p.progresses, func(p *Progress) bool { return p.Status == "pending" }) {
@@ -42,28 +43,27 @@ func (p Porter) Status() string {
 	return "failed"
 }
 
+// Cancels the ongoing porting process.
 func (p Porter) Abort() error {
 	if len(p.progresses) == 0 {
 		return errors.New("porter: no started porting job")
 	}
 
-	if p.Status() == "aborting" {
+	switch p.Status() {
+	case "aborting":
 		return nil
-	}
-
-	if p.Status() != "running" {
+	case "aborted":
+		return errors.New("porter: already aborted")
+	case "running":
+		p.Message <- "Cancelling..."
+		p.cancelFunc()
+		return nil
+	default:
 		return errors.New("porter: no running porting job")
 	}
-
-	if p.Status() == "aborted" {
-		return errors.New("porter: already aborted")
-	}
-
-	p.Message <- "Cancelling..."
-	p.cancelFunc()
-	return nil
 }
 
+// Returns the current progress and messages of the porting process.
 func (p Porter) Progress() (Progresses, error) {
 	if len(p.progresses) == 0 {
 		return Progresses{}, errors.New("porter: no started porting job")
@@ -74,9 +74,9 @@ func (p Porter) Progress() (Progresses, error) {
 		messageses = append(messageses, <-p.Message)
 	}
 
-	progresses := make([]Progress, 0, len(p.progresses))
-	for _, prog := range p.progresses {
-		progresses = append(progresses, *prog)
+	progresses := make([]Progress, len(p.progresses))
+	for i, prog := range p.progresses {
+		progresses[i] = *prog
 	}
 
 	return Progresses{
@@ -87,7 +87,8 @@ func (p Porter) Progress() (Progresses, error) {
 	}, nil
 }
 
-func (p *Porter) Export(dest string) error {
+// Compresses the target directories into a ZIP file at the destination.
+func (p *Porter) Export(dest string) (err error) {
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	p.cancelFunc = cancelFunc
 
@@ -110,7 +111,6 @@ func (p *Porter) Export(dest string) error {
 				root := filepath.Dir(pathExe)
 				if cwd != root {
 					os.Chdir(root)
-					// defer func() { os.Chdir(cwd) }()
 				}
 
 				relpaths := []string{}
@@ -135,11 +135,10 @@ func (p *Porter) Export(dest string) error {
 	if err != nil {
 		return err
 	}
-
 	return toZip(p.progresses[1], dest, paths...)
-
 }
 
+// Restores data from a ZIP file and cleans up or restores backups.
 func (p *Porter) ImportFromFile(orig string) error {
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	p.cancelFunc = cancelFunc
@@ -156,10 +155,10 @@ func (p *Porter) ImportFromFile(orig string) error {
 	}
 
 	err := fromZip(p.progresses[1], orig, p.DirRoot)
-
 	return errors.Join(err, cleanup(p.progresses[2], p.Targets, err != nil))
 }
 
+// Downloads a ZIP file from a URL and imports its contents.
 func (p *Porter) ImportFromURL(url string) error {
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	p.cancelFunc = cancelFunc
@@ -176,18 +175,20 @@ func (p *Porter) ImportFromURL(url string) error {
 		return err
 	}
 
-	if filename, err := download(p.progresses[1], url); err != nil {
+	filename, err := download(p.progresses[1], url)
+	if err != nil {
 		return errors.Join(err, cleanup(p.progresses[3], p.Targets, true))
-	} else {
-		err = fromZip(p.progresses[2], filename, p.DirRoot)
-		return errors.Join(err, cleanup(p.progresses[3], p.Targets, err != nil))
 	}
+
+	err = fromZip(p.progresses[2], filename, p.DirRoot)
+	return errors.Join(err, cleanup(p.progresses[3], p.Targets, err != nil))
 }
 
+// Marks all pending progress steps as skipped.
 func (p *Porter) exit() {
-	for _, p := range p.progresses {
-		if p.Status == "pending" {
-			p.Status = "skiped"
+	for _, prog := range p.progresses {
+		if prog.Status == "pending" {
+			prog.Status = "skipped"
 		}
 	}
 }

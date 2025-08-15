@@ -25,8 +25,6 @@ func Unzip(src, dest string) error {
 
 	// Closure to address file descriptors issue with all the deferred .Close() methods
 	extractAndWriteFile := func(f *zip.File) error {
-		fmt.Println("extracting...")
-
 		rc, err := f.Open()
 		if err != nil {
 			return err
