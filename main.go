@@ -75,6 +75,13 @@ func init() {
 }
 
 func main() {
+	// working directory correction
+	if cwd, err := os.Getwd(); err == nil {
+		if pathExe, err := os.Executable(); err == nil && cwd != filepath.Dir(pathExe) {
+			os.Chdir(filepath.Dir(pathExe))
+		}
+	}
+
 	app := &App{}
 	mgt := &execute.CommandExecutor{}
 
@@ -97,7 +104,7 @@ func main() {
 			mgt,
 			&store.DriverGroupManager{Path: filepath.Join(dirConf, "groups.json")},
 			&store.AppSettingManager{Path: filepath.Join(dirConf, "setting.json")},
-			&porter.Porter{DirRoot: dirRoot, DirConf: dirConf, DirDriver: dirDir},
+			&porter.Porter{DirRoot: dirRoot, Message: make(chan string, 512), Targets: []string{dirConf, dirDir}},
 			&sysinfo.SysInfo{},
 		},
 		EnumBind: []interface{}{

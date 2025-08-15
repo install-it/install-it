@@ -28,14 +28,14 @@ defineExpose({
     updateProgress()
     interval = setInterval(updateProgress, 300)
   },
-  import: (from: 'url' | 'file', source: string, ignoreAS: boolean) => {
+  import: (from: 'url' | 'file', source: string) => {
     frame.value?.show()
     progress.value = null
     messages.value = []
 
     if (from == 'url') {
       programPorter
-        .ImportFromURL(source, ignoreAS)
+        .ImportFromURL(source)
         .catch(toastErrMsg)
         .finally(() => {
           clearInterval(interval)
@@ -43,7 +43,7 @@ defineExpose({
         })
     } else {
       programPorter
-        .ImportFromFile(source, ignoreAS)
+        .ImportFromFile(source)
         .catch(toastErrMsg)
         .finally(() => {
           clearInterval(interval)

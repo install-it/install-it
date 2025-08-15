@@ -34,6 +34,7 @@ export namespace porter {
 	    current: number;
 	    // Go type: time
 	    startAt: any;
+	    error: any;
 	
 	    static createFrom(source: any = {}) {
 	        return new Progress(source);
@@ -46,6 +47,7 @@ export namespace porter {
 	        this.total = source["total"];
 	        this.current = source["current"];
 	        this.startAt = this.convertValues(source["startAt"], null);
+	        this.error = source["error"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

@@ -1,8 +1,8 @@
 module driver-box
 
-go 1.23
+go 1.23.0
 
-toolchain go1.23.2
+toolchain go1.23.3
 
 require (
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d
