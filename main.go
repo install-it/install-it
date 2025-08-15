@@ -75,6 +75,13 @@ func init() {
 }
 
 func main() {
+	// working directory correction
+	if cwd, err := os.Getwd(); err == nil {
+		if pathExe, err := os.Executable(); err == nil && cwd != filepath.Dir(pathExe) {
+			os.Chdir(filepath.Dir(pathExe))
+		}
+	}
+
 	app := &App{}
 	mgt := &execute.CommandExecutor{}
 

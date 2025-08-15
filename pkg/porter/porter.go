@@ -98,39 +98,26 @@ func (p *Porter) Export(dest string) (err error) {
 	}
 	defer p.exit()
 
-	cwd, paths, err := func(tracker *Progress) (cwd string, paths []string, err error) {
-		tracker.Start(1)
+	paths, err := func(tracker *Progress) (paths []string, err error) {
+		tracker.Start(int64(len(p.Targets)))
 		defer updateProgress(tracker, err)
 
 		if cwd, err := os.Getwd(); err != nil {
-			return "", []string{}, err
+			return nil, err
 		} else {
-			if pathExe, err := os.Executable(); err != nil {
-				return "", []string{}, err
-			} else {
-				root := filepath.Dir(pathExe)
-				if cwd != root {
-					os.Chdir(root)
+			relpaths := []string{}
+			for _, dir := range p.Targets {
+				if rel, err := filepath.Rel(cwd, dir); err != nil {
+					return relpaths, err
+				} else {
+					tracker.Accumulate(1)
+					relpaths = append(relpaths, rel)
 				}
-
-				relpaths := []string{}
-				for _, dir := range p.Targets {
-					if rel, err := filepath.Rel(root, dir); err != nil {
-						return cwd, []string{}, err
-					} else {
-						relpaths = append(relpaths, rel)
-					}
-				}
-				return cwd, relpaths, nil
 			}
+			return relpaths, nil
+
 		}
 	}(p.progresses[0])
-
-	defer func() {
-		if cwd != "" {
-			os.Chdir(cwd)
-		}
-	}()
 
 	if err != nil {
 		return err
