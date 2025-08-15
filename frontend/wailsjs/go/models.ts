@@ -28,6 +28,7 @@ export namespace execute {
 export namespace porter {
 	
 	export class Progress {
+	    name: string;
 	    status: string;
 	    total: number;
 	    current: number;
@@ -41,6 +42,7 @@ export namespace porter {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
 	        this.status = source["status"];
 	        this.total = source["total"];
 	        this.current = source["current"];

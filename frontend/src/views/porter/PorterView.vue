@@ -16,12 +16,10 @@ const importInput = ref<{
   from: 'file' | 'url'
   filePath: string
   url: string
-  ignoreAppSetting: boolean
 }>({
   from: 'file',
   filePath: '',
-  url: '',
-  ignoreAppSetting: false
+  url: ''
 })
 
 onBeforeMount(() => {
@@ -174,11 +172,6 @@ onBeforeMount(() => {
         </div>
       </div>
 
-      <label>
-        <input type="checkbox" v-model="importInput.ignoreAppSetting" />
-        {{ $t('porter.ignoreAppSetting') }}
-      </label>
-
       <div class="flex justify-end">
         <button
           type="button"
@@ -186,8 +179,7 @@ onBeforeMount(() => {
           @click="
             progressModal?.import(
               importInput.from,
-              importInput.from == 'file' ? importInput.filePath : importInput.url,
-              importInput.ignoreAppSetting
+              importInput.from == 'file' ? importInput.filePath : importInput.url
             )
           "
         >
