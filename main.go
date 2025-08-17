@@ -75,13 +75,6 @@ func init() {
 }
 
 func main() {
-	// working directory correction
-	if cwd, err := os.Getwd(); err == nil {
-		if pathExe, err := os.Executable(); err == nil && cwd != filepath.Dir(pathExe) {
-			os.Chdir(filepath.Dir(pathExe))
-		}
-	}
-
 	app := &App{}
 	mgt := &execute.CommandExecutor{}
 
@@ -96,6 +89,13 @@ func main() {
 		},
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
 		OnStartup: func(ctx context.Context) {
+			// working directory correction
+			if cwd, err := os.Getwd(); err == nil {
+				if pathExe, err := os.Executable(); err == nil && cwd != filepath.Dir(pathExe) {
+					os.Chdir(filepath.Dir(pathExe))
+				}
+			}
+
 			app.SetContext(ctx)
 			mgt.SetContext(ctx)
 		},
