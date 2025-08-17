@@ -29,7 +29,7 @@ export namespace porter {
 	
 	export class Progress {
 	    name: string;
-	    status: string;
+	    status: status.Status;
 	    total: number;
 	    current: number;
 	    // Go type: time
@@ -71,7 +71,7 @@ export namespace porter {
 	export class Progresses {
 	    tasks: Progress[];
 	    messages: string[];
-	    status: string;
+	    status: status.Status;
 	
 	    static createFrom(source: any = {}) {
 	        return new Progresses(source);
@@ -101,6 +101,20 @@ export namespace porter {
 		    }
 		    return a;
 		}
+	}
+
+}
+
+export namespace status {
+	
+	export enum Status {
+	    PENDING = "pending",
+	    RUNNING = "running",
+	    COMPLETED = "completed",
+	    FAILED = "failed",
+	    ABORTING = "aborting",
+	    ABORTED = "aborted",
+	    SKIPED = "skiped",
 	}
 
 }

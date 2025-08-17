@@ -4,6 +4,7 @@ import (
 	"context"
 	"driver-box/pkg/execute"
 	"driver-box/pkg/porter"
+	"driver-box/pkg/status"
 	"driver-box/pkg/store"
 	"driver-box/pkg/sysinfo"
 	"embed"
@@ -124,6 +125,18 @@ func main() {
 				{store.Reboot, "REBOOT"},
 				{store.Shutdown, "SHUTDOWN"},
 				{store.Firmware, "FIRMWARE"},
+			},
+			[]struct {
+				Value  status.Status
+				TSName string
+			}{
+				{status.Pending, "PENDING"},
+				{status.Running, "RUNNING"},
+				{status.Completed, "COMPLETED"},
+				{status.Failed, "FAILED"},
+				{status.Aborting, "ABORTING"},
+				{status.Aborted, "ABORTED"},
+				{status.Skiped, "SKIPED"},
 			},
 		},
 		Windows: &windows.Options{

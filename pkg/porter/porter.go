@@ -2,6 +2,7 @@ package porter
 
 import (
 	"context"
+	"driver-box/pkg/status"
 	"errors"
 	"os"
 	"path/filepath"
@@ -17,30 +18,30 @@ type Porter struct {
 }
 
 // Returns the current status of the porting process.
-func (p Porter) Status() string {
+func (p Porter) Status() status.Status {
 	if len(p.progresses) == 0 {
-		return "pending"
+		return status.Pending
 	}
 
 	if some(p.progresses, func(p *Progress) bool { return p.Error == context.Canceled }) {
 		if some(p.progresses, func(p *Progress) bool {
-			return p.Status == "pending" || p.Status == "running"
+			return p.Status == status.Pending || p.Status == status.Running
 		}) {
-			return "aborting"
+			return status.Aborting
 		}
-		return "aborted"
+		return status.Aborted
 	}
 
-	if all(p.progresses, func(p *Progress) bool { return p.Status == "pending" }) {
-		return "pending"
+	if all(p.progresses, func(p *Progress) bool { return p.Status == status.Pending }) {
+		return status.Pending
 	}
-	if all(p.progresses, func(p *Progress) bool { return p.Status == "completed" }) {
-		return "completed"
+	if all(p.progresses, func(p *Progress) bool { return p.Status == status.Completed }) {
+		return status.Completed
 	}
-	if all(p.progresses, func(p *Progress) bool { return p.Status != "failed" }) {
-		return "running"
+	if all(p.progresses, func(p *Progress) bool { return p.Status != status.Failed }) {
+		return status.Running
 	}
-	return "failed"
+	return status.Failed
 }
 
 // Cancels the ongoing porting process.
@@ -50,11 +51,11 @@ func (p Porter) Abort() error {
 	}
 
 	switch p.Status() {
-	case "aborting":
+	case status.Aborting:
 		return nil
-	case "aborted":
+	case status.Aborted:
 		return errors.New("porter: already aborted")
-	case "running":
+	case status.Running:
 		p.Message <- "Cancelling..."
 		p.cancelFunc()
 		return nil
@@ -92,8 +93,8 @@ func (p *Porter) Export(dest string) (err error) {
 	p.cancelFunc = cancelFunc
 
 	p.progresses = []*Progress{
-		{context: ctx, message: p.Message, Name: "initialisation", Status: "pending"},
-		{context: ctx, message: p.Message, Name: "compression", Status: "pending"},
+		{context: ctx, message: p.Message, Name: "initialisation", Status: status.Pending},
+		{context: ctx, message: p.Message, Name: "compression", Status: status.Pending},
 	}
 	defer p.exit()
 
@@ -130,9 +131,9 @@ func (p *Porter) ImportFromFile(orig string) error {
 	p.cancelFunc = cancelFunc
 
 	p.progresses = []*Progress{
-		{context: ctx, message: p.Message, Name: "backup", Status: "pending"},
-		{context: ctx, message: p.Message, Name: "decompression", Status: "pending"},
-		{context: ctx, message: p.Message, Name: "cleanup", Status: "pending"},
+		{context: ctx, message: p.Message, Name: "backup", Status: status.Pending},
+		{context: ctx, message: p.Message, Name: "decompression", Status: status.Pending},
+		{context: ctx, message: p.Message, Name: "cleanup", Status: status.Pending},
 	}
 	defer p.exit()
 
@@ -150,10 +151,10 @@ func (p *Porter) ImportFromURL(url string) error {
 	p.cancelFunc = cancelFunc
 
 	p.progresses = []*Progress{
-		{context: ctx, message: p.Message, Name: "backup", Status: "pending"},
-		{context: ctx, message: p.Message, Name: "download", Status: "pending"},
-		{context: ctx, message: p.Message, Name: "decompression", Status: "pending"},
-		{context: ctx, message: p.Message, Name: "cleanup", Status: "pending"},
+		{context: ctx, message: p.Message, Name: "backup", Status: status.Pending},
+		{context: ctx, message: p.Message, Name: "download", Status: status.Pending},
+		{context: ctx, message: p.Message, Name: "decompression", Status: status.Pending},
+		{context: ctx, message: p.Message, Name: "cleanup", Status: status.Pending},
 	}
 	defer p.exit()
 
@@ -173,8 +174,8 @@ func (p *Porter) ImportFromURL(url string) error {
 // Marks all pending progress steps as skipped.
 func (p *Porter) exit() {
 	for _, prog := range p.progresses {
-		if prog.Status == "pending" {
-			prog.Status = "skipped"
+		if prog.Status == status.Pending {
+			prog.Status = status.Skiped
 		}
 	}
 }
