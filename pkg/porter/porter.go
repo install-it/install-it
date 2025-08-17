@@ -83,7 +83,6 @@ func (p Porter) Progress() (Progresses, error) {
 		Progresses: progresses,
 		Messages:   messageses,
 		Status:     p.Status(),
-		Error:      "",
 	}, nil
 }
 

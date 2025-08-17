@@ -56,8 +56,7 @@ func (p *Progress) Fail(err error) {
 
 // Type binding to the frontend progress query
 type Progresses struct {
-	Progresses []Progress `json:"tasks"`   // List of individual task progress
-	Messages   []string   `json:"message"` // Collected messages from all tasks
-	Status     string     `json:"status"`  // Overall status of the porting process
-	Error      string     `json:"error"`   // Summary error message, if any
+	Progresses []Progress `json:"tasks"`    // List of individual task progress
+	Messages   []string   `json:"messages"` // Collected messages from all tasks
+	Status     string     `json:"status"`   // Overall status of the porting process
 }

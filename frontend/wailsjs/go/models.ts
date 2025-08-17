@@ -70,9 +70,8 @@ export namespace porter {
 	}
 	export class Progresses {
 	    tasks: Progress[];
-	    message: string[];
+	    messages: string[];
 	    status: string;
-	    error: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new Progresses(source);
@@ -81,9 +80,8 @@ export namespace porter {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.tasks = this.convertValues(source["tasks"], Progress);
-	        this.message = source["message"];
+	        this.messages = source["messages"];
 	        this.status = source["status"];
-	        this.error = source["error"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -109,16 +107,16 @@ export namespace porter {
 
 export namespace store {
 	
-	export enum DriverType {
-	    NETWORK = "network",
-	    DISPLAY = "display",
-	    MISCELLANEOUS = "miscellaneous",
-	}
 	export enum SuccessAction {
 	    NOTHING = "nothing",
 	    REBOOT = "reboot",
 	    SHUTDOWN = "shutdown",
 	    FIRMWARE = "firmware",
+	}
+	export enum DriverType {
+	    NETWORK = "network",
+	    DISPLAY = "display",
+	    MISCELLANEOUS = "miscellaneous",
 	}
 	export class AppSetting {
 	    create_partition: boolean;

@@ -79,7 +79,7 @@ function updateProgress() {
     }
 
     progress.value = p
-    messages.value.push(...p.message.filter(m => m !== ''))
+    messages.value.push(...p.messages.filter(m => m !== ''))
 
     if (scroll) {
       nextTick(() => {
