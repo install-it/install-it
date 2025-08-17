@@ -8,7 +8,7 @@ defineProps<{ progress?: porter.Progress }>()
 <template>
   <li class="flex items-center" :class="{ grow: progress !== undefined }">
     <span
-      class="flex items-center justify-center h-7 aspect-square rounded-full text-sm text-white"
+      class="flex items-center justify-center h-7 md:h-9 lg:h-11 aspect-square rounded-full text-sm text-white"
       :class="[
         { 'animate-pulse': progress?.status.includes('ing') },
         statusBadget[progress?.status as keyof typeof statusBadget] || 'bg-gray-300'
@@ -32,9 +32,11 @@ defineProps<{ progress?: porter.Progress }>()
     </span>
 
     <div class="relative flex flex-col w-full text-center" v-if="progress !== undefined">
-      <span class="text-xs absolute -top-4 w-full">{{ progress.name }}</span>
+      <span class="text-xs lg:text-sm absolute -top-5 lg:-top-6 truncate w-full px-1">{{
+        progress.name
+      }}</span>
 
-      <div class="w-full h-1.5 bg-gray-200 rounded-full">
+      <div class="w-full h-1.5 lg:h-2 bg-gray-200 rounded-full">
         <div
           class="h-full transition-all"
           :class="[statusBadget[progress.status as keyof typeof statusBadget]]"
