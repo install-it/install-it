@@ -1,13 +1,15 @@
 <script setup lang="ts">
+import CheckIcon from '@/components/icons/CheckIcon.vue'
 import CrossIcon from '@/components/icons/CrossIcon.vue'
 import ModalFrame from '@/components/modals/ModalFrame.vue'
+import { statusBadget } from '@/definitions/styles'
 import { porter } from '@/wailsjs/go/models'
 import * as programPorter from '@/wailsjs/go/porter/Porter'
 import * as runtime from '@/wailsjs/runtime'
 import { nextTick, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
-import ProgressBar from './ProgressBar.vue'
+import ProgressNode from './ProgressNode.vue'
 
 const frame = useTemplateRef('frame')
 
@@ -138,7 +140,32 @@ function toastErrMsg(err: string) {
         <!-- Modal body -->
         <div class="h-[70vh] w-[70vw] overflow-auto py-2 px-4">
           <div class="flex flex-col gap-y-2 h-full">
+            <div class="flex items-center gap-x-3">
+              <h2 class="text-lg font-bold">匯出檔案</h2>
+
+              <p
+                class="inline-flex justify-center items-center max-w-[96%] h-6 px-1 rounded-sm"
+                :class="[
+                  { 'animate-pulse': progress?.status.includes('ing') },
+                  statusBadget[progress?.status as keyof typeof statusBadget]
+                ]"
+              >
+                <span class="truncate">{{ $t(`executeStatus.${progress?.status}`) }}</span>
+              </p>
+            </div>
+
             <ProgressBar :progresses="progress"></ProgressBar>
+            <ol class="flex items-center w-full">
+              <ProgressNode
+                v-for="(progress, i) in progress?.tasks ?? []"
+                :progress
+                :key="i"
+              ></ProgressNode>
+
+              <ProgressNode>
+                <CheckIcon></CheckIcon>
+              </ProgressNode>
+            </ol>
 
             <div
               class="flex flex-col flex-1 gap-y-2 overflow-y-auto min-h-48 p-1 border rounded-sm"
