@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { statusBadget } from '@/definitions/styles'
 import { porter } from '@/wailsjs/go/models'
 import { computed } from 'vue'
 
@@ -26,15 +25,13 @@ const inProgress = computed(
         {{ progress.name }}
       </span>
 
-      <div class="w-full h-1.5 lg:h-2 bg-gray-200" :class="[{ 'animate-pulse': inProgress }]">
+      <div class="w-full h-1.5 lg:h-2 bg-gray-200">
         <div
           class="h-full transition-all"
-          :class="[
-            { 'animate-pulse': inProgress },
-            statusBadget[progress.status as keyof typeof statusBadget]
-          ]"
+          :class="[{ 'animate-pulse': inProgress }]"
           :style="{
-            width: `${progress.total === 0 ? 0 : Math.floor((progress.current / progress.total) * 100)}%`
+            width: `${progress.total === 0 ? 0 : Math.floor((progress.current / progress.total) * 100)}%`,
+            'background-color': `var(--color-${progress.status})`
           }"
         ></div>
       </div>

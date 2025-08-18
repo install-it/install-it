@@ -115,6 +115,8 @@ export namespace status {
 	    ABORTING = "aborting",
 	    ABORTED = "aborted",
 	    SKIPED = "skiped",
+	    SPEEDED = "speeded",
+	    ERRORED = "errored",
 	}
 
 }

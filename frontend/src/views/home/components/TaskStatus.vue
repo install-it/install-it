@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { statusBadget } from '@/definitions/styles'
 import type { Process } from '../types'
 
 const props = defineProps<{ process: Process }>()
@@ -19,13 +18,7 @@ defineEmits<{ abort: [] }>()
     <div class="flex items-center w-4/6 ps-1 py-1">
       <!-- status badget -->
       <div class="shrink-0 w-[4.1rem]">
-        <p
-          class="inline-flex justify-center items-center max-w-[96%] h-6 px-1 rounded-sm"
-          :class="[
-            { 'animate-pulse': props.process.status.includes('ing') },
-            statusBadget[props.process.status]
-          ]"
-        >
+        <p class="h-6 badge" :class="[`badge-${props.process.status}`]">
           <span class="text-sm truncate">{{ $t(`executeStatus.${props.process.status}`) }}</span>
         </p>
       </div>
@@ -64,7 +57,7 @@ defineEmits<{ abort: [] }>()
         </div>
       </template>
 
-      <template v-else-if="props.process.status == 'broken'">
+      <template v-else-if="props.process.status == 'errored'">
         <div class="text-sm break-all line-clamp-2 font-mono">
           {{
             props.process.result?.error?.split(':').slice(1).join(':').trim() ??

@@ -77,6 +77,17 @@
   }
 }
 
+@theme static {
+  --color-pending: var(--color-gray-300);
+  --color-running: var(--color-half-baked-500);
+  --color-aborting: var(--color-yellow-400);
+  --color-aborted: var(--color-yellow-400);
+  --color-speeded: var(--color-red-300);
+  --color-failed: var(--color-red-300);
+  --color-completed: var(--color-apple-green-600);
+  --color-broken: var(--color-red-700);
+}
+
 .v-toast {
   padding: 8px;
 }

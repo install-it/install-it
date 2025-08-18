@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import CrossIcon from '@/components/icons/CrossIcon.vue'
 import ModalFrame from '@/components/modals/ModalFrame.vue'
-import { statusBadget } from '@/definitions/styles'
 import { porter } from '@/wailsjs/go/models'
 import * as programPorter from '@/wailsjs/go/porter/Porter'
 import * as runtime from '@/wailsjs/runtime'
@@ -146,13 +145,7 @@ function toastErrMsg(err: string) {
             <div class="flex items-center gap-x-3">
               <h2 class="text-lg font-bold">{{ title }}</h2>
 
-              <p
-                class="inline-flex justify-center items-center max-w-[96%] h-6 px-1 rounded-sm"
-                :class="[
-                  { 'animate-pulse': progress?.status.includes('ing') },
-                  statusBadget[progress?.status as keyof typeof statusBadget]
-                ]"
-              >
+              <p class="h-6 badge" :class="[`badge-${progress?.status}`]">
                 <span class="truncate capitalize">{{ $t(`status.${progress?.status}`) }}</span>
               </p>
             </div>

@@ -8,3 +8,42 @@
     color: var(--color-apple-green-800);
   }
 }
+
+/* status badge */
+@layer components {
+  .badge {
+    @apply inline-flex justify-center items-center max-w-[96%] px-1 rounded-sm select-none;
+  }
+
+  .badge-pending {
+    @apply bg-pending;
+  }
+
+  .badge-running {
+    @apply animate-pulse bg-running;
+  }
+
+  .badge-aborting {
+    @apply animate-pulse bg-aborting;
+  }
+
+  .badge-aborted {
+    @apply bg-aborted;
+  }
+
+  .badge-speeded {
+    @apply bg-speeded;
+  }
+
+  .badge-failed {
+    @apply bg-failed;
+  }
+
+  .badge-completed {
+    @apply bg-completed;
+  }
+
+  .badge-broken {
+    @apply bg-broken text-white;
+  }
+}
