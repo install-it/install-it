@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import CheckIcon from '@/components/icons/CheckIcon.vue'
 import CrossIcon from '@/components/icons/CrossIcon.vue'
 import ModalFrame from '@/components/modals/ModalFrame.vue'
 import { statusBadget } from '@/definitions/styles'
@@ -156,15 +155,27 @@ function toastErrMsg(err: string) {
 
             <ProgressBar :progresses="progress"></ProgressBar>
             <ol class="flex items-center w-full">
-              <ProgressNode
-                v-for="(progress, i) in progress?.tasks ?? []"
-                :progress
-                :key="i"
-              ></ProgressNode>
-
-              <ProgressNode>
-                <CheckIcon></CheckIcon>
+              <ProgressNode v-for="(progress, i) in progress?.tasks ?? []" :progress :key="i">
+                <i class="text-gray-500 text-xs lg:text-base">
+                  <font-awesome-icon
+                    v-if="progress.status == 'pending'"
+                    icon="fa-solid fa-ellipsis"
+                    bounce
+                  />
+                  <font-awesome-icon
+                    v-else-if="progress.status.includes('ing')"
+                    icon="fa-solid fa-spinner"
+                    spin
+                  />
+                  <font-awesome-icon
+                    v-else-if="progress.status == 'completed'"
+                    icon="fa-solid fa-check"
+                  />
+                  <font-awesome-icon v-else icon="fa-solid fa-exclamation" />
+                </i>
               </ProgressNode>
+
+              <ProgressNode></ProgressNode>
             </ol>
 
             <div
