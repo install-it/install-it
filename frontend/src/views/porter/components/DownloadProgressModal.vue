@@ -156,8 +156,7 @@ function toastErrMsg(err: string) {
                 <i class="text-xs lg:text-base">
                   <font-awesome-icon
                     v-if="progress.status == 'pending'"
-                    icon="fa-solid fa-ellipsis"
-                    bounce
+                    icon="fa-solid fa-hourglass-start"
                   />
                   <font-awesome-icon
                     v-else-if="progress.status.includes('ing')"
