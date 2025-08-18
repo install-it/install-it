@@ -137,6 +137,8 @@ func main() {
 				{status.Aborting, "ABORTING"},
 				{status.Aborted, "ABORTED"},
 				{status.Skiped, "SKIPED"},
+				{status.Speeded, "SPEEDED"},
+				{status.Errored, "ERRORED"},
 			},
 		},
 		Windows: &windows.Options{

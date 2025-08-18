@@ -10,4 +10,6 @@ const (
 	Aborting  Status = "aborting"
 	Aborted   Status = "aborted"
 	Skiped    Status = "skiped"
+	Speeded   Status = "speeded"
+	Errored   Status = "errored"
 )
