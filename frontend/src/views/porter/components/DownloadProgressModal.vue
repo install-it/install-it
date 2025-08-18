@@ -10,11 +10,10 @@ import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
 import ProgressNode from './ProgressNode.vue'
 
-const frame = useTemplateRef('frame')
-
 defineExpose({
   export: (destination: string) => {
     frame.value?.show()
+    title.value = t('porter.export')
     progress.value = null
     messages.value = []
 
@@ -31,6 +30,7 @@ defineExpose({
   },
   import: (from: 'url' | 'file', source: string) => {
     frame.value?.show()
+    title.value = `${t('porter.import')} (${t(`porter.${from}`)})`
     progress.value = null
     messages.value = []
 
@@ -57,17 +57,21 @@ defineExpose({
   }
 })
 
+const frame = useTemplateRef('frame')
+
+const messageBox = useTemplateRef('message-box')
+
 const { t } = useI18n()
 
 const $toast = useToast({ position: 'top-right' })
-
-const messageBox = useTemplateRef('message-box')
 
 let interval = -1
 
 const messages = ref<Array<string>>([])
 
 const progress = ref<porter.Progresses | null>(null)
+
+const title = ref<string>()
 
 function updateProgress() {
   return programPorter.Progress().then(p => {
@@ -140,7 +144,7 @@ function toastErrMsg(err: string) {
         <div class="h-[70vh] w-[70vw] overflow-auto py-2 px-4">
           <div class="flex flex-col gap-y-2 h-full">
             <div class="flex items-center gap-x-3">
-              <h2 class="text-lg font-bold">匯出檔案</h2>
+              <h2 class="text-lg font-bold">{{ title }}</h2>
 
               <p
                 class="inline-flex justify-center items-center max-w-[96%] h-6 px-1 rounded-sm"
