@@ -12,7 +12,17 @@ const inProgress = computed(
 <template>
   <li class="flex items-center" :class="{ grow: progress !== undefined }">
     <span
-      class="flex items-center justify-center h-7 md:h-9 lg:h-11 aspect-square border-2 lg:border-3 rounded-full"
+      class="flex items-center justify-center h-7 md:h-9 lg:h-11 aspect-square border-4 lg:border-6 border-gray-100 rounded-full"
+      :style="[
+        progress != undefined
+          ? {
+              'background-color': `var(--color-${progress.status})`,
+              color: ['pending', 'skiped'].includes(progress.status)
+                ? 'var(--color-gray-500)'
+                : 'white'
+            }
+          : undefined
+      ]"
     >
       <slot></slot>
     </span>
@@ -25,7 +35,7 @@ const inProgress = computed(
         {{ progress.name }}
       </span>
 
-      <div class="w-full h-1.5 lg:h-2 bg-gray-200">
+      <div class="w-full h-1.5 lg:h-2 bg-gray-100">
         <div
           class="h-full transition-all"
           :class="[{ 'animate-pulse': inProgress }]"

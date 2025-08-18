@@ -153,7 +153,7 @@ function toastErrMsg(err: string) {
             <ProgressBar :progresses="progress"></ProgressBar>
             <ol class="flex items-center w-full">
               <ProgressNode v-for="(progress, i) in progress?.tasks ?? []" :progress :key="i">
-                <i class="text-gray-500 text-xs lg:text-base">
+                <i class="text-xs lg:text-base">
                   <font-awesome-icon
                     v-if="progress.status == 'pending'"
                     icon="fa-solid fa-ellipsis"
