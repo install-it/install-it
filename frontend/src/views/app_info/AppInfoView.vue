@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import BoxArrowUpRight from '@/components/icons/BoxArrowUpRight.vue'
 import { latestRelease } from '@/utils'
 import { RunAndOutput } from '@/wailsjs/go/execute/CommandExecutor'
 import {
@@ -131,10 +130,10 @@ function checkUpdate() {
 
           <button
             type="button"
-            class="ml-1"
+            class="ms-1"
             @click="RunAndOutput('cmd', ['/c', `explorer.exe ${info.app.pathDriver}`], true)"
           >
-            <BoxArrowUpRight></BoxArrowUpRight>
+            <font-awesome-icon icon="fa-solid fa-arrow-up-right-from-square" class="text-sky-900" />
           </button>
         </div>
       </div>

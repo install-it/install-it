@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import CheckSquareIcon from '@/components/icons/CheckSquareIcon.vue'
-import CrossIcon from '@/components/icons/CrossIcon.vue'
-import SquareIcon from '@/components/icons/SquareIcon.vue'
 import ModalFrame from '@/components/modals/ModalFrame.vue'
 import { flags } from '@/definitions/flags'
 import { SelectFile } from '@/wailsjs/go/main/App'
@@ -75,7 +72,7 @@ const filterGroups = computed(() => {
             class="p-3 text-sm text-gray-400 hover:text-gray-900 bg-transparent hover:bg-gray-100 rounded-lg"
             @click="frame?.hide()"
           >
-            <CrossIcon></CrossIcon>
+            <font-awesome-icon icon="fa-solid fa-xmark" />
           </button>
         </div>
 
@@ -254,7 +251,7 @@ const filterGroups = computed(() => {
                     }
                   "
                 >
-                  <CheckSquareIcon></CheckSquareIcon>
+                  <font-awesome-icon icon="fa-regular fa-square-check" />
                 </button>
 
                 <button
@@ -267,7 +264,7 @@ const filterGroups = computed(() => {
                     }
                   "
                 >
-                  <SquareIcon></SquareIcon>
+                  <font-awesome-icon icon="fa-regular fa-square" />
                 </button>
               </div>
 

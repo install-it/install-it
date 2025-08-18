@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import CrossIcon from '@/components/icons/CrossIcon.vue'
 import ModalFrame from '@/components/modals/ModalFrame.vue'
 import * as executor from '@/wailsjs/go/execute/CommandExecutor'
 import { status } from '@/wailsjs/go/models'
@@ -176,7 +175,7 @@ async function handleAbort(process: Process) {
               processes.some(cmd => ['pending', 'running', 'aborting'].includes(cmd.status))
             "
           >
-            <CrossIcon></CrossIcon>
+            <font-awesome-icon icon="fa-solid fa-xmark" />
           </button>
         </div>
 

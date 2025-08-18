@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import CrossIcon from '@/components/icons/CrossIcon.vue'
 import ModalFrame from '@/components/modals/ModalFrame.vue'
 import { latestRelease } from '@/utils'
 import { Update } from '@/wailsjs/go/main/App'
@@ -47,7 +46,7 @@ const webviewVersion = ref(false)
               }
             "
           >
-            <CrossIcon></CrossIcon>
+            <font-awesome-icon icon="fa-solid fa-xmark" />
           </button>
         </div>
 

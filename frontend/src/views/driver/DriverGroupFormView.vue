@@ -1,10 +1,4 @@
 <script setup lang="ts">
-import ArrowExpandVerticalIcon from '@/components/icons/ArrowExpandVerticalIcon.vue'
-import FloppyIcon from '@/components/icons/FloppyIcon.vue'
-import OneTwoThreeIcon from '@/components/icons/OneTwoThreeIcon.vue'
-import PencilSquareIcon from '@/components/icons/PencilSquareIcon.vue'
-import PlusSquareIcon from '@/components/icons/PlusSquareIcon.vue'
-import TrashIcon from '@/components/icons/TrashIcon.vue'
 import UnsaveConfirmModal from '@/components/modals/UnsaveConfirmModal.vue'
 import { getNotExistDrivers } from '@/utils/index'
 import { store } from '@/wailsjs/go/models'
@@ -209,7 +203,7 @@ function handleSubmit(event: SubmitEvent) {
                 class="inline-block p-0.5 max-h-5 bg-yellow-300 rounded-xs"
                 :title="$t('driverForm.incompatibleWith')"
               >
-                <ArrowExpandVerticalIcon></ArrowExpandVerticalIcon>
+                <font-awesome-icon icon="fa-solid fa-code-merge" />
               </span>
 
               <span
@@ -217,17 +211,17 @@ function handleSubmit(event: SubmitEvent) {
                 class="inline-block p-0.5 max-h-5 bg-blue-300 rounded-xs"
                 :title="$t('driverForm.allowedExitCode')"
               >
-                <OneTwoThreeIcon></OneTwoThreeIcon>
+                <font-awesome-icon icon="fa-solid fa-0" />
               </span>
             </div>
 
             <div>
               <div class="flex gap-x-2">
                 <button type="button" @click="inputModal?.show(d)">
-                  <PencilSquareIcon></PencilSquareIcon>
+                  <font-awesome-icon icon="fa-solid fa-pen-to-square" />
                 </button>
                 <button type="button" @click="group.drivers.splice(i, 1)">
-                  <TrashIcon></TrashIcon>
+                  <font-awesome-icon icon="fa-solid fa-trash" />
                 </button>
               </div>
             </div>
@@ -246,7 +240,7 @@ function handleSubmit(event: SubmitEvent) {
           id="driver-submit-btn"
           class="h-8 px-2 text-sm font-medium text-white bg-half-baked-600 hover:bg-half-baked-500 rounded-lg"
         >
-          <FloppyIcon></FloppyIcon>
+          <font-awesome-icon icon="fa-solid fa-floppy-disk" />
         </button>
 
         <button
@@ -254,7 +248,7 @@ function handleSubmit(event: SubmitEvent) {
           class="h-8 px-2 text-sm font-medium text-white bg-powder-blue-800 hover:bg-powder-blue-600 rounded-lg"
           @click="inputModal?.show()"
         >
-          <PlusSquareIcon></PlusSquareIcon>
+          <font-awesome-icon icon="fa-regular fa-square-plus" />
         </button>
       </div>
     </div>
