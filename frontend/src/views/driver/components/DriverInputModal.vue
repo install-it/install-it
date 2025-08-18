@@ -5,7 +5,6 @@ import { SelectFile } from '@/wailsjs/go/main/App'
 import { store } from '@/wailsjs/go/models'
 import * as groupManager from '@/wailsjs/go/store/DriverGroupManager'
 import { computed, nextTick, ref, useTemplateRef } from 'vue'
-import DriverTypeBadget from './DriverTypeBadget.vue'
 
 const frame = useTemplateRef('frame')
 
@@ -284,7 +283,7 @@ const filterGroups = computed(() => {
                       v-model="driver.incompatibles"
                       class="me-1.5"
                     />
-                    <DriverTypeBadget type="default"></DriverTypeBadget>
+                    <span class="badge badge-builtin me-1">&nbsp;</span>
                     <span class="line-clamp-2">
                       {{ $t('installOption.setPassword') }}
                     </span>
@@ -306,7 +305,7 @@ const filterGroups = computed(() => {
                       v-model="driver.incompatibles"
                       class="me-1.5"
                     />
-                    <DriverTypeBadget type="default"></DriverTypeBadget>
+                    <span class="badge badge-builtin me-1">&nbsp;</span>
                     <span class="line-clamp-2">
                       {{ $t('installOption.createPartition') }}
                     </span>
@@ -323,7 +322,7 @@ const filterGroups = computed(() => {
                           v-model="driver.incompatibles"
                           class="me-1.5"
                         />
-                        <DriverTypeBadget :type="g.type"></DriverTypeBadget>
+                        <span class="badge me-1" :class="[`badge-${g.type}`]">&nbsp;</span>
                         <span class="line-clamp-2">
                           {{ `[${g.name}] ${d.name}` }}
                         </span>

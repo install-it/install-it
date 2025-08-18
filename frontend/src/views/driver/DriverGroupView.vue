@@ -6,7 +6,6 @@ import { onBeforeMount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toast-notification'
-import DriverTypeBadget from './components/DriverTypeBadget.vue'
 
 const { t } = useI18n()
 
@@ -127,8 +126,8 @@ watch(driverType, newType => {
         :draggable="reordering"
       >
         <div class="flex justify-between">
-          <p class="my-1 truncate oveflow-x-hidden">
-            <DriverTypeBadget :type="g.type"></DriverTypeBadget>
+          <p class="my-1 truncate oveflow-x-hidden align-middle">
+            <span class="badge h-4 px-1 me-1" :class="[`badge-${g.type}`]">&nbsp;</span>
             <span>{{ g.name }}</span>
           </p>
 

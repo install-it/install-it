@@ -87,6 +87,10 @@
   --color-failed: var(--color-red-300);
   --color-completed: var(--color-apple-green-600);
   --color-broken: var(--color-red-700);
+  --color-display: var(--color-green-100);
+  --color-network: var(--color-blue-100);
+  --color-miscellaneous: var(--color-gray-200);
+  --color-builtin: var(--color-orange-200);
 }
 
 .v-toast {

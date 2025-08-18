@@ -15,35 +15,55 @@
     @apply inline-flex justify-center items-center max-w-[96%] px-1 rounded-sm select-none;
   }
 
-  .badge-pending {
+  .badge.badge-pending {
     @apply bg-pending;
   }
 
-  .badge-running {
+  .badge.badge-pending {
+    @apply bg-pending;
+  }
+
+  .badge.badge-running {
     @apply animate-pulse bg-running;
   }
 
-  .badge-aborting {
+  .badge.badge-aborting {
     @apply animate-pulse bg-aborting;
   }
 
-  .badge-aborted {
+  .badge.badge-aborted {
     @apply bg-aborted;
   }
 
-  .badge-speeded {
+  .badge.badge-speeded {
     @apply bg-speeded;
   }
 
-  .badge-failed {
+  .badge.badge-failed {
     @apply bg-failed;
   }
 
-  .badge-completed {
+  .badge.badge-completed {
     @apply bg-completed;
   }
 
-  .badge-broken {
+  .badge.badge-broken {
     @apply bg-broken text-white;
+  }
+
+  .badge.badge-network {
+    @apply bg-network;
+  }
+
+  .badge.badge-display {
+    @apply bg-display;
+  }
+
+  .badge.badge-miscellaneous {
+    @apply bg-miscellaneous;
+  }
+
+  .badge.badge-builtin {
+    @apply bg-builtin;
   }
 }
