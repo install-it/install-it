@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { statusBadget } from '@/definitions/styles'
 import { porter } from '@/wailsjs/go/models'
 import { computed } from 'vue'
 
@@ -13,7 +12,15 @@ const inProgress = computed(
 <template>
   <li class="flex items-center" :class="{ grow: progress !== undefined }">
     <span
-      class="flex items-center justify-center h-7 md:h-9 lg:h-11 aspect-square border-2 lg:border-3 rounded-full"
+      class="flex items-center justify-center h-7 md:h-9 lg:h-11 aspect-square border-4 lg:border-6 border-gray-100 rounded-full"
+      :style="[
+        progress != undefined
+          ? {
+              'background-color': `var(--color-${progress.status})`,
+              color: 'white'
+            }
+          : undefined
+      ]"
     >
       <slot></slot>
     </span>
@@ -26,15 +33,13 @@ const inProgress = computed(
         {{ progress.name }}
       </span>
 
-      <div class="w-full h-1.5 lg:h-2 bg-gray-200" :class="[{ 'animate-pulse': inProgress }]">
+      <div class="w-full h-1.5 lg:h-2 bg-gray-100">
         <div
           class="h-full transition-all"
-          :class="[
-            { 'animate-pulse': inProgress },
-            statusBadget[progress.status as keyof typeof statusBadget]
-          ]"
+          :class="[{ 'animate-pulse': inProgress }]"
           :style="{
-            width: `${progress.total === 0 ? 0 : Math.floor((progress.current / progress.total) * 100)}%`
+            width: `${progress.total === 0 ? 0 : Math.floor((progress.current / progress.total) * 100)}%`,
+            'background-color': `var(--color-${progress.status})`
           }"
         ></div>
       </div>

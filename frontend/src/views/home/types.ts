@@ -1,3 +1,5 @@
+import type { status } from '@/wailsjs/go/models'
+
 export type Command = {
   id: string
   name?: string
@@ -13,15 +15,7 @@ export type Command = {
 
 export type Process = {
   command: Command
-  status:
-    | 'pending'
-    | 'running'
-    | 'aborting'
-    | 'completed'
-    | 'failed'
-    | 'aborted'
-    | 'speeded'
-    | 'broken'
+  status: status.Status
   procId?: string
   result?: {
     lapse: number

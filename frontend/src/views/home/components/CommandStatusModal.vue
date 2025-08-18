@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import CrossIcon from '@/components/icons/CrossIcon.vue'
 import ModalFrame from '@/components/modals/ModalFrame.vue'
 import * as executor from '@/wailsjs/go/execute/CommandExecutor'
+import { status } from '@/wailsjs/go/models'
 import * as runtime from '@/wailsjs/runtime/runtime'
 import AsyncLock from 'async-lock'
 import { ref, useTemplateRef } from 'vue'
@@ -18,7 +18,7 @@ defineExpose({
 
     isParallel = parallel
 
-    processes.value = cmds.map(vals => ({ command: { ...vals }, status: 'pending' }))
+    processes.value = cmds.map(vals => ({ command: { ...vals }, status: status.Status.PENDING }))
     dispatchCommand()
   },
   hide: frame.value?.hide || (() => {})
@@ -41,13 +41,13 @@ runtime.EventsOn('execute:exited', async (id: string, result: NonNullable<Proces
   process.result = result
 
   if (result.aborted) {
-    process.status = 'aborted'
+    process.status = status.Status.ABORTED
   } else if (![0, ...process.command.config.allowRtCodes].includes(result.exitCode)) {
-    process.status = 'failed'
+    process.status = status.Status.FAILED
   } else if (result.lapse < process.command.config.minExeTime) {
-    process.status = 'speeded'
+    process.status = status.Status.SPEEDED
   } else {
-    process.status = 'completed'
+    process.status = status.Status.COMPLETED
   }
 
   dispatchCommand().then(() => {
@@ -84,11 +84,11 @@ async function dispatchCommand() {
       await executor
         .Run(process.command.config.program, process.command.config.options)
         .then(processId => {
-          process.status = 'running'
+          process.status = status.Status.RUNNING
           process.procId = processId
         })
         .catch(error => {
-          process.status = 'broken'
+          process.status = status.Status.ERRORED
           process.result = {
             lapse: -1,
             exitCode: -1,
@@ -102,12 +102,14 @@ async function dispatchCommand() {
   })
 }
 
-function handleAbort(process: Process) {
+async function handleAbort(process: Process) {
   return lock
     .acquire('executor', () => {
       if (process.status == 'pending' || process.status == 'running') {
         process.status =
-          process.procId == undefined || process.procId == '' ? 'aborted' : 'aborting'
+          process.procId == undefined || process.procId == ''
+            ? status.Status.ABORTED
+            : status.Status.ABORTING
       }
     })
     .then(() => {
@@ -141,7 +143,7 @@ function handleAbort(process: Process) {
             }
           })
 
-        process.status = 'broken'
+        process.status = status.Status.ERRORED
         process.result = {
           lapse: -1,
           exitCode: -1,
@@ -163,7 +165,7 @@ function handleAbort(process: Process) {
         <!-- Modal header -->
         <div class="flex items-center justify-between px-3 py-1.5 border-b rounded-t">
           <h3 class="font-semibold">
-            {{ $t('executeStatus.title') }}
+            {{ $t('execute.title') }}
           </h3>
           <button
             type="button"
@@ -173,7 +175,7 @@ function handleAbort(process: Process) {
               processes.some(cmd => ['pending', 'running', 'aborting'].includes(cmd.status))
             "
           >
-            <CrossIcon></CrossIcon>
+            <font-awesome-icon icon="fa-solid fa-xmark" />
           </button>
         </div>
 
@@ -203,7 +205,7 @@ function handleAbort(process: Process) {
               }
             "
           >
-            {{ $t('executeStatus.forceComplete') }}
+            {{ $t('execute.forceComplete') }}
           </button>
         </div>
       </div>

@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import ArrowExpandVerticalIcon from '@/components/icons/ArrowExpandVerticalIcon.vue'
-import CopyIcon from '@/components/icons/CopyIcon.vue'
-import OneTwoThreeIcon from '@/components/icons/OneTwoThreeIcon.vue'
-import PencilSquareIcon from '@/components/icons/PencilSquareIcon.vue'
-import TrashIcon from '@/components/icons/TrashIcon.vue'
 import { ExecutableExists } from '@/wailsjs/go/main/App'
 import { store } from '@/wailsjs/go/models'
 import * as groupManger from '@/wailsjs/go/store/DriverGroupManager'
@@ -11,7 +6,6 @@ import { onBeforeMount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toast-notification'
-import DriverTypeBadget from './components/DriverTypeBadget.vue'
 
 const { t } = useI18n()
 
@@ -132,18 +126,18 @@ watch(driverType, newType => {
         :draggable="reordering"
       >
         <div class="flex justify-between">
-          <p class="my-1 truncate oveflow-x-hidden">
-            <DriverTypeBadget :type="g.type"></DriverTypeBadget>
+          <p class="my-1 truncate oveflow-x-hidden align-middle">
+            <span class="badge h-4 px-1 me-1" :class="[`badge-${g.type}`]">&nbsp;</span>
             <span>{{ g.name }}</span>
           </p>
 
           <div class="flex gap-x-1.5 py-1">
-            <RouterLink :to="`/drivers/edit/${g.id}`" class="p-1 bg-gray-200 rounded-sm">
-              <PencilSquareIcon></PencilSquareIcon>
+            <RouterLink :to="`/drivers/edit/${g.id}`" class="px-0.5 bg-gray-200 rounded-sm">
+              <font-awesome-icon icon="fa-solid fa-pen-to-square" class="text-gray-500" />
             </RouterLink>
 
             <button
-              class="p-1 bg-gray-200 rounded-sm"
+              class="px-0.5 bg-gray-200 rounded-sm"
               @click="
                 () => {
                   groupManger.Add(g).then(() => {
@@ -154,11 +148,11 @@ watch(driverType, newType => {
                 }
               "
             >
-              <CopyIcon></CopyIcon>
+              <font-awesome-icon icon="fa-solid fa-clone" class="text-gray-500" />
             </button>
 
             <button
-              class="p-1 bg-gray-200 rounded-sm"
+              class="px-0.5 bg-gray-200 rounded-sm"
               @click="
                 () => {
                   groupManger.Remove(g.id).then(() => {
@@ -169,7 +163,7 @@ watch(driverType, newType => {
                 }
               "
             >
-              <TrashIcon></TrashIcon>
+              <font-awesome-icon icon="fa-solid fa-trash" class="text-gray-500" />
             </button>
           </div>
         </div>
@@ -205,7 +199,7 @@ watch(driverType, newType => {
               class="inline-block p-0.5 max-h-5 bg-yellow-300 rounded-xs"
               :title="$t('driverForm.incompatibleWith')"
             >
-              <ArrowExpandVerticalIcon></ArrowExpandVerticalIcon>
+              <font-awesome-icon icon="fa-solid fa-code-merge" />
             </span>
 
             <span
@@ -213,7 +207,7 @@ watch(driverType, newType => {
               class="inline-block p-0.5 max-h-5 bg-blue-300 rounded-xs"
               :title="$t('driverForm.allowedExitCode')"
             >
-              <OneTwoThreeIcon></OneTwoThreeIcon>
+              <font-awesome-icon icon="fa-solid fa-0" />
             </span>
           </div>
         </div>

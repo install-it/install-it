@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import CheckSquareIcon from '@/components/icons/CheckSquareIcon.vue'
-import CrossIcon from '@/components/icons/CrossIcon.vue'
-import SquareIcon from '@/components/icons/SquareIcon.vue'
 import ModalFrame from '@/components/modals/ModalFrame.vue'
 import { flags } from '@/definitions/flags'
 import { SelectFile } from '@/wailsjs/go/main/App'
 import { store } from '@/wailsjs/go/models'
 import * as groupManager from '@/wailsjs/go/store/DriverGroupManager'
 import { computed, nextTick, ref, useTemplateRef } from 'vue'
-import DriverTypeBadget from './DriverTypeBadget.vue'
 
 const frame = useTemplateRef('frame')
 
@@ -75,7 +71,7 @@ const filterGroups = computed(() => {
             class="p-3 text-sm text-gray-400 hover:text-gray-900 bg-transparent hover:bg-gray-100 rounded-lg"
             @click="frame?.hide()"
           >
-            <CrossIcon></CrossIcon>
+            <font-awesome-icon icon="fa-solid fa-xmark" />
           </button>
         </div>
 
@@ -180,7 +176,7 @@ const filterGroups = computed(() => {
                 />
               </div>
 
-              <p class="hint-text">
+              <p class="text-hint">
                 {{ $t('driverForm.commaSeparated') }}
               </p>
             </div>
@@ -198,7 +194,7 @@ const filterGroups = computed(() => {
                   class="w-full p-1.5 text-sm shadow-xs"
                   required
                 />
-                <p class="hint-text">
+                <p class="text-hint">
                   {{ $t('driverForm.minExecuteTimeHelp') }}
                 </p>
               </div>
@@ -213,10 +209,10 @@ const filterGroups = computed(() => {
                   v-model="driver.allowRtCodes"
                   class="w-full p-1.5 text-sm shadow-xs"
                 />
-                <p class="hint-text">
+                <p class="text-hint">
                   {{ $t('driverForm.allowedExitCodeHelp') }}
                 </p>
-                <p class="hint-text">
+                <p class="text-hint">
                   {{ $t('driverForm.commaSeparated') }}
                 </p>
               </div>
@@ -254,7 +250,7 @@ const filterGroups = computed(() => {
                     }
                   "
                 >
-                  <CheckSquareIcon></CheckSquareIcon>
+                  <font-awesome-icon icon="fa-regular fa-square-check" />
                 </button>
 
                 <button
@@ -267,7 +263,7 @@ const filterGroups = computed(() => {
                     }
                   "
                 >
-                  <SquareIcon></SquareIcon>
+                  <font-awesome-icon icon="fa-regular fa-square" />
                 </button>
               </div>
 
@@ -287,7 +283,7 @@ const filterGroups = computed(() => {
                       v-model="driver.incompatibles"
                       class="me-1.5"
                     />
-                    <DriverTypeBadget type="default"></DriverTypeBadget>
+                    <span class="badge badge-builtin me-1">&nbsp;</span>
                     <span class="line-clamp-2">
                       {{ $t('installOption.setPassword') }}
                     </span>
@@ -309,7 +305,7 @@ const filterGroups = computed(() => {
                       v-model="driver.incompatibles"
                       class="me-1.5"
                     />
-                    <DriverTypeBadget type="default"></DriverTypeBadget>
+                    <span class="badge badge-builtin me-1">&nbsp;</span>
                     <span class="line-clamp-2">
                       {{ $t('installOption.createPartition') }}
                     </span>
@@ -326,41 +322,10 @@ const filterGroups = computed(() => {
                           v-model="driver.incompatibles"
                           class="me-1.5"
                         />
-                        <DriverTypeBadget :type="g.type"></DriverTypeBadget>
+                        <span class="badge me-1" :class="[`badge-${g.type}`]">&nbsp;</span>
                         <span class="line-clamp-2">
                           {{ `[${g.name}] ${d.name}` }}
                         </span>
-
-                        <!-- <div class="flex flex-col w-5/6">
-                            <p class="line-clamp-2">
-                              {{ `[${g.name}] ${d.name}` }}
-                            </p>
-
-                            <p class="text-xs text-gray-300 truncate">
-                              {{
-                                d.path.includes('\\')
-                                  ? `...${d.path.split('\\').slice(2).join('\\').toString()}`
-                                  : `${d.path} ${d.flags.join(' ')}`
-                              }}
-                            </p>
-                          </div> -->
-
-                        <!-- <template v-if="d.name !== ''">
-                            <span class="line-clamp-2">
-                              {{ `[${g.name}] ${d.name}` }}
-                            </span>
-                          </template>
-                          <template v-else>
-                            <div class="flex justify-between items-center w-full">
-                              <span class="">
-                                {{ `[${g.name}]` }}
-                              </span>
-
-                              <span class="shrink text-xs text-gray-300 break-all line-clamp-2">
-                                {{ d.path.split('\\').slice(-1).toString() }}
-                              </span>
-                            </div>
-                          </template> -->
                       </label>
                     </li>
                   </template>

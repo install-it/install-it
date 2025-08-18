@@ -6,14 +6,18 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // Porter manages the porting process including export, import, and progress tracking.
 type Porter struct {
-	DirRoot    string             // Root directory for import/export operations
-	Targets    []string           // Target directories to be backed up or compressed
-	Message    chan string        // Channel for progress messages
-	progresses []*Progress        // Slice of progress trackers for each step
+	DirRoot string   // Root directory for import/export operations
+	Targets []string // Target directories to be backed up or compressed
+
+	Message    chan string // Channel for progress messages
+	progresses []*Progress // Slice of progress trackers for each step
+
+	ctx        context.Context
 	cancelFunc context.CancelFunc // Function to cancel ongoing operations
 }
 
@@ -23,9 +27,9 @@ func (p Porter) Status() status.Status {
 		return status.Pending
 	}
 
-	if some(p.progresses, func(p *Progress) bool { return p.Error == context.Canceled }) {
+	if p.ctx.Err() == context.Canceled {
 		if some(p.progresses, func(p *Progress) bool {
-			return p.Status == status.Pending || p.Status == status.Running
+			return strings.Contains(string(p.Status), "ing")
 		}) {
 			return status.Aborting
 		}
@@ -46,7 +50,7 @@ func (p Porter) Status() status.Status {
 
 // Cancels the ongoing porting process.
 func (p Porter) Abort() error {
-	if len(p.progresses) == 0 {
+	if len(p.progresses) == 0 || p.cancelFunc == nil {
 		return errors.New("porter: no started porting job")
 	}
 
@@ -89,12 +93,11 @@ func (p Porter) Progress() (Progresses, error) {
 
 // Compresses the target directories into a ZIP file at the destination.
 func (p *Porter) Export(dest string) (err error) {
-	ctx, cancelFunc := context.WithCancel(context.Background())
-	p.cancelFunc = cancelFunc
+	p.ctx, p.cancelFunc = context.WithCancel(context.Background())
 
 	p.progresses = []*Progress{
-		{context: ctx, message: p.Message, Name: "initialisation", Status: status.Pending},
-		{context: ctx, message: p.Message, Name: "compression", Status: status.Pending},
+		{context: p.ctx, message: p.Message, Name: "initialisation", Status: status.Pending},
+		{context: p.ctx, message: p.Message, Name: "compression", Status: status.Pending},
 	}
 	defer p.exit()
 
@@ -127,13 +130,12 @@ func (p *Porter) Export(dest string) (err error) {
 
 // Restores data from a ZIP file and cleans up or restores backups.
 func (p *Porter) ImportFromFile(orig string) error {
-	ctx, cancelFunc := context.WithCancel(context.Background())
-	p.cancelFunc = cancelFunc
+	p.ctx, p.cancelFunc = context.WithCancel(context.Background())
 
 	p.progresses = []*Progress{
-		{context: ctx, message: p.Message, Name: "backup", Status: status.Pending},
-		{context: ctx, message: p.Message, Name: "decompression", Status: status.Pending},
-		{context: ctx, message: p.Message, Name: "cleanup", Status: status.Pending},
+		{context: p.ctx, message: p.Message, Name: "backup", Status: status.Pending},
+		{context: p.ctx, message: p.Message, Name: "decompression", Status: status.Pending},
+		{context: p.ctx, message: p.Message, Name: "cleanup", Status: status.Pending},
 	}
 	defer p.exit()
 
@@ -147,14 +149,13 @@ func (p *Porter) ImportFromFile(orig string) error {
 
 // Downloads a ZIP file from a URL and imports its contents.
 func (p *Porter) ImportFromURL(url string) error {
-	ctx, cancelFunc := context.WithCancel(context.Background())
-	p.cancelFunc = cancelFunc
+	p.ctx, p.cancelFunc = context.WithCancel(context.Background())
 
 	p.progresses = []*Progress{
-		{context: ctx, message: p.Message, Name: "backup", Status: status.Pending},
-		{context: ctx, message: p.Message, Name: "download", Status: status.Pending},
-		{context: ctx, message: p.Message, Name: "decompression", Status: status.Pending},
-		{context: ctx, message: p.Message, Name: "cleanup", Status: status.Pending},
+		{context: p.ctx, message: p.Message, Name: "backup", Status: status.Pending},
+		{context: p.ctx, message: p.Message, Name: "download", Status: status.Pending},
+		{context: p.ctx, message: p.Message, Name: "decompression", Status: status.Pending},
+		{context: p.ctx, message: p.Message, Name: "cleanup", Status: status.Pending},
 	}
 	defer p.exit()
 

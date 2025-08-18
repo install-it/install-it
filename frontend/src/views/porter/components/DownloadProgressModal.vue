@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import CrossIcon from '@/components/icons/CrossIcon.vue'
 import ModalFrame from '@/components/modals/ModalFrame.vue'
-import { statusBadget } from '@/definitions/styles'
 import { porter } from '@/wailsjs/go/models'
 import * as programPorter from '@/wailsjs/go/porter/Porter'
 import * as runtime from '@/wailsjs/runtime'
@@ -136,7 +134,7 @@ function toastErrMsg(err: string) {
               }
             "
           >
-            <CrossIcon></CrossIcon>
+            <font-awesome-icon icon="fa-solid fa-xmark" />
           </button>
         </div>
 
@@ -146,13 +144,7 @@ function toastErrMsg(err: string) {
             <div class="flex items-center gap-x-3">
               <h2 class="text-lg font-bold">{{ title }}</h2>
 
-              <p
-                class="inline-flex justify-center items-center max-w-[96%] h-6 px-1 rounded-sm"
-                :class="[
-                  { 'animate-pulse': progress?.status.includes('ing') },
-                  statusBadget[progress?.status as keyof typeof statusBadget]
-                ]"
-              >
+              <p class="h-6 badge" :class="[`badge-${progress?.status}`]">
                 <span class="truncate capitalize">{{ $t(`status.${progress?.status}`) }}</span>
               </p>
             </div>
@@ -160,11 +152,10 @@ function toastErrMsg(err: string) {
             <ProgressBar :progresses="progress"></ProgressBar>
             <ol class="flex items-center w-full">
               <ProgressNode v-for="(progress, i) in progress?.tasks ?? []" :progress :key="i">
-                <i class="text-gray-500 text-xs lg:text-base">
+                <i class="text-xs lg:text-base">
                   <font-awesome-icon
                     v-if="progress.status == 'pending'"
-                    icon="fa-solid fa-ellipsis"
-                    bounce
+                    icon="fa-solid fa-hourglass-start"
                   />
                   <font-awesome-icon
                     v-else-if="progress.status.includes('ing')"

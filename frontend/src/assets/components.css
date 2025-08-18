@@ -1,0 +1,69 @@
+/* text */
+@layer components {
+  .text-hint {
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 300;
+    color: var(--color-apple-green-800);
+  }
+}
+
+/* status badge */
+@layer components {
+  .badge {
+    @apply inline-flex justify-center items-center max-w-[96%] px-1 rounded-sm select-none;
+  }
+
+  .badge.badge-pending {
+    @apply bg-pending;
+  }
+
+  .badge.badge-pending {
+    @apply bg-pending;
+  }
+
+  .badge.badge-running {
+    @apply animate-pulse bg-running;
+  }
+
+  .badge.badge-aborting {
+    @apply animate-pulse bg-aborting;
+  }
+
+  .badge.badge-aborted {
+    @apply bg-aborted;
+  }
+
+  .badge.badge-speeded {
+    @apply bg-speeded;
+  }
+
+  .badge.badge-failed {
+    @apply bg-failed;
+  }
+
+  .badge.badge-completed {
+    @apply bg-completed;
+  }
+
+  .badge.badge-broken {
+    @apply bg-broken text-white;
+  }
+
+  .badge.badge-network {
+    @apply bg-network;
+  }
+
+  .badge.badge-display {
+    @apply bg-display;
+  }
+
+  .badge.badge-miscellaneous {
+    @apply bg-miscellaneous;
+  }
+
+  .badge.badge-builtin {
+    @apply bg-builtin;
+  }
+}

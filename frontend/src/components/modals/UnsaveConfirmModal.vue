@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import CrossIcon from '@/components/icons/CrossIcon.vue'
 import { useTemplateRef } from 'vue'
 import ModalFrame from './ModalFrame.vue'
 
@@ -37,7 +36,7 @@ let callback: (answer: 'yes' | 'no') => void
               }
             "
           >
-            <CrossIcon></CrossIcon>
+            <font-awesome-icon icon="fa-solid fa-xmark" />
           </button>
         </div>
 

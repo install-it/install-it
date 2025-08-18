@@ -1,25 +1,20 @@
 <script setup lang="ts">
 import { AppVersion } from '@/wailsjs/go/main/App'
 import * as app_manager from '@/wailsjs/go/store/AppSettingManager'
-import { onBeforeMount, type Component } from 'vue'
+import { onBeforeMount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { RouteLocationRaw } from 'vue-router'
 import { useToast } from 'vue-toast-notification'
-import DownloadIcon from './components/icons/DownloadIcon.vue'
-import FileExeIcon from './components/icons/FileExeIcon.vue'
-import GearIcon from './components/icons/GearIcon.vue'
-import HomeIcon from './components/icons/HomeIcon.vue'
-import InfoLgIcon from './components/icons/InfoLgIcon.vue'
 import { latestRelease } from './utils'
 
 const { t, locale } = useI18n()
 
-const routes: Array<{ to: RouteLocationRaw; icon: Component }> = [
-  { to: '/', icon: HomeIcon },
-  { to: '/drivers', icon: FileExeIcon },
-  { to: '/settings', icon: GearIcon },
-  { to: '/porter', icon: DownloadIcon },
-  { to: '/app-info', icon: InfoLgIcon }
+const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
+  { to: '/', icon: 'fa-regular fa-house' },
+  { to: '/drivers', icon: 'fa-regular fa-file-code' },
+  { to: '/settings', icon: 'fa-solid fa-gear' },
+  { to: '/porter', icon: 'fa-solid fa-people-arrows' },
+  { to: '/app-info', icon: 'fa-solid fa-info' }
 ]
 
 onBeforeMount(() => {
@@ -50,7 +45,7 @@ onBeforeMount(() => {
               class="flex p-2 rounded-lg hover:bg-gray-200"
               activeClass="text-apple-green-900 bg-powder-blue-400"
             >
-              <component :is="link.icon"></component>
+              <font-awesome-icon :icon="link.icon" />
             </RouterLink>
           </li>
         </ul>
