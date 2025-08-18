@@ -251,11 +251,7 @@ async function handleSubmit() {
 
           <select name="network" class="w-full ps-3 pe-9 pt-5 pb-1 rounded-lg">
             <option>{{ $t('common.pleaseSelect') }}</option>
-            <option
-              v-for="d in groups.filter(d => d.type == store.DriverType.NETWORK)"
-              :key="d.id"
-              :value="d.id"
-            >
+            <option v-for="d in groups.filter(d => d.type == 'network')" :key="d.id" :value="d.id">
               {{ `${d.name}${notExistDrivers.includes(d.id) ? ' ⚠' : ''}` }}
             </option>
           </select>
@@ -270,11 +266,7 @@ async function handleSubmit() {
 
           <select name="display" class="w-full ps-3 pe-9 pt-5 pb-1 rounded-lg">
             <option>{{ $t('common.pleaseSelect') }}</option>
-            <option
-              v-for="d in groups.filter(d => d.type == store.DriverType.DISPLAY)"
-              :key="d.id"
-              :value="d.id"
-            >
+            <option v-for="d in groups.filter(d => d.type == 'display')" :key="d.id" :value="d.id">
               {{ `${d.name}${notExistDrivers.includes(d.id) ? ' ⚠' : ''}` }}
             </option>
           </select>
@@ -290,10 +282,7 @@ async function handleSubmit() {
           </label>
 
           <div class="h-full overflow-y-scroll px-2 pt-3 rounded-lg border border-apple-green-600">
-            <template
-              v-for="d in groups.filter(d => d.type == store.DriverType.MISCELLANEOUS)"
-              :key="d.id"
-            >
+            <template v-for="d in groups.filter(d => d.type == 'miscellaneous')" :key="d.id">
               <label class="flex items-center w-full select-none cursor-pointer">
                 <input type="checkbox" name="miscellaneous" class="me-1.5" :value="d.id" />
                 {{ `${d.name}${notExistDrivers.includes(d.id) ? ' ⚠' : ''}` }}
@@ -401,21 +390,21 @@ async function handleSubmit() {
     @completed="
       () => {
         switch (settings.success_action) {
-          case store.SuccessAction.SHUTDOWN:
+          case 'shutdown':
             executor.RunAndOutput(
               'cmd',
               ['/C', `shutdown /s /t ${settings.success_action_delay}`],
               true
             )
             break
-          case store.SuccessAction.REBOOT:
+          case 'reboot':
             executor.RunAndOutput(
               'cmd',
               ['/C', `shutdown /r /t ${settings.success_action_delay}`],
               true
             )
             break
-          case store.SuccessAction.FIRMWARE:
+          case 'firmware':
             executor
               .RunAndOutput(
                 'cmd',
