@@ -17,9 +17,7 @@ const inProgress = computed(
         progress != undefined
           ? {
               'background-color': `var(--color-${progress.status})`,
-              color: ['pending', 'skiped'].includes(progress.status)
-                ? 'var(--color-gray-500)'
-                : 'white'
+              color: 'white'
             }
           : undefined
       ]"
