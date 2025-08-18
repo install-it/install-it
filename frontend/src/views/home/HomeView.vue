@@ -361,10 +361,10 @@ async function handleSubmit() {
           </select>
         </div>
 
-        <div class="flex flex-row gap-x-3 justify-end items-center mt-2">
+        <div class="flex flex-row gap-x-3 justify-end items-center mt-2 h-8">
           <button
             type="button"
-            class="px-3 py-1.5 text-white text-sm bg-rose-700 hover:bg-rose-600 rounded-sm"
+            class="px-3 h-full text-sm border-2 text-half-baked-800 border-half-baked-600 hover:border-half-baked-400 rounded-sm"
             @click="
               () => {
                 form?.reset()
@@ -375,7 +375,7 @@ async function handleSubmit() {
             {{ $t('installOption.reset') }}
           </button>
           <button
-            class="px-3 py-1.5 text-white text-sm bg-half-baked-600 hover:bg-half-baked-500 rounded-sm"
+            class="px-3 h-full text-white text-sm bg-half-baked-600 hover:bg-half-baked-500 rounded-sm"
             @click="handleSubmit"
           >
             {{ $t('installOption.execute') }}
