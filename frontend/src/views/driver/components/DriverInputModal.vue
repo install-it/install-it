@@ -326,37 +326,6 @@ const filterGroups = computed(() => {
                         <span class="line-clamp-2">
                           {{ `[${g.name}] ${d.name}` }}
                         </span>
-
-                        <!-- <div class="flex flex-col w-5/6">
-                            <p class="line-clamp-2">
-                              {{ `[${g.name}] ${d.name}` }}
-                            </p>
-
-                            <p class="text-xs text-gray-300 truncate">
-                              {{
-                                d.path.includes('\\')
-                                  ? `...${d.path.split('\\').slice(2).join('\\').toString()}`
-                                  : `${d.path} ${d.flags.join(' ')}`
-                              }}
-                            </p>
-                          </div> -->
-
-                        <!-- <template v-if="d.name !== ''">
-                            <span class="line-clamp-2">
-                              {{ `[${g.name}] ${d.name}` }}
-                            </span>
-                          </template>
-                          <template v-else>
-                            <div class="flex justify-between items-center w-full">
-                              <span class="">
-                                {{ `[${g.name}]` }}
-                              </span>
-
-                              <span class="shrink text-xs text-gray-300 break-all line-clamp-2">
-                                {{ d.path.split('\\').slice(-1).toString() }}
-                              </span>
-                            </div>
-                          </template> -->
                       </label>
                     </li>
                   </template>
