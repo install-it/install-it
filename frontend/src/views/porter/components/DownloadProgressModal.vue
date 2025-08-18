@@ -153,7 +153,7 @@ function toastErrMsg(err: string) {
                   statusBadget[progress?.status as keyof typeof statusBadget]
                 ]"
               >
-                <span class="truncate">{{ $t(`executeStatus.${progress?.status}`) }}</span>
+                <span class="truncate capitalize">{{ $t(`status.${progress?.status}`) }}</span>
               </p>
             </div>
 

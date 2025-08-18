@@ -142,6 +142,22 @@
     "successActionDelay": "關機選項延遲",
     "task": "額外工作"
   },
+  "status": {
+    "@aborted": "已取消",
+    "@aborting": "取消中",
+    "@completed": "完成",
+    "@failed": "失敗",
+    "@pending": "等待中",
+    "@running": "執行中",
+    "@speeded": "失敗",
+    "aborted": "已取消",
+    "aborting": "取消中",
+    "completed": "完成",
+    "failed": "失敗",
+    "pending": "等待中",
+    "running": "執行中",
+    "speeded": "失敗"
+  },
   "successAction": {
     "firmware": "進入 BIOS/UEFI",
     "nothing": "沒有動作",
