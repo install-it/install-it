@@ -4,6 +4,7 @@ import (
 	"context"
 	"driver-box/pkg/execute"
 	"driver-box/pkg/porter"
+	"driver-box/pkg/status"
 	"driver-box/pkg/store"
 	"driver-box/pkg/sysinfo"
 	"embed"
@@ -75,13 +76,6 @@ func init() {
 }
 
 func main() {
-	// working directory correction
-	if cwd, err := os.Getwd(); err == nil {
-		if pathExe, err := os.Executable(); err == nil && cwd != filepath.Dir(pathExe) {
-			os.Chdir(filepath.Dir(pathExe))
-		}
-	}
-
 	app := &App{}
 	mgt := &execute.CommandExecutor{}
 
@@ -96,6 +90,13 @@ func main() {
 		},
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
 		OnStartup: func(ctx context.Context) {
+			// working directory correction
+			if cwd, err := os.Getwd(); err == nil {
+				if pathExe, err := os.Executable(); err == nil && cwd != filepath.Dir(pathExe) {
+					os.Chdir(filepath.Dir(pathExe))
+				}
+			}
+
 			app.SetContext(ctx)
 			mgt.SetContext(ctx)
 		},
@@ -124,6 +125,18 @@ func main() {
 				{store.Reboot, "REBOOT"},
 				{store.Shutdown, "SHUTDOWN"},
 				{store.Firmware, "FIRMWARE"},
+			},
+			[]struct {
+				Value  status.Status
+				TSName string
+			}{
+				{status.Pending, "PENDING"},
+				{status.Running, "RUNNING"},
+				{status.Completed, "COMPLETED"},
+				{status.Failed, "FAILED"},
+				{status.Aborting, "ABORTING"},
+				{status.Aborted, "ABORTED"},
+				{status.Skiped, "SKIPED"},
 			},
 		},
 		Windows: &windows.Options{

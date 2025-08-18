@@ -29,7 +29,7 @@ export namespace porter {
 	
 	export class Progress {
 	    name: string;
-	    status: string;
+	    status: status.Status;
 	    total: number;
 	    current: number;
 	    // Go type: time
@@ -70,9 +70,8 @@ export namespace porter {
 	}
 	export class Progresses {
 	    tasks: Progress[];
-	    message: string[];
-	    status: string;
-	    error: string;
+	    messages: string[];
+	    status: status.Status;
 	
 	    static createFrom(source: any = {}) {
 	        return new Progresses(source);
@@ -81,9 +80,8 @@ export namespace porter {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.tasks = this.convertValues(source["tasks"], Progress);
-	        this.message = source["message"];
+	        this.messages = source["messages"];
 	        this.status = source["status"];
-	        this.error = source["error"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -103,6 +101,20 @@ export namespace porter {
 		    }
 		    return a;
 		}
+	}
+
+}
+
+export namespace status {
+	
+	export enum Status {
+	    PENDING = "pending",
+	    RUNNING = "running",
+	    COMPLETED = "completed",
+	    FAILED = "failed",
+	    ABORTING = "aborting",
+	    ABORTED = "aborted",
+	    SKIPED = "skiped",
 	}
 
 }

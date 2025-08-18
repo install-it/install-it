@@ -7,11 +7,12 @@ toolchain go1.23.3
 require (
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d
 	github.com/shirou/gopsutil/v3 v3.24.5
-	github.com/wailsapp/wails/v2 v2.9.2
+	github.com/wailsapp/wails/v2 v2.10.2
 	github.com/yusufpapurcu/wmi v1.2.4
 )
 
 require (
+	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/lufia/plan9stats v0.0.0-20240909124753-873cd0166683 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
@@ -38,16 +39,14 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/puzpuzpuz/xsync/v3 v3.5.0
 	github.com/rivo/uniseg v0.4.7 // indirect
-	github.com/samber/lo v1.49.0 // indirect
+	github.com/samber/lo v1.49.1 // indirect
 	github.com/tkrajina/go-reflector v0.5.8 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	github.com/wailsapp/go-webview2 v1.0.19
 	github.com/wailsapp/mimetype v1.4.1 // indirect
-	golang.org/x/crypto v0.32.0 // indirect
-	golang.org/x/net v0.34.0
-	golang.org/x/sys v0.29.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/crypto v0.33.0 // indirect
+	golang.org/x/net v0.35.0
+	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 )
-
-// replace github.com/wailsapp/wails/v2 v2.9.2 => C:\Users\EltonLO(House730)\Documents\Programs\go\pkg\mod

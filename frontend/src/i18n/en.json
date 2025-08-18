@@ -141,6 +141,22 @@
     "successActionDelay": "Success Action Delay",
     "task": "Task"
   },
+  "status": {
+    "@aborted": "term",
+    "@aborting": "aborting",
+    "@completed": "ok",
+    "@failed": "fail",
+    "@pending": "wait",
+    "@running": "run",
+    "@speeded": "fail",
+    "aborted": "aborted",
+    "aborting": "aborting",
+    "completed": "completed",
+    "failed": "failed",
+    "pending": "pending",
+    "running": "running",
+    "speeded": "speeded"
+  },
   "successAction": {
     "firmware": "Reboot to BIOS/UEFI",
     "nothing": "Nothing",

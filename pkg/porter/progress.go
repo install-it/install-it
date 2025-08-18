@@ -2,6 +2,7 @@ package porter
 
 import (
 	"context"
+	"driver-box/pkg/status"
 	"time"
 )
 
@@ -9,7 +10,7 @@ import (
 // It implements io.Writer to allow tracking of byte-based progress (e.g., during downloads).
 type Progress struct {
 	Name    string          `json:"name"`   // Name of the task
-	Status  string          `json:"status"` // Current status: "pending", "running", "completed", "failed", "aborted"
+	Status  status.Status   `json:"status"` // Current status: "pending", "running", "completed", "failed", "aborted"
 	Total   int64           `json:"total"`
 	Current int64           `json:"current"`
 	StartAt time.Time       `json:"startAt"` // Timestamp when the task started
@@ -29,7 +30,7 @@ func (p *Progress) Write(b []byte) (int, error) {
 // Initializes the progress tracking with a total byte count.
 func (p *Progress) Start(total int64) {
 	p.StartAt = time.Now()
-	p.Status = "running"
+	p.Status = status.Running
 	p.Total = total
 }
 
@@ -41,23 +42,22 @@ func (p *Progress) Accumulate(current int64) {
 // Marks the progress as completed and sets Current to Total.
 func (p *Progress) Complete() {
 	p.Current = p.Total
-	p.Status = "completed"
+	p.Status = status.Completed
 }
 
 // Marks the progress as failed or aborted depending on the error type.
 func (p *Progress) Fail(err error) {
 	p.Error = err
 	if err == context.Canceled {
-		p.Status = "aborted"
+		p.Status = status.Aborted
 	} else {
-		p.Status = "failed"
+		p.Status = status.Failed
 	}
 }
 
 // Type binding to the frontend progress query
 type Progresses struct {
-	Progresses []Progress `json:"tasks"`   // List of individual task progress
-	Messages   []string   `json:"message"` // Collected messages from all tasks
-	Status     string     `json:"status"`  // Overall status of the porting process
-	Error      string     `json:"error"`   // Summary error message, if any
+	Progresses []Progress    `json:"tasks"`    // List of individual task progress
+	Messages   []string      `json:"messages"` // Collected messages from all tasks
+	Status     status.Status `json:"status"`   // Overall status of the porting process
 }

@@ -14,7 +14,11 @@
     "i18n-sync": "node ./src/i18n/sync.js"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.0.8",
+    "@fortawesome/fontawesome-svg-core": "^7.0.0",
+    "@fortawesome/free-brands-svg-icons": "^7.0.0",
+    "@fortawesome/free-regular-svg-icons": "^7.0.0",
+    "@fortawesome/free-solid-svg-icons": "^7.0.0",
+    "@fortawesome/vue-fontawesome": "^3.1.1",
     "async-lock": "^1.4.1",
     "marked": "^15.0.7",
     "semver": "^7.7.1",
@@ -26,6 +30,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.8",
+    "@tailwindcss/vite": "^4.0.8",
     "@tsconfig/node20": "^20.1.4",
     "@types/async-lock": "^1.4.2",
     "@types/node": "^22.13.5",
@@ -43,5 +48,8 @@
     "typescript": "~5.7.3",
     "vite": "^6.2.0",
     "vue-tsc": "^2.2.4"
+  },
+  "volta": {
+    "node": "22.18.0"
   }
 }
