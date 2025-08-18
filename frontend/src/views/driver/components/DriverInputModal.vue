@@ -180,7 +180,7 @@ const filterGroups = computed(() => {
                 />
               </div>
 
-              <p class="hint-text">
+              <p class="text-hint">
                 {{ $t('driverForm.commaSeparated') }}
               </p>
             </div>
@@ -198,7 +198,7 @@ const filterGroups = computed(() => {
                   class="w-full p-1.5 text-sm shadow-xs"
                   required
                 />
-                <p class="hint-text">
+                <p class="text-hint">
                   {{ $t('driverForm.minExecuteTimeHelp') }}
                 </p>
               </div>
@@ -213,10 +213,10 @@ const filterGroups = computed(() => {
                   v-model="driver.allowRtCodes"
                   class="w-full p-1.5 text-sm shadow-xs"
                 />
-                <p class="hint-text">
+                <p class="text-hint">
                   {{ $t('driverForm.allowedExitCodeHelp') }}
                 </p>
-                <p class="hint-text">
+                <p class="text-hint">
                   {{ $t('driverForm.commaSeparated') }}
                 </p>
               </div>

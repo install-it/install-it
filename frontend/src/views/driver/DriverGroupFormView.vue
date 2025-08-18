@@ -234,7 +234,7 @@ function handleSubmit(event: SubmitEvent) {
           </div>
         </div>
 
-        <p class="hint-text">
+        <p class="text-hint">
           {{ $t('driverForm.incompatibleForNewHelp') }}
         </p>
       </div>
