@@ -165,7 +165,7 @@ async function handleAbort(process: Process) {
         <!-- Modal header -->
         <div class="flex items-center justify-between px-3 py-1.5 border-b rounded-t">
           <h3 class="font-semibold">
-            {{ $t('executeStatus.title') }}
+            {{ $t('execute.title') }}
           </h3>
           <button
             type="button"
@@ -205,7 +205,7 @@ async function handleAbort(process: Process) {
               }
             "
           >
-            {{ $t('executeStatus.forceComplete') }}
+            {{ $t('execute.forceComplete') }}
           </button>
         </div>
       </div>

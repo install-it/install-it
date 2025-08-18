@@ -53,21 +53,13 @@
     "type": "軀動類別",
     "view": "檢視"
   },
-  "executeStatus": {
+  "execute": {
     "abort": "取消",
-    "aborted": "已取消",
-    "aborting": "取消中",
-    "broken": "錯誤",
-    "completed": "完成",
     "earlyExit": "執行時間過短（{second}秒）",
     "executeTime": "執行時間：{second}秒",
     "exitCode": "狀態碼：{code}",
-    "failed": "失敗",
     "fileNotExist": "檔案／路徑不存在",
     "forceComplete": "強制完成",
-    "pending": "等待中",
-    "running": "執行中",
-    "speeded": "失敗",
     "startFailed": "程式出錯，未能執行",
     "title": "執行狀態"
   },

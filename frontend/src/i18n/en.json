@@ -53,21 +53,13 @@
     "type": "Driver Type",
     "view": "View"
   },
-  "executeStatus": {
+  "execute": {
     "abort": "Abort",
-    "aborted": "TERM",
-    "aborting": "ABORTING",
-    "broken": "ERR",
-    "completed": "OK",
     "earlyExit": "Early Completion ({second}s)",
     "executeTime": "Total time: {second}s",
     "exitCode": "Exit Code: {code}",
-    "failed": "FAIL",
     "fileNotExist": "File/Path not exist.",
     "forceComplete": "Force Complete",
-    "pending": "WAIT",
-    "running": "RUN",
-    "speeded": "FAIL",
     "startFailed": "Failed to start due to errors.",
     "title": "Execution Status"
   },
