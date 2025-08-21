@@ -103,8 +103,8 @@ func main() {
 		Bind: []interface{}{
 			app,
 			mgt,
-			&store.DriverGroupManager{Path: filepath.Join(dirConf, "groups.json")},
-			&store.AppSettingManager{Path: filepath.Join(dirConf, "setting.json")},
+			&store.AppSettingStore{Store: &store.FileStore{Path: filepath.Join(dirConf, "setting.json")}},
+			&store.DriverGroupStore{Store: &store.FileStore{Path: filepath.Join(dirConf, "groups.json")}},
 			&porter.Porter{DirRoot: dirRoot, Message: make(chan string, 512), Targets: []string{dirConf, dirDir}},
 			&sysinfo.SysInfo{},
 		},

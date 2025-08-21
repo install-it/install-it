@@ -2,7 +2,7 @@
 import { onBeforeMount, ref, useTemplateRef } from 'vue'
 
 import { Cwd, SelectFile, SelectFolder } from '@/wailsjs/go/main/App'
-import * as appManager from '@/wailsjs/go/store/AppSettingManager'
+import * as appSettingStore from '@/wailsjs/go/store/AppSettingStore'
 import { useI18n } from 'vue-i18n'
 import DownloadProgressModal from './components/DownloadProgressModal.vue'
 
@@ -23,7 +23,7 @@ const importInput = ref<{
 })
 
 onBeforeMount(() => {
-  appManager.Read().then(s => (importInput.value.url = s.driver_download_url))
+  appSettingStore.All().then(s => (importInput.value.url = s.driver_download_url))
 
   Cwd().then(cwd => {
     exportDirectory.value = cwd

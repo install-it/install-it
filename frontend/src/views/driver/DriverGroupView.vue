@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ExecutableExists } from '@/wailsjs/go/main/App'
 import { store } from '@/wailsjs/go/models'
-import * as groupManger from '@/wailsjs/go/store/DriverGroupManager'
+import * as groupStore from '@/wailsjs/go/store/DriverGroupStore'
 import { onBeforeMount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
@@ -28,8 +28,8 @@ const notExistDrivers = ref<Array<string>>([])
 const reordering = ref(false)
 
 onBeforeMount(() => {
-  groupManger
-    .Read()
+  groupStore
+    .All()
     .then(g => (groups.value = g))
     .catch(() => {
       $toast.error(t('toast.readDriverFailed'))
@@ -111,13 +111,13 @@ watch(driverType, newType => {
             const sourceId = event.dataTransfer!.getData('id')
             const sourcePosition = event.dataTransfer!.getData('position')
 
-            groupManger.IndexOf(g.id).then(targetIndex => {
+            groupStore.IndexOf(g.id).then(targetIndex => {
               if (parseInt(sourcePosition) <= i) {
                 // aligning MoveBehind's logic and UI draging's logic
                 targetIndex -= 1
               }
 
-              groupManger.MoveBehind(sourceId, targetIndex).then(result => {
+              groupStore.MoveBehind(sourceId, targetIndex).then(result => {
                 groups = result
               })
             })
@@ -140,8 +140,8 @@ watch(driverType, newType => {
               class="px-0.5 bg-gray-200 rounded-sm"
               @click="
                 () => {
-                  groupManger.Add(g).then(() => {
-                    groupManger.Read().then(g => {
+                  groupStore.Add(g).then(() => {
+                    groupStore.All().then(g => {
                       groups = g
                     })
                   })
@@ -155,8 +155,8 @@ watch(driverType, newType => {
               class="px-0.5 bg-gray-200 rounded-sm"
               @click="
                 () => {
-                  groupManger.Remove(g.id).then(() => {
-                    groupManger.Read().then(g => {
+                  groupStore.Remove(g.id).then(() => {
+                    groupStore.All().then(g => {
                       groups = g
                     })
                   })

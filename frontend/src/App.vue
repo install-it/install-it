@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { AppVersion } from '@/wailsjs/go/main/App'
-import * as app_manager from '@/wailsjs/go/store/AppSettingManager'
+import * as app_manager from '@/wailsjs/go/store/AppSettingStore.js'
 import { onBeforeMount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { RouteLocationRaw } from 'vue-router'
@@ -18,7 +18,7 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
 ]
 
 onBeforeMount(() => {
-  app_manager.Read().then(s => {
+  app_manager.All().then(s => {
     locale.value = s.language
 
     if (s.auto_check_update) {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import UnsaveConfirmModal from '@/components/modals/UnsaveConfirmModal.vue'
 import { store } from '@/wailsjs/go/models'
-import * as appManager from '@/wailsjs/go/store/AppSettingManager'
+import * as appSettingStore from '@/wailsjs/go/store/AppSettingStore'
 import { onBeforeMount, ref, toRaw, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
@@ -21,8 +21,8 @@ const settings = ref<store.AppSetting>(new store.AppSetting())
 let settingsOriginal: store.AppSetting
 
 onBeforeMount(() => {
-  appManager
-    .Read()
+  appSettingStore
+    .All()
     .then(s => {
       settings.value = s
       settingsOriginal = structuredClone(s)
@@ -48,7 +48,8 @@ function handleTabClick(key: (typeof tabKeys)[number]) {
 }
 
 function handleSubmit() {
-  appManager.Update(settings.value).then(() => {
+  console.log(settings.value)
+  appSettingStore.Update(settings.value).then(() => {
     locale.value = settings.value.language
     settingsOriginal = structuredClone(toRaw(settings.value))
 

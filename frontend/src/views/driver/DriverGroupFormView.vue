@@ -2,7 +2,7 @@
 import UnsaveConfirmModal from '@/components/modals/UnsaveConfirmModal.vue'
 import { getNotExistDrivers } from '@/utils/index'
 import { store } from '@/wailsjs/go/models'
-import * as groupManager from '@/wailsjs/go/store/DriverGroupManager'
+import * as groupStore from '@/wailsjs/go/store/DriverGroupStore'
 import { onBeforeMount, ref, toRaw, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
@@ -38,7 +38,7 @@ const group = ref<store.DriverGroup>(
 let groupOriginal: store.DriverGroup = structuredClone(toRaw(group.value))
 
 onBeforeMount(() => {
-  groupManager
+  groupStore
     .Get($route.params.id as string)
     .then(g => {
       group.value = g
@@ -83,12 +83,12 @@ function handleSubmit(event: SubmitEvent) {
 
   const action =
     group.value.id == undefined
-      ? groupManager.Add(group.value).then(gid => {
+      ? groupStore.Add(group.value).then(gid => {
           group.value.id = gid
           // no need to update the URL,
           // as users is not able to refresh the page in production build
         })
-      : groupManager.Update({
+      : groupStore.Update({
           ...group.value,
           drivers: group.value.drivers.map(d => {
             if (d.id.includes('new:')) {
@@ -102,7 +102,7 @@ function handleSubmit(event: SubmitEvent) {
     .then(() => {
       $toast.success(t('toast.updated'))
 
-      groupManager.Get(group.value.id).then(g => {
+      groupStore.Get(group.value.id).then(g => {
         group.value = g
         groupOriginal = structuredClone(g)
 

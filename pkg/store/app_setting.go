@@ -1,68 +1,5 @@
 package store
 
-import (
-	"encoding/json"
-	"os"
-)
-
-type AppSettingManager struct {
-	Path    string
-	setting AppSetting
-	fstat   os.FileInfo
-}
-
-func (s *AppSettingManager) Read() (AppSetting, error) {
-	if s.fstat == nil || s.modified() {
-		var setting AppSetting
-
-		if _, err := os.Stat(s.Path); err != nil {
-			s.Update(AppSetting{SuccessAction: Nothing, SuccessActionDelay: 5, Language: "en"})
-		}
-
-		bytes, err := os.ReadFile(s.Path)
-		if err != nil {
-			return AppSetting{}, err
-		}
-
-		if err := json.Unmarshal(bytes, &setting); err != nil {
-			return AppSetting{}, err
-		}
-
-		s.setting = setting
-	}
-
-	return s.setting, nil
-}
-
-func (s *AppSettingManager) Update(setting AppSetting) error {
-	s.setting = setting
-
-	bytes, err := json.Marshal(s.setting)
-	if err != nil {
-		return err
-	}
-
-	if err := os.WriteFile(s.Path, bytes, os.ModePerm); err == nil {
-		s.fstat, _ = os.Stat(s.Path)
-		return nil
-	} else {
-		return err
-	}
-
-}
-
-func (s AppSettingManager) modified() bool {
-	if s.fstat == nil {
-		return false
-	}
-
-	if stat, err := os.Stat(s.Path); err != nil {
-		return false
-	} else {
-		return stat.ModTime().After(s.fstat.ModTime())
-	}
-}
-
 type AppSetting struct {
 	CreatePartition    bool          `json:"create_partition"`
 	SetPassword        bool          `json:"set_password"`
@@ -85,3 +22,24 @@ const (
 	Reboot   SuccessAction = "reboot"
 	Firmware SuccessAction = "firmware"
 )
+
+type AppSettingStore struct {
+	Store   Store
+	setting AppSetting
+}
+
+func (s *AppSettingStore) All() (AppSetting, error) {
+	if s.Store.Modified() {
+		s.setting = AppSetting{}
+		s.Store.Read(&s.setting)
+	} else if !s.Store.Exist() {
+		s.setting = AppSetting{SuccessAction: Nothing, SuccessActionDelay: 5, Language: "en"}
+		s.Store.Write(s.setting)
+	}
+	return s.setting, nil
+}
+
+func (s *AppSettingStore) Update(v AppSetting) {
+	s.setting = v
+	s.Store.Write(v)
+}

@@ -3,7 +3,7 @@ import ModalFrame from '@/components/modals/ModalFrame.vue'
 import { flags } from '@/definitions/flags'
 import { SelectFile } from '@/wailsjs/go/main/App'
 import { store } from '@/wailsjs/go/models'
-import * as groupManager from '@/wailsjs/go/store/DriverGroupManager'
+import * as groupStore from '@/wailsjs/go/store/DriverGroupStore'
 import { computed, nextTick, ref, useTemplateRef } from 'vue'
 
 const frame = useTemplateRef('frame')
@@ -12,7 +12,7 @@ defineExpose({
   show: (data?: Partial<store.Driver>) => {
     frame.value?.show()
 
-    groupManager.Read().then(g => (groups.value = g))
+    groupStore.All().then(g => (groups.value = g))
 
     if (data) {
       driver.value = {

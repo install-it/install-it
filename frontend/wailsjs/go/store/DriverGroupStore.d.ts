@@ -4,6 +4,8 @@ import {store} from '../models';
 
 export function Add(arg1:store.DriverGroup):Promise<string>;
 
+export function All():Promise<Array<store.DriverGroup>>;
+
 export function Get(arg1:string):Promise<store.DriverGroup>;
 
 export function GroupOf(arg1:string):Promise<string>;
@@ -11,8 +13,6 @@ export function GroupOf(arg1:string):Promise<string>;
 export function IndexOf(arg1:string):Promise<number>;
 
 export function MoveBehind(arg1:string,arg2:number):Promise<Array<store.DriverGroup>>;
-
-export function Read():Promise<Array<store.DriverGroup>>;
 
 export function Remove(arg1:string):Promise<void>;
 

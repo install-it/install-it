@@ -3,8 +3,8 @@ import { getNotExistDrivers } from '@/utils'
 import CommandStatueModal from '@/views/home/components/CommandStatusModal.vue'
 import * as executor from '@/wailsjs/go/execute/CommandExecutor'
 import { store, sysinfo } from '@/wailsjs/go/models'
-import * as appManager from '@/wailsjs/go/store/AppSettingManager'
-import * as groupManager from '@/wailsjs/go/store/DriverGroupManager'
+import * as appSettingStore from '@/wailsjs/go/store/AppSettingStore'
+import * as groupStore from '@/wailsjs/go/store/DriverGroupStore'
 import * as sysinfoqy from '@/wailsjs/go/sysinfo/SysInfo'
 import { onBeforeMount, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -36,15 +36,15 @@ const hwinfos = ref<{
 } | null>(null)
 
 onBeforeMount(() => {
-  appManager
-    .Read()
+  appSettingStore
+    .All()
     .then(s => (settings.value = s))
     .catch(() => {
       $toast.error(t('toast.readAppSettingFailed'))
     })
 
-  groupManager
-    .Read()
+  groupStore
+    .All()
     .then(g => {
       groups.value = g
 
@@ -368,7 +368,7 @@ async function handleSubmit() {
             @click="
               () => {
                 form?.reset()
-                appManager.Read().then(s => (settings = s))
+                appSettingStore.All().then(s => (settings = s))
               }
             "
           >
