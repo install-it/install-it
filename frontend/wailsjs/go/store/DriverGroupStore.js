@@ -14,10 +14,6 @@ export function Get(arg1) {
   return window['go']['store']['DriverGroupStore']['Get'](arg1);
 }
 
-export function GroupOf(arg1) {
-  return window['go']['store']['DriverGroupStore']['GroupOf'](arg1);
-}
-
 export function IndexOf(arg1) {
   return window['go']['store']['DriverGroupStore']['IndexOf'](arg1);
 }
