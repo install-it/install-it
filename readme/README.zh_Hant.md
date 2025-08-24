@@ -42,7 +42,7 @@
 ## Project 簡介
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/8a29d13f-5058-4c4e-ada1-b0689add5675">
+  <img width="754" height="569" src="https://github.com/user-attachments/assets/a8c6f316-87d7-4b9f-8ccd-6a732326643d">
 <p align="right">
 
 driver-box 旨在加快安裝大量硬件軀動的時間。用家可以將不同類型的軀動程式加入到本程式中。之後每次只需選擇合適的軀動程式即可。<br>

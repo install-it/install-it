@@ -39,19 +39,19 @@
 ## About The Project
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/8a29d13f-5058-4c4e-ada1-b0689add5675">
+  <img src="https://github.com/user-attachments/assets/35606055-7ce6-4e97-8152-a7042d7fe001" width="754" height="569">
 </p>
 <p align="right">
 
-driver-box aims to speed up the installation of a large number of hardware drivers. Users can add different types of drivers to this program. Then, each time, they only need to select the appropriate drivers.<br>
-In addition to installing drivers, you can also use driver-box to install other programs or execute commands.
+driver-box aims to speed up the installation of hardware drivers. With just a few clicks, you can install various types of drivers.<br />
+Beyond drivers, driver-box can also execute system commands and install other programs, see [Usage](#usage) section for more.
 
 </p>
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Built With
 
-[<img src="https://img.shields.io/badge/bootstrap%20icons-7532fa?style=for-the-badge&logo=bootstrap&logoColor=white">](https://icons.getbootstrap.com/)
+[<img src="https://img.shields.io/badge/font%20awesome-538cd7?style=for-the-badge&logo=fontawesome&logoColor=white">](https://fontawesome.com/)
 [<img src="https://img.shields.io/badge/go-01add8?style=for-the-badge&logo=go&logoColor=white">](https://go.dev/)
 [<img src="https://img.shields.io/badge/tailwindcss-38bdf8?style=for-the-badge&logo=tailwindcss&logoColor=white">](https://tailwindcss.com/)
 [<img src="https://img.shields.io/badge/vue.js-41b883?style=for-the-badge&logo=vue.js&logoColor=white">](https://vuejs.org/)
@@ -64,7 +64,7 @@ In addition to installing drivers, you can also use driver-box to install other 
 
 ### Prerequisites
 
-- Go https://go.dev/doc/install
+- Go ≥1.23 https://go.dev/doc/install
 - Node 22 https://nodejs.org/en/download/package-manager
 
 ### Setup
@@ -91,6 +91,9 @@ In addition to installing drivers, you can also use driver-box to install other 
 
 - Build Executable
   ```sh
+  wails build
+
+  # build with version number set
   wails build -ldflags "-X main.buildVersion=<version number>"
   ```
 
@@ -99,30 +102,51 @@ In addition to installing drivers, you can also use driver-box to install other 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-<img src="https://github.com/user-attachments/assets/8fb85b19-133e-4cbf-9ee4-21e5237c9089">
+### Managing Drivers
 
-The smallest execution unit in driver-box is an executable file. Therefore, you can use driver-box for tasks beyond installing hardware drivers, such as executing any scripts or shell commands via `cmd` or `powershell`.
+<img src="https://github.com/user-attachments/assets/909dcbbd-9b02-4c06-941e-a77035e1250f" width="754" height="569">
 
-You can add multiple drivers to a single "group". All drivers added to the same group will be executed together.
-
-### Add and Edit Drivers
-
-<img src="https://github.com/user-attachments/assets/65d2b1fc-6138-4e81-95d6-605cecd14128">
+When you add a driver to driver-box, there are three types you can choose from: `network`, `display`, and `miscellaneous`. Only `miscellaneous` allow multiple selection.
 
 #### Path
 
-The path to the driver. You can also enter shell commands or other programs in the OS `PATH`.
+The path to the driver installer.
 
-By design, driver-box assumes that all drivers are placed in the `drivers` folder, as copying the driver files (executables `.exe` or folders) to the program's `drivers/<category>/` folder facilitates management and transfer (e.g., copying the program to a USB drive). Therefore, files selected via the "Select File" button will be represented with relative paths. However, you can also enter absolute paths.
+driver-box are designed with portability in mind, therefore 
+  1. It is recommended to place all your driver installer under the `driver/<category>` folder to facilitate management and transfer (e.g., copying the program to a USB drive).
+  
+  2. Paths selected via the "Select File" button will be a relative paths to driver-box's executable path. However, nothing prevents you from entering an absolute paths manually.
+
+Other than installing drivers, driver-box can do more than that.
+
+##### Execute commands
+
+You can execute commands available in the OS `PATH` variable.
+
+For CMD, you can execute commands by entering `cmd` in the path field, and `/c,<command>` in the install option field. Then it is equivlent to:
+
+```batch
+cmd /c <command>
+```
+
+For Powershell, you can execute commands by entering `powershell` in the path field, and `-Command,<command>` in the install option field. Then it is equivlent to:
+
+```batch
+powershell -Command <command>
+```
+
+##### Install programs other than drivers
+
+Program installer usually provides a slient install options like driver installers. For example, Steam support silent install by supplying `/S` option when you executing `SteamSetup.exe`. Explore yourself and turn driver-box to your PC setup toolbox :).
 
 #### Install Option
 
-[Execution parameters](https://en.wikipedia.org/wiki/Command-line_interface#Arguments) are generally used in command-line interfaces to modify program execution settings or input data into the program.
+[CLI Option](https://en.wikipedia.org/wiki/Command-line_interface#Arguments) is to control the execution behaviour, or input data into the program.
 
-Many installation programs support silent installation, where the program installs automatically without any user input.<br>
-We highly recommend entering the appropriate execution parameters to enable the added drivers to install in silent mode.
+Many installation executables support silent installation, where the program will be installed automatically without any interactions.<br>
+It is highly recommended to enter the appropriate execution parameters to allow drivers to be installed in silent mode to maximise functionality of driver-box.
 
-driver-box provides installation parameters for common drivers.<br>
+driver-box provides installation parameters preset for common drivers:<br>
 
 | Option         | Applicable Program                                                                                                                                               |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -136,28 +160,17 @@ driver-box provides installation parameters for common drivers.<br>
 | Intel Chipset  | [Chipset INF Utility](https://www.intel.com/content/www/us/en/support/products/1145/software/chipset-software/intel-chipset-software-installation-utility.html)  |
 | AMD Chipset    | [AMD Chipset Drivers](https://www.amd.com/en/support/download/drivers.html)                                                                                      |
 
-For drivers not in the default set, you can try searching online for `driver name` + `silent`/`unattended`/`command line install`, or use software like [Silent Install Builder](https://www.silentinstall.org/) to create them yourself.
-
-#### Incompatible With
-
-When selected, in "synchronous installation" mode, the relevant drivers will not be executed at the same time.
+For drivers that are not in the preset, you can try searching online for `driver name` + `silent`/`unattended`/`command line install`.
 
 ### Installation
 
-<img src="https://github.com/user-attachments/assets/f028262a-b39f-41d4-9969-1638ae6f6ca5">
+Select all the suitable driver and click `Execute`. A popup will be displayed for execution status.
 
-Please note that, by design, driver-box uses the exit status code after the program or command execution to determine whether it was successful. Some programs may return a status code indicating success (e.g., `0`), but in reality, the execution was not successful or completed.
-
-_Until all tasks are completed, the execution status window cannot be closed._
+> Note: driver-box uses the exit status code to determine success. Some programs may return 0 (success) even if the installation failed.
 
 #### Shutdown Option
 
-Shutdown option will only be executed after all tasks are successfully completed and drivers are installed successfully.
-
-#### Cancel Execution
-
-Only tasks in "waiting" or "running" status can be canceled.<br>
-Click the "Cancel" button for the relevant task. However, note that the program does not guarantee that the task can be terminated.
+Shutdown option will only be applied after all executions are successfully completed.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -176,3 +189,4 @@ Click the "Cancel" button for the relevant task. However, note that the program 
 [issues-url]: https://github.com/markmybytes/driver-box/issues
 [license-shield]: https://img.shields.io/github/license/markmybytes/driver-box.svg?style=for-the-badge
 [license-url]: https://github.com/markmybytes/driver-box/blob/master/LICENSE.txt
+
