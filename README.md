@@ -1,16 +1,18 @@
 <a id="readme-top"></a>
 
+
 <!-- PROJECT SHIELDS -->
 <div align="center">
-  
+
   [![Tag][tag-shield]][tag-url]
   [![Contributors][contributors-shield]][contributors-url]
   [![Forks][forks-shield]][forks-url]
   [![Stargazers][stars-shield]][stars-url]
   [![Issues][issues-shield]][issues-url]
   [![MIT License][license-shield]][license-url]
-  
+
 </div>
+
 
 <!-- PROJECT LOGO -->
 <div align="center">
@@ -21,7 +23,7 @@
   <h3 align="center">driver-box</h3>
 
   <p align="center">
-    Program/Driver Installation Tool
+    A Driver/Software Installation Tool
     <br>
     <a href="https://github.com/markmybytes/driver-box/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
@@ -35,18 +37,24 @@
   </p>
 </div>
 
+
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/35606055-7ce6-4e97-8152-a7042d7fe001" width="754" height="569">
 </p>
-<p align="right">
 
-driver-box aims to speed up the installation of hardware drivers. With just a few clicks, you can install various types of drivers.<br />
-Beyond drivers, driver-box can also execute system commands and install other programs, see [Usage](#usage) section for more.
+driver-box is a PC setup assistant tool that aims to simplify and speed up the driver installation process. <br />
+It allows you to **preload a bunch of driver installers** and then **select the most suitable ones to install** during the setup of a new PC. <br />
+Beyond drivers, installing softwares, and executing commands are also possible in driver-box, see [Usage](#usage) section for more.
 
-</p>
+| Download :arrow_down: | [Latest Release](https://github.com/markmybytes/driver-box/releases/latest) |
+|-----------------------|-----------------------------------------------------------------------------|
+
+> [!NOTE]  
+> driver-box does not include any driver installers in releases. You may check out [driver-claw](https://github.com/markmybytes/driver-claw), a CLI tool that automatically download common hardware drivers.
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Built With
@@ -59,12 +67,13 @@ Beyond drivers, driver-box can also execute system commands and install other pr
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+
 <!-- GETTING STARTED -->
 ## Getting Started
 
 ### Prerequisites
 
-- Go ≥1.23 https://go.dev/doc/install
+- Go ≥ 1.23 https://go.dev/doc/install
 - Node 22 https://nodejs.org/en/download/package-manager
 
 ### Setup
@@ -75,6 +84,7 @@ Beyond drivers, driver-box can also execute system commands and install other pr
   ```sh
   go install github.com/wailsapp/wails/v2/cmd/wails@latest
   ```
+
 - NPM Dependencies
   ```sh
   cd ./frontend
@@ -99,56 +109,59 @@ Beyond drivers, driver-box can also execute system commands and install other pr
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-### Managing Drivers
+### Managing Installers
 
 <img src="https://github.com/user-attachments/assets/909dcbbd-9b02-4c06-941e-a77035e1250f" width="754" height="569">
 
-When you add a driver to driver-box, there are three types you can choose from: `network`, `display`, and `miscellaneous`. Only `miscellaneous` allow multiple selection.
+To add an installer into driver-box:
 
-#### Path
+1. Place all your installer under the `driver/<category>` folder
+2. Create a installer group
+   - you can add multiple installer into a single group
+   - driver-box predefined three categroies: `network`, `display`, and `miscellaneous`, only `miscellaneous` allow multiple selection
+3. Enter the details for each installer
+4. Done
 
-The path to the driver installer.
+> [!TIP]
+> It is highly recommended to provide the correct command-line options so that the installer can be executed in unattended mode to maximise functionality of driver-box. <br />
+> See [Exection Option](#exection-option) section for more information.
 
-driver-box are designed with portability in mind, therefore 
-  1. It is recommended to place all your driver installer under the `driver/<category>` folder to facilitate management and transfer (e.g., copying the program to a USB drive).
-  
-  2. Paths selected via the "Select File" button will be a relative paths to driver-box's executable path. However, nothing prevents you from entering an absolute paths manually.
+<details>
+  <summary>[Example] Execute commands</summary>
 
-Other than installing drivers, driver-box can do more than that.
+  You can execute binary available in the OS `PATH` variable. In Windows, you can use CMD or Powershell to execute commands or scripts.
 
-##### Execute commands
+  For CMD, you can execute commands by entering `cmd` in the path field, and `/c,<command>` in the option field. Then it is equivlent to:
 
-You can execute commands available in the OS `PATH` variable.
+  ```batch
+  cmd /c command
+  ```
 
-For CMD, you can execute commands by entering `cmd` in the path field, and `/c,<command>` in the install option field. Then it is equivlent to:
+  For Powershell, you can execute commands by entering `powershell` in the path field, and `-Command,<command>` in the option field. Then it is equivlent to:
 
-```batch
-cmd /c <command>
-```
+  ```batch
+  powershell -Command command
+  ```
+</details>
 
-For Powershell, you can execute commands by entering `powershell` in the path field, and `-Command,<command>` in the install option field. Then it is equivlent to:
+<details>
+  <summary>[Example] Install non-driver software</summary>
 
-```batch
-powershell -Command <command>
-```
+  Software installer usually provides a slient install options like driver installers. For example, Steam support silent install by supplying `/S` option when you executing `SteamSetup.exe`. Explore yourself and turn driver-box to your PC setup toolbox :)
+</details>
 
-##### Install programs other than drivers
+### Execution Option
 
-Program installer usually provides a slient install options like driver installers. For example, Steam support silent install by supplying `/S` option when you executing `SteamSetup.exe`. Explore yourself and turn driver-box to your PC setup toolbox :).
+[Command-line Option/Argument](https://en.wikipedia.org/wiki/Command-line_interface#Arguments) is to control the execution behaviour, or input data into the program. <br />
+Many installers support unattend mode or silent mode, where the software will be installed automatically without any interactions.
 
-#### Install Option
+driver-box provides installation parameters preset for the following common drivers:
 
-[CLI Option](https://en.wikipedia.org/wiki/Command-line_interface#Arguments) is to control the execution behaviour, or input data into the program.
-
-Many installation executables support silent installation, where the program will be installed automatically without any interactions.<br>
-It is highly recommended to enter the appropriate execution parameters to allow drivers to be installed in silent mode to maximise functionality of driver-box.
-
-driver-box provides installation parameters preset for common drivers:<br>
-
-| Option         | Applicable Program                                                                                                                                               |
+| Option         | Applicable Installer                                                                                                                                             |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Intel LAN      | [Intel® Ethernet Adapter Complete Driver Pack](https://www.intel.com/content/www/us/en/download/15084/intel-ethernet-adapter-complete-driver-pack.html)          |
 | Realtek LAN    | [Realtek PCIe FE / GBE / 2.5G / 5G Ethernet Family Controller Software](https://www.realtek.com/Download/List?cate_id=584)                                       |
@@ -160,23 +173,19 @@ driver-box provides installation parameters preset for common drivers:<br>
 | Intel Chipset  | [Chipset INF Utility](https://www.intel.com/content/www/us/en/support/products/1145/software/chipset-software/intel-chipset-software-installation-utility.html)  |
 | AMD Chipset    | [AMD Chipset Drivers](https://www.amd.com/en/support/download/drivers.html)                                                                                      |
 
-For drivers that are not in the preset, you can try searching online for `driver name` + `silent`/`unattended`/`command line install`.
+For software that is not in the preset, you can try searching online with `software name` + `silent`/`unattended`/`command line install`.
 
 ### Installation
 
-Select all the suitable driver and click `Execute`. A popup will be displayed for execution status.
-
-> Note: driver-box uses the exit status code to determine success. Some programs may return 0 (success) even if the installation failed.
-
-#### Shutdown Option
-
-Shutdown option will only be applied after all executions are successfully completed.
+Select all the suitable software in the home page and click `Execute`. A popup will be displayed for execution status.
+ 
+> [!IMPORTANT]  
+> driver-box uses the exit status code to determine the execution status. Some programs may return 0 (indicating successful) even if the installation not yet completed, or failed.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
+<!-- MARKDOWN LINKS & IMAGES -->
 [tag-url]: https://github.com/markmybytes/driver-box/releases
 [tag-shield]: https://img.shields.io/github/v/tag/markmybytes/driver-box?style=for-the-badge&label=LATEST&color=%23B1B1B1
 [contributors-shield]: https://img.shields.io/github/contributors/markmybytes/driver-box.svg?style=for-the-badge
@@ -189,4 +198,3 @@ Shutdown option will only be applied after all executions are successfully compl
 [issues-url]: https://github.com/markmybytes/driver-box/issues
 [license-shield]: https://img.shields.io/github/license/markmybytes/driver-box.svg?style=for-the-badge
 [license-url]: https://github.com/markmybytes/driver-box/blob/master/LICENSE.txt
-

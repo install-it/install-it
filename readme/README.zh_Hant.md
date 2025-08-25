@@ -1,6 +1,5 @@
 <a id="readme-top"></a>
 
-
 <!-- PROJECT SHIELDS -->
 <div align="center">
   
@@ -42,17 +41,24 @@
 ## Project 簡介
 
 <p align="center">
-  <img width="754" height="569" src="https://github.com/user-attachments/assets/a8c6f316-87d7-4b9f-8ccd-6a732326643d">
+  <img src="https://github.com/user-attachments/assets/a8c6f316-87d7-4b9f-8ccd-6a732326643d" width="754" height="569">
 <p align="right">
 
-driver-box 旨在加快安裝大量硬件軀動的時間。用家可以將不同類型的軀動程式加入到本程式中。之後每次只需選擇合適的軀動程式即可。<br>
-除了安裝軀動程式，你亦可以利用 driver-box 來安裝其他程式或執行指令。
+driver-box 是一個軀動程式安裝工具，旨在減少安裝大量硬件軀動所需的時間。它允許您預先加入驅動程式安裝檔至工具內，並在新電腦設定過程中選擇最合適的驅動程式進行安裝。<br />
+除了驅動程式之外，driver-box 還支援安裝軟體及執行指令，詳情請參閱[使用](#使用)。
+
+| 下載 :arrow_down: | [Latest Release](https://github.com/markmybytes/driver-box/releases/latest) |
+|-------------------|-----------------------------------------------------------------------------|
+
+> [!NOTE]
+> driver-box 並沒有內置任何軀動程式。如有需要，可使用 [driver-claw](https://github.com/markmybytes/driver-claw) 工具，一鍵自動下載所有最新的常見硬件軀動程式。
+
 
 <p align="right">(<a href="#readme-top">回到最頂</a>)</p>
 
 ### 第三方工具使用
 
-[<img src="https://img.shields.io/badge/bootstrap%20icons-7532fa?style=for-the-badge&logo=bootstrap&logoColor=white">](https://icons.getbootstrap.com/)
+[<img src="https://img.shields.io/badge/font%20awesome-538cd7?style=for-the-badge&logo=fontawesome&logoColor=white">](https://fontawesome.com/)
 [<img src="https://img.shields.io/badge/go-01add8?style=for-the-badge&logo=go&logoColor=white">](https://go.dev/)
 [<img src="https://img.shields.io/badge/tailwindcss-38bdf8?style=for-the-badge&logo=tailwindcss&logoColor=white">](https://tailwindcss.com/)
 [<img src="https://img.shields.io/badge/vue.js-41b883?style=for-the-badge&logo=vue.js&logoColor=white">](https://vuejs.org/)
@@ -66,7 +72,7 @@ driver-box 旨在加快安裝大量硬件軀動的時間。用家可以將不同
 
 ### 所需軟件
 
-- Go https://go.dev/doc/install
+- Go ≥ 1.23 https://go.dev/doc/install
 - Node 22 https://nodejs.org/en/download/package-manager
 
 ### 安裝 Dependency
@@ -91,6 +97,9 @@ driver-box 旨在加快安裝大量硬件軀動的時間。用家可以將不同
 
 - Build Executable
   ```sh
+  wails build
+
+  # build with version number set
   wails build -ldflags "-X main.buildVersion=<version number>"
   ```
 
@@ -100,33 +109,53 @@ driver-box 旨在加快安裝大量硬件軀動的時間。用家可以將不同
 <!-- USAGE EXAMPLES -->
 ## 使用
 
-<img src="https://github.com/user-attachments/assets/8fb85b19-133e-4cbf-9ee4-21e5237c9089">
+### 安裝程式管理
 
-driver-box 最細的執行單位為執行檔。因此你可利用 driver-box 來進行安裝硬件的軀動程式外的工作，例如透過 `cmd` 或 `powershell` 來執行任何腳本（script）或殼層命令（Shell command）。
+<img src="https://github.com/user-attachments/assets/8fb85b19-133e-4cbf-9ee4-21e5237c9089" width="754" height="569">
 
-而你可以將多個軀動程式加至同一個「組合」中。所有加至同一個組合的軀動程式會一同執行。
+加入安裝程式至 driver-box 內的步驟：
 
-### 加入、編輯軀動程式
+1. 裝安裝程式的檔案移動至 `driver/<category>` 資料夾內
+2. 新增一個「安裝程式群組」
+     - 你可以加入多個安裝程式至同一個群組內
+     - driver-box 提供了三個分類可供選擇：`網絡介面卡`、`顯示卡`及`其他`，只有`其他`可以多選
+3. 輸入安裝程式的詳細資料
+4. 完成
 
-<img src="https://github.com/user-attachments/assets/65d2b1fc-6138-4e81-95d6-605cecd14128">
+> [!TIP]
+> 為更好發揮 driver-box 的功能，請務必為所有安裝程式輸入相應的命令列選項（Command-line option），使其能以零人手操作的模式（unattended）下自動執行。
 
-#### 軀動路徑
+<details>
+  <summary>[範例] 執行指令</summary>
 
-軀動程式的路徑。你亦可以在此輸入 Shell command 或其他在 `PATH` 內的程式。
+  driver-box 支援執行在作業系統 `PATH` 的環境變數內的程序。在 Windows 上，你可以透過 CMD 或 Powershell 執行指令碼。
 
-設計上，driver-box 是預設所有軀動程都放置 `drivers` 資料夾內，因為將軀動程式的檔案（執行檔 `.exe` 或資料夾）複製到程式的 `drivers/<分類>/` 資料夾內可以方便管理及轉移（例如複製程式到 USB 上）。
-因此透過「選擇檔案」按鈕選擇的檔案將會以相對路徑表示。但你亦可以輸入絕對路徑。
+  就 CMD 而言，輸入 `cmd` 至路徑中；`/c,<command>` 至執行參數中，即可執行 CMD 指令：
 
-#### 執行參數
+  ```batch
+  cmd /c command
+  ```
 
-[執行參數](https://en.wikipedia.org/wiki/Command-line_interface#Arguments)一般用於命令列介面（Command Line）上，以修改程式執行設定或輸入資料至程式中。
+  就 Powershell 而言，輸入 `powershell` 至路徑中；`-Command,<command>` 至執行參數中，即可執行 powershell 指令：
 
-不少安裝程序都會支援以自動模式安裝（silent install），用戶無需進行任何輸入，相關程式便會自行安裝。<br>
-我們十分建議輸入相關的執行參數，令加入的軀動能以自動模式安裝。
+  ```batch
+  powershell -Command command
+  ```
+</details>
 
-driver-box 已提供常見軀動的安裝參數。<br>
+<details>
+  <summary>[範例] 安裝非軀動程式的軟件</summary>
 
-| 選項           | 適用程式                                                                                                                                                         |
+  一般而言，軟件安裝程式會提供零人手操作安裝的模式。例如 Steam 可以加入 `/S` 的參數執行 `SteamSetup.exe`，即可在零人手操作下進行安裝。
+</details>
+
+### 執行參數
+
+[程式命令行選項](https://en.wikipedia.org/wiki/Command-line_interface#Arguments) 是用作控制程式的行為或輸入資料至程式中。大部份安裝程式都設有「零人手操作模式」（unattend/silent mode），即整個安裝過程中，毋須進行進何操作。
+
+而 driver-box 內置了一些常見軀動程式的零人手操作模式參數：
+
+| 選項           | 適用的軀動程式                                                                                                                                                    |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Intel LAN      | [Intel® Ethernet Adapter Complete Driver Pack](https://www.intel.com/content/www/us/en/download/15084/intel-ethernet-adapter-complete-driver-pack.html)          |
 | Realtek LAN    | [Realtek PCIe FE / GBE / 2.5G / 5G Ethernet Family Controller Software](https://www.realtek.com/Download/List?cate_id=584)                                       |
@@ -138,34 +167,20 @@ driver-box 已提供常見軀動的安裝參數。<br>
 | Intel Chipset  | [Chipset INF Utility](https://www.intel.com/content/www/us/en/support/products/1145/software/chipset-software/intel-chipset-software-installation-utility.html)  |
 | AMD Chipset    | [AMD Chipset Drivers](https://www.amd.com/en/support/download/drivers.html)                                                                                      |
 
-不在預設集上的軀動可嘗試在網上以 `軀動名稱` + `silent`／`unattended`／`command line install` 搜尋，或利用 [Silent Install Builder](https://www.silentinstall.org/) 等類似的軟件自行製作。
-
-#### 不能同時安裝
-
-勺選後，在使用「同步安裝」模式時，有關的軀動程式將不會在同一時間執行。
+對於未有在上述表格中例出的軟件，你可嘗試以 `software name` + `silent`/`unattended`/`command line install` 搜索。
 
 ### 安裝
 
-<img src="https://github.com/user-attachments/assets/f028262a-b39f-41d4-9969-1638ae6f6ca5">
 
-請注意，設計上，driver-box 是利用程式／指令執行完成後的狀態碼來判斷是否成功執行。一些程式會回應表示執行成功的狀態碼（例如 `0`），但實際上並非執行成功／完成執行。
+在首頁選擇所有合適的軟體後，點擊「執行」即可開始安裝。系統會跳出提示視窗，顯示執行狀態。
+ 
+> [!IMPORTANT]  
+> driver-box 會根據程式的退出狀態碼來判斷執行結果。但有些程式即使安裝尚未完成或失敗，仍可能回傳 0（代表成功），因此執行狀態可能不完全準確。
 
-_在所有工作執行完成前，執行狀態視窗不能夠被關閉。_
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-#### 關機設定
-
-關機設定只會在所有工作執行成功及軀動安裝成功後才會執行。
-
-#### 取消執行
-
-只有處於「等待中」或「執行中」的工作才能取消執行。<br>
-按下相關工作的「取消」按鈕即可。但注意，程式並不保證相關工作能夠被終止執行。
-
-<p align="right">(<a href="#readme-top">回到最頂</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-
 [tag-url]: https://github.com/markmybytes/driver-box/releases
 [tag-shield]: https://img.shields.io/github/v/tag/markmybytes/driver-box?style=for-the-badge&label=LATEST&color=%23B1B1B1
 [contributors-shield]: https://img.shields.io/github/contributors/markmybytes/driver-box.svg?style=for-the-badge
