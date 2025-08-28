@@ -70,7 +70,7 @@ watch(driverType, newType => {
       </button>
     </div>
 
-    <div class="flex flex-col grow py-2 min-h-48 overflow-y-scroll shadow-lg rounded-sm">
+    <div class="flex flex-col grow p-1.5 min-h-48 overflow-y-scroll shadow-md rounded-md">
       <div
         v-for="(g, i) in groups.filter(g => g.type == driverType)"
         :key="g.id"
@@ -132,12 +132,15 @@ watch(driverType, newType => {
           </p>
 
           <div class="flex gap-x-1.5 py-1">
-            <RouterLink :to="`/drivers/edit/${g.id}`" class="px-0.5 bg-gray-200 rounded-sm">
+            <RouterLink
+              :to="`/drivers/edit/${g.id}`"
+              class="px-1 bg-gray-200 hover:bg-gray-300 transition-all rounded-sm"
+            >
               <font-awesome-icon icon="fa-solid fa-pen-to-square" class="text-gray-500" />
             </RouterLink>
 
             <button
-              class="px-0.5 bg-gray-200 rounded-sm"
+              class="px-1 bg-gray-200 hover:bg-gray-300 transition-all rounded-sm"
               @click="
                 () => {
                   groupManger.Add(g).then(() => {
@@ -152,7 +155,7 @@ watch(driverType, newType => {
             </button>
 
             <button
-              class="px-0.5 bg-gray-200 rounded-sm"
+              class="px-1 bg-gray-200 hover:bg-gray-300 transition-all rounded-sm"
               @click="
                 () => {
                   groupManger.Remove(g.id).then(() => {
@@ -218,23 +221,22 @@ watch(driverType, newType => {
       <button
         v-show="groups?.filter(d => d.type == driverType).length > 1"
         type="button"
-        class="h-8 px-3 text-white text-sm focus:outline-hidden rounded-sm"
-        :class="[
+        class="btn text-white"
+        :style="
           reordering
-            ? 'bg-apple-green-800 hover:bg-apple-green-700 animate-blink-75'
-            : 'bg-[#D9BD68] hover:bg-[#E5D195]'
-        ]"
+            ? '--btn-color: var(--color-apple-green-800); animation: var(--animate-blink-75);'
+            : '--btn-color: #D9BD68'
+        "
         @click="reordering = !reordering"
       >
         {{ reordering ? $t('driverForm.view') : $t('driverForm.order') }}
       </button>
 
-      <RouterLink
-        :to="{ path: '/drivers/create', query: { type: driverType } }"
-        class="flex items-center h-8 px-3 text-white text-sm focus:outline-hidden bg-powder-blue-800 hover:bg-powder-blue-700 rounded-sm"
-      >
-        {{ $t('driverForm.create') }}
-      </RouterLink>
+      <button class="btn btn-primary">
+        <RouterLink :to="{ path: '/drivers/create', query: { type: driverType } }">
+          {{ $t('driverForm.create') }}
+        </RouterLink>
+      </button>
     </div>
   </div>
 </template>
