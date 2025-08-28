@@ -164,7 +164,6 @@ async function handleSubmit() {
     <div
       id="sysinfo"
       class="flex flex-col grow gap-y-1 min-h-28 overflow-y-auto p-1 border rounded-sm"
-      :class="{ loading: hwinfos === null }"
     >
       <template v-if="hwinfos !== null">
         <div>
@@ -234,8 +233,11 @@ async function handleSubmit() {
 
       <template v-else>
         <div v-for="i in 6" :key="i">
-          <h2 class="h-5 mb-1" :style="{ width: `${Math.random() * (25 - 15) + 15}%` }"></h2>
-          <p class="h-5" :style="{ width: `${Math.random() * (85 - 30) + 30}%` }"></p>
+          <h2
+            class="skeleton h-5 mb-1"
+            :style="{ width: `${Math.random() * (25 - 15) + 15}%` }"
+          ></h2>
+          <p class="skeleton h-5" :style="{ width: `${Math.random() * (85 - 30) + 30}%` }"></p>
         </div>
       </template>
     </div>
@@ -430,23 +432,3 @@ async function handleSubmit() {
     "
   ></CommandStatueModal>
 </template>
-
-<style scoped>
-#sysinfo.loading {
-  h2,
-  p {
-    background-color: #e2e2e2;
-    animation: skeleton 1.5s infinite;
-  }
-}
-
-@keyframes skeleton {
-  0%,
-  100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 0.2;
-  }
-}
-</style>
