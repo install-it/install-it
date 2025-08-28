@@ -82,11 +82,7 @@ defineEmits<{ abort: [] }>()
       </template>
 
       <!-- abort button -->
-      <button
-        v-show="props.process.status == 'pending' || props.process.status == 'running'"
-        class="ms-auto mx-1 px-1.5 text-sm bg-kashmir-blue-100 rounded-sm"
-        @click="$emit('abort')"
-      >
+      <button class="ms-auto btn btn-xs font-normal" @click="$emit('abort')">
         {{ $t('execute.abort') }}
       </button>
     </div>

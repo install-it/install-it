@@ -194,7 +194,7 @@ async function handleAbort(process: Process) {
           "
         >
           <button
-            class="flex rounded px-1 text-white bg-half-baked-600"
+            class="btn btn-sm btn-secondary font-normal"
             @click="
               event => {
                 $emit('completed')
@@ -205,6 +205,7 @@ async function handleAbort(process: Process) {
               }
             "
           >
+            <font-awesome-icon icon="fa-solid fa-forward" />
             {{ $t('execute.forceComplete') }}
           </button>
         </div>

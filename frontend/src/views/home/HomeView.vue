@@ -284,7 +284,12 @@ async function handleSubmit() {
           <div class="h-full overflow-y-scroll px-2 pt-3 rounded-lg border border-apple-green-600">
             <template v-for="d in groups.filter(d => d.type == 'miscellaneous')" :key="d.id">
               <label class="flex items-center w-full select-none cursor-pointer">
-                <input type="checkbox" name="miscellaneous" class="me-1.5" :value="d.id" />
+                <input
+                  type="checkbox"
+                  name="miscellaneous"
+                  class="checkbox checkbox-sm checkbox-primary me-1.5"
+                  :value="d.id"
+                />
                 {{ `${d.name}${notExistDrivers.includes(d.id) ? ' ⚠' : ''}` }}
               </label>
             </template>
@@ -300,35 +305,35 @@ async function handleSubmit() {
         <p class="font-semibold">{{ $t('installOption.title') }}</p>
 
         <div class="flex flex-col flex-1 justify-around">
-          <div class="flex items-center gap-x-4">
-            <label class="select-none cursor-pointer">
+          <div class="flex gap-x-4">
+            <label class="flex items-center gap-x-1.5 select-none cursor-pointer">
               <input
                 type="checkbox"
                 name="create_partition"
                 v-model="settings.create_partition"
-                class="me-1"
+                class="checkbox checkbox-sm checkbox-primary"
               />
               {{ $t('installOption.createPartition') }}
             </label>
 
-            <label class="select-none cursor-pointer">
+            <label class="flex items-center gap-x-1.5 select-none cursor-pointer">
               <input
                 type="checkbox"
                 name="parallel_install"
                 v-model="settings.parallel_install"
-                class="me-1"
+                class="checkbox checkbox-sm checkbox-primary"
               />
               {{ $t('installOption.parallelInstall') }}
             </label>
           </div>
 
-          <div class="flex items-center gap-x-2">
-            <label class="select-none cursor-pointer">
+          <div class="flex gap-x-2">
+            <label class="flex items-center gap-x-1.5 select-none cursor-pointer">
               <input
                 type="checkbox"
                 name="set_password"
                 v-model="settings.set_password"
-                class="me-1"
+                class="checkbox checkbox-sm checkbox-primary"
               />
               {{ $t('installOption.setPassword') }}
             </label>
@@ -337,7 +342,7 @@ async function handleSubmit() {
               type="text"
               name="password"
               v-model="settings.password"
-              class="max-w-28 p-1.5 text-xs shadow-xs"
+              class="max-w-28 input input-sm input-primary"
               :disabled="!settings.set_password"
             />
           </div>
@@ -353,7 +358,7 @@ async function handleSubmit() {
           <select
             name="success_action"
             v-model="settings.success_action"
-            class="w-full p-1 text-sm text-gray-900"
+            class="select select-primary w-full"
           >
             <option v-for="action in store.SuccessAction" :key="action" :value="action">
               {{ $t(`successAction.${action}`) }}
@@ -364,7 +369,7 @@ async function handleSubmit() {
         <div class="flex flex-row gap-x-3 justify-end items-center mt-2 h-8">
           <button
             type="button"
-            class="px-3 h-full text-sm border-2 text-half-baked-800 border-half-baked-600 hover:border-half-baked-400 rounded-sm"
+            class="btn btn-outline btn-secondary border-2"
             @click="
               () => {
                 form?.reset()
@@ -374,10 +379,7 @@ async function handleSubmit() {
           >
             {{ $t('installOption.reset') }}
           </button>
-          <button
-            class="px-3 h-full text-white text-sm bg-half-baked-600 hover:bg-half-baked-500 rounded-sm"
-            @click="handleSubmit"
-          >
+          <button class="btn btn-secondary" @click="handleSubmit">
             {{ $t('installOption.execute') }}
           </button>
         </div>
