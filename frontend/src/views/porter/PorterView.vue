@@ -53,12 +53,12 @@ onBeforeMount(() => {
             type="url"
             name="export_directory"
             v-model="exportDirectory"
-            class="flex-1 px-3 py-2 w-full text-black text-sm border-none rounded-sm bg-gray-100"
+            class="grow input input-primary"
           />
 
           <button
             type="button"
-            class="px-3 text-sm font-medium text-white bg-powder-blue-800 hover:bg-powder-blue-600 rounded-sm"
+            class="btn btn-primary"
             @click="
               () => {
                 SelectFolder(false).then(path => {
@@ -77,7 +77,7 @@ onBeforeMount(() => {
       <div class="flex justify-end">
         <button
           type="button"
-          class="mt-3 py-1 w-28 text-white bg-half-baked-600 hover:bg-half-baked-500 rounded-sm"
+          class="btn btn-secondary mt-3 w-28"
           @click="
             () => {
               if (!exportDirectory) {
@@ -134,13 +134,13 @@ onBeforeMount(() => {
             name="driver_download_url"
             placeholder="driver-box.zip"
             v-model="importInput.filePath"
-            class="flex-1 px-3 py-2 w-full text-black text-sm border-none rounded-sm bg-gray-100"
+            class="grow input input-primary"
             readonly
           />
 
           <button
             type="button"
-            class="px-3 text-sm font-medium text-white bg-powder-blue-800 hover:bg-powder-blue-600 rounded-sm"
+            class="btn btn-primary"
             @click="
               () => {
                 SelectFile(false).then(path => {
@@ -167,7 +167,7 @@ onBeforeMount(() => {
             type="url"
             placeholder="https://..."
             v-model="importInput.url"
-            class="flex-1 px-3 py-2 w-full text-black text-sm rounded-sm"
+            class="grow input input-primary"
           />
         </div>
       </div>
@@ -175,7 +175,7 @@ onBeforeMount(() => {
       <div class="flex justify-end">
         <button
           type="button"
-          class="mt-3 py-1 w-28 text-white bg-half-baked-600 hover:bg-half-baked-500 rounded-sm"
+          class="btn btn-secondary mt-3 w-28"
           @click="
             progressModal?.import(
               importInput.from,
