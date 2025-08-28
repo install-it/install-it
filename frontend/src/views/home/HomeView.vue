@@ -342,7 +342,7 @@ async function handleSubmit() {
               type="text"
               name="password"
               v-model="settings.password"
-              class="max-w-28 input input-sm input-primary"
+              class="max-w-28 input input-sm input-accent"
               :disabled="!settings.set_password"
             />
           </div>
@@ -358,7 +358,7 @@ async function handleSubmit() {
           <select
             name="success_action"
             v-model="settings.success_action"
-            class="select select-primary w-full"
+            class="select select-accent w-full"
           >
             <option v-for="action in store.SuccessAction" :key="action" :value="action">
               {{ $t(`successAction.${action}`) }}

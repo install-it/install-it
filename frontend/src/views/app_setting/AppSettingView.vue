@@ -108,7 +108,7 @@ function handleSubmit() {
               min="0"
               step="0"
               v-model="settings.success_action_delay"
-              class="w-20 input input-primary shadow-xs"
+              class="w-20 input input-accent shadow-xs"
               required
             />
             &nbsp; {{ $t('setting.second') }}
@@ -127,7 +127,7 @@ function handleSubmit() {
               type="url"
               name="driver_download_url"
               v-model="settings.driver_download_url"
-              class="w-full input input-primary shadow-xs"
+              class="w-full input input-accent shadow-xs"
             />
           </div>
         </div>
@@ -171,7 +171,7 @@ function handleSubmit() {
                 type="text"
                 name="password"
                 v-model="settings.password"
-                class="input input-primary"
+                class="input input-accent"
                 :disabled="!settings.set_password"
               />
             </div>
@@ -204,7 +204,7 @@ function handleSubmit() {
             <select
               name="success_action"
               v-model="settings.success_action"
-              class="select select-primary"
+              class="select select-accent"
             >
               <option v-for="action in store.SuccessAction" :key="action" :value="action">
                 {{ $t(`successAction.${action}`) }}
@@ -222,7 +222,7 @@ function handleSubmit() {
         </p>
 
         <div>
-          <select name="language" v-model="settings.language" class="select select-primary">
+          <select name="language" v-model="settings.language" class="select select-accent">
             <option value="en">English</option>
             <option value="zh_Hant_HK">繁體中文</option>
           </select>

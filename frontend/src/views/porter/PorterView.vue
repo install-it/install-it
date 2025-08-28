@@ -53,7 +53,7 @@ onBeforeMount(() => {
             type="url"
             name="export_directory"
             v-model="exportDirectory"
-            class="grow input input-primary"
+            class="grow input input-accent"
           />
 
           <button
@@ -134,7 +134,7 @@ onBeforeMount(() => {
             name="driver_download_url"
             placeholder="driver-box.zip"
             v-model="importInput.filePath"
-            class="grow input input-primary"
+            class="grow input input-accent"
             readonly
           />
 
@@ -167,7 +167,7 @@ onBeforeMount(() => {
             type="url"
             placeholder="https://..."
             v-model="importInput.url"
-            class="grow input input-primary"
+            class="grow input input-accent"
           />
         </div>
       </div>

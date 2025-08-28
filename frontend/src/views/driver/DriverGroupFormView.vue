@@ -132,7 +132,7 @@ function handleSubmit(event: SubmitEvent) {
         <fieldset class="fieldset">
           <legend class="fieldset-legend text-sm">{{ $t('driverForm.type') }}</legend>
 
-          <select name="type" v-model="group.type" class="w-full select select-primary" required>
+          <select name="type" v-model="group.type" class="w-full select select-accent" required>
             <option v-for="type in store.DriverType" :key="type" :value="type">
               {{ $t(`driverCatetory.${type}`) }}
             </option>
@@ -143,7 +143,7 @@ function handleSubmit(event: SubmitEvent) {
       <div class="grow">
         <fieldset class="fieldset">
           <legend class="fieldset-legend text-sm">{{ $t('driverForm.name') }}</legend>
-          <input type="text" class="input input-primary w-full" required />
+          <input type="text" class="input input-accent w-full" required />
         </fieldset>
       </div>
     </div>
