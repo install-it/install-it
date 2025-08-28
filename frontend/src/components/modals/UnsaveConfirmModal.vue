@@ -47,10 +47,10 @@ let callback: (answer: 'yes' | 'no') => void
           </p>
         </div>
 
-        <div class="flex gap-x-2 h-12 py-2 px-4 border-t">
+        <div class="flex gap-x-2 px-4 py-2 border-t">
           <button
             type="button"
-            class="flex-1 text-white bg-apple-green-800 hover:bg-apple-green-600 rounded-sm"
+            class="flex-1 btn btn-accent text-gray-700"
             @click="
               () => {
                 frame?.hide()
@@ -63,7 +63,7 @@ let callback: (answer: 'yes' | 'no') => void
 
           <button
             type="button"
-            class="flex-1 text-white bg-gray-400 hover:bg-gray-300 rounded-sm"
+            class="flex-1 btn"
             @click="
               () => {
                 frame?.hide()
