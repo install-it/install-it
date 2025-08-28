@@ -92,12 +92,12 @@ const webviewVersion = ref(false)
                 {{ $t('info.updateOption') }}
               </h1>
 
-              <label class="flex item-center w-full select-none cursor-pointer">
+              <label class="flex items-center w-full select-none cursor-pointer">
                 <input
                   type="checkbox"
                   name="create_partition"
                   v-model="webviewVersion"
-                  class="me-1.5 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500"
+                  class="checkbox checkbox-primary me-1.5"
                 />
                 {{ $t('info.downloadBuiltInWebView2Version') }}
               </label>
@@ -105,7 +105,7 @@ const webviewVersion = ref(false)
           </div>
 
           <button
-            class="w-full py-1 text-white bg-half-baked-600 hover:bg-half-baked-500 rounded-sm"
+            class="w-full btn btn-secondary"
             @click="
               () => {
                 if (!releaseInfo) {
