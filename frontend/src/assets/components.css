@@ -11,59 +11,59 @@
 
 /* status badge */
 @layer components {
-  .badge {
+  .proc-badge {
     @apply inline-flex justify-center items-center max-w-[96%] px-1 rounded-sm select-none;
   }
 
-  .badge.badge-pending {
+  .proc-badge.proc-badge-pending {
     @apply bg-pending;
   }
 
-  .badge.badge-pending {
+  .proc-badge.proc-badge-pending {
     @apply bg-pending;
   }
 
-  .badge.badge-running {
+  .proc-badge.proc-badge-running {
     @apply animate-pulse bg-running;
   }
 
-  .badge.badge-aborting {
+  .proc-badge.proc-badge-aborting {
     @apply animate-pulse bg-aborting;
   }
 
-  .badge.badge-aborted {
+  .proc-badge.proc-badge-aborted {
     @apply bg-aborted;
   }
 
-  .badge.badge-speeded {
+  .proc-badge.proc-badge-speeded {
     @apply bg-speeded;
   }
 
-  .badge.badge-failed {
+  .proc-badge.proc-badge-failed {
     @apply bg-failed;
   }
 
-  .badge.badge-completed {
+  .proc-badge.proc-badge-completed {
     @apply bg-completed;
   }
 
-  .badge.badge-broken {
+  .proc-badge.proc-badge-broken {
     @apply bg-broken text-white;
   }
 
-  .badge.badge-network {
+  .proc-badge.proc-badge-network {
     @apply bg-network;
   }
 
-  .badge.badge-display {
+  .proc-badge.proc-badge-display {
     @apply bg-display;
   }
 
-  .badge.badge-miscellaneous {
+  .proc-badge.proc-badge-miscellaneous {
     @apply bg-miscellaneous;
   }
 
-  .badge.badge-builtin {
+  .proc-badge.proc-badge-builtin {
     @apply bg-builtin;
   }
 }

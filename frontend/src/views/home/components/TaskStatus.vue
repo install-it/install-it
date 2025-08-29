@@ -18,7 +18,7 @@ defineEmits<{ abort: [] }>()
     <div class="flex items-center w-4/6 ps-1 py-1">
       <!-- status badget -->
       <div class="shrink-0 w-[4.1rem]">
-        <p class="h-6 badge" :class="[`badge-${props.process.status}`]">
+        <p class="h-6 proc-badge" :class="[`proc-badge-${props.process.status}`]">
           <span class="text-sm truncate">
             {{ $t(`status.@${props.process.status}`).toUpperCase() }}
           </span>

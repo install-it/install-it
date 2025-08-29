@@ -144,7 +144,7 @@ function toastErrMsg(err: string) {
             <div class="flex items-center gap-x-3">
               <h2 class="text-lg font-bold">{{ title }}</h2>
 
-              <p class="h-6 badge" :class="[`badge-${progress?.status}`]">
+              <p class="h-6 proc-badge" :class="[`proc-badge-${progress?.status}`]">
                 <span class="truncate capitalize">{{ $t(`status.${progress?.status}`) }}</span>
               </p>
             </div>
