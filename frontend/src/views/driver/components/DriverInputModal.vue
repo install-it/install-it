@@ -78,7 +78,7 @@ const filterGroups = computed(() => {
         <!-- Modal body -->
         <div class="max-h-[70vh] overflow-auto py-2 px-4" ref="modalBody">
           <form
-            class="flex flex-col gap-y-3"
+            class="flex flex-col gap-y-2"
             autocomplete="off"
             @submit.prevent="
               _ => {
@@ -101,27 +101,24 @@ const filterGroups = computed(() => {
               }
             "
           >
-            <div>
-              <label class="block mb-2 text-sm font-medium text-gray-900">
-                {{ $t('driverForm.name') }}
-              </label>
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend text-sm">{{ $t('driverForm.name') }}</legend>
+
               <input
                 type="text"
                 name="name"
                 v-model="driver.name"
-                class="w-full p-1.5 text-sm shadow-xs"
+                class="input input-accent w-full"
               />
-            </div>
+            </fieldset>
 
-            <div>
-              <label class="block mb-2 text-sm font-medium text-gray-900">
-                {{ $t('driverForm.path') }}
-              </label>
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend text-sm">{{ $t('driverForm.path') }}</legend>
 
-              <div class="flex">
+              <div class="join">
                 <button
                   type="button"
-                  class="w-28 px-3 text-sm text-gray-900 bg-gray-200 border border-e-0 rounded-s-md rounded-e-0 border-gray-300"
+                  class="w-32 btn join-item"
                   @click="
                     SelectFile(true).then(path => {
                       driver.path = path
@@ -130,35 +127,32 @@ const filterGroups = computed(() => {
                 >
                   {{ $t('driverForm.selectFile') }}
                 </button>
+
                 <input
                   type="text"
                   name="path"
                   v-model="driver.path"
-                  class="block flex-1 min-w-0 w-full p-1.5 text-sm rounded-none rounded-e shadow-xs"
+                  class="input input-accent w-full join-item"
                   ref="pathInput"
                   required
                 />
               </div>
-            </div>
+            </fieldset>
 
-            <div>
-              <label class="block mb-2 text-sm font-medium text-gray-900">
-                {{ $t('driverForm.argument') }}
-              </label>
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend text-sm">{{ $t('driverForm.argument') }}</legend>
 
-              <div class="flex">
+              <div class="join">
                 <select
                   name="flags"
-                  class="w-28 text-sm border border-e-0 rounded-e-none rounded-s"
+                  class="w-32 select select-accent join-item ps-1"
                   @change="
                     event => {
                       driver.flags = (event.target as HTMLSelectElement).value
                     }
                   "
                 >
-                  <option value="">
-                    {{ $t('driverForm.manualInput') }}
-                  </option>
+                  <option value="">{{ $t('driverForm.manualInput') }}</option>
                   <option
                     v-for="(flag, name) in flags"
                     :key="name"
@@ -168,57 +162,186 @@ const filterGroups = computed(() => {
                     {{ name }}
                   </option>
                 </select>
+
                 <input
                   type="text"
                   name="flags"
                   v-model="driver.flags"
-                  class="flex-1 p-1.5 text-sm rounded-none rounded-e shadow-xs"
+                  class="input input-accent w-full join-item"
                 />
               </div>
 
-              <p class="text-hint">
+              <p class="label text-apple-green-800">
                 {{ $t('driverForm.commaSeparated') }}
               </p>
-            </div>
+            </fieldset>
 
             <div class="flex gap-x-3">
-              <div>
-                <label class="block mb-2 text-sm font-medium text-gray-900">
+              <fieldset class="fieldset flex-1">
+                <legend class="fieldset-legend text-sm">
                   {{ $t('driverForm.minExecuteTime') }}
-                </label>
+                </legend>
+
                 <input
                   type="number"
                   name="minExeTime"
                   v-model="driver.minExeTime"
                   step="0.1"
-                  class="w-full p-1.5 text-sm shadow-xs"
+                  class="input input-accent w-full"
                   required
                 />
-                <p class="text-hint">
+
+                <p class="label text-apple-green-800 text-wrap">
                   {{ $t('driverForm.minExecuteTimeHelp') }}
                 </p>
-              </div>
+              </fieldset>
 
-              <div>
-                <label class="block mb-2 text-sm font-medium text-gray-900">
+              <fieldset class="fieldset flex-1">
+                <legend class="fieldset-legend text-sm">
                   {{ $t('driverForm.allowedExitCode') }}
-                </label>
+                </legend>
+
                 <input
                   type="text"
                   name="allowRtCodes"
                   v-model="driver.allowRtCodes"
-                  class="w-full p-1.5 text-sm shadow-xs"
+                  class="input input-accent"
                 />
-                <p class="text-hint">
-                  {{ $t('driverForm.allowedExitCodeHelp') }}
-                </p>
-                <p class="text-hint">
+
+                <p class="label text-apple-green-800 text-wrap">
                   {{ $t('driverForm.commaSeparated') }}
                 </p>
-              </div>
+              </fieldset>
             </div>
 
-            <div>
+            <fieldset class="fieldset flex-1">
+              <legend class="fieldset-legend text-sm">
+                {{ $t('driverForm.incompatibleWith') }}
+              </legend>
+
+              <div class="mb-1 text-xs line-clamp-1">
+                <span class="inline">
+                  {{ $t('driverForm.selectedWithCount', { count: driver.incompatibles?.length }) }}
+                </span>
+              </div>
+
+              <div class="flex mb-2 gap-x-2">
+                <input
+                  v-model="searchPhrase"
+                  :placeholder="$t('driverForm.search')"
+                  class="input border-none focus:outline-gray-200 bg-gray-100 grow"
+                />
+
+                <button
+                  type="button"
+                  class="btn px-2 text-white"
+                  style="--btn-color: var(--color-powder-blue-800)"
+                  :title="$t('driverForm.selectAll')"
+                  @click="
+                    () => {
+                      driver.incompatibles = [
+                        ...groups.flatMap(g => g.drivers.flatMap(d => d.id)),
+                        'set_password',
+                        'create_partition'
+                      ]
+                    }
+                  "
+                >
+                  <font-awesome-icon icon="fa-regular fa-square-check" />
+                </button>
+
+                <button
+                  type="button"
+                  class="btn px-2 text-white"
+                  style="--btn-color: var(--color-rose-400)"
+                  :title="$t('driverForm.selectNone')"
+                  @click="
+                    () => {
+                      driver.incompatibles = []
+                    }
+                  "
+                >
+                  <font-awesome-icon icon="fa-regular fa-square" />
+                </button>
+              </div>
+
+              <ul class="h-44 p-1.5 overflow-auto border rounded-lg">
+                <li
+                  class="py-2.5 px-4 text-sm"
+                  v-show="
+                    searchPhrase === '' ||
+                    'set password'.includes(searchPhrase) ||
+                    $t('installOption.setPassword').includes(searchPhrase)
+                  "
+                >
+                  <label class="flex items-center w-full select-none cursor-pointer">
+                    <input
+                      type="checkbox"
+                      value="set_password"
+                      v-model="driver.incompatibles"
+                      class="checkbox checkbox-sm checkbox-primary me-1.5"
+                    />
+                    <span class="badge px-1 me-1" :style="`--badge-color: var(--color-builtin)`">
+                      &nbsp;
+                    </span>
+                    <span class="line-clamp-2">
+                      {{ $t('installOption.setPassword') }}
+                    </span>
+                  </label>
+                </li>
+
+                <li
+                  class="py-2.5 px-4 text-sm"
+                  v-show="
+                    searchPhrase === '' ||
+                    'create partition'.includes(searchPhrase) ||
+                    $t('installOption.createPartition').includes(searchPhrase)
+                  "
+                >
+                  <label class="flex items-center w-full select-none cursor-pointer">
+                    <input
+                      type="checkbox"
+                      value="create_partition"
+                      v-model="driver.incompatibles"
+                      class="checkbox checkbox-sm checkbox-primary me-1.5"
+                    />
+                    <span class="badge px-1 me-1" :style="`--badge-color: var(--color-builtin)`">
+                      &nbsp;
+                    </span>
+                    <span class="line-clamp-2">
+                      {{ $t('installOption.createPartition') }}
+                    </span>
+                  </label>
+                </li>
+
+                <template v-for="g in filterGroups" :key="g.id">
+                  <template v-for="d in g.drivers.filter(d => d.id != driver.id)" :key="d.id">
+                    <li class="py-2.5 px-4 text-sm">
+                      <label class="flex items-center w-full select-none cursor-pointer">
+                        <input
+                          type="checkbox"
+                          :value="d.id"
+                          v-model="driver.incompatibles"
+                          class="checkbox checkbox-sm checkbox-primary me-1.5"
+                        />
+                        <span
+                          class="badge px-1 me-1"
+                          :class="[`badge-${g.type}`]"
+                          :style="`--badge-color: var(--color-${g.type})`"
+                        >
+                          &nbsp;
+                        </span>
+                        <span class="line-clamp-2">
+                          {{ `[${g.name}] ${d.name}` }}
+                        </span>
+                      </label>
+                    </li>
+                  </template>
+                </template>
+              </ul>
+            </fieldset>
+
+            <!-- <div>
               <label class="block text-sm font-medium text-gray-900">
                 {{ $t('driverForm.incompatibleWith') }}
               </label>
@@ -331,12 +454,9 @@ const filterGroups = computed(() => {
                   </template>
                 </template>
               </ul>
-            </div>
+            </div> -->
 
-            <button
-              type="submit"
-              class="w-full my-1 py-2 text-sm font-medium text-white bg-half-baked-600 hover:bg-half-baked-500 rounded-lg"
-            >
+            <button type="submit" class="btn btn-secondary">
               {{ $t('common.save') }}
             </button>
           </form>
@@ -347,18 +467,8 @@ const filterGroups = computed(() => {
 </template>
 
 <style scoped>
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-
-label:has(+ input:required, + select:required):after,
-label:has(+ div > input:required):after {
+legend:has(+ input:required, + select:required):after,
+legend:has(+ div > input:required):after {
   content: ' *';
   color: red;
 }

@@ -127,33 +127,124 @@ function handleSubmit(event: SubmitEvent) {
     autocomplete="off"
     @submit.prevent="event => handleSubmit(event as SubmitEvent)"
   >
-    <div class="flex gap-x-3">
+    <div class="flex gap-x-3 px-1">
       <div class="w-32">
-        <label class="block mb-2 text-sm font-medium text-gray-900">
-          {{ $t('driverForm.type') }}
-        </label>
-        <select name="type" v-model="group.type" class="w-full p-1.5 text-sm shadow-xs" required>
-          <option v-for="type in store.DriverType" :key="type" :value="type">
-            {{ $t(`driverCatetory.${type}`) }}
-          </option>
-        </select>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend text-sm">{{ $t('driverForm.type') }}</legend>
+
+          <select name="type" v-model="group.type" class="w-full select select-accent" required>
+            <option v-for="type in store.DriverType" :key="type" :value="type">
+              {{ $t(`driverCatetory.${type}`) }}
+            </option>
+          </select>
+        </fieldset>
       </div>
 
-      <div class="flex-1">
-        <label class="block mb-2 text-sm font-medium text-gray-900">
-          {{ $t('driverForm.name') }}
-        </label>
-        <input
-          type="text"
-          name="name"
-          v-model="group.name"
-          class="w-full p-1.5 text-sm shadow-xs"
-          required
-        />
+      <div class="grow">
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend text-sm">{{ $t('driverForm.name') }}</legend>
+          <input type="text" class="input input-accent w-full" required />
+        </fieldset>
       </div>
     </div>
 
-    <div class="flex flex-col gap-y-4">
+    <fieldset class="fieldset">
+      <legend class="fieldset-legend text-sm">{{ $t('driverForm.driver') }}</legend>
+
+      <div>
+        <div class="max-h-[40vh] text-sm overflow-y-auto">
+          <div class="grid grid-rows">
+            <div class="grid grid-cols-10 gap-2 py-1.5 border-y">
+              <div class="col-span-2">{{ $t('driverForm.name') }}</div>
+              <div class="col-span-3">{{ $t('driverForm.path') }}</div>
+              <div class="col-span-2">{{ $t('driverForm.argument') }}</div>
+              <div class="col-span-2">{{ $t('driverForm.otherSetting') }}</div>
+            </div>
+
+            <div v-if="group.drivers.length == 0" class="py-1 text-center last:border-b">N/A</div>
+
+            <div
+              v-else
+              v-for="(d, i) in group.drivers"
+              :key="d.id"
+              class="grid grid-cols-10 items-center gap-2 py-1.5 text-xs border-b"
+              :class="{ 'bg-lime-50': d.id.includes('new:') }"
+            >
+              <div class="col-span-2">
+                <p class="break-all line-clamp-2">
+                  {{ d.name }}
+                </p>
+              </div>
+
+              <div class="col-span-3">
+                <p
+                  class="font-mono break-all line-clamp-2"
+                  :class="{ 'text-red-600': notExistDrivers.includes(d.id) }"
+                >
+                  {{ d.path }}
+                </p>
+              </div>
+
+              <div class="col-span-2">
+                <p class="break-all line-clamp-2">
+                  {{ d.flags.join(', ') }}
+                </p>
+              </div>
+
+              <div class="flex col-span-2 gap-x-1">
+                <span
+                  v-show="d.incompatibles.length > 0"
+                  class="inline-block p-0.5 max-h-5 bg-yellow-300 rounded-xs"
+                  :title="$t('driverForm.incompatibleWith')"
+                >
+                  <font-awesome-icon icon="fa-solid fa-code-merge" />
+                </span>
+
+                <span
+                  v-show="d.allowRtCodes.length > 0"
+                  class="inline-block p-0.5 max-h-5 bg-blue-300 rounded-xs"
+                  :title="$t('driverForm.allowedExitCode')"
+                >
+                  <font-awesome-icon icon="fa-solid fa-0" />
+                </span>
+              </div>
+
+              <div>
+                <div class="flex gap-x-2">
+                  <button type="button" @click="inputModal?.show(d)">
+                    <font-awesome-icon icon="fa-solid fa-pen-to-square" />
+                  </button>
+                  <button type="button" @click="group.drivers.splice(i, 1)">
+                    <font-awesome-icon icon="fa-solid fa-trash" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-hint">
+            {{ $t('driverForm.incompatibleForNewHelp') }}
+          </p>
+        </div>
+
+        <div class="flex justify-end gap-x-3">
+          <button
+            v-show="JSON.stringify(group.drivers) != JSON.stringify(groupOriginal.drivers)"
+            type="submit"
+            id="driver-submit-btn"
+            class="btn btn-secondary px-2"
+          >
+            <font-awesome-icon icon="fa-solid fa-floppy-disk" />
+          </button>
+
+          <button type="button" class="btn btn-primary px-2" @click="inputModal?.show()">
+            <font-awesome-icon icon="fa-regular fa-square-plus" />
+          </button>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- <div class="flex flex-col gap-y-4">
       <label class="block text-sm font-medium text-gray-900">
         {{ $t('driverForm.driver') }}
       </label>
@@ -251,21 +342,19 @@ function handleSubmit(event: SubmitEvent) {
           <font-awesome-icon icon="fa-regular fa-square-plus" />
         </button>
       </div>
-    </div>
+    </div> -->
 
     <div class="flex h-8 gap-x-5">
       <button
         type="button"
-        class="w-full text-sm font-medium text-white bg-gray-400 hover:bg-gray-300 rounded-lg"
+        class="grow btn"
+        style="--btn-color: var(--color-gray-100)"
         @click="$router.back()"
       >
         {{ $t('common.back') }}
       </button>
 
-      <button
-        type="submit"
-        class="w-full text-sm font-medium text-white bg-half-baked-600 hover:bg-half-baked-500 rounded-lg"
-      >
+      <button type="submit" class="grow btn btn-secondary">
         {{ $t('common.save') }}
       </button>
     </div>
@@ -292,8 +381,8 @@ function handleSubmit(event: SubmitEvent) {
 </template>
 
 <style scoped>
-label:has(+ input:required, + select:required):after,
-label:has(+ div > input:required):after {
+legend:has(+ input:required, + select:required):after,
+legend:has(+ div > input:required):after {
   content: ' *';
   color: red;
 }

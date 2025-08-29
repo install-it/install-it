@@ -18,7 +18,7 @@ defineEmits<{ abort: [] }>()
     <div class="flex items-center w-4/6 ps-1 py-1">
       <!-- status badget -->
       <div class="shrink-0 w-[4.1rem]">
-        <p class="h-6 badge" :class="[`badge-${props.process.status}`]">
+        <p class="h-6 proc-badge" :class="[`proc-badge-${props.process.status}`]">
           <span class="text-sm truncate">
             {{ $t(`status.@${props.process.status}`).toUpperCase() }}
           </span>
@@ -84,7 +84,7 @@ defineEmits<{ abort: [] }>()
       <!-- abort button -->
       <button
         v-show="props.process.status == 'pending' || props.process.status == 'running'"
-        class="ms-auto mx-1 px-1.5 text-sm bg-kashmir-blue-100 rounded-sm"
+        class="ms-auto btn btn-xs font-normal"
         @click="$emit('abort')"
       >
         {{ $t('execute.abort') }}

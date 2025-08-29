@@ -144,12 +144,11 @@ function toastErrMsg(err: string) {
             <div class="flex items-center gap-x-3">
               <h2 class="text-lg font-bold">{{ title }}</h2>
 
-              <p class="h-6 badge" :class="[`badge-${progress?.status}`]">
+              <p class="h-6 proc-badge" :class="[`proc-badge-${progress?.status}`]">
                 <span class="truncate capitalize">{{ $t(`status.${progress?.status}`) }}</span>
               </p>
             </div>
 
-            <ProgressBar :progresses="progress"></ProgressBar>
             <ol class="flex items-center w-full">
               <ProgressNode v-for="(progress, i) in progress?.tasks ?? []" :progress :key="i">
                 <i class="text-xs lg:text-base">
@@ -186,7 +185,7 @@ function toastErrMsg(err: string) {
               <button
                 v-show="progress?.status == 'pending' || progress?.status == 'running'"
                 type="button"
-                class="px-2 py-1 text-white bg-rose-600 rounded-sm"
+                class="btn btn-error"
                 @click="
                   () => {
                     programPorter.Abort().catch(err => $toast.error(err))

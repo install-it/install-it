@@ -1,109 +1,7 @@
 @import 'tailwindcss';
+@plugin "daisyui";
+@import './theme.css';
 @import './components.css';
-
-@theme {
-  --animate-blink-0: blink-0 1s step-start 0s infinite;
-  --animate-blink-50: blink-50 1s step-start 0s infinite;
-  --animate-blink-75: blink-75 1s step-start 0s infinite;
-
-  --color-apple-green-50: #ffffff;
-  --color-apple-green-100: #ffffff;
-  --color-apple-green-200: #ffffff;
-  --color-apple-green-300: #ffffff;
-  --color-apple-green-400: #fcfefd;
-  --color-apple-green-500: #dff2eb;
-  --color-apple-green-600: #b7e2d2;
-  --color-apple-green-700: #8fd2b9;
-  --color-apple-green-800: #67c1a0;
-  --color-apple-green-900: #46ab86;
-  --color-apple-green-950: #3d9776;
-  --color-apple-green: #dff2eb;
-
-  --color-powder-blue-50: #ffffff;
-  --color-powder-blue-100: #ffffff;
-  --color-powder-blue-200: #ffffff;
-  --color-powder-blue-300: #f6fcfc;
-  --color-powder-blue-400: #d8f0f2;
-  --color-powder-blue-500: #b9e5e8;
-  --color-powder-blue-600: #8fd5da;
-  --color-powder-blue-700: #65c6cc;
-  --color-powder-blue-800: #3eb3bb;
-  --color-powder-blue-900: #308b91;
-  --color-powder-blue-950: #29777c;
-  --color-powder-blue: #b9e5e8;
-
-  --color-half-baked-50: #ffffff;
-  --color-half-baked-100: #f5f9fc;
-  --color-half-baked-200: #d6e7f1;
-  --color-half-baked-300: #b7d5e7;
-  --color-half-baked-400: #99c4dd;
-  --color-half-baked-500: #7ab2d3;
-  --color-half-baked-600: #509ac5;
-  --color-half-baked-700: #377da6;
-  --color-half-baked-800: #295d7c;
-  --color-half-baked-900: #1b3d52;
-  --color-half-baked-950: #142e3d;
-  --color-half-baked: #7ab2d3;
-
-  --color-kashmir-blue-50: #b5c1d7;
-  --color-kashmir-blue-100: #a7b7d0;
-  --color-kashmir-blue-200: #8da1c2;
-  --color-kashmir-blue-300: #728bb3;
-  --color-kashmir-blue-400: #5875a5;
-  --color-kashmir-blue-500: #4a628a;
-  --color-kashmir-blue-600: #364865;
-  --color-kashmir-blue-700: #232e41;
-  --color-kashmir-blue-800: #0f141c;
-  --color-kashmir-blue-900: #000000;
-  --color-kashmir-blue-950: #000000;
-  --color-kashmir-blue: #4a628a;
-
-  @keyframes blink-0 {
-    50% {
-      opacity: 0;
-    }
-  }
-
-  @keyframes blink-50 {
-    50% {
-      opacity: 0.5;
-    }
-  }
-
-  @keyframes blink-75 {
-    50% {
-      opacity: 0.75;
-    }
-  }
-}
-
-@theme static {
-  --color-pending: var(--color-gray-300);
-  --color-running: var(--color-half-baked-500);
-  --color-aborting: var(--color-yellow-400);
-  --color-aborted: var(--color-yellow-400);
-  --color-skiped: var(--color-gray-300);
-  --color-speeded: var(--color-red-300);
-  --color-failed: var(--color-red-300);
-  --color-completed: var(--color-apple-green-600);
-  --color-broken: var(--color-red-700);
-  --color-display: var(--color-green-100);
-  --color-network: var(--color-blue-100);
-  --color-miscellaneous: var(--color-gray-200);
-  --color-builtin: var(--color-orange-200);
-}
-
-.v-toast {
-  padding: 8px;
-}
-
-.v-toast__item .v-toast__text {
-  padding: 0.5rem 1rem;
-}
-
-.v-toast__item {
-  min-height: 3rem;
-}
 
 @layer base {
   @font-face {
@@ -157,4 +55,16 @@
   input[type='checkbox'] {
     accent-color: var(--color-powder-blue-700);
   }
+}
+
+.v-toast {
+  padding: 8px;
+}
+
+.v-toast__item .v-toast__text {
+  padding: 0.5rem 1rem;
+}
+
+.v-toast__item {
+  min-height: 3rem;
 }
