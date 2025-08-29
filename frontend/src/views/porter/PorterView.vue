@@ -122,70 +122,71 @@ onBeforeMount(() => {
         </div>
       </div>
 
-      <!-- from file -->
-      <div v-if="importInput.from == 'file'" class="flex gap-x-6">
-        <label class="w-24 content-center text-gray-900">
-          {{ t('porter.file') }}
-        </label>
+      <form
+        @submit.prevent="
+          progressModal?.import(
+            importInput.from,
+            importInput.from == 'file' ? importInput.filePath : importInput.url
+          )
+        "
+      >
+        <!-- from file -->
+        <div v-if="importInput.from == 'file'" class="flex gap-x-6">
+          <label class="w-24 content-center text-gray-900">
+            {{ t('porter.file') }}
+          </label>
 
-        <div class="flex gap-x-2 w-full">
-          <input
-            type="url"
-            name="driver_download_url"
-            placeholder="driver-box.zip"
-            v-model="importInput.filePath"
-            class="grow input input-accent"
-            readonly
-          />
+          <div class="flex gap-x-2 w-full">
+            <input
+              type="url"
+              name="driver_download_url"
+              placeholder="driver-box.zip"
+              v-model="importInput.filePath"
+              class="grow input input-accent pointer-events-none"
+              :required="importInput.from == 'file'"
+            />
 
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="
-              () => {
-                SelectFile(false).then(path => {
-                  if (path != '') {
-                    importInput.filePath = path
-                  }
-                })
-              }
-            "
-          >
-            {{ t('common.select') }}
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="
+                () => {
+                  SelectFile(false).then(path => {
+                    if (path != '') {
+                      importInput.filePath = path
+                    }
+                  })
+                }
+              "
+            >
+              {{ t('common.select') }}
+            </button>
+          </div>
+        </div>
+
+        <!-- from url -->
+        <div v-else class="flex gap-x-6">
+          <label class="w-24 content-center text-gray-900">
+            {{ $t('porter.url') }}
+          </label>
+
+          <div class="flex gap-x-2 w-full">
+            <input
+              type="url"
+              placeholder="https://..."
+              v-model="importInput.url"
+              class="grow input input-accent"
+              :required="importInput.from == 'url'"
+            />
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <button type="submit" class="btn btn-secondary mt-3 w-28">
+            {{ $t('porter.import') }}
           </button>
         </div>
-      </div>
-
-      <!-- from url -->
-      <div v-else class="flex gap-x-6">
-        <label class="w-24 content-center text-gray-900">
-          {{ $t('porter.url') }}
-        </label>
-
-        <div class="flex gap-x-2 w-full">
-          <input
-            type="url"
-            placeholder="https://..."
-            v-model="importInput.url"
-            class="grow input input-accent"
-          />
-        </div>
-      </div>
-
-      <div class="flex justify-end">
-        <button
-          type="button"
-          class="btn btn-secondary mt-3 w-28"
-          @click="
-            progressModal?.import(
-              importInput.from,
-              importInput.from == 'file' ? importInput.filePath : importInput.url
-            )
-          "
-        >
-          {{ $t('porter.import') }}
-        </button>
-      </div>
+      </form>
     </div>
   </div>
 
