@@ -281,7 +281,9 @@ const filterGroups = computed(() => {
                       v-model="driver.incompatibles"
                       class="checkbox checkbox-sm checkbox-primary me-1.5"
                     />
-                    <span class="badge badge-builtin me-1">&nbsp;</span>
+                    <span class="badge px-1 me-1" :style="`--badge-color: var(--color-builtin)`">
+                      &nbsp;
+                    </span>
                     <span class="line-clamp-2">
                       {{ $t('installOption.setPassword') }}
                     </span>
@@ -303,7 +305,9 @@ const filterGroups = computed(() => {
                       v-model="driver.incompatibles"
                       class="checkbox checkbox-sm checkbox-primary me-1.5"
                     />
-                    <span class="badge badge-builtin me-1">&nbsp;</span>
+                    <span class="badge px-1 me-1" :style="`--badge-color: var(--color-builtin)`">
+                      &nbsp;
+                    </span>
                     <span class="line-clamp-2">
                       {{ $t('installOption.createPartition') }}
                     </span>
@@ -320,7 +324,13 @@ const filterGroups = computed(() => {
                           v-model="driver.incompatibles"
                           class="checkbox checkbox-sm checkbox-primary me-1.5"
                         />
-                        <span class="badge me-1" :class="[`badge-${g.type}`]">&nbsp;</span>
+                        <span
+                          class="badge px-1 me-1"
+                          :class="[`badge-${g.type}`]"
+                          :style="`--badge-color: var(--color-${g.type})`"
+                        >
+                          &nbsp;
+                        </span>
                         <span class="line-clamp-2">
                           {{ `[${g.name}] ${d.name}` }}
                         </span>

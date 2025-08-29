@@ -127,7 +127,9 @@ watch(driverType, newType => {
       >
         <div class="flex justify-between">
           <p class="my-1 truncate oveflow-x-hidden align-middle">
-            <span class="badge h-4 px-1 me-1" :class="[`badge-${g.type}`]">&nbsp;</span>
+            <span class="badge h-4 px-1 me-1" :style="`--badge-color: var(--color-${g.type})`">
+              &nbsp;
+            </span>
             <span>{{ g.name }}</span>
           </p>
 
