@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import ModalFrame from '@/components/modals/ModalFrame.vue'
 import { SelectFile } from '@/wailsjs/go/main/App'
-import { store } from '@/wailsjs/go/models'
-import * as groupManager from '@/wailsjs/go/store/DriverGroupManager'
+import { storage } from '@/wailsjs/go/models'
+import * as groupManager from '@/wailsjs/go/storage/DriverGroupManager'
 import { computed, nextTick, ref, useTemplateRef } from 'vue'
 
 const frame = useTemplateRef('frame')
 
 defineExpose({
-  show: (data?: Partial<store.Driver>) => {
+  show: (data?: Partial<storage.Driver>) => {
     frame.value?.show()
 
     groupManager.Read().then(g => (groups.value = g))
@@ -31,7 +31,7 @@ defineExpose({
   hide: frame.value?.hide || (() => {})
 })
 
-defineEmits<{ submit: [dri: store.Driver] }>()
+defineEmits<{ submit: [dri: storage.Driver] }>()
 
 const FLAGS = {
   'Intel LAN': ['/s'],
@@ -45,14 +45,14 @@ const FLAGS = {
   'AMD Chipset': ['/S']
 }
 
-const groups = ref<Array<store.DriverGroup>>([])
+const groups = ref<Array<storage.DriverGroup>>([])
 
 const modalBody = useTemplateRef<HTMLDivElement>('modalBody')
 
 const searchPhrase = ref('')
 
 const driver = ref<
-  Partial<Omit<store.Driver, 'allowRtCodes' | 'flags'> & { allowRtCodes: string; flags: string }>
+  Partial<Omit<storage.Driver, 'allowRtCodes' | 'flags'> & { allowRtCodes: string; flags: string }>
 >({})
 
 const filterGroups = computed(() => {
@@ -95,7 +95,7 @@ const filterGroups = computed(() => {
               _ => {
                 $emit(
                   'submit',
-                  new store.Driver({
+                  new storage.Driver({
                     ...driver,
                     flags: driver.flags ? driver.flags.split(',') : [],
                     allowRtCodes: driver.allowRtCodes

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import UnsaveConfirmModal from '@/components/modals/UnsaveConfirmModal.vue'
 import { getNotExistDrivers } from '@/utils/index'
-import { store } from '@/wailsjs/go/models'
-import * as groupManager from '@/wailsjs/go/store/DriverGroupManager'
+import { storage } from '@/wailsjs/go/models'
+import * as groupManager from '@/wailsjs/go/storage/DriverGroupManager'
 import { onBeforeMount, ref, toRaw, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
@@ -23,11 +23,11 @@ const inputModal = useTemplateRef('inputModal')
 
 const notExistDrivers = ref<Array<string>>([])
 
-const group = ref<store.DriverGroup>(
-  new store.DriverGroup({
+const group = ref<storage.DriverGroup>(
+  new storage.DriverGroup({
     type:
-      store.DriverType[
-        $route.query.type?.toString().toUpperCase() as keyof typeof store.DriverType
+      storage.DriverType[
+        $route.query.type?.toString().toUpperCase() as keyof typeof storage.DriverType
       ] ?? undefined,
     name: $route.query.name ?? '',
     drivers: []
@@ -35,7 +35,7 @@ const group = ref<store.DriverGroup>(
 )
 
 /** A clone of the `group` variable */
-let groupOriginal: store.DriverGroup = structuredClone(toRaw(group.value))
+let groupOriginal: storage.DriverGroup = structuredClone(toRaw(group.value))
 
 onBeforeMount(() => {
   groupManager
@@ -133,7 +133,7 @@ function handleSubmit(event: SubmitEvent) {
           <legend class="fieldset-legend text-sm">{{ $t('driverForm.type') }}</legend>
 
           <select name="type" v-model="group.type" class="w-full select select-accent" required>
-            <option v-for="type in store.DriverType" :key="type" :value="type">
+            <option v-for="type in storage.DriverType" :key="type" :value="type">
               {{ $t(`driverCatetory.${type}`) }}
             </option>
           </select>

@@ -2,7 +2,7 @@
 import { onBeforeMount, ref, useTemplateRef } from 'vue'
 
 import { Cwd, SelectFile, SelectFolder } from '@/wailsjs/go/main/App'
-import * as appManager from '@/wailsjs/go/store/AppSettingManager'
+import * as appManager from '@/wailsjs/go/storage/AppSettingManager'
 import { useI18n } from 'vue-i18n'
 import DownloadProgressModal from './components/ProgressModal.vue'
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ExecutableExists } from '@/wailsjs/go/main/App'
-import { store } from '@/wailsjs/go/models'
-import * as groupManger from '@/wailsjs/go/store/DriverGroupManager'
+import { storage } from '@/wailsjs/go/models'
+import * as groupManger from '@/wailsjs/go/storage/DriverGroupManager'
 import { onBeforeMount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
@@ -16,11 +16,12 @@ const $route = useRoute()
 const $toast = useToast({ position: 'top-right' })
 
 const driverType = ref(
-  store.DriverType[$route.query.type?.toString().toUpperCase() as keyof typeof store.DriverType] ??
-    store.DriverType.NETWORK
+  storage.DriverType[
+    $route.query.type?.toString().toUpperCase() as keyof typeof storage.DriverType
+  ] ?? storage.DriverType.NETWORK
 )
 
-const groups = ref<Array<store.DriverGroup>>([])
+const groups = ref<Array<storage.DriverGroup>>([])
 
 /** driver ID of drivers that the executable cannot be found */
 const notExistDrivers = ref<Array<string>>([])
@@ -57,7 +58,7 @@ watch(driverType, newType => {
   <div class="flex flex-col h-full gap-y-2">
     <div class="flex flex-row gap-x-3 list-none text-center">
       <button
-        v-for="type in store.DriverType"
+        v-for="type in storage.DriverType"
         :key="type"
         class="w-full py-3 text-xs font-bold uppercase shadow-lg rounded-sm"
         :class="{

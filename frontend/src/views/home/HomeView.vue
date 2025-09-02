@@ -2,9 +2,9 @@
 import { getNotExistDrivers } from '@/utils'
 import CommandStatueModal from '@/views/home/components/CommandStatusModal.vue'
 import * as executor from '@/wailsjs/go/execute/CommandExecutor'
-import { store, sysinfo } from '@/wailsjs/go/models'
-import * as appManager from '@/wailsjs/go/store/AppSettingManager'
-import * as groupManager from '@/wailsjs/go/store/DriverGroupManager'
+import { storage, sysinfo } from '@/wailsjs/go/models'
+import * as appManager from '@/wailsjs/go/storage/AppSettingManager'
+import * as groupManager from '@/wailsjs/go/storage/DriverGroupManager'
 import * as sysinfoqy from '@/wailsjs/go/sysinfo/SysInfo'
 import { onBeforeMount, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -19,12 +19,12 @@ const statusModal = useTemplateRef('statusModal')
 
 const form = useTemplateRef('form')
 
-const groups = ref<Array<store.DriverGroup>>([])
+const groups = ref<Array<storage.DriverGroup>>([])
 
 /** driver ID of drivers that the executable cannot be found */
 const notExistDrivers = ref<Array<string>>([])
 
-const settings = ref<store.AppSetting>(new store.AppSetting())
+const settings = ref<storage.AppSetting>(new storage.AppSetting())
 
 const hwinfos = ref<{
   motherboard: Array<sysinfo.Win32_BaseBoard>
@@ -362,7 +362,7 @@ async function handleSubmit() {
             v-model="settings.success_action"
             class="select select-accent w-full"
           >
-            <option v-for="action in store.SuccessAction" :key="action" :value="action">
+            <option v-for="action in storage.SuccessAction" :key="action" :value="action">
               {{ $t(`successAction.${action}`) }}
             </option>
           </select>

@@ -5,7 +5,7 @@ import (
 	"driver-box/pkg/execute"
 	"driver-box/pkg/porter"
 	"driver-box/pkg/status"
-	"driver-box/pkg/store"
+	"driver-box/pkg/storage"
 	"driver-box/pkg/sysinfo"
 	"embed"
 	"os"
@@ -103,28 +103,28 @@ func main() {
 		Bind: []interface{}{
 			app,
 			mgt,
-			&store.DriverGroupManager{Path: filepath.Join(dirConf, "groups.json")},
-			&store.AppSettingManager{Path: filepath.Join(dirConf, "setting.json")},
+			&storage.DriverGroupManager{Path: filepath.Join(dirConf, "groups.json")},
+			&storage.AppSettingManager{Path: filepath.Join(dirConf, "setting.json")},
 			&porter.Porter{DirRoot: dirRoot, Message: make(chan string, 512), Targets: []string{dirConf, dirDir}},
 			&sysinfo.SysInfo{},
 		},
 		EnumBind: []interface{}{
 			[]struct {
-				Value  store.DriverType
+				Value  storage.DriverType
 				TSName string
 			}{
-				{store.Network, "NETWORK"},
-				{store.Display, "DISPLAY"},
-				{store.Miscellaneous, "MISCELLANEOUS"},
+				{storage.Network, "NETWORK"},
+				{storage.Display, "DISPLAY"},
+				{storage.Miscellaneous, "MISCELLANEOUS"},
 			},
 			[]struct {
-				Value  store.SuccessAction
+				Value  storage.SuccessAction
 				TSName string
 			}{
-				{store.Nothing, "NOTHING"},
-				{store.Reboot, "REBOOT"},
-				{store.Shutdown, "SHUTDOWN"},
-				{store.Firmware, "FIRMWARE"},
+				{storage.Nothing, "NOTHING"},
+				{storage.Reboot, "REBOOT"},
+				{storage.Shutdown, "SHUTDOWN"},
+				{storage.Firmware, "FIRMWARE"},
 			},
 			[]struct {
 				Value  status.Status

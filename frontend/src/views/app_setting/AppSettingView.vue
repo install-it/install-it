@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import UnsaveConfirmModal from '@/components/modals/UnsaveConfirmModal.vue'
-import { store } from '@/wailsjs/go/models'
-import * as appManager from '@/wailsjs/go/store/AppSettingManager'
+import { storage } from '@/wailsjs/go/models'
+import * as appManager from '@/wailsjs/go/storage/AppSettingManager'
 import { onBeforeMount, ref, toRaw, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
@@ -16,9 +16,9 @@ const tabKeys = ['softwareSetting', 'defaultInstallSetting', 'displaySetting'] a
 
 const currentTab = ref<(typeof tabKeys)[number]>(tabKeys[0])
 
-const settings = ref<store.AppSetting>(new store.AppSetting())
+const settings = ref<storage.AppSetting>(new storage.AppSetting())
 
-let settingsOriginal: store.AppSetting
+let settingsOriginal: storage.AppSetting
 
 onBeforeMount(() => {
   appManager
@@ -206,7 +206,7 @@ function handleSubmit() {
               v-model="settings.success_action"
               class="select select-accent"
             >
-              <option v-for="action in store.SuccessAction" :key="action" :value="action">
+              <option v-for="action in storage.SuccessAction" :key="action" :value="action">
                 {{ $t(`successAction.${action}`) }}
               </option>
             </select>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { AppVersion } from '@/wailsjs/go/main/App'
-import * as app_manager from '@/wailsjs/go/store/AppSettingManager'
+import * as app_manager from '@/wailsjs/go/storage/AppSettingManager'
 import { onBeforeMount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { RouteLocationRaw } from 'vue-router'
