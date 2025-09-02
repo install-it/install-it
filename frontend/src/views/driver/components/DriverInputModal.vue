@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import ModalFrame from '@/components/modals/ModalFrame.vue'
-import { flags } from '@/definitions/flags'
 import { SelectFile } from '@/wailsjs/go/main/App'
 import { store } from '@/wailsjs/go/models'
 import * as groupManager from '@/wailsjs/go/store/DriverGroupManager'
@@ -33,6 +32,18 @@ defineExpose({
 })
 
 defineEmits<{ submit: [dri: store.Driver] }>()
+
+const FLAGS = {
+  'Intel LAN': ['/s'],
+  'Realtek LAN': ['-s'],
+  'Nvidia Display': ['-s', '-noreboot', 'Display.Driver'],
+  'AMD Display': ['-install'],
+  'Intel Display': ['-s', '--noExtras'],
+  'Intel Wifi': ['-q'],
+  'Intel BT': ['/quiet', '/norestart'],
+  'Intel Chipset': ['-s', '-norestart'],
+  'AMD Chipset': ['/S']
+}
 
 const groups = ref<Array<store.DriverGroup>>([])
 
@@ -154,7 +165,7 @@ const filterGroups = computed(() => {
                 >
                   <option value="">{{ $t('driverForm.manualInput') }}</option>
                   <option
-                    v-for="(flag, name) in flags"
+                    v-for="(flag, name) in FLAGS"
                     :key="name"
                     :value="flag.join(',')"
                     :selected="driver.flags === flag.join()"
