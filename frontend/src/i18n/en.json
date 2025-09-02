@@ -161,6 +161,7 @@
     "cancelFailed": "[{name}] Failed to abort.",
     "checkUpdateFailed": "Unable to check update due to unable to retrieve version info.",
     "downloadingUpdater": "Downloading the updater. Upon finished, the software will be closed and updated.",
+    "failedToSave": "Failed to save.",
     "finished": "Finished",
     "noInputWarning": "Please select a driver or task first.",
     "noUpdate": "No Update.",

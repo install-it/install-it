@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import UnsaveConfirmModal from '@/components/modals/UnsaveConfirmModal.vue'
+import { useAppSettingStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
-import * as appManager from '@/wailsjs/go/storage/AppSettingManager'
-import { onBeforeMount, ref, toRaw, useTemplateRef } from 'vue'
+import { ref, toRaw, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
 
@@ -16,31 +16,18 @@ const tabKeys = ['softwareSetting', 'defaultInstallSetting', 'displaySetting'] a
 
 const currentTab = ref<(typeof tabKeys)[number]>(tabKeys[0])
 
-const settings = ref<storage.AppSetting>(new storage.AppSetting())
-
-let settingsOriginal: storage.AppSetting
-
-onBeforeMount(() => {
-  appManager
-    .Read()
-    .then(s => {
-      settings.value = s
-      settingsOriginal = structuredClone(s)
-    })
-    .catch(() => {
-      $toast.error(t('toast.readAppSettingFailed'))
-    })
-})
+const settingStore = useAppSettingStore()
 
 function handleTabClick(key: (typeof tabKeys)[number]) {
-  if (JSON.stringify(settings.value) == JSON.stringify(settingsOriginal)) {
+  console.table(toRaw(settingStore.settings))
+  console.table(toRaw(settingStore.settingOriginal))
+  if (JSON.stringify(settingStore.settings) == JSON.stringify(settingStore.settingOriginal)) {
     currentTab.value = key
     return
   }
 
   questionModal.value?.show(answer => {
     if (answer == 'yes') {
-      settings.value = structuredClone(settingsOriginal)
       currentTab.value = key
     }
     questionModal.value?.hide()
@@ -48,12 +35,15 @@ function handleTabClick(key: (typeof tabKeys)[number]) {
 }
 
 function handleSubmit() {
-  appManager.Update(settings.value).then(() => {
-    locale.value = settings.value.language
-    settingsOriginal = structuredClone(toRaw(settings.value))
-
-    $toast.success(t('toast.updated'), { duration: 1500, position: 'top-right' })
-  })
+  settingStore
+    .write()
+    .then(() => {
+      locale.value = settingStore.settings.language
+      $toast.success(t('toast.saved'), { duration: 1500, position: 'top-right' })
+    })
+    .catch(() => {
+      $toast.error(t('toast.failedToSave'), { duration: 1500, position: 'top-right' })
+    })
 }
 </script>
 
@@ -90,7 +80,7 @@ function handleSubmit() {
               <input
                 type="checkbox"
                 name="auto_check_update"
-                v-model="settings.auto_check_update"
+                v-model="settingStore.settings.auto_check_update"
                 class="checkbox checkbox-primary me-1.5"
               />
               {{ $t('common.enable') }}
@@ -107,7 +97,7 @@ function handleSubmit() {
               name="success_action_delay"
               min="0"
               step="0"
-              v-model="settings.success_action_delay"
+              v-model="settingStore.settings.success_action_delay"
               class="w-20 input input-accent shadow-xs"
               required
             />
@@ -126,7 +116,7 @@ function handleSubmit() {
             <input
               type="url"
               name="driver_download_url"
-              v-model="settings.driver_download_url"
+              v-model="settingStore.settings.driver_download_url"
               class="w-full input input-accent shadow-xs"
             />
           </div>
@@ -146,7 +136,7 @@ function handleSubmit() {
               <input
                 type="checkbox"
                 name="create_partition"
-                v-model="settings.create_partition"
+                v-model="settingStore.settings.create_partition"
                 class="checkbox checkbox-primary me-1.5"
               />
               {{ $t('installOption.createPartition') }}
@@ -159,7 +149,7 @@ function handleSubmit() {
                 <input
                   type="checkbox"
                   name="set_password"
-                  v-model="settings.set_password"
+                  v-model="settingStore.settings.set_password"
                   class="checkbox checkbox-primary me-1.5"
                 />
                 {{ $t('installOption.setPassword') }}
@@ -170,9 +160,9 @@ function handleSubmit() {
               <input
                 type="text"
                 name="password"
-                v-model="settings.password"
+                v-model="settingStore.settings.password"
                 class="input input-accent"
-                :disabled="!settings.set_password"
+                :disabled="!settingStore.settings.set_password"
               />
             </div>
           </div>
@@ -190,7 +180,7 @@ function handleSubmit() {
               <input
                 type="checkbox"
                 name="parallel_install"
-                v-model="settings.parallel_install"
+                v-model="settingStore.settings.parallel_install"
                 class="checkbox checkbox-primary me-1.5"
               />
               {{ $t('installOption.parallelInstall') }}
@@ -203,7 +193,7 @@ function handleSubmit() {
             </label>
             <select
               name="success_action"
-              v-model="settings.success_action"
+              v-model="settingStore.settings.success_action"
               class="select select-accent"
             >
               <option v-for="action in storage.SuccessAction" :key="action" :value="action">
@@ -222,7 +212,11 @@ function handleSubmit() {
         </p>
 
         <div>
-          <select name="language" v-model="settings.language" class="select select-accent">
+          <select
+            name="language"
+            v-model="settingStore.settings.language"
+            class="select select-accent"
+          >
             <option value="en">English</option>
             <option value="zh_Hant_HK">繁體中文</option>
           </select>
@@ -240,7 +234,7 @@ function handleSubmit() {
               <input
                 type="checkbox"
                 name="filter_miniport_nic"
-                v-model="settings.filter_miniport_nic"
+                v-model="settingStore.settings.filter_miniport_nic"
                 class="checkbox checkbox-primary me-1.5"
               />
               {{ $t('setting.filterMiniportNic') }}
@@ -254,7 +248,7 @@ function handleSubmit() {
               <input
                 type="checkbox"
                 name="filter_microsoft_nic"
-                v-model="settings.filter_microsoft_nic"
+                v-model="settingStore.settings.filter_microsoft_nic"
                 class="checkbox checkbox-primary me-1.5"
               />
               {{ $t('setting.filterMicorsoftNic') }}

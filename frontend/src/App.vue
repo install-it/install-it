@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { useAppSettingStore } from '@/store'
 import { AppVersion } from '@/wailsjs/go/main/App'
-import * as app_manager from '@/wailsjs/go/storage/AppSettingManager'
 import { onBeforeMount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { RouteLocationRaw } from 'vue-router'
@@ -17,20 +17,29 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
   { to: '/app-info', icon: 'fa-solid fa-info' }
 ]
 
-onBeforeMount(() => {
-  app_manager.Read().then(s => {
-    locale.value = s.language
+const $toast = useToast({ position: 'top-right' })
 
-    if (s.auto_check_update) {
-      AppVersion().then(version =>
-        latestRelease(version).then(release => {
-          if (release.hasUpdate) {
-            useToast({ position: 'top-right' }).info(t('toast.updateAvailable'))
-          }
-        })
-      )
-    }
-  })
+const settingsStore = useAppSettingStore()
+
+onBeforeMount(() => {
+  settingsStore
+    .read()
+    .then(() => {
+      locale.value = settingsStore.settings.language
+
+      if (settingsStore.settings.auto_check_update) {
+        AppVersion().then(version =>
+          latestRelease(version).then(release => {
+            if (release.hasUpdate) {
+              $toast.info(t('toast.updateAvailable'))
+            }
+          })
+        )
+      }
+    })
+    .catch(() => {
+      $toast.error(t('toast.readAppSettingFailed'))
+    })
 })
 </script>
 
