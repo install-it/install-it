@@ -30,7 +30,7 @@ const inProgress = computed(
         class="text-xs lg:text-sm absolute -top-4.5 lg:-top-5.5 truncate w-full px-1"
         :class="{ 'text-gray-400': !inProgress }"
       >
-        {{ progress.name }}
+        {{ $t(`porter.${progress.name}`) }}
       </span>
 
       <div class="w-full h-1.5 lg:h-2 bg-gray-100">
