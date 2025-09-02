@@ -21,6 +21,7 @@
     "@fortawesome/vue-fontawesome": "^3.1.1",
     "async-lock": "^1.4.1",
     "marked": "^16.2.0",
+    "pinia": "^3.0.3",
     "semver": "^7.7.2",
     "vue": "^3.5.18",
     "vue-i18n": "^11.1.11",
