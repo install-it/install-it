@@ -57,6 +57,7 @@ onBeforeMount(() => {
               :to="link.to"
               class="flex p-2 rounded-lg hover:bg-gray-200"
               activeClass="text-apple-green-900 bg-powder-blue-400"
+              draggable="false"
             >
               <font-awesome-icon :icon="link.icon" />
             </RouterLink>

@@ -21,6 +21,7 @@ const reordering = ref(false)
           'text-half-baked-600 bg-white': $route.query.type !== type,
           'text-white bg-half-baked-600': $route.query.type === type
         }"
+        draggable="false"
       >
         {{ $t(`driverCatetory.${type}`) }}
       </router-link>
