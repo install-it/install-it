@@ -2,69 +2,73 @@
 import UnsaveConfirmModal from '@/components/modals/UnsaveConfirmModal.vue'
 import { useAppSettingStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
-import { ref, toRaw, useTemplateRef } from 'vue'
+import { ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useToast } from 'vue-toast-notification'
+import { onBeforeRouteLeave } from 'vue-router'
 
-const { t, locale } = useI18n()
-
-const $toast = useToast({ position: 'top-right' })
+const { locale } = useI18n()
 
 const questionModal = useTemplateRef('questionModal')
 
-const tabKeys = ['softwareSetting', 'defaultInstallSetting', 'displaySetting'] as const
-
-const currentTab = ref<(typeof tabKeys)[number]>(tabKeys[0])
+const tabs = ref({ softwareSetting: true, defaultInstallSetting: false, displaySetting: false })
 
 const settingStore = useAppSettingStore()
 
-function handleTabClick(key: (typeof tabKeys)[number]) {
-  console.table(toRaw(settingStore.settings))
-  console.table(toRaw(settingStore.settingOriginal))
-  if (JSON.stringify(settingStore.settings) == JSON.stringify(settingStore.settingOriginal)) {
-    currentTab.value = key
-    return
-  }
-
-  questionModal.value?.show(answer => {
-    if (answer == 'yes') {
-      currentTab.value = key
-    }
-    questionModal.value?.hide()
-  })
-}
-
-function handleSubmit() {
-  settingStore
-    .write()
-    .then(() => {
-      locale.value = settingStore.settings.language
-      $toast.success(t('toast.saved'), { duration: 1500, position: 'top-right' })
-    })
-    .catch(() => {
-      $toast.error(t('toast.failedToSave'), { duration: 1500, position: 'top-right' })
-    })
-}
+onBeforeRouteLeave((to, from, next) => {
+  settingStore.restore()
+  next()
+})
 </script>
 
 <template>
-  <form class="flex flex-col h-full gap-y-3" @submit.prevent="handleSubmit()">
+  <form
+    class="flex flex-col h-full gap-y-3"
+    @submit.prevent="
+      () => {
+        settingStore
+          .write()
+          .then(() => {
+            locale = settingStore.settings.language
+            $toast.success($t('toast.saved'), { duration: 1500, position: 'top-right' })
+          })
+          .catch(() => {
+            $toast.error($t('toast.failedToSave'), { duration: 1500, position: 'top-right' })
+          })
+      }
+    "
+  >
     <div class="flex items-center border-b-2">
       <button
-        v-for="key in tabKeys"
+        v-for="key in Object.keys(tabs)"
         :key="key"
         type="button"
         class="px-4 py-2"
         :class="
-          currentTab == key ? 'font-semibold border-b-2 border-b-kashmir-blue-500 -mb-[2px]' : ''
+          tabs[key as keyof typeof tabs]
+            ? 'font-semibold border-b-2 border-b-kashmir-blue-500 -mb-[2px]'
+            : ''
         "
-        @click="() => handleTabClick(key)"
+        @click="
+          () => {
+            if (!settingStore.modified) {
+              Object.keys(tabs).forEach(k => (tabs[k as keyof typeof tabs] = k == key))
+            } else {
+              questionModal?.show(answer => {
+                if (answer == 'yes') {
+                  settingStore.restore()
+                  Object.keys(tabs).forEach(k => (tabs[k as keyof typeof tabs] = k == key))
+                }
+                questionModal?.hide()
+              })
+            }
+          }
+        "
       >
         {{ $t(`setting.${key}`) }}
       </button>
     </div>
 
-    <div v-show="currentTab == 'softwareSetting'" class="flex flex-col gap-y-3">
+    <div v-show="tabs.softwareSetting" class="flex flex-col gap-y-3">
       <section>
         <p class="font-bold mb-2">
           {{ $t('setting.generalSetting') }}
@@ -124,7 +128,7 @@ function handleSubmit() {
       </section>
     </div>
 
-    <div v-show="currentTab == 'defaultInstallSetting'" class="flex flex-col gap-y-3">
+    <div v-show="tabs.defaultInstallSetting" class="flex flex-col gap-y-3">
       <section>
         <p class="font-bold mb-2">
           {{ $t('setting.task') }}
@@ -205,7 +209,7 @@ function handleSubmit() {
       </section>
     </div>
 
-    <div v-show="currentTab == 'displaySetting'" class="flex flex-col gap-y-3">
+    <div v-show="tabs.displaySetting" class="flex flex-col gap-y-3">
       <section>
         <p class="font-bold mb-2">
           {{ $t('setting.language') }}

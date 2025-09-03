@@ -1,30 +1,32 @@
 import { storage } from '@/wailsjs/go/models'
 import * as appManager from '@/wailsjs/go/storage/AppSettingManager'
 import { defineStore } from 'pinia'
-import { readonly, ref, toRaw } from 'vue'
+import { computed, ref, toRaw } from 'vue'
 
 export const useAppSettingStore = defineStore('appSetting', () => {
   const loading = ref(false)
+
   const settings = ref<storage.AppSetting>(new storage.AppSetting())
-  const settingOriginal = ref(settings.value)
+  const original = ref(structuredClone(toRaw(settings.value)))
 
   return {
     loading,
     settings,
-    settingOriginal: readonly(settingOriginal),
+    modified: computed(() => JSON.stringify(original.value) !== JSON.stringify(settings.value)),
+    restore: () => (settings.value = structuredClone(toRaw(original.value))),
     read: async () => {
       loading.value = true
       return appManager
         .Read()
         .then(s => {
           settings.value = s
-          settingOriginal.value = structuredClone(s)
+          original.value = structuredClone(s)
         })
         .finally(() => (loading.value = false))
     },
     write: () =>
       appManager
         .Update(settings.value)
-        .then(() => (settingOriginal.value = structuredClone(toRaw(settings.value))))
+        .then(() => (original.value = structuredClone(toRaw(settings.value))))
   }
 })
