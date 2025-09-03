@@ -38,7 +38,6 @@ export const useDriverGroupStore = defineStore('driverGroup', () => {
 
   const groups = ref<storage.DriverGroup[]>([])
   const notFoundDrivers = ref<Array<string>>([])
-  const original = ref<storage.DriverGroup[]>(structuredClone(toRaw(groups.value)))
 
   watch(
     groups,
@@ -60,17 +59,12 @@ export const useDriverGroupStore = defineStore('driverGroup', () => {
   return {
     loading,
     groups,
-    modified: computed(() => JSON.stringify(original.value) !== JSON.stringify(groups.value)),
-    restore: () => (groups.value = structuredClone(toRaw(original.value))),
     notFoundDrivers,
     read: async () => {
       loading.value = true
       return groupManger
         .Read()
-        .then(g => {
-          groups.value = g
-          original.value = structuredClone(g)
-        })
+        .then(g => (groups.value = g))
         .finally(() => (loading.value = false))
     }
   }

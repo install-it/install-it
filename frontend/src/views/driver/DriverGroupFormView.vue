@@ -33,14 +33,15 @@ const group = ref<storage.DriverGroup>(
     })
 )
 
-/** A clone of the `group` variable */
 const groupOriginal: storage.DriverGroup = structuredClone(toRaw(group.value))
 
 onBeforeRouteLeave((to, from, next) => {
-  if (groupStore.modified) {
+  if (JSON.stringify(group.value) != JSON.stringify(groupOriginal)) {
     questionModal.value?.show(answer => {
       if (answer == 'yes') {
-        groupStore.restore()
+        groupStore.groups = groupStore.groups.map(g =>
+          g.id == groupOriginal.id ? groupOriginal : g
+        )
         next(true)
       }
     })
