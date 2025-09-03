@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { useAppSettingStore } from '@/store'
 import { getNotExistDrivers } from '@/utils'
 import CommandStatueModal from '@/views/home/components/CommandStatusModal.vue'
 import * as executor from '@/wailsjs/go/execute/CommandExecutor'
 import { storage, sysinfo } from '@/wailsjs/go/models'
-import * as appManager from '@/wailsjs/go/storage/AppSettingManager'
 import * as groupManager from '@/wailsjs/go/storage/DriverGroupManager'
 import * as sysinfoqy from '@/wailsjs/go/sysinfo/SysInfo'
 import { onBeforeMount, ref, useTemplateRef } from 'vue'
@@ -24,7 +24,7 @@ const groups = ref<Array<storage.DriverGroup>>([])
 /** driver ID of drivers that the executable cannot be found */
 const notExistDrivers = ref<Array<string>>([])
 
-const settings = ref<storage.AppSetting>(new storage.AppSetting())
+const settingStore = useAppSettingStore()
 
 const hwinfos = ref<{
   motherboard: Array<sysinfo.Win32_BaseBoard>
@@ -36,13 +36,6 @@ const hwinfos = ref<{
 } | null>(null)
 
 onBeforeMount(() => {
-  appManager
-    .Read()
-    .then(s => (settings.value = s))
-    .catch(() => {
-      $toast.error(t('toast.readAppSettingFailed'))
-    })
-
   groupManager
     .Read()
     .then(g => {
@@ -85,7 +78,7 @@ async function handleSubmit() {
   const inputs = new FormData(form.value)
   const commands: Array<Command> = []
 
-  if (settings.value.set_password) {
+  if (settingStore.settings.set_password) {
     commands.push({
       id: 'set_password',
       groupName: t('task.setPassword'),
@@ -96,9 +89,9 @@ async function handleSubmit() {
           'Hidden',
           '-Command',
           `Set-LocalUser -Name $Env:UserName -Password ${
-            settings.value.password == ''
+            settingStore.settings.password == ''
               ? '(new-object System.Security.SecureString)'
-              : `(ConvertTo-SecureString ${settings.value.password} -AsPlainText -Force)`
+              : `(ConvertTo-SecureString ${settingStore.settings.password} -AsPlainText -Force)`
           }`
         ],
         minExeTime: 0.5,
@@ -108,7 +101,7 @@ async function handleSubmit() {
     })
   }
 
-  if (settings.value.create_partition) {
+  if (settingStore.settings.create_partition) {
     commands.push({
       id: 'create_partition',
       groupName: t('task.createPartitions'),
@@ -155,7 +148,7 @@ async function handleSubmit() {
     return
   }
 
-  statusModal.value?.show(settings.value.parallel_install, commands)
+  statusModal.value?.show(settingStore.settings.parallel_install, commands)
 }
 </script>
 
@@ -207,13 +200,13 @@ async function handleSubmit() {
             v-for="(dp, i) in hwinfos.nic
               .filter(
                 n =>
-                  !settings.filter_miniport_nic ||
-                  (settings.filter_miniport_nic && !n.Name.includes('Miniport'))
+                  !settingStore.settings.filter_miniport_nic ||
+                  (settingStore.settings.filter_miniport_nic && !n.Name.includes('Miniport'))
               )
               .filter(
                 n =>
-                  !settings.filter_microsoft_nic ||
-                  (settings.filter_microsoft_nic && !n.Name.includes('Microsoft'))
+                  !settingStore.settings.filter_microsoft_nic ||
+                  (settingStore.settings.filter_microsoft_nic && !n.Name.includes('Microsoft'))
               )"
             :key="i"
             class="text-sm"
@@ -312,7 +305,7 @@ async function handleSubmit() {
               <input
                 type="checkbox"
                 name="create_partition"
-                v-model="settings.create_partition"
+                v-model="settingStore.settings.create_partition"
                 class="checkbox checkbox-sm checkbox-primary"
               />
               {{ $t('installOption.createPartition') }}
@@ -322,7 +315,7 @@ async function handleSubmit() {
               <input
                 type="checkbox"
                 name="parallel_install"
-                v-model="settings.parallel_install"
+                v-model="settingStore.settings.parallel_install"
                 class="checkbox checkbox-sm checkbox-primary"
               />
               {{ $t('installOption.parallelInstall') }}
@@ -334,7 +327,7 @@ async function handleSubmit() {
               <input
                 type="checkbox"
                 name="set_password"
-                v-model="settings.set_password"
+                v-model="settingStore.settings.set_password"
                 class="checkbox checkbox-sm checkbox-primary"
               />
               {{ $t('installOption.setPassword') }}
@@ -343,9 +336,9 @@ async function handleSubmit() {
             <input
               type="text"
               name="password"
-              v-model="settings.password"
+              v-model="settingStore.settings.password"
               class="max-w-28 input input-sm input-accent"
-              :disabled="!settings.set_password"
+              :disabled="!settingStore.settings.set_password"
             />
           </div>
         </div>
@@ -359,7 +352,7 @@ async function handleSubmit() {
 
           <select
             name="success_action"
-            v-model="settings.success_action"
+            v-model="settingStore.settings.success_action"
             class="select select-accent w-full"
           >
             <option v-for="action in storage.SuccessAction" :key="action" :value="action">
@@ -375,7 +368,7 @@ async function handleSubmit() {
             @click="
               () => {
                 form?.reset()
-                appManager.Read().then(s => (settings = s))
+                settingStore.restore()
               }
             "
           >
@@ -393,18 +386,18 @@ async function handleSubmit() {
     ref="statusModal"
     @completed="
       () => {
-        switch (settings.success_action) {
+        switch (settingStore.settings.success_action) {
           case 'shutdown':
             executor.RunAndOutput(
               'cmd',
-              ['/C', `shutdown /s /t ${settings.success_action_delay}`],
+              ['/C', `shutdown /s /t ${settingStore.settings.success_action_delay}`],
               true
             )
             break
           case 'reboot':
             executor.RunAndOutput(
               'cmd',
-              ['/C', `shutdown /r /t ${settings.success_action_delay}`],
+              ['/C', `shutdown /r /t ${settingStore.settings.success_action_delay}`],
               true
             )
             break
@@ -412,7 +405,7 @@ async function handleSubmit() {
             executor
               .RunAndOutput(
                 'cmd',
-                ['/C', `shutdown /r /fw /t ${settings.success_action_delay}`],
+                ['/C', `shutdown /r /fw /t ${settingStore.settings.success_action_delay}`],
                 true
               )
               .then(result => {
@@ -421,7 +414,7 @@ async function handleSubmit() {
                   // execute again normally solve the error
                   executor.RunAndOutput(
                     'cmd',
-                    ['/C', `shutdown /r /fw /t ${settings.success_action_delay}`],
+                    ['/C', `shutdown /r /fw /t ${settingStore.settings.success_action_delay}`],
                     true
                   )
                 }
