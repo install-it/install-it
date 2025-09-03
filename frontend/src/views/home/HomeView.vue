@@ -19,9 +19,6 @@ const form = useTemplateRef('form')
 
 const groups = ref<Array<storage.DriverGroup>>([])
 
-/** driver ID of drivers that the executable cannot be found */
-const notExistDrivers = ref<Array<string>>([])
-
 const settingStore = useAppSettingStore()
 
 const groupStore = useDriverGroupStore()
@@ -234,7 +231,7 @@ async function handleSubmit() {
           <select name="network" class="w-full ps-3 pe-9 pt-5 pb-1 rounded-lg">
             <option>{{ $t('common.pleaseSelect') }}</option>
             <option v-for="d in groups.filter(d => d.type == 'network')" :key="d.id" :value="d.id">
-              {{ `${d.name}${notExistDrivers.includes(d.id) ? ' ⚠' : ''}` }}
+              {{ `${d.name}${groupStore.notFoundDrivers.includes(d.id) ? ' ⚠' : ''}` }}
             </option>
           </select>
         </div>
