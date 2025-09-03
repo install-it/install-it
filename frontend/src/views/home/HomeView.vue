@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { useAppSettingStore } from '@/store'
-import { getNotExistDrivers } from '@/utils'
+import { useAppSettingStore, useDriverGroupStore } from '@/store'
 import CommandStatueModal from '@/views/home/components/CommandStatusModal.vue'
 import * as executor from '@/wailsjs/go/execute/CommandExecutor'
 import { storage, sysinfo } from '@/wailsjs/go/models'
-import * as groupManager from '@/wailsjs/go/storage/DriverGroupManager'
 import * as sysinfoqy from '@/wailsjs/go/sysinfo/SysInfo'
 import { onBeforeMount, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -26,6 +24,8 @@ const notExistDrivers = ref<Array<string>>([])
 
 const settingStore = useAppSettingStore()
 
+const groupStore = useDriverGroupStore()
+
 const hwinfos = ref<{
   motherboard: Array<sysinfo.Win32_BaseBoard>
   cpu: Array<sysinfo.Win32_Processor>
@@ -36,19 +36,6 @@ const hwinfos = ref<{
 } | null>(null)
 
 onBeforeMount(() => {
-  groupManager
-    .Read()
-    .then(g => {
-      groups.value = g
-
-      getNotExistDrivers(groups.value.flatMap(g => g.drivers)).then(result => {
-        notExistDrivers.value = result
-      })
-    })
-    .catch(() => {
-      $toast.error(t('toast.readDriverFailed'))
-    })
-
   Promise.all([
     sysinfoqy.MotherboardInfo(),
     sysinfoqy.CpuInfo(),
@@ -262,7 +249,7 @@ async function handleSubmit() {
           <select name="display" class="w-full ps-3 pe-9 pt-5 pb-1 rounded-lg">
             <option>{{ $t('common.pleaseSelect') }}</option>
             <option v-for="d in groups.filter(d => d.type == 'display')" :key="d.id" :value="d.id">
-              {{ `${d.name}${notExistDrivers.includes(d.id) ? ' ⚠' : ''}` }}
+              {{ `${d.name}${groupStore.notFoundDrivers.includes(d.id) ? ' ⚠' : ''}` }}
             </option>
           </select>
         </div>
@@ -285,7 +272,7 @@ async function handleSubmit() {
                   class="checkbox checkbox-sm checkbox-primary me-1.5"
                   :value="d.id"
                 />
-                {{ `${d.name}${notExistDrivers.includes(d.id) ? ' ⚠' : ''}` }}
+                {{ `${d.name}${groupStore.notFoundDrivers.includes(d.id) ? ' ⚠' : ''}` }}
               </label>
             </template>
           </div>
