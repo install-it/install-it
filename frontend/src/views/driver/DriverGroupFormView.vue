@@ -13,8 +13,6 @@ const { t } = useI18n()
 
 const $route = useRoute()
 
-const $router = useRouter()
-
 const $toast = useToast({ position: 'top-right' })
 
 const questionModal = useTemplateRef('questionModal')
