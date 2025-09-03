@@ -138,7 +138,7 @@ onBeforeMount(() => {
 
           <div class="flex gap-x-2 w-full">
             <input
-              type="url"
+              type="text"
               name="driver_download_url"
               placeholder="driver-box.zip"
               v-model="importInput.filePath"
