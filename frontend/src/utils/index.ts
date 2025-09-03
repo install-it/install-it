@@ -1,9 +1,9 @@
 import { ExecutableExists } from '@/wailsjs/go/main/App'
-import type { store } from '@/wailsjs/go/models'
+import type { storage } from '@/wailsjs/go/models'
 import { marked } from 'marked'
 import * as semver from 'semver'
 
-export function getNotExistDrivers(drivers: Array<store.Driver>) {
+export function getNotExistDrivers(drivers: Array<storage.Driver>) {
   return Promise.all(
     drivers.flatMap(d => ExecutableExists(d.path).then(exist => ({ id: d.id, exist: exist })))
   ).then(results => {

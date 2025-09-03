@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import ModalFrame from '@/components/modals/ModalFrame.vue'
-import { flags } from '@/definitions/flags'
 import { SelectFile } from '@/wailsjs/go/main/App'
-import { store } from '@/wailsjs/go/models'
-import * as groupManager from '@/wailsjs/go/store/DriverGroupManager'
+import { storage } from '@/wailsjs/go/models'
+import * as groupManager from '@/wailsjs/go/storage/DriverGroupManager'
 import { computed, nextTick, ref, useTemplateRef } from 'vue'
 
 const frame = useTemplateRef('frame')
 
 defineExpose({
-  show: (data?: Partial<store.Driver>) => {
+  show: (data?: Partial<storage.Driver>) => {
     frame.value?.show()
 
     groupManager.Read().then(g => (groups.value = g))
@@ -32,16 +31,28 @@ defineExpose({
   hide: frame.value?.hide || (() => {})
 })
 
-defineEmits<{ submit: [dri: store.Driver] }>()
+defineEmits<{ submit: [dri: storage.Driver] }>()
 
-const groups = ref<Array<store.DriverGroup>>([])
+const FLAGS = {
+  'Intel LAN': ['/s'],
+  'Realtek LAN': ['-s'],
+  'Nvidia Display': ['-s', '-noreboot', 'Display.Driver'],
+  'AMD Display': ['-install'],
+  'Intel Display': ['-s', '--noExtras'],
+  'Intel Wifi': ['-q'],
+  'Intel BT': ['/quiet', '/norestart'],
+  'Intel Chipset': ['-s', '-norestart'],
+  'AMD Chipset': ['/S']
+}
+
+const groups = ref<Array<storage.DriverGroup>>([])
 
 const modalBody = useTemplateRef<HTMLDivElement>('modalBody')
 
 const searchPhrase = ref('')
 
 const driver = ref<
-  Partial<Omit<store.Driver, 'allowRtCodes' | 'flags'> & { allowRtCodes: string; flags: string }>
+  Partial<Omit<storage.Driver, 'allowRtCodes' | 'flags'> & { allowRtCodes: string; flags: string }>
 >({})
 
 const filterGroups = computed(() => {
@@ -84,7 +95,7 @@ const filterGroups = computed(() => {
               _ => {
                 $emit(
                   'submit',
-                  new store.Driver({
+                  new storage.Driver({
                     ...driver,
                     flags: driver.flags ? driver.flags.split(',') : [],
                     allowRtCodes: driver.allowRtCodes
@@ -154,7 +165,7 @@ const filterGroups = computed(() => {
                 >
                   <option value="">{{ $t('driverForm.manualInput') }}</option>
                   <option
-                    v-for="(flag, name) in flags"
+                    v-for="(flag, name) in FLAGS"
                     :key="name"
                     :value="flag.join(',')"
                     :selected="driver.flags === flag.join()"

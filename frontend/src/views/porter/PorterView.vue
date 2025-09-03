@@ -2,11 +2,8 @@
 import { onBeforeMount, ref, useTemplateRef } from 'vue'
 
 import { Cwd, SelectFile, SelectFolder } from '@/wailsjs/go/main/App'
-import * as appManager from '@/wailsjs/go/store/AppSettingManager'
-import { useI18n } from 'vue-i18n'
-import DownloadProgressModal from './components/DownloadProgressModal.vue'
-
-const { t } = useI18n()
+import * as appManager from '@/wailsjs/go/storage/AppSettingManager'
+import DownloadProgressModal from './components/ProgressModal.vue'
 
 const progressModal = useTemplateRef('progressModal')
 
@@ -34,18 +31,18 @@ onBeforeMount(() => {
 <template>
   <div class="flex flex-col h-full gap-y-6">
     <div>
-      <h1 class="text-xl font-bold">{{ t('porter.title') }}</h1>
-      <p class="text-gray-400">{{ t('porter.titleHint') }}</p>
+      <h1 class="text-xl font-bold">{{ $t('porter.title') }}</h1>
+      <p class="text-gray-400">{{ $t('porter.titleHint') }}</p>
 
       <hr class="mt-2 -mb-3" />
     </div>
 
     <div class="flex flex-col gap-y-3">
-      <h2 class="mb-1 text-lg font-medium">{{ t('porter.exportToFile') }}</h2>
+      <h2 class="mb-1 text-lg font-medium">{{ $t('porter.exportToFile') }}</h2>
 
       <div class="flex gap-x-6">
         <label class="w-24 content-center text-gray-900">
-          {{ t('porter.exportDestination') }}
+          {{ $t('porter.exportDestination') }}
         </label>
 
         <div class="flex gap-x-2 w-full">
@@ -69,7 +66,7 @@ onBeforeMount(() => {
               }
             "
           >
-            {{ t('common.select') }}
+            {{ $t('common.select') }}
           </button>
         </div>
       </div>
@@ -88,7 +85,7 @@ onBeforeMount(() => {
             }
           "
         >
-          {{ t('porter.export') }}
+          {{ $t('porter.export') }}
         </button>
       </div>
     </div>
@@ -104,7 +101,7 @@ onBeforeMount(() => {
             class="z-10 px-3 text-center text-xs rounded-3xl select-none"
             @click="importInput.from = 'file'"
           >
-            {{ t('porter.importFromFile') }}
+            {{ $t('porter.importFromFile') }}
           </button>
 
           <button
@@ -133,12 +130,12 @@ onBeforeMount(() => {
         <!-- from file -->
         <div v-if="importInput.from == 'file'" class="flex gap-x-6">
           <label class="w-24 content-center text-gray-900">
-            {{ t('porter.file') }}
+            {{ $t('porter.file') }}
           </label>
 
           <div class="flex gap-x-2 w-full">
             <input
-              type="url"
+              type="text"
               name="driver_download_url"
               placeholder="driver-box.zip"
               v-model="importInput.filePath"
@@ -159,7 +156,7 @@ onBeforeMount(() => {
                 }
               "
             >
-              {{ t('common.select') }}
+              {{ $t('common.select') }}
             </button>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { far } from '@fortawesome/free-regular-svg-icons'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import { LoadingPlugin } from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/css/index.css'
@@ -16,6 +17,7 @@ library.add(fas, far)
 
 const app = createApp(App)
   .use(router)
+  .use(createPinia())
   .use(ToastPlugin, { position: 'top-right' })
   .use(i18n)
   .use(LoadingPlugin)

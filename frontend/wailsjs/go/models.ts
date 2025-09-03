@@ -121,7 +121,7 @@ export namespace status {
 
 }
 
-export namespace store {
+export namespace storage {
 	
 	export enum DriverType {
 	    NETWORK = "network",

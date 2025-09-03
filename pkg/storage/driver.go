@@ -1,4 +1,4 @@
-package store
+package storage
 
 import (
 	"encoding/json"
@@ -67,7 +67,7 @@ func (m DriverGroupManager) IndexOf(groupId string) (int, error) {
 	})
 
 	if index == -1 {
-		return -1, errors.New("store: no group with the same ID was found")
+		return -1, errors.New("storage: no group with the same ID was found")
 	}
 	return index, nil
 }
@@ -80,7 +80,7 @@ func (m DriverGroupManager) GroupOf(driverId string) (string, error) {
 			}
 		}
 	}
-	return "", errors.New("store: no driver with the same ID was found in any group")
+	return "", errors.New("storage: no driver with the same ID was found in any group")
 }
 
 func (m *DriverGroupManager) Get(id string) (DriverGroup, error) {
@@ -158,7 +158,7 @@ func (m *DriverGroupManager) MoveBehind(id string, index int) ([]DriverGroup, er
 		return m.groups, err
 	} else {
 		if index < -1 || index >= len(m.groups)-1 {
-			return m.groups, errors.New("store: target index out of bound")
+			return m.groups, errors.New("storage: target index out of bound")
 		}
 
 		if len(m.groups) == 1 || srcIndex-index == 1 {
