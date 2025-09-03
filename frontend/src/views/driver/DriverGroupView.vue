@@ -2,51 +2,35 @@
 import { useDriverGroupStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
 import * as groupManger from '@/wailsjs/go/storage/DriverGroupManager'
-import { ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useRoute, useRouter } from 'vue-router'
-
-const { t } = useI18n()
-
-const $router = useRouter()
-
-const $route = useRoute()
-
-const driverType = ref(
-  storage.DriverType[
-    $route.query.type?.toString().toUpperCase() as keyof typeof storage.DriverType
-  ] ?? storage.DriverType.NETWORK
-)
+import { ref } from 'vue'
 
 const groupStore = useDriverGroupStore()
 
 const reordering = ref(false)
-
-watch(driverType, newType => {
-  $router.replace({ path: '/drivers', query: { type: newType } })
-})
 </script>
 
 <template>
   <div class="flex flex-col h-full gap-y-2">
     <div class="flex flex-row gap-x-3 list-none text-center">
-      <button
+      <router-link
         v-for="type in storage.DriverType"
         :key="type"
+        :to="{ path: '/drivers', query: { type: type } }"
         class="w-full py-3 text-xs font-bold uppercase shadow-lg rounded-sm"
         :class="{
-          'text-half-baked-600 bg-white': driverType !== type,
-          'text-white bg-half-baked-600': driverType === type
+          'text-half-baked-600 bg-white': $route.query.type !== type,
+          'text-white bg-half-baked-600': $route.query.type === type
         }"
-        @click="driverType = type"
       >
-        {{ t(`driverCatetory.${type}`) }}
-      </button>
+        {{ $t(`driverCatetory.${type}`) }}
+      </router-link>
     </div>
 
     <div class="flex flex-col grow p-1.5 min-h-48 overflow-y-scroll shadow-md rounded-md">
       <div
-        v-for="(g, i) in groupStore.groups.filter(g => g.type == driverType)"
+        v-for="(g, i) in groupStore.groups.filter(
+          g => $route.query.type == undefined || g.type == $route.query.type
+        )"
         :key="g.id"
         class="driver-card m-1 px-2 py-1 border border-gray-200 rounded-lg shadow-sm"
         :class="reordering ? 'select-none cursor-pointer' : ''"
@@ -179,7 +163,7 @@ watch(driverType, newType => {
 
     <div class="flex justify-end gap-x-3">
       <button
-        v-show="groupStore.groups?.filter(d => d.type == driverType).length > 1"
+        v-show="groupStore.groups?.filter(d => d.type == $route.query.type).length > 1"
         type="button"
         class="btn text-white"
         :style="
@@ -193,7 +177,7 @@ watch(driverType, newType => {
       </button>
 
       <button class="btn btn-primary">
-        <RouterLink :to="{ path: '/drivers/create', query: { type: driverType } }">
+        <RouterLink :to="{ path: '/drivers/create', query: { type: $route.query.type } }">
           {{ $t('driverForm.create') }}
         </RouterLink>
       </button>
