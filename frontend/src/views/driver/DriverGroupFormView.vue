@@ -13,6 +13,8 @@ const { t } = useI18n()
 
 const $route = useRoute()
 
+const $router = useRouter()
+
 const $toast = useToast({ position: 'top-right' })
 
 const questionModal = useTemplateRef('questionModal')
@@ -60,7 +62,7 @@ function handleSubmit(event: SubmitEvent) {
     $toast.success(t('toast.updated'))
     groupStore.read().then(() => {
       if (event.submitter?.id !== 'driver-submit-btn') {
-        useRouter().back()
+        $router.back()
       }
       // update the reference after reloading groups
       group.value = groupStore.groups.find(g => g.id === group.value.id)!
