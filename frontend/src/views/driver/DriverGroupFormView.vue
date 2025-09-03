@@ -3,7 +3,7 @@ import UnsaveConfirmModal from '@/components/modals/UnsaveConfirmModal.vue'
 import { useDriverGroupStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
 import * as groupManager from '@/wailsjs/go/storage/DriverGroupManager'
-import { onBeforeMount, ref, toRaw, useTemplateRef } from 'vue'
+import { ref, toRaw, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toast-notification'
@@ -24,22 +24,19 @@ const inputModal = useTemplateRef('inputModal')
 const groupStore = useDriverGroupStore()
 
 const group = ref<storage.DriverGroup>(
-  new storage.DriverGroup({
-    type:
-      storage.DriverType[
-        $route.query.type?.toString().toUpperCase() as keyof typeof storage.DriverType
-      ] ?? undefined,
-    name: $route.query.name ?? '',
-    drivers: []
-  })
+  groupStore.groups.find(g => g.id == $route.params.id) ??
+    new storage.DriverGroup({
+      type:
+        storage.DriverType[
+          $route.query.type?.toString().toUpperCase() as keyof typeof storage.DriverType
+        ] ?? undefined,
+      name: '',
+      drivers: []
+    })
 )
 
 /** A clone of the `group` variable */
 const groupOriginal: storage.DriverGroup = structuredClone(toRaw(group.value))
-
-onBeforeMount(() => {
-  group.value = groupStore.groups.find(g => g.id == $route.params.id) ?? group.value
-})
 
 onBeforeRouteLeave((to, from, next) => {
   if (groupStore.modified) {
@@ -60,34 +57,38 @@ function handleSubmit(event: SubmitEvent) {
     return
   }
 
-  const action =
-    group.value.id == undefined
-      ? groupManager.Add(group.value).then(gid => {
-          group.value.id = gid
-          // no need to update the URL,
-          // as users is not able to refresh the page in production build
-        })
-      : groupManager.Update({
-          ...group.value,
-          drivers: group.value.drivers.map(d => {
-            if (d.id.includes('new:')) {
-              d.id = ''
-            }
-            return d
-          })
-        })
-
-  action
-    .then(() => {
-      $toast.success(t('toast.updated'))
-      groupStore.read().then(() => {
-        if (event.submitter?.id == 'driver-submit-btn') {
-          group.value = groupStore.groups.find(g => g.id == group.value.id)!
-        }
-        $router.back()
-      })
+  const handleSuccess = () => {
+    $toast.success(t('toast.updated'))
+    groupStore.read().then(() => {
+      if (event.submitter?.id !== 'driver-submit-btn') {
+        useRouter().back()
+      }
+      // update the reference after reloading groups
+      group.value = groupStore.groups.find(g => g.id === group.value.id)!
     })
-    .catch(reason => $toast.error(reason))
+  }
+
+  if (group.value.id == undefined) {
+    // no page refresh in production build, no need to update the URL
+    groupManager
+      .Add(group.value)
+      .then(gid => (group.value.id = gid))
+      .then(handleSuccess)
+      .catch(reason => $toast.error(reason))
+  } else {
+    groupManager
+      .Update({
+        ...group.value,
+        drivers: group.value.drivers.map(d => {
+          if (d.id.includes('new:')) {
+            d.id = ''
+          }
+          return d
+        })
+      })
+      .then(handleSuccess)
+      .catch(reason => $toast.error(reason))
+  }
 }
 </script>
 
