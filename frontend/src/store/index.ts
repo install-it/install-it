@@ -1,7 +1,9 @@
+import { ExecutableExists } from '@/wailsjs/go/main/App'
 import { storage } from '@/wailsjs/go/models'
 import * as appManager from '@/wailsjs/go/storage/AppSettingManager'
+import * as groupManger from '@/wailsjs/go/storage/DriverGroupManager'
 import { defineStore } from 'pinia'
-import { computed, ref, toRaw } from 'vue'
+import { computed, ref, toRaw, watch } from 'vue'
 
 export const useAppSettingStore = defineStore('appSetting', () => {
   const loading = ref(false)
@@ -28,5 +30,48 @@ export const useAppSettingStore = defineStore('appSetting', () => {
       appManager
         .Update(settings.value)
         .then(() => (original.value = structuredClone(toRaw(settings.value))))
+  }
+})
+
+export const useDriverGroupStore = defineStore('driverGroup', () => {
+  const loading = ref(false)
+
+  const groups = ref<storage.DriverGroup[]>([])
+  const notFoundDrivers = ref<Array<string>>([])
+  // const original = ref<storage.DriverGroup[]>(structuredClone(toRaw(groups.value)))
+
+  watch(
+    groups,
+    newGroups =>
+      Promise.all(
+        newGroups
+          .flatMap(g => g.drivers)
+          .flatMap(d => ExecutableExists(d.path).then(exist => ({ id: d.id, exist: exist })))
+      )
+        .then(results => {
+          return results
+            .map(result => (result.exist ? undefined : result.id))
+            .filter(v => v !== undefined)
+        })
+        .then(ids => (notFoundDrivers.value = ids)),
+    { immediate: true }
+  )
+
+  return {
+    loading,
+    groups,
+    // modified: computed(() => JSON.stringify(original.value) !== JSON.stringify(groups.value)),
+    // restore: () => (groups.value = structuredClone(toRaw(original.value))),
+    notFoundDrivers,
+    read: async () => {
+      loading.value = true
+      return groupManger
+        .Read()
+        .then(g => {
+          groups.value = g
+          // original.value = structuredClone(g)
+        })
+        .finally(() => (loading.value = false))
+    }
   }
 })

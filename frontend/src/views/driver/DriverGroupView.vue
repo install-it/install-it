@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { ExecutableExists } from '@/wailsjs/go/main/App'
+import { useDriverGroupStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
 import * as groupManger from '@/wailsjs/go/storage/DriverGroupManager'
-import { onBeforeMount, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
-import { useToast } from 'vue-toast-notification'
 
 const { t } = useI18n()
 
@@ -13,41 +12,15 @@ const $router = useRouter()
 
 const $route = useRoute()
 
-const $toast = useToast({ position: 'top-right' })
-
 const driverType = ref(
   storage.DriverType[
     $route.query.type?.toString().toUpperCase() as keyof typeof storage.DriverType
   ] ?? storage.DriverType.NETWORK
 )
 
-const groups = ref<Array<storage.DriverGroup>>([])
-
-/** driver ID of drivers that the executable cannot be found */
-const notExistDrivers = ref<Array<string>>([])
+const groupStore = useDriverGroupStore()
 
 const reordering = ref(false)
-
-onBeforeMount(() => {
-  groupManger
-    .Read()
-    .then(g => (groups.value = g))
-    .catch(() => {
-      $toast.error(t('toast.readDriverFailed'))
-    })
-})
-
-watch(groups, newGroups => {
-  Promise.all(
-    newGroups.flatMap(g =>
-      g.drivers.flatMap(d => ExecutableExists(d.path).then(exist => ({ id: d.id, exist: exist })))
-    )
-  ).then(results => {
-    notExistDrivers.value = results
-      .map(result => (result.exist ? undefined : result.id))
-      .filter(v => v !== undefined)
-  })
-})
 
 watch(driverType, newType => {
   $router.replace({ path: '/drivers', query: { type: newType } })
@@ -73,7 +46,7 @@ watch(driverType, newType => {
 
     <div class="flex flex-col grow p-1.5 min-h-48 overflow-y-scroll shadow-md rounded-md">
       <div
-        v-for="(g, i) in groups.filter(g => g.type == driverType)"
+        v-for="(g, i) in groupStore.groups.filter(g => g.type == driverType)"
         :key="g.id"
         class="driver-card m-1 px-2 py-1 border border-gray-200 rounded-lg shadow-sm"
         :class="reordering ? 'select-none cursor-pointer' : ''"
@@ -119,7 +92,7 @@ watch(driverType, newType => {
               }
 
               groupManger.MoveBehind(sourceId, targetIndex).then(result => {
-                groups = result
+                groupStore.groups = result
               })
             })
           }
@@ -144,30 +117,14 @@ watch(driverType, newType => {
 
             <button
               class="px-1 bg-gray-200 hover:bg-gray-300 transition-all rounded-sm"
-              @click="
-                () => {
-                  groupManger.Add(g).then(() => {
-                    groupManger.Read().then(g => {
-                      groups = g
-                    })
-                  })
-                }
-              "
+              @click="groupManger.Add(g).then(() => groupStore.read())"
             >
               <font-awesome-icon icon="fa-solid fa-clone" class="text-gray-500" />
             </button>
 
             <button
               class="px-1 bg-gray-200 hover:bg-gray-300 transition-all rounded-sm"
-              @click="
-                () => {
-                  groupManger.Remove(g.id).then(() => {
-                    groupManger.Read().then(g => {
-                      groups = g
-                    })
-                  })
-                }
-              "
+              @click="groupManger.Remove(g.id).then(() => groupStore.read())"
             >
               <font-awesome-icon icon="fa-solid fa-trash" class="text-gray-500" />
             </button>
@@ -190,7 +147,7 @@ watch(driverType, newType => {
 
           <div
             class="col-span-5 lg:col-span-5 break-all line-clamp-2"
-            :class="{ 'text-red-600': notExistDrivers.includes(d.id) }"
+            :class="{ 'text-red-600': groupStore.notFoundDrivers.includes(d.id) }"
           >
             {{ d.path }}
           </div>
@@ -222,7 +179,7 @@ watch(driverType, newType => {
 
     <div class="flex justify-end gap-x-3">
       <button
-        v-show="groups?.filter(d => d.type == driverType).length > 1"
+        v-show="groupStore.groups?.filter(d => d.type == driverType).length > 1"
         type="button"
         class="btn text-white"
         :style="

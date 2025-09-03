@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAppSettingStore } from '@/store'
+import { useAppSettingStore, useDriverGroupStore } from '@/store'
 import { AppVersion } from '@/wailsjs/go/main/App'
 import { onBeforeMount } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -21,7 +21,11 @@ const $toast = useToast({ position: 'top-right' })
 
 const settingsStore = useAppSettingStore()
 
+const groupStore = useDriverGroupStore()
+
 onBeforeMount(() => {
+  groupStore.read()
+
   settingsStore
     .read()
     .then(() => {
