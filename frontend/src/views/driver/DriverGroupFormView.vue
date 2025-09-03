@@ -143,7 +143,7 @@ function handleSubmit(event: SubmitEvent) {
       <div class="grow">
         <fieldset class="fieldset">
           <legend class="fieldset-legend text-sm">{{ $t('driverForm.name') }}</legend>
-          <input type="text" class="input input-accent w-full" required />
+          <input type="text" v-model="group.name" class="input input-accent w-full" required />
         </fieldset>
       </div>
     </div>
