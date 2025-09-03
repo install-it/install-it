@@ -24,7 +24,7 @@ const inputModal = useTemplateRef('inputModal')
 const groupStore = useDriverGroupStore()
 
 const group = ref<storage.DriverGroup>(
-  groupStore.groups.find(g => g.id == $route.params.id) ??
+  structuredClone(toRaw(groupStore.groups.find(g => g.id == $route.params.id))) ??
     new storage.DriverGroup({
       type:
         storage.DriverType[
@@ -35,17 +35,12 @@ const group = ref<storage.DriverGroup>(
     })
 )
 
-const groupOriginal: storage.DriverGroup = structuredClone(toRaw(group.value))
+let groupOriginal: storage.DriverGroup = structuredClone(toRaw(group.value))
 
 onBeforeRouteLeave((to, from, next) => {
   if (JSON.stringify(group.value) != JSON.stringify(groupOriginal)) {
     questionModal.value?.show(answer => {
-      if (answer == 'yes') {
-        groupStore.groups = groupStore.groups.map(g =>
-          g.id == groupOriginal.id ? groupOriginal : g
-        )
-        next(true)
-      }
+      next(answer == 'yes')
     })
   } else {
     next(true)
@@ -60,12 +55,11 @@ function handleSubmit(event: SubmitEvent) {
 
   const handleSuccess = () => {
     $toast.success(t('toast.updated'))
+    groupOriginal = structuredClone(toRaw(group.value))
     groupStore.read().then(() => {
       if (event.submitter?.id !== 'driver-submit-btn') {
         $router.back()
       }
-      // update the reference after reloading groups
-      group.value = groupStore.groups.find(g => g.id === group.value.id)!
     })
   }
 
