@@ -3,7 +3,7 @@ import UnsaveConfirmModal from '@/components/modals/UnsaveConfirmModal.vue'
 import { useDriverGroupStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
 import * as groupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
-import { ref, toRaw, useTemplateRef } from 'vue'
+import { useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toast-notification'
@@ -23,22 +23,12 @@ const inputModal = useTemplateRef('inputModal')
 
 const groupStore = useDriverGroupStore()
 
-const group = ref<storage.DriverGroup>(
-  structuredClone(toRaw(groupStore.groups.find(g => g.id == $route.params.id))) ??
-    new storage.DriverGroup({
-      type:
-        storage.DriverType[
-          $route.query.type?.toString().toUpperCase() as keyof typeof storage.DriverType
-        ] ?? undefined,
-      name: '',
-      drivers: []
-    })
-)
+const groupEditor = groupStore.editor($route.params.id as string | undefined)
 
-let groupOriginal: storage.DriverGroup = structuredClone(toRaw(group.value))
+const group = groupEditor.group // alias
 
 onBeforeRouteLeave((to, from, next) => {
-  if (JSON.stringify(group.value) != JSON.stringify(groupOriginal)) {
+  if (groupEditor.modified) {
     questionModal.value?.show(answer => {
       next(answer == 'yes')
     })
@@ -55,16 +45,17 @@ function handleSubmit(event: SubmitEvent) {
 
   const handleSuccess = () => {
     $toast.success(t('toast.updated'))
-    groupOriginal = structuredClone(toRaw(group.value))
-    groupStore.read().then(() => {
+    groupStorage.All().then(gs => {
+      groupStore.groups = gs
       if (event.submitter?.id !== 'driver-submit-btn') {
         $router.back()
+      } else {
+        $router.replace({ path: `/drivers/edit/${group.value.id}` })
       }
     })
   }
 
   if (group.value.id == undefined) {
-    // no page refresh in production build, no need to update the URL
     groupStorage
       .Add(group.value)
       .then(gid => (group.value.id = gid))
@@ -145,7 +136,7 @@ function handleSubmit(event: SubmitEvent) {
               <div class="col-span-3">
                 <p
                   class="font-mono break-all line-clamp-2"
-                  :class="{ 'text-red-600': groupStore.notFoundDrivers.includes(d.id) }"
+                  :class="{ 'text-red-600': groupEditor.notFoundDrivers.value.includes(d.id) }"
                 >
                   {{ d.path }}
                 </p>
@@ -195,7 +186,7 @@ function handleSubmit(event: SubmitEvent) {
 
         <div class="flex justify-end gap-x-3">
           <button
-            v-show="JSON.stringify(group.drivers) != JSON.stringify(groupOriginal.drivers)"
+            v-show="groupEditor.modified"
             type="submit"
             id="driver-submit-btn"
             class="btn btn-secondary px-2"

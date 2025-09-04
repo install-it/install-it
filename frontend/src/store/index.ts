@@ -5,6 +5,19 @@ import * as driverGroupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
 import { defineStore } from 'pinia'
 import { computed, ref, toRaw, watch } from 'vue'
 
+export const createEditor = <T>(data: T) => {
+  const dataClone = ref(structuredClone(toRaw(data)))
+  return {
+    data: dataClone,
+    modified: computed(() => JSON.stringify(dataClone.value) != JSON.stringify(data)),
+    restore: () => (dataClone.value = structuredClone(toRaw(data))),
+    save: () => {
+      data = structuredClone(toRaw(dataClone.value))
+      dataClone.value = structuredClone(toRaw(data))
+    }
+  }
+}
+
 export const useAppSettingStore = defineStore('appSetting', () => {
   const loading = ref(false)
 
@@ -70,6 +83,40 @@ export const useDriverGroupStore = defineStore('driverGroup', () => {
         .All()
         .then(g => (groups.value = g))
         .finally(() => (loading.value = false))
+    },
+    editor: (id: string | null | undefined) => {
+      const gidx = groups.value.findIndex(g => g.id == id)
+      const groupClone = ref(
+        id == null || gidx === -1
+          ? new storage.DriverGroup({ type: undefined, name: '', drivers: [] })
+          : structuredClone(toRaw(groups.value[gidx]!))
+      )
+      const notFoundDrivers = ref<Array<string>>([])
+
+      watch(
+        groupClone.value.drivers,
+        newDrivers =>
+          Promise.all(
+            newDrivers.map(d =>
+              ExecutableExists(d.path).then(exist => ({ id: d.id, exist: exist }))
+            )
+          )
+            .then(results => {
+              return results
+                .map(result => (result.exist ? undefined : result.id))
+                .filter(v => v !== undefined)
+            })
+            .then(ids => (notFoundDrivers.value = ids)),
+        { immediate: true }
+      )
+
+      return {
+        group: groupClone,
+        notFoundDrivers,
+        modified: computed(() => JSON.stringify(groupClone.value) != JSON.stringify(groups.value)),
+        restore: () => (groupClone.value = structuredClone(toRaw(groups.value[gidx]!))),
+        refresh: () => (groupClone.value = structuredClone(toRaw(groups.value[gidx]!)))
+      }
     }
   }
 })
