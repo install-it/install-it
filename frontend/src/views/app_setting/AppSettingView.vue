@@ -25,6 +25,7 @@ onBeforeRouteLeave((to, from, next) => {
     class="flex flex-col h-full gap-y-3"
     @submit.prevent="
       () => {
+        // TODO: use manager to save, then load latest data into store
         settingStore
           .write()
           .then(() => {

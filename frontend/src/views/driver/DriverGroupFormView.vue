@@ -69,7 +69,7 @@ function handleSubmit(event: SubmitEvent) {
       .Add(group.value)
       .then(gid => (group.value.id = gid))
       .then(handleSuccess)
-      .catch(reason => $toast.error(reason))
+      .catch(reason => $toast.error(reason.toString()))
   } else {
     groupManager
       .Update({
@@ -82,7 +82,7 @@ function handleSubmit(event: SubmitEvent) {
         })
       })
       .then(handleSuccess)
-      .catch(reason => $toast.error(reason))
+      .catch(reason => $toast.error(reason.toString()))
   }
 }
 </script>

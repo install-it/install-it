@@ -17,8 +17,6 @@ const statusModal = useTemplateRef('statusModal')
 
 const form = useTemplateRef('form')
 
-const groups = ref<Array<storage.DriverGroup>>([])
-
 const settingStore = useAppSettingStore()
 
 const groupStore = useDriverGroupStore()
@@ -104,7 +102,7 @@ async function handleSubmit() {
     })
   }
 
-  groups.value
+  groupStore.groups
     .filter(group =>
       [inputs.get('network'), inputs.get('display'), ...inputs.getAll('miscellaneous')].includes(
         group.id
@@ -230,7 +228,11 @@ async function handleSubmit() {
 
           <select name="network" class="w-full ps-3 pe-9 pt-5 pb-1 rounded-lg">
             <option>{{ $t('common.pleaseSelect') }}</option>
-            <option v-for="d in groups.filter(d => d.type == 'network')" :key="d.id" :value="d.id">
+            <option
+              v-for="d in groupStore.groups.filter(d => d.type == 'network')"
+              :key="d.id"
+              :value="d.id"
+            >
               {{ `${d.name}${groupStore.notFoundDrivers.includes(d.id) ? ' ⚠' : ''}` }}
             </option>
           </select>
@@ -245,7 +247,11 @@ async function handleSubmit() {
 
           <select name="display" class="w-full ps-3 pe-9 pt-5 pb-1 rounded-lg">
             <option>{{ $t('common.pleaseSelect') }}</option>
-            <option v-for="d in groups.filter(d => d.type == 'display')" :key="d.id" :value="d.id">
+            <option
+              v-for="d in groupStore.groups.filter(d => d.type == 'display')"
+              :key="d.id"
+              :value="d.id"
+            >
               {{ `${d.name}${groupStore.notFoundDrivers.includes(d.id) ? ' ⚠' : ''}` }}
             </option>
           </select>
@@ -261,7 +267,10 @@ async function handleSubmit() {
           </label>
 
           <div class="h-full overflow-y-scroll px-2 pt-3 rounded-lg border border-apple-green-600">
-            <template v-for="d in groups.filter(d => d.type == 'miscellaneous')" :key="d.id">
+            <template
+              v-for="d in groupStore.groups.filter(d => d.type == 'miscellaneous')"
+              :key="d.id"
+            >
               <label class="flex items-center w-full select-none cursor-pointer">
                 <input
                   type="checkbox"

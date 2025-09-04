@@ -3,7 +3,7 @@ import ModalFrame from '@/components/modals/ModalFrame.vue'
 import { SelectFile } from '@/wailsjs/go/main/App'
 import { storage } from '@/wailsjs/go/models'
 import * as groupManager from '@/wailsjs/go/storage/DriverGroupManager'
-import { computed, nextTick, ref, useTemplateRef } from 'vue'
+import { computed, nextTick, ref, toRaw, useTemplateRef } from 'vue'
 
 const frame = useTemplateRef('frame')
 
@@ -104,7 +104,7 @@ const filterGroups = computed(() => {
                           .map(c => parseInt(c))
                           .filter(c => !Number.isNaN(c))
                       : [],
-                    incompatibles: driver.incompatibles ?? []
+                    incompatibles: toRaw(driver.incompatibles) ?? []
                   })
                 )
 
@@ -351,121 +351,6 @@ const filterGroups = computed(() => {
                 </template>
               </ul>
             </fieldset>
-
-            <!-- <div>
-              <label class="block text-sm font-medium text-gray-900">
-                {{ $t('driverForm.incompatibleWith') }}
-              </label>
-
-              <div class="mb-1 text-xs line-clamp-1">
-                <span class="inline">
-                  {{ $t('driverForm.selectedWithCount', { count: driver.incompatibles?.length }) }}
-                </span>
-              </div>
-
-              <div class="flex mb-2 gap-x-2">
-                <input
-                  v-model="searchPhrase"
-                  :placeholder="$t('driverForm.search')"
-                  class="px-3 py-2 w-full text-black text-sm border-none rounded-sm bg-gray-100"
-                />
-
-                <button
-                  type="button"
-                  class="px-3 text-sm font-medium text-white bg-powder-blue-800 hover:bg-powder-blue-600 rounded-sm"
-                  :title="$t('driverForm.selectAll')"
-                  @click="
-                    () => {
-                      driver.incompatibles = [
-                        ...groups.flatMap(g => g.drivers.flatMap(d => d.id)),
-                        'set_password',
-                        'create_partition'
-                      ]
-                    }
-                  "
-                >
-                  <font-awesome-icon icon="fa-regular fa-square-check" />
-                </button>
-
-                <button
-                  type="button"
-                  class="px-3 text-sm font-medium text-white bg-rose-400 hover:bg-rose-300 rounded-sm"
-                  :title="$t('driverForm.selectNone')"
-                  @click="
-                    () => {
-                      driver.incompatibles = []
-                    }
-                  "
-                >
-                  <font-awesome-icon icon="fa-regular fa-square" />
-                </button>
-              </div>
-
-              <ul class="h-44 p-1.5 overflow-auto border rounded-lg">
-                <li
-                  class="py-2.5 px-4 text-sm"
-                  v-show="
-                    searchPhrase === '' ||
-                    'set password'.includes(searchPhrase) ||
-                    $t('installOption.setPassword').includes(searchPhrase)
-                  "
-                >
-                  <label class="flex item-center w-full select-none cursor-pointer">
-                    <input
-                      type="checkbox"
-                      value="set_password"
-                      v-model="driver.incompatibles"
-                      class="me-1.5"
-                    />
-                    <span class="badge badge-builtin me-1">&nbsp;</span>
-                    <span class="line-clamp-2">
-                      {{ $t('installOption.setPassword') }}
-                    </span>
-                  </label>
-                </li>
-
-                <li
-                  class="py-2.5 px-4 text-sm"
-                  v-show="
-                    searchPhrase === '' ||
-                    'create partition'.includes(searchPhrase) ||
-                    $t('installOption.createPartition').includes(searchPhrase)
-                  "
-                >
-                  <label class="flex item-center w-full select-none cursor-pointer">
-                    <input
-                      type="checkbox"
-                      value="create_partition"
-                      v-model="driver.incompatibles"
-                      class="me-1.5"
-                    />
-                    <span class="badge badge-builtin me-1">&nbsp;</span>
-                    <span class="line-clamp-2">
-                      {{ $t('installOption.createPartition') }}
-                    </span>
-                  </label>
-                </li>
-
-                <template v-for="g in filterGroups" :key="g.id">
-                  <template v-for="d in g.drivers.filter(d => d.id != driver.id)" :key="d.id">
-                    <li class="py-2.5 px-4 text-sm">
-                      <label class="flex items-center w-full select-none cursor-pointer">
-                        <input
-                          type="checkbox"
-                          :value="d.id"
-                          v-model="driver.incompatibles"
-                          class="me-1.5"
-                        />
-                        <span class="badge me-1" :class="[`badge-${g.type}`]">&nbsp;</span>
-                        <span class="line-clamp-2">
-                          {{ `[${g.name}] ${d.name}` }}
-                        </span>
-                      </label>
-                    </li>
-                  </template>
-                </template>
-              </ul>
-            </div> -->
 
             <button type="submit" class="btn btn-secondary">
               {{ $t('common.save') }}
