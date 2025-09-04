@@ -1,7 +1,7 @@
 import { ExecutableExists } from '@/wailsjs/go/main/App'
 import { storage } from '@/wailsjs/go/models'
-import * as appManager from '@/wailsjs/go/storage/AppSettingManager'
-import * as groupManger from '@/wailsjs/go/storage/DriverGroupManager'
+import * as appSettingStorage from '@/wailsjs/go/storage/AppSettingStorage'
+import * as driverGroupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
 import { defineStore } from 'pinia'
 import { computed, ref, toRaw, watch } from 'vue'
 
@@ -18,8 +18,8 @@ export const useAppSettingStore = defineStore('appSetting', () => {
     restore: () => (settings.value = structuredClone(toRaw(original.value))),
     read: async () => {
       loading.value = true
-      return appManager
-        .Read()
+      return appSettingStorage
+        .All()
         .then(s => {
           settings.value = s
           original.value = structuredClone(s)
@@ -27,7 +27,7 @@ export const useAppSettingStore = defineStore('appSetting', () => {
         .finally(() => (loading.value = false))
     },
     write: () =>
-      appManager
+      appSettingStorage
         .Update(settings.value)
         .then(() => (original.value = structuredClone(toRaw(settings.value))))
   }
@@ -62,8 +62,8 @@ export const useDriverGroupStore = defineStore('driverGroup', () => {
     notFoundDrivers,
     read: async () => {
       loading.value = true
-      return groupManger
-        .Read()
+      return driverGroupStorage
+        .All()
         .then(g => (groups.value = g))
         .finally(() => (loading.value = false))
     }

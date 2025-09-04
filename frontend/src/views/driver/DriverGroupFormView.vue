@@ -2,7 +2,7 @@
 import UnsaveConfirmModal from '@/components/modals/UnsaveConfirmModal.vue'
 import { useDriverGroupStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
-import * as groupManager from '@/wailsjs/go/storage/DriverGroupManager'
+import * as groupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
 import { ref, toRaw, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
@@ -65,13 +65,13 @@ function handleSubmit(event: SubmitEvent) {
 
   if (group.value.id == undefined) {
     // no page refresh in production build, no need to update the URL
-    groupManager
+    groupStorage
       .Add(group.value)
       .then(gid => (group.value.id = gid))
       .then(handleSuccess)
       .catch(reason => $toast.error(reason.toString()))
   } else {
-    groupManager
+    groupStorage
       .Update({
         ...group.value,
         drivers: group.value.drivers.map(d => {
