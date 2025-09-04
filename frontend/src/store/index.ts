@@ -9,27 +9,31 @@ export const useAppSettingStore = defineStore('appSetting', () => {
   const loading = ref(false)
 
   const settings = ref<storage.AppSetting>(new storage.AppSetting())
-  const original = ref(structuredClone(toRaw(settings.value)))
 
   return {
     loading,
     settings,
-    modified: computed(() => JSON.stringify(original.value) !== JSON.stringify(settings.value)),
-    restore: () => (settings.value = structuredClone(toRaw(original.value))),
     read: async () => {
       loading.value = true
       return appSettingStorage
         .All()
-        .then(s => {
-          settings.value = s
-          original.value = structuredClone(s)
-        })
+        .then(s => (settings.value = s))
         .finally(() => (loading.value = false))
     },
-    write: () =>
-      appSettingStorage
-        .Update(settings.value)
-        .then(() => (original.value = structuredClone(toRaw(settings.value))))
+    editor: () => {
+      const settingsClone = ref(structuredClone(toRaw(settings.value)))
+      return {
+        settings: settingsClone,
+        modified: computed(
+          () => JSON.stringify(settingsClone.value) != JSON.stringify(settings.value)
+        ),
+        restore: () => (settingsClone.value = structuredClone(toRaw(settings.value))),
+        save: () => {
+          settings.value = structuredClone(toRaw(settingsClone.value))
+          settingsClone.value = structuredClone(toRaw(settings.value))
+        }
+      }
+    }
   }
 })
 
