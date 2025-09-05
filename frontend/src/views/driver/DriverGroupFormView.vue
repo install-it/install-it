@@ -3,7 +3,7 @@ import UnsaveConfirmModal from '@/components/modals/UnsaveConfirmModal.vue'
 import { useDriverGroupStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
 import * as groupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
-import { useTemplateRef } from 'vue'
+import { toRaw, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toast-notification'
@@ -224,6 +224,7 @@ function handleSubmit(event: SubmitEvent) {
   <DriverInputModal
     @submit="
       newDriver => {
+        console.log(newDriver)
         if (newDriver.id) {
           group.drivers = group.drivers.map(d => (d.id == newDriver.id ? newDriver : d))
         } else {
@@ -231,6 +232,8 @@ function handleSubmit(event: SubmitEvent) {
             ...newDriver,
             id: `new:${group.drivers.length + 1}` // assign a temporary ID for editing
           })
+
+          console.table(toRaw(group))
         }
         inputModal?.hide()
       }

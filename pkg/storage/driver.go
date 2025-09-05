@@ -82,6 +82,19 @@ func (s *DriverGroupStorage) Add(group DriverGroup) (string, error) {
 }
 
 func (s *DriverGroupStorage) Update(group DriverGroup) error {
+	// TODO: do a global search to findout which are new drivers
+	var drivers []*Driver
+	for _, g := range s.data {
+		drivers = append(drivers, g.Drivers...)
+	}
+
+	for i := range group.Drivers {
+		if group.Drivers[i].Id == "" {
+			group.Drivers[i].Id = GenerateId(drivers)
+			drivers = append(drivers, group.Drivers[i])
+		}
+	}
+
 	if err := Update(&group, &s.data); err != nil {
 		return err
 	}
