@@ -105,6 +105,11 @@ export const useDriverGroupStore = defineStore('driverGroup', () => {
                 new storage.DriverGroup({ type: defaultType, name: '', drivers: [] })
             )
         ),
+        modifiedDrivers: computed(
+          () =>
+            JSON.stringify(groupClone.value.drivers) !=
+            JSON.stringify(groups.value.find(g => g.id == groupClone.value.id)?.drivers || [])
+        ),
         reset: () => {
           groupClone.value = structuredClone(
             toRaw(

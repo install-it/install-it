@@ -190,7 +190,7 @@ function handleSubmit(event: SubmitEvent) {
 
         <div class="flex justify-end gap-x-3">
           <button
-            v-show="groupEditor.modified.value"
+            v-show="groupEditor.modifiedDrivers.value"
             type="submit"
             id="driver-submit-btn"
             class="btn btn-secondary px-2"
