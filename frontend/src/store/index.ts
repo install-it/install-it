@@ -40,7 +40,7 @@ export const useAppSettingStore = defineStore('appSetting', () => {
         modified: computed(
           () => JSON.stringify(settingsClone.value) != JSON.stringify(settings.value)
         ),
-        restore: () => (settingsClone.value = structuredClone(toRaw(settings.value))),
+        reset: () => (settingsClone.value = structuredClone(toRaw(settings.value))),
         save: () => {
           settings.value = structuredClone(toRaw(settingsClone.value))
           settingsClone.value = structuredClone(toRaw(settings.value))

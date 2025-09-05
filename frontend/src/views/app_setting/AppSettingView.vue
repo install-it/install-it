@@ -29,7 +29,7 @@ async function handleMoveAway() {
     if (settingEditor.modified.value) {
       questionModal.value?.show(answer => {
         if (answer == 'yes') {
-          settingEditor.restore()
+          settingEditor.reset()
         }
         resolve(answer == 'yes')
       })
