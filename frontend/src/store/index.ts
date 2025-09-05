@@ -27,11 +27,7 @@ export const useAppSettingStore = defineStore('appSetting', () => {
         modified: computed(
           () => JSON.stringify(settingsClone.value) != JSON.stringify(settings.value)
         ),
-        reset: () => (settingsClone.value = structuredClone(toRaw(settings.value))),
-        save: () => {
-          settings.value = structuredClone(toRaw(settingsClone.value))
-          settingsClone.value = structuredClone(toRaw(settings.value))
-        }
+        reset: () => (settingsClone.value = structuredClone(toRaw(settings.value)))
       }
     }
   }
@@ -101,8 +97,7 @@ export const useDriverGroupStore = defineStore('driverGroup', () => {
         group: groupClone,
         notFoundDrivers,
         modified: computed(() => JSON.stringify(groupClone.value) != JSON.stringify(groups.value)),
-        restore: () => (groupClone.value = structuredClone(toRaw(groups.value[gidx]!))),
-        refresh: () => (groupClone.value = structuredClone(toRaw(groups.value[gidx]!)))
+        reset: () => (groupClone.value = structuredClone(toRaw(groups.value[gidx]!)))
       }
     }
   }
