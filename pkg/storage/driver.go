@@ -109,11 +109,19 @@ func (s *DriverGroupStorage) Remove(id string) error {
 		return err
 	}
 
-	for i, group := range s.data {
-		if index := slices.IndexFunc(group.Drivers, func(d *Driver) bool { return d.Id == id }); index != -1 {
-			s.data[i].Drivers = append(group.Drivers[:index], group.Drivers[index+1:]...)
-		}
-	}
+	// for i, group := range s.data {
+	// 	if index := slices.IndexFunc(group.Drivers, func(d *Driver) bool { return d.Id == id }); index != -1 {
+	// 		s.data[i].Drivers = append(group.Drivers[:index], group.Drivers[index+1:]...)
+	// 	}
+	// }
+	// for gidx, group := range s.data {
+	// 	for didx, driver := range group.Drivers {
+	// 		if slices.Contains(driver.Incompatibles, id) {
+	// 			s.data[gidx].Drivers[didx].Incompatibles = slices.Delete(
+	// 				driver.Incompatibles, slices.Index(driver.Incompatibles, id), slices.Index(driver.Incompatibles, id)+1)
+	// 		}
+	// 	}
+	// }
 
 	return s.Store.Write(s.data)
 }
