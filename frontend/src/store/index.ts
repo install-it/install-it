@@ -35,7 +35,6 @@ export const useAppSettingStore = defineStore('appSetting', () => {
 
 export const useDriverGroupStore = defineStore('driverGroup', () => {
   const loading = ref(false)
-
   const groups = ref<storage.DriverGroup[]>([])
   const notFoundDrivers = ref<Array<string>>([])
 
@@ -68,11 +67,13 @@ export const useDriverGroupStore = defineStore('driverGroup', () => {
         .finally(() => (loading.value = false))
     },
     editor: (id: string | null | undefined) => {
-      const gidx = groups.value.findIndex(g => g.id == id)
-      const groupClone = ref(
-        id == null || gidx === -1
-          ? new storage.DriverGroup({ type: undefined, name: '', drivers: [] })
-          : structuredClone(toRaw(groups.value[gidx]!))
+      const groupClone = ref<storage.DriverGroup>(
+        structuredClone(
+          toRaw(
+            groups.value.find(g => g.id == id) ??
+              new storage.DriverGroup({ type: undefined, name: '', drivers: [] })
+          )
+        )
       )
       const notFoundDrivers = ref<Array<string>>([])
 
@@ -96,8 +97,22 @@ export const useDriverGroupStore = defineStore('driverGroup', () => {
       return {
         group: groupClone,
         notFoundDrivers,
-        modified: computed(() => JSON.stringify(groupClone.value) != JSON.stringify(groups.value)),
-        reset: () => (groupClone.value = structuredClone(toRaw(groups.value[gidx]!)))
+        modified: computed(
+          () =>
+            JSON.stringify(groupClone.value) !=
+            JSON.stringify(
+              groups.value.find(g => g.id == groupClone.value.id) ||
+                new storage.DriverGroup({ type: undefined, name: '', drivers: [] })
+            )
+        ),
+        reset: () => {
+          groupClone.value = structuredClone(
+            toRaw(
+              groups.value.find(g => g.id == groupClone.value.id) ||
+                new storage.DriverGroup({ type: undefined, name: '', drivers: [] })
+            )
+          )
+        }
       }
     }
   }

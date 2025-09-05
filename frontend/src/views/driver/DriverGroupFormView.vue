@@ -28,7 +28,7 @@ const groupEditor = groupStore.editor($route.params.id as string | undefined)
 const group = groupEditor.group // alias
 
 onBeforeRouteLeave((to, from, next) => {
-  if (groupEditor.modified) {
+  if (groupEditor.modified.value) {
     questionModal.value?.show(answer => {
       next(answer == 'yes')
     })
@@ -47,6 +47,7 @@ function handleSubmit(event: SubmitEvent) {
     $toast.success(t('toast.updated'))
     groupStorage.All().then(gs => {
       groupStore.groups = gs
+      groupEditor.reset()
       if (event.submitter?.id !== 'driver-submit-btn') {
         $router.back()
       } else {
@@ -186,7 +187,7 @@ function handleSubmit(event: SubmitEvent) {
 
         <div class="flex justify-end gap-x-3">
           <button
-            v-show="groupEditor.modified"
+            v-show="groupEditor.modified.value"
             type="submit"
             id="driver-submit-btn"
             class="btn btn-secondary px-2"
