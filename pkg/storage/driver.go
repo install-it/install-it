@@ -80,8 +80,19 @@ func (s *DriverGroupStorage) Add(group DriverGroup) (string, error) {
 }
 
 func (s *DriverGroupStorage) Update(group DriverGroup) error {
+	// slice of all the existing drivers
 	drivers := utils.FlatMap(s.data, func(g *DriverGroup) []*Driver { return g.Drivers })
+	// slice of all the existing drivers' ID
 	driverIds := utils.Map(drivers, func(d *Driver) string { return d.Id })
+	// slice of all the drivers' ID that will be delete after the update
+	deletedIds := slices.DeleteFunc(driverIds, func(id string) bool {
+		for _, d := range group.Drivers {
+			if d.Id == id {
+				return true
+			}
+		}
+		return false
+	})
 
 	// generate ID for new drivers
 	for i := range group.Drivers {
@@ -97,15 +108,6 @@ func (s *DriverGroupStorage) Update(group DriverGroup) error {
 	}
 
 	// cacased deletion on Driver.Incompatibles
-	deletedIds := slices.DeleteFunc(driverIds, func(id string) bool {
-		for _, d := range group.Drivers {
-			if d.Id == id {
-				return true
-			}
-		}
-		return false
-	})
-
 	for _, g := range s.data {
 		for _, d := range g.Drivers {
 			d.Incompatibles = slices.DeleteFunc(d.Incompatibles, func(id string) bool {
