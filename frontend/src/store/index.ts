@@ -66,12 +66,12 @@ export const useDriverGroupStore = defineStore('driverGroup', () => {
         .then(g => (groups.value = g))
         .finally(() => (loading.value = false))
     },
-    editor: (id: string | null | undefined) => {
+    editor: (id: string | null | undefined, defaultType?: storage.DriverType) => {
       const groupClone = ref<storage.DriverGroup>(
         structuredClone(
           toRaw(
             groups.value.find(g => g.id == id) ??
-              new storage.DriverGroup({ type: undefined, name: '', drivers: [] })
+              new storage.DriverGroup({ type: defaultType, name: '', drivers: [] })
           )
         )
       )
@@ -102,14 +102,14 @@ export const useDriverGroupStore = defineStore('driverGroup', () => {
             JSON.stringify(groupClone.value) !=
             JSON.stringify(
               groups.value.find(g => g.id == groupClone.value.id) ||
-                new storage.DriverGroup({ type: undefined, name: '', drivers: [] })
+                new storage.DriverGroup({ type: defaultType, name: '', drivers: [] })
             )
         ),
         reset: () => {
           groupClone.value = structuredClone(
             toRaw(
               groups.value.find(g => g.id == groupClone.value.id) ||
-                new storage.DriverGroup({ type: undefined, name: '', drivers: [] })
+                new storage.DriverGroup({ type: defaultType, name: '', drivers: [] })
             )
           )
         }

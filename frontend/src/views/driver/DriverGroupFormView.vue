@@ -23,7 +23,10 @@ const inputModal = useTemplateRef('inputModal')
 
 const groupStore = useDriverGroupStore()
 
-const groupEditor = groupStore.editor($route.params.id as string | undefined)
+const groupEditor = groupStore.editor(
+  $route.params.id as string | undefined,
+  storage.DriverType[$route.query.type?.toString().toUpperCase() as keyof typeof storage.DriverType]
+)
 
 const group = groupEditor.group // alias
 
