@@ -5,19 +5,6 @@ import * as driverGroupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
 import { defineStore } from 'pinia'
 import { computed, ref, toRaw, watch } from 'vue'
 
-export const createEditor = <T>(data: T) => {
-  const dataClone = ref(structuredClone(toRaw(data)))
-  return {
-    data: dataClone,
-    modified: computed(() => JSON.stringify(dataClone.value) != JSON.stringify(data)),
-    restore: () => (dataClone.value = structuredClone(toRaw(data))),
-    save: () => {
-      data = structuredClone(toRaw(dataClone.value))
-      dataClone.value = structuredClone(toRaw(data))
-    }
-  }
-}
-
 export const useAppSettingStore = defineStore('appSetting', () => {
   const loading = ref(false)
 
