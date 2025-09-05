@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { useAppSettingStore, useDriverGroupStore } from '@/store'
 import { AppVersion } from '@/wailsjs/go/main/App'
+import * as appSettingStorage from '@/wailsjs/go/storage/AppSettingStorage'
+import * as driverGroupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { RouteLocationRaw } from 'vue-router'
@@ -18,11 +20,24 @@ const groupStore = useDriverGroupStore()
 const initilisating = ref(true)
 
 Promise.all([
-  groupStore.read(),
-  settingsStore
-    .read()
-    .then(() => {
-      locale.value = settingsStore.settings.language
+  driverGroupStorage
+    .All()
+    .then(gs => (groupStore.groups = gs))
+    .catch(() => {
+      $toast.error(t('toast.readDriverFailed'))
+    }),
+  appSettingStorage
+    .All()
+    .then(s => {
+      settingsStore.settings = s
+      locale.value = s.language
+    })
+    .catch(() => {
+      $toast.error(t('toast.readAppSettingFailed'))
+    })
+])
+  .then(() => {
+    setTimeout(() => {
       if (settingsStore.settings.auto_check_update) {
         return AppVersion().then(version =>
           latestRelease(version).then(release => {
@@ -32,11 +47,9 @@ Promise.all([
           })
         )
       }
-    })
-    .catch(() => {
-      $toast.error(t('toast.readAppSettingFailed'))
-    })
-]).finally(() => (initilisating.value = false))
+    }, 1000)
+  })
+  .finally(() => (initilisating.value = false))
 
 const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
   { to: '/', icon: 'fa-regular fa-house' },

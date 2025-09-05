@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useDriverGroupStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
+import * as driverGroupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
 import * as groupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
 import { ref } from 'vue'
 
 const groupStore = useDriverGroupStore()
-
 const reordering = ref(false)
 </script>
 
@@ -102,14 +102,32 @@ const reordering = ref(false)
 
             <button
               class="px-1 bg-gray-200 hover:bg-gray-300 transition-all rounded-sm"
-              @click="groupStorage.Add(g).then(() => groupStore.read())"
+              @click="
+                groupStorage.Add(g).then(() =>
+                  driverGroupStorage
+                    .All()
+                    .then(gs => (groupStore.groups = gs))
+                    .catch(() => {
+                      $toast.error($t('toast.readDriverFailed'))
+                    })
+                )
+              "
             >
               <font-awesome-icon icon="fa-solid fa-clone" class="text-gray-500" />
             </button>
 
             <button
               class="px-1 bg-gray-200 hover:bg-gray-300 transition-all rounded-sm"
-              @click="groupStorage.Remove(g.id).then(() => groupStore.read())"
+              @click="
+                groupStorage.Remove(g.id).then(() =>
+                  driverGroupStorage
+                    .All()
+                    .then(gs => (groupStore.groups = gs))
+                    .catch(() => {
+                      $toast.error($t('toast.readDriverFailed'))
+                    })
+                )
+              "
             >
               <font-awesome-icon icon="fa-solid fa-trash" class="text-gray-500" />
             </button>
