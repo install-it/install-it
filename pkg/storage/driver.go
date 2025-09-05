@@ -65,10 +65,7 @@ func (s *DriverGroupStorage) Get(id string) (DriverGroup, error) {
 }
 
 func (s *DriverGroupStorage) Add(group DriverGroup) (string, error) {
-	var drivers []*Driver
-	for _, g := range s.data {
-		drivers = append(drivers, g.Drivers...)
-	}
+	drivers := utils.FlatMap(s.data, func(g *DriverGroup) []*Driver { return g.Drivers })
 
 	for i := range group.Drivers {
 		group.Drivers[i].Id = GenerateId(drivers)
@@ -83,10 +80,7 @@ func (s *DriverGroupStorage) Add(group DriverGroup) (string, error) {
 }
 
 func (s *DriverGroupStorage) Update(group DriverGroup) error {
-	var drivers []*Driver
-	for _, g := range s.data {
-		drivers = append(drivers, g.Drivers...)
-	}
+	drivers := utils.FlatMap(s.data, func(g *DriverGroup) []*Driver { return g.Drivers })
 	driverIds := utils.Map(drivers, func(d *Driver) string { return d.Id })
 
 	// generate ID for new drivers
@@ -128,19 +122,15 @@ func (s *DriverGroupStorage) Remove(id string) error {
 	if err != nil {
 		return err
 	}
-
-	driverIds := make([]string, 0, len(group.Drivers))
-	for _, driver := range group.Drivers {
-		driverIds = append(driverIds, driver.Id)
-	}
+	driverIds := utils.Map(group.Drivers, func(d *Driver) string { return d.Id })
 
 	if err := Delete(id, &s.data); err != nil {
 		return err
 	}
 
-	for _, group := range s.data {
-		for _, driver := range group.Drivers {
-			driver.Incompatibles = slices.DeleteFunc(driver.Incompatibles, func(id string) bool {
+	for _, g := range s.data {
+		for _, d := range g.Drivers {
+			d.Incompatibles = slices.DeleteFunc(d.Incompatibles, func(id string) bool {
 				return slices.Contains(driverIds, id)
 			})
 		}
