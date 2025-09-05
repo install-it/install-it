@@ -144,7 +144,7 @@ func (s DriverGroupStorage) IndexOf(id string) (int, error) {
 }
 
 func (s *DriverGroupStorage) MoveBehind(id string, index int) ([]*DriverGroup, error) {
-	if srcIndex, err := IndexOf(id, s.data); err != nil {
+	if srcIndex, err := s.IndexOf(id); err != nil {
 		return s.data, err
 	} else {
 		if index < -1 || index >= len(s.data)-1 {
