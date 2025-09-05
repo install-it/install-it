@@ -82,29 +82,6 @@ func (s *DriverGroupStorage) Add(group DriverGroup) (string, error) {
 	}
 }
 
-// func (s *DriverGroupStorage) Update(group DriverGroup) error {
-// 	var drivers []*Driver
-// 	var driverIds []string
-// 	for _, g := range s.data {
-// 		drivers = append(drivers, g.Drivers...)
-// 		for _, d := range g.Drivers {
-// 			driverIds = append(driverIds, d.Id)
-// 		}
-// 	}
-
-// 	for i := range group.Drivers {
-// 		if !slices.Contains(driverIds, group.Drivers[i].Id) {
-// 			group.Drivers[i].Id = GenerateId(drivers)
-// 			drivers = append(drivers, group.Drivers[i])
-// 		}
-// 	}
-
-//		if err := Update(&group, &s.data); err != nil {
-//			return err
-//		}
-//		return s.Store.Write(s.data)
-//	}
-
 func (s *DriverGroupStorage) Update(group DriverGroup) error {
 	existingGroup, err := Get(group.Id, s.data)
 	if err != nil {
