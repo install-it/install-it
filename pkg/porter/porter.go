@@ -3,6 +3,7 @@ package porter
 import (
 	"context"
 	"driver-box/pkg/status"
+	"driver-box/pkg/utils"
 	"errors"
 	"os"
 	"path/filepath"
@@ -28,7 +29,7 @@ func (p Porter) Status() status.Status {
 	}
 
 	if p.ctx.Err() == context.Canceled {
-		if some(p.progresses, func(p *Progress) bool {
+		if utils.Some(p.progresses, func(p *Progress) bool {
 			return strings.Contains(string(p.Status), "ing")
 		}) {
 			return status.Aborting
@@ -36,13 +37,13 @@ func (p Porter) Status() status.Status {
 		return status.Aborted
 	}
 
-	if all(p.progresses, func(p *Progress) bool { return p.Status == status.Pending }) {
+	if utils.All(p.progresses, func(p *Progress) bool { return p.Status == status.Pending }) {
 		return status.Pending
 	}
-	if all(p.progresses, func(p *Progress) bool { return p.Status == status.Completed }) {
+	if utils.All(p.progresses, func(p *Progress) bool { return p.Status == status.Completed }) {
 		return status.Completed
 	}
-	if all(p.progresses, func(p *Progress) bool { return p.Status != status.Failed }) {
+	if utils.All(p.progresses, func(p *Progress) bool { return p.Status != status.Failed }) {
 		return status.Running
 	}
 	return status.Failed
