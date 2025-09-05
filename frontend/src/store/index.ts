@@ -38,20 +38,19 @@ export const useDriverGroupStore = defineStore('driverGroup', () => {
   const groups = ref<storage.DriverGroup[]>([])
   const notFoundDrivers = ref<Array<string>>([])
 
+  const findNotExists = (drivers: Array<storage.Driver>) =>
+    Promise.all(
+      drivers.map(d => ExecutableExists(d.path).then(exist => ({ id: d.id, exist: exist })))
+    ).then(results => {
+      return results
+        .map(result => (result.exist ? undefined : result.id))
+        .filter(v => v !== undefined)
+    })
+
   watch(
     groups,
     newGroups =>
-      Promise.all(
-        newGroups
-          .flatMap(g => g.drivers)
-          .flatMap(d => ExecutableExists(d.path).then(exist => ({ id: d.id, exist: exist })))
-      )
-        .then(results => {
-          return results
-            .map(result => (result.exist ? undefined : result.id))
-            .filter(v => v !== undefined)
-        })
-        .then(ids => (notFoundDrivers.value = ids)),
+      findNotExists(newGroups.flatMap(g => g.drivers)).then(ids => (notFoundDrivers.value = ids)),
     { immediate: true }
   )
 
@@ -79,18 +78,7 @@ export const useDriverGroupStore = defineStore('driverGroup', () => {
 
       watch(
         groupClone.value.drivers,
-        newDrivers =>
-          Promise.all(
-            newDrivers.map(d =>
-              ExecutableExists(d.path).then(exist => ({ id: d.id, exist: exist }))
-            )
-          )
-            .then(results => {
-              return results
-                .map(result => (result.exist ? undefined : result.id))
-                .filter(v => v !== undefined)
-            })
-            .then(ids => (notFoundDrivers.value = ids)),
+        newDrivers => findNotExists(newDrivers).then(ids => (notFoundDrivers.value = ids)),
         { immediate: true }
       )
 
