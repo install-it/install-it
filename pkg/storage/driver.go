@@ -83,72 +83,10 @@ func (s *DriverGroupStorage) Add(group DriverGroup) (string, error) {
 }
 
 func (s *DriverGroupStorage) Update(group DriverGroup) error {
-	existingGroup, err := Get(group.Id, s.data)
-	if err != nil {
-		return err
-	}
-
-	// Find removed driver IDs
-	driverMap := make(map[string]bool)
-	for _, driver := range group.Drivers {
-		driverMap[driver.Id] = true
-	}
-
-	removedDriverIds := make([]string, 0)
-	for _, driver := range existingGroup.Drivers {
-		if !driverMap[driver.Id] {
-			removedDriverIds = append(removedDriverIds, driver.Id)
-		}
-	}
-
-	// Generate IDs for new drivers
-	existingIds := make(map[string]bool)
-	for _, g := range s.data {
-		for _, d := range g.Drivers {
-			existingIds[d.Id] = true
-		}
-	}
-
-	for i, driver := range group.Drivers {
-		if !existingIds[driver.Id] {
-			group.Drivers[i].Id = GenerateId([]*Driver{})
-		}
-	}
-
-	// Update group and clean up incompatibles
-	if err := Update(&group, &s.data); err != nil {
-		return err
-	}
-
-	if len(removedDriverIds) > 0 {
-		removedSet := make(map[string]bool)
-		for _, id := range removedDriverIds {
-			removedSet[id] = true
-		}
-
-		for _, g := range s.data {
-			for _, d := range g.Drivers {
-				d.Incompatibles = slices.DeleteFunc(d.Incompatibles, func(id string) bool {
-					return removedSet[id]
-				})
-			}
-		}
-	}
-
-	return s.Store.Write(s.data)
-}
-
-func (s *DriverGroupStorage) Update2(group DriverGroup) error {
-	group, err := s.Get(group.Id)
-	if err != nil {
-		return err
-	}
-
 	var drivers []*Driver
 	for _, g := range s.data {
 		drivers = append(drivers, g.Drivers...)
 	}
-
 	driverIds := utils.Map(drivers, func(d *Driver) string { return d.Id })
 
 	// generate ID for new drivers
