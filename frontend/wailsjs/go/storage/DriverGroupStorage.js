@@ -29,3 +29,7 @@ export function Remove(arg1) {
 export function Update(arg1) {
   return window['go']['storage']['DriverGroupStorage']['Update'](arg1);
 }
+
+export function Update2(arg1) {
+  return window['go']['storage']['DriverGroupStorage']['Update2'](arg1);
+}

@@ -15,3 +15,5 @@ export function MoveBehind(arg1:string,arg2:number):Promise<Array<storage.Driver
 export function Remove(arg1:string):Promise<void>;
 
 export function Update(arg1:storage.DriverGroup):Promise<void>;
+
+export function Update2(arg1:storage.DriverGroup):Promise<void>;
