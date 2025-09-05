@@ -19,6 +19,8 @@ const groupStore = useDriverGroupStore()
 
 const initilisating = ref(true)
 
+const hasUpdate = ref(false)
+
 Promise.all([
   driverGroupStorage
     .All()
@@ -41,6 +43,7 @@ Promise.all([
       if (settingsStore.settings.auto_check_update) {
         return AppVersion().then(version =>
           latestRelease(version).then(release => {
+            hasUpdate.value = release.hasUpdate
             if (release.hasUpdate) {
               $toast.info(t('toast.updateAvailable'))
             }
@@ -75,7 +78,14 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
                     activeClass="text-apple-green-900 bg-powder-blue-400"
                     draggable="false"
                   >
-                    <font-awesome-icon :icon="link.icon" />
+                    <div class="indicator">
+                      <span
+                        class="indicator-item status status-neutral"
+                        style="background-image: unset"
+                        v-if="link.to == '/app-info' && hasUpdate"
+                      ></span>
+                      <font-awesome-icon :icon="link.icon" />
+                    </div>
                   </RouterLink>
                 </li>
               </ul>
