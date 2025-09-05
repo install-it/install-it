@@ -118,7 +118,7 @@ func (s *DriverGroupStorage) Update(group DriverGroup) error {
 }
 
 func (s *DriverGroupStorage) Remove(id string) error {
-	group, err := Get(id, s.data)
+	group, err := s.Get(id)
 	if err != nil {
 		return err
 	}
