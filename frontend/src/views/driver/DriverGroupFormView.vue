@@ -113,8 +113,8 @@ function handleSubmit(event: SubmitEvent) {
       <legend class="fieldset-legend text-sm">{{ $t('driverForm.driver') }}</legend>
 
       <div>
-        <div class="max-h-[40vh] text-sm overflow-y-auto">
-          <div class="grid grid-rows">
+        <div class="max-h-[40vh] overflow-y-auto">
+          <div class="grid grid-rows text-sm">
             <div class="grid grid-cols-10 gap-2 py-1.5 border-y">
               <div class="col-span-2">{{ $t('driverForm.name') }}</div>
               <div class="col-span-3">{{ $t('driverForm.path') }}</div>
