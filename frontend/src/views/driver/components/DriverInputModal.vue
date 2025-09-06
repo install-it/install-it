@@ -153,8 +153,8 @@ const filterGroups = computed(() => {
             <fieldset class="fieldset">
               <legend class="fieldset-legend text-sm">{{ $t('driverForm.argument') }}</legend>
 
-              <div class="join">
-                <select
+              <div class="join items-center">
+                <!-- <select
                   name="flags"
                   class="w-32 select select-accent join-item ps-1"
                   @change="
@@ -172,7 +172,35 @@ const filterGroups = computed(() => {
                   >
                     {{ name }}
                   </option>
-                </select>
+                </select> -->
+                <div class="dropdown">
+                  <div tabindex="0" role="button" class="join-item btn m-1 w-30">
+                    {{ $t('common.select') }}
+                  </div>
+                  <ul
+                    tabindex="0"
+                    class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
+                  >
+                    <div class="h-36 overflow-y-auto">
+                      <li
+                        v-for="(flag, name) in FLAGS"
+                        :key="name"
+                        @click="
+                          event => {
+                            driver.flags = flag.join()
+                            ;(
+                              event.currentTarget as HTMLLIElement
+                            ).parentElement?.parentElement?.blur()
+                          }
+                        "
+                      >
+                        <a>
+                          {{ name }}
+                        </a>
+                      </li>
+                    </div>
+                  </ul>
+                </div>
 
                 <input
                   type="text"
