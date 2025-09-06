@@ -110,9 +110,11 @@ func (a App) Update(from string, to string, builtinWebview bool) error {
 	defer file.Close()
 
 	response, err := http.Get(
-		fmt.Sprintf("https://github.com/driverbox/driver-box/releases/latest/download/updater.%s.exe", a.AppBinaryType()))
+		fmt.Sprintf("https://github.com/driverbox/driver-box/releases/download/v%s/updater.%s.exe", to, a.AppBinaryType()))
 	if err != nil {
 		return err
+	} else if response.StatusCode < 100 || response.StatusCode > 200 {
+		return fmt.Errorf("main: failed to locate the updater for \"%s\" - %s", to, response.Status)
 	}
 	defer response.Body.Close()
 
