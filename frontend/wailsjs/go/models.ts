@@ -242,8 +242,7 @@ export namespace sysinfo {
 	    Height: number;
 	    HostingBoard: boolean;
 	    HotSwappable: boolean;
-	    // Go type: time
-	    InstallDate: any;
+	    InstallDate: string;
 	    Manufacturer: string;
 	    Model: string;
 	    Name: string;
@@ -279,7 +278,7 @@ export namespace sysinfo {
 	        this.Height = source["Height"];
 	        this.HostingBoard = source["HostingBoard"];
 	        this.HotSwappable = source["HotSwappable"];
-	        this.InstallDate = this.convertValues(source["InstallDate"], null);
+	        this.InstallDate = source["InstallDate"];
 	        this.Manufacturer = source["Manufacturer"];
 	        this.Model = source["Model"];
 	        this.Name = source["Name"];
@@ -301,24 +300,6 @@ export namespace sysinfo {
 	        this.Weight = source["Weight"];
 	        this.Width = source["Width"];
 	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
 	}
 	export class Win32_DiskDrive {
 	    Availability: number;
@@ -338,8 +319,7 @@ export namespace sysinfo {
 	    ErrorMethodology: string;
 	    FirmwareRevision: string;
 	    Index: number;
-	    // Go type: time
-	    InstallDate: any;
+	    InstallDate: string;
 	    InterfaceType: string;
 	    LastErrorCode: number;
 	    Manufacturer: string;
@@ -397,7 +377,7 @@ export namespace sysinfo {
 	        this.ErrorMethodology = source["ErrorMethodology"];
 	        this.FirmwareRevision = source["FirmwareRevision"];
 	        this.Index = source["Index"];
-	        this.InstallDate = this.convertValues(source["InstallDate"], null);
+	        this.InstallDate = source["InstallDate"];
 	        this.InterfaceType = source["InterfaceType"];
 	        this.LastErrorCode = source["LastErrorCode"];
 	        this.Manufacturer = source["Manufacturer"];
@@ -432,24 +412,6 @@ export namespace sysinfo {
 	        this.TotalTracks = source["TotalTracks"];
 	        this.TracksPerCylinder = source["TracksPerCylinder"];
 	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
 	}
 	export class Win32_DiskPartition {
 	    AdditionalAvailability: number;
@@ -477,8 +439,7 @@ export namespace sysinfo {
 	    ErrorMethodology: string;
 	    HiddenSectors: number;
 	    Index: number;
-	    // Go type: time
-	    InstallDate: any;
+	    InstallDate: string;
 	    LastErrorCode: number;
 	    Name: string;
 	    PNPDeviceID: string;
@@ -524,7 +485,7 @@ export namespace sysinfo {
 	        this.ErrorMethodology = source["ErrorMethodology"];
 	        this.HiddenSectors = source["HiddenSectors"];
 	        this.Index = source["Index"];
-	        this.InstallDate = this.convertValues(source["InstallDate"], null);
+	        this.InstallDate = source["InstallDate"];
 	        this.LastErrorCode = source["LastErrorCode"];
 	        this.Name = source["Name"];
 	        this.PNPDeviceID = source["PNPDeviceID"];
@@ -539,24 +500,6 @@ export namespace sysinfo {
 	        this.SystemName = source["SystemName"];
 	        this.Type = source["Type"];
 	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
 	}
 	export class Win32_NetworkAdapter {
 	    AdapterType: string;
@@ -573,8 +516,7 @@ export namespace sysinfo {
 	    ErrorDescription: string;
 	    GUID: string;
 	    Index: number;
-	    // Go type: time
-	    InstallDate: any;
+	    InstallDate: string;
 	    Installed: boolean;
 	    InterfaceIndex: number;
 	    LastErrorCode: number;
@@ -599,8 +541,7 @@ export namespace sysinfo {
 	    StatusInfo: number;
 	    SystemCreationClassName: string;
 	    SystemName: string;
-	    // Go type: time
-	    TimeOfLastReset: any;
+	    TimeOfLastReset: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new Win32_NetworkAdapter(source);
@@ -622,7 +563,7 @@ export namespace sysinfo {
 	        this.ErrorDescription = source["ErrorDescription"];
 	        this.GUID = source["GUID"];
 	        this.Index = source["Index"];
-	        this.InstallDate = this.convertValues(source["InstallDate"], null);
+	        this.InstallDate = source["InstallDate"];
 	        this.Installed = source["Installed"];
 	        this.InterfaceIndex = source["InterfaceIndex"];
 	        this.LastErrorCode = source["LastErrorCode"];
@@ -647,26 +588,8 @@ export namespace sysinfo {
 	        this.StatusInfo = source["StatusInfo"];
 	        this.SystemCreationClassName = source["SystemCreationClassName"];
 	        this.SystemName = source["SystemName"];
-	        this.TimeOfLastReset = this.convertValues(source["TimeOfLastReset"], null);
+	        this.TimeOfLastReset = source["TimeOfLastReset"];
 	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
 	}
 	export class Win32_PhysicalMemory {
 	    Attributes: number;
@@ -681,8 +604,7 @@ export namespace sysinfo {
 	    DeviceLocator: string;
 	    FormFactor: number;
 	    HotSwappable: boolean;
-	    // Go type: time
-	    InstallDate: any;
+	    InstallDate: string;
 	    InterleaveDataDepth: number;
 	    InterleavePosition: number;
 	    Manufacturer: string;
@@ -725,7 +647,7 @@ export namespace sysinfo {
 	        this.DeviceLocator = source["DeviceLocator"];
 	        this.FormFactor = source["FormFactor"];
 	        this.HotSwappable = source["HotSwappable"];
-	        this.InstallDate = this.convertValues(source["InstallDate"], null);
+	        this.InstallDate = source["InstallDate"];
 	        this.InterleaveDataDepth = source["InterleaveDataDepth"];
 	        this.InterleavePosition = source["InterleavePosition"];
 	        this.Manufacturer = source["Manufacturer"];
@@ -750,24 +672,6 @@ export namespace sysinfo {
 	        this.TypeDetail = source["TypeDetail"];
 	        this.Version = source["Version"];
 	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
 	}
 	export class Win32_Processor {
 	    AddressWidth: number;
@@ -789,8 +693,7 @@ export namespace sysinfo {
 	    ErrorDescription: string;
 	    ExtClock: number;
 	    Family: number;
-	    // Go type: time
-	    InstallDate: any;
+	    InstallDate: string;
 	    L2CacheSize: number;
 	    L2CacheSpeed: number;
 	    L3CacheSize: number;
@@ -854,7 +757,7 @@ export namespace sysinfo {
 	        this.ErrorDescription = source["ErrorDescription"];
 	        this.ExtClock = source["ExtClock"];
 	        this.Family = source["Family"];
-	        this.InstallDate = this.convertValues(source["InstallDate"], null);
+	        this.InstallDate = source["InstallDate"];
 	        this.L2CacheSize = source["L2CacheSize"];
 	        this.L2CacheSpeed = source["L2CacheSpeed"];
 	        this.L3CacheSize = source["L3CacheSize"];
@@ -893,24 +796,6 @@ export namespace sysinfo {
 	        this.VMMonitorModeExtensions = source["VMMonitorModeExtensions"];
 	        this.VoltageCaps = source["VoltageCaps"];
 	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
 	}
 	export class Win32_UserAccount {
 	    AccountType: number;
@@ -919,8 +804,7 @@ export namespace sysinfo {
 	    Disabled: boolean;
 	    Domain: string;
 	    FullName: string;
-	    // Go type: time
-	    InstallDate: any;
+	    InstallDate: string;
 	    LocalAccount: boolean;
 	    Lockout: boolean;
 	    Name: string;
@@ -943,7 +827,7 @@ export namespace sysinfo {
 	        this.Disabled = source["Disabled"];
 	        this.Domain = source["Domain"];
 	        this.FullName = source["FullName"];
-	        this.InstallDate = this.convertValues(source["InstallDate"], null);
+	        this.InstallDate = source["InstallDate"];
 	        this.LocalAccount = source["LocalAccount"];
 	        this.Lockout = source["Lockout"];
 	        this.Name = source["Name"];
@@ -954,24 +838,6 @@ export namespace sysinfo {
 	        this.SIDType = source["SIDType"];
 	        this.Status = source["Status"];
 	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
 	}
 	export class Win32_VideoController {
 	    AcceleratorCapabilities: number[];
@@ -997,8 +863,7 @@ export namespace sysinfo {
 	    DeviceID: string;
 	    DeviceSpecificPens: number;
 	    DitherType: number;
-	    // Go type: time
-	    DriverDate: any;
+	    DriverDate: string;
 	    DriverVersion: string;
 	    ErrorCleared: boolean;
 	    ErrorDescription: string;
@@ -1006,8 +871,7 @@ export namespace sysinfo {
 	    ICMMethod: number;
 	    InfFilename: string;
 	    InfSection: string;
-	    // Go type: time
-	    InstallDate: any;
+	    InstallDate: string;
 	    InstalledDisplayDrivers: string;
 	    LastErrorCode: number;
 	    MaxMemorySupported: number;
@@ -1029,8 +893,7 @@ export namespace sysinfo {
 	    SystemCreationClassName: string;
 	    SystemName: string;
 	    SystemPaletteEntries: number;
-	    // Go type: time
-	    TimeOfLastReset: any;
+	    TimeOfLastReset: string;
 	    VideoArchitecture: number;
 	    VideoMemoryType: number;
 	    VideoMode: number;
@@ -1066,7 +929,7 @@ export namespace sysinfo {
 	        this.DeviceID = source["DeviceID"];
 	        this.DeviceSpecificPens = source["DeviceSpecificPens"];
 	        this.DitherType = source["DitherType"];
-	        this.DriverDate = this.convertValues(source["DriverDate"], null);
+	        this.DriverDate = source["DriverDate"];
 	        this.DriverVersion = source["DriverVersion"];
 	        this.ErrorCleared = source["ErrorCleared"];
 	        this.ErrorDescription = source["ErrorDescription"];
@@ -1074,7 +937,7 @@ export namespace sysinfo {
 	        this.ICMMethod = source["ICMMethod"];
 	        this.InfFilename = source["InfFilename"];
 	        this.InfSection = source["InfSection"];
-	        this.InstallDate = this.convertValues(source["InstallDate"], null);
+	        this.InstallDate = source["InstallDate"];
 	        this.InstalledDisplayDrivers = source["InstalledDisplayDrivers"];
 	        this.LastErrorCode = source["LastErrorCode"];
 	        this.MaxMemorySupported = source["MaxMemorySupported"];
@@ -1096,31 +959,13 @@ export namespace sysinfo {
 	        this.SystemCreationClassName = source["SystemCreationClassName"];
 	        this.SystemName = source["SystemName"];
 	        this.SystemPaletteEntries = source["SystemPaletteEntries"];
-	        this.TimeOfLastReset = this.convertValues(source["TimeOfLastReset"], null);
+	        this.TimeOfLastReset = source["TimeOfLastReset"];
 	        this.VideoArchitecture = source["VideoArchitecture"];
 	        this.VideoMemoryType = source["VideoMemoryType"];
 	        this.VideoMode = source["VideoMode"];
 	        this.VideoModeDescription = source["VideoModeDescription"];
 	        this.VideoProcessor = source["VideoProcessor"];
 	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
 	}
 
 }

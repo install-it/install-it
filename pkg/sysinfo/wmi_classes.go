@@ -1,7 +1,5 @@
 package sysinfo
 
-import "time"
-
 /*
 The Win32_Processor WMI class represents a device that can interpret a sequence of instructions on a computer running on a Windows operating system.
 
@@ -27,7 +25,7 @@ type Win32_Processor struct {
 	ErrorDescription                        string
 	ExtClock                                uint32
 	Family                                  uint16
-	InstallDate                             time.Time
+	InstallDate                             string
 	L2CacheSize                             uint32
 	L2CacheSpeed                            uint32
 	L3CacheSize                             uint32
@@ -82,7 +80,7 @@ type Win32_MotherboardDevice struct {
 	DeviceID                    string
 	ErrorCleared                bool
 	ErrorDescription            string
-	InstallDate                 time.Time
+	InstallDate                 string
 	LastErrorCode               uint32
 	Name                        string
 	PNPDeviceID                 string
@@ -111,7 +109,7 @@ type Win32_BaseBoard struct {
 	Height                  float32
 	HostingBoard            bool
 	HotSwappable            bool
-	InstallDate             time.Time
+	InstallDate             string
 	Manufacturer            string
 	Model                   string
 	Name                    string
@@ -152,7 +150,7 @@ type Win32_PhysicalMemory struct {
 	DeviceLocator        string
 	FormFactor           uint16
 	HotSwappable         bool
-	InstallDate          time.Time
+	InstallDate          string
 	InterleaveDataDepth  uint16
 	InterleavePosition   uint32
 	Manufacturer         string
@@ -207,7 +205,7 @@ type Win32_VideoController struct {
 	DeviceID                     string
 	DeviceSpecificPens           uint32
 	DitherType                   uint32
-	DriverDate                   time.Time
+	DriverDate                   string
 	DriverVersion                string
 	ErrorCleared                 bool
 	ErrorDescription             string
@@ -215,7 +213,7 @@ type Win32_VideoController struct {
 	ICMMethod                    uint32
 	InfFilename                  string
 	InfSection                   string
-	InstallDate                  time.Time
+	InstallDate                  string
 	InstalledDisplayDrivers      string
 	LastErrorCode                uint32
 	MaxMemorySupported           uint32
@@ -237,7 +235,7 @@ type Win32_VideoController struct {
 	SystemCreationClassName      string
 	SystemName                   string
 	SystemPaletteEntries         uint32
-	TimeOfLastReset              time.Time
+	TimeOfLastReset              string
 	VideoArchitecture            uint16
 	VideoMemoryType              uint16
 	VideoMode                    uint16
@@ -267,7 +265,7 @@ type Win32_NetworkAdapter struct {
 	ErrorDescription            string
 	GUID                        string
 	Index                       uint32
-	InstallDate                 time.Time
+	InstallDate                 string
 	Installed                   bool
 	InterfaceIndex              uint32
 	LastErrorCode               uint32
@@ -292,7 +290,7 @@ type Win32_NetworkAdapter struct {
 	StatusInfo                  uint16
 	SystemCreationClassName     string
 	SystemName                  string
-	TimeOfLastReset             time.Time
+	TimeOfLastReset             string
 }
 
 /*
@@ -318,7 +316,7 @@ type Win32_DiskDrive struct {
 	ErrorMethodology            string
 	FirmwareRevision            string
 	Index                       uint32
-	InstallDate                 time.Time
+	InstallDate                 string
 	InterfaceType               string
 	LastErrorCode               uint32
 	Manufacturer                string
@@ -386,7 +384,7 @@ type Win32_DiskPartition struct {
 	ErrorMethodology            string
 	HiddenSectors               uint32
 	Index                       uint32
-	InstallDate                 time.Time
+	InstallDate                 string
 	LastErrorCode               uint32
 	Name                        string
 	PNPDeviceID                 string
@@ -414,7 +412,7 @@ type Win32_UserAccount struct {
 	Disabled           bool
 	Domain             string
 	FullName           string
-	InstallDate        time.Time
+	InstallDate        string
 	LocalAccount       bool
 	Lockout            bool
 	Name               string
