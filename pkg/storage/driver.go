@@ -46,12 +46,11 @@ type DriverGroupStorage struct {
 }
 
 func (s *DriverGroupStorage) All() ([]DriverGroup, error) {
-	if s.Store.Modified() {
-		s.data = []*DriverGroup{}
-		s.Store.Read(&s.data)
-	} else if !s.Store.Exist() {
+	if !s.Store.Exist() {
 		s.data = []*DriverGroup{}
 		s.Store.Write(s.data)
+	} else {
+		s.Store.Read(&s.data)
 	}
 	return s.copyOfAll(), nil
 }

@@ -4,4 +4,4 @@ import {storage} from '../models';
 
 export function All():Promise<storage.AppSetting>;
 
-export function Update(arg1:storage.AppSetting):Promise<void>;
+export function Update(arg1:storage.AppSetting):Promise<storage.AppSetting>;

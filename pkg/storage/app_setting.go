@@ -29,12 +29,11 @@ type AppSettingStorage struct {
 }
 
 func (s *AppSettingStorage) All() (AppSetting, error) {
-	if s.Store.Modified() {
-		s.setting = AppSetting{}
-		s.Store.Read(&s.setting)
-	} else if !s.Store.Exist() {
+	if !s.Store.Exist() {
 		s.setting = AppSetting{SuccessAction: Nothing, SuccessActionDelay: 5, Language: "en"}
 		s.Store.Write(s.setting)
+	} else {
+		s.Store.Read(&s.setting)
 	}
 	return s.setting, nil
 }
