@@ -45,7 +45,7 @@ type DriverGroupStorage struct {
 	data  []*DriverGroup
 }
 
-func (s *DriverGroupStorage) All() ([]*DriverGroup, error) {
+func (s *DriverGroupStorage) All() ([]DriverGroup, error) {
 	if s.Store.Modified() {
 		s.data = []*DriverGroup{}
 		s.Store.Read(&s.data)
@@ -53,10 +53,10 @@ func (s *DriverGroupStorage) All() ([]*DriverGroup, error) {
 		s.data = []*DriverGroup{}
 		s.Store.Write(s.data)
 	}
-	return s.data, nil
+	return s.copyOfAll(), nil
 }
 
-func (s *DriverGroupStorage) Get(id string) (DriverGroup, error) {
+func (s DriverGroupStorage) Get(id string) (DriverGroup, error) {
 	if group, err := Get(id, s.data); err != nil {
 		return DriverGroup{}, err
 	} else {
@@ -79,7 +79,7 @@ func (s *DriverGroupStorage) Add(group DriverGroup) (string, error) {
 	}
 }
 
-func (s *DriverGroupStorage) Update(group DriverGroup) error {
+func (s *DriverGroupStorage) Update(group DriverGroup) (DriverGroup, error) {
 	// slice of all the existing drivers
 	drivers := utils.FlatMap(s.data, func(g *DriverGroup) []*Driver { return g.Drivers })
 	// slice of all the existing drivers' ID
@@ -104,7 +104,7 @@ func (s *DriverGroupStorage) Update(group DriverGroup) error {
 
 	// update group
 	if err := Update(&group, &s.data); err != nil {
-		return err
+		return DriverGroup{}, err
 	}
 
 	// cacased deletion on Driver.Incompatibles
@@ -116,7 +116,7 @@ func (s *DriverGroupStorage) Update(group DriverGroup) error {
 		}
 	}
 
-	return s.Store.Write(s.data)
+	return group, s.Store.Write(s.data)
 }
 
 func (s *DriverGroupStorage) Remove(id string) error {
@@ -145,16 +145,16 @@ func (s DriverGroupStorage) IndexOf(id string) (int, error) {
 	return IndexOf(id, s.data)
 }
 
-func (s *DriverGroupStorage) MoveBehind(id string, index int) ([]*DriverGroup, error) {
+func (s *DriverGroupStorage) MoveBehind(id string, index int) ([]DriverGroup, error) {
 	if srcIndex, err := s.IndexOf(id); err != nil {
-		return s.data, err
+		return s.copyOfAll(), err
 	} else {
 		if index < -1 || index >= len(s.data)-1 {
-			return s.data, errors.New("store: target index out of bound")
+			return s.copyOfAll(), errors.New("store: target index out of bound")
 		}
 
 		if len(s.data) == 1 || srcIndex-index == 1 {
-			return s.data, nil
+			return s.copyOfAll(), nil
 		}
 
 		if srcIndex <= index {
@@ -166,6 +166,11 @@ func (s *DriverGroupStorage) MoveBehind(id string, index int) ([]*DriverGroup, e
 				s.data[i-1], s.data[i] = s.data[i], s.data[i-1]
 			}
 		}
-		return s.data, s.Store.Write(s.data)
+
+		return s.copyOfAll(), s.Store.Write(s.data)
 	}
+}
+
+func (s DriverGroupStorage) copyOfAll() []DriverGroup {
+	return utils.Map(s.data, func(g *DriverGroup) DriverGroup { return *g })
 }

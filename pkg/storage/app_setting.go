@@ -39,7 +39,7 @@ func (s *AppSettingStorage) All() (AppSetting, error) {
 	return s.setting, nil
 }
 
-func (s *AppSettingStorage) Update(v AppSetting) {
+func (s *AppSettingStorage) Update(v AppSetting) (AppSetting, error) {
 	s.setting = v
-	s.Store.Write(v)
+	return s.setting, s.Store.Write(v)
 }
