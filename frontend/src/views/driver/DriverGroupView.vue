@@ -13,6 +13,18 @@ const reordering = ref(false)
   <div class="flex flex-col h-full gap-y-2">
     <div class="flex flex-row gap-x-3 list-none text-center">
       <router-link
+        :to="{ path: '/drivers' }"
+        class="w-full py-3 text-xs font-bold uppercase shadow-lg rounded-sm"
+        :class="{
+          'text-half-baked-600 bg-white': $route.query.type != undefined,
+          'text-white bg-half-baked-600': $route.query.type == undefined
+        }"
+        draggable="false"
+      >
+        {{ $t(`common.all`) }}
+      </router-link>
+
+      <router-link
         v-for="type in storage.DriverType"
         :key="type"
         :to="{ path: '/drivers', query: { type: type } }"
