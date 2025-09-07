@@ -1,17 +1,5 @@
-import { ExecutableExists } from '@/wailsjs/go/main/App'
-import type { storage } from '@/wailsjs/go/models'
 import { marked } from 'marked'
 import * as semver from 'semver'
-
-export function getNotExistDrivers(drivers: Array<storage.Driver>) {
-  return Promise.all(
-    drivers.flatMap(d => ExecutableExists(d.path).then(exist => ({ id: d.id, exist: exist })))
-  ).then(results => {
-    return results
-      .map(result => (result.exist ? undefined : result.id))
-      .filter(v => v !== undefined)
-  })
-}
 
 export async function latestRelease(currentVersion: string) {
   return fetch('https://api.github.com/repos/driverbox/driver-box/releases/latest')
