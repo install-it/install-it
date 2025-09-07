@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import ModalFrame from '@/components/modals/ModalFrame.vue'
+import { useDriverGroupStore } from '@/store'
 import { SelectFile } from '@/wailsjs/go/main/App'
 import { storage } from '@/wailsjs/go/models'
-import * as groupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
 import { computed, nextTick, ref, toRaw, useTemplateRef } from 'vue'
 
 const frame = useTemplateRef('frame')
@@ -10,8 +10,6 @@ const frame = useTemplateRef('frame')
 defineExpose({
   show: (data?: Partial<storage.Driver>) => {
     frame.value?.show()
-
-    groupStorage.All().then(g => (groups.value = g))
 
     if (data) {
       driver.value = {
@@ -45,7 +43,7 @@ const FLAGS = {
   'AMD Chipset': ['/S']
 }
 
-const groups = ref<Array<storage.DriverGroup>>([])
+const groupStore = useDriverGroupStore()
 
 const modalBody = useTemplateRef<HTMLDivElement>('modalBody')
 
@@ -57,8 +55,8 @@ const driver = ref<
 
 const filterGroups = computed(() => {
   return searchPhrase.value === ''
-    ? groups.value
-    : groups.value.filter(
+    ? groupStore.groups
+    : groupStore.groups.filter(
         g =>
           g.name.includes(searchPhrase.value) ||
           g.drivers.some(d => d.name.includes(searchPhrase.value))
@@ -279,7 +277,7 @@ const filterGroups = computed(() => {
                   @click="
                     () => {
                       driver.incompatibles = [
-                        ...groups.flatMap(g => g.drivers.flatMap(d => d.id)),
+                        ...groupStore.groups.flatMap(g => g.drivers.flatMap(d => d.id)),
                         'set_password',
                         'create_partition'
                       ]
