@@ -14,7 +14,7 @@ export function getNotExistDrivers(drivers: Array<storage.Driver>) {
 }
 
 export async function latestRelease(currentVersion: string) {
-  return fetch('https://api.github.com/repos/markmybytes/driver-box/releases/latest')
+  return fetch('https://api.github.com/repos/driverbox/driver-box/releases/latest')
     .then(response => response.json())
     .then(async body => {
       const version = semver.clean(body.tag_name) || '0.0.0'

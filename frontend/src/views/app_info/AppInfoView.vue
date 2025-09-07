@@ -162,11 +162,11 @@ function checkUpdate() {
         <div class="col-span-2">{{ $t('info.sourceCode') }}</div>
         <div class="col-span-5">
           <a
-            href="https://github.com/markmybytes/driver-box"
+            href="https://github.com/driverbox/driver-box"
             class="text-sky-700 underline"
             @click.prevent="event => BrowserOpenURL((event.target as HTMLAnchorElement).href)"
           >
-            https://github.com/markmybytes/driver-box
+            https://github.com/driverbox/driver-box
           </a>
         </div>
       </div>
@@ -175,11 +175,11 @@ function checkUpdate() {
         <div class="col-span-2">{{ $t('info.reportBug') }}</div>
         <div class="col-span-5">
           <a
-            href="https://github.com/markmybytes/driver-box/issues"
+            href="https://github.com/driverbox/driver-box/issues"
             class="text-sky-700 underline"
             @click.prevent="event => BrowserOpenURL((event.target as HTMLAnchorElement).href)"
           >
-            https://github.com/markmybytes/driver-box/issues
+            https://github.com/driverbox/driver-box/issues
           </a>
         </div>
       </div>
@@ -193,7 +193,7 @@ function checkUpdate() {
             <button
               type="button"
               class="ml-2"
-              @click="BrowserOpenURL('https://github.com/markmybytes/driver-box/blob/main/LICENSE')"
+              @click="BrowserOpenURL('https://github.com/driverbox/driver-box/blob/main/LICENSE')"
             >
               <BoxArrowUpRight></BoxArrowUpRight>
             </button>
