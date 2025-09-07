@@ -48,8 +48,8 @@ function handleSubmit(event: SubmitEvent) {
 
   const handleSuccess = () => {
     $toast.success(t('toast.updated'))
-    groupStorage.All().then(gs => {
-      groupStore.groups = gs
+    groupStorage.All().then(newDriverGroups => {
+      groupStore.groups = newDriverGroups
       groupEditor.reset()
       if (event.submitter?.id !== 'driver-submit-btn') {
         $router.back()

@@ -3,7 +3,7 @@ import UnsaveConfirmModal from '@/components/modals/UnsaveConfirmModal.vue'
 import { useAppSettingStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
 import * as appSettingStorage from '@/wailsjs/go/storage/AppSettingStorage'
-import { ref, toRaw, useTemplateRef } from 'vue'
+import { ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onBeforeRouteLeave } from 'vue-router'
 import { useToast } from 'vue-toast-notification'
@@ -42,9 +42,8 @@ async function handleMoveAway() {
 function handleSubmit() {
   appSettingStorage
     .Update(settings.value)
-    .then(() => {
-      // TODO: update GO to return new settings
-      useAppSettingStore().settings = structuredClone(toRaw(settingEditor.settings.value))
+    .then(newAppSettings => {
+      useAppSettingStore().settings = newAppSettings
       settingEditor.reset()
 
       locale.value = settings.value.language
