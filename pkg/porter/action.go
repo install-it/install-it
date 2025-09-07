@@ -28,26 +28,6 @@ func dirSize(target string, exclDir bool) (int64, error) {
 	return size, err
 }
 
-// Returns true if all elements in the slice satisfy the predicate.
-func all[T any](ts []T, pred func(T) bool) bool {
-	for _, t := range ts {
-		if !pred(t) {
-			return false
-		}
-	}
-	return true
-}
-
-// Returns true if at least one element in the slice satisfies the predicate.
-func some[T any](ts []T, pred func(T) bool) bool {
-	for _, t := range ts {
-		if pred(t) {
-			return true
-		}
-	}
-	return false
-}
-
 // Finalises the progress tracker based on the presence of an error.
 func updateProgress(progress *Progress, err error) {
 	if err != nil {

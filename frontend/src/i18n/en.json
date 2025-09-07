@@ -1,5 +1,6 @@
 {
   "common": {
+    "all": "All",
     "back": "Back",
     "cancel": "Cancel",
     "confirm": "Confirm",
@@ -25,7 +26,7 @@
     "action": "Action",
     "allowedExitCode": "Allowed Exit Code",
     "allowedExitCodeHelp": "If the exit code of the execution is in specificied value,  the execution will be treated as successful.",
-    "argument": "Install Option",
+    "argument": "Execution Option",
     "commaSeparated": "Use comma to separate multiple values.",
     "create": "Create",
     "createDriver": "Creat Driver",

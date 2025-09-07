@@ -1,189 +1,21 @@
 package storage
 
 import (
-	"encoding/json"
+	"driver-box/pkg/utils"
 	"errors"
-	"os"
 	"slices"
 )
-
-type DriverGroupManager struct {
-	Path   string
-	groups []DriverGroup
-	fstat  os.FileInfo
-}
-
-func (m *DriverGroupManager) Read() ([]DriverGroup, error) {
-	if m.fstat == nil || m.modified() {
-		var groups []DriverGroup
-
-		if _, err := os.Stat(m.Path); err != nil {
-			os.WriteFile(m.Path, []byte("[]"), os.ModePerm)
-		}
-
-		bytes, err := os.ReadFile(m.Path)
-		if err != nil {
-			return nil, err
-		}
-
-		if err := json.Unmarshal(bytes, &groups); err != nil {
-			return nil, err
-		}
-
-		m.groups = groups
-	}
-	return m.groups, nil
-}
-
-func (m *DriverGroupManager) write() error {
-	bytes, err := json.Marshal(m.groups)
-	if err != nil {
-		return err
-	}
-
-	if err := os.WriteFile(m.Path, bytes, os.ModePerm); err == nil {
-		m.fstat, _ = os.Stat(m.Path)
-		return nil
-	} else {
-		return err
-	}
-}
-
-func (m DriverGroupManager) modified() bool {
-	if m.fstat == nil {
-		return false
-	}
-
-	if stat, err := os.Stat(m.Path); err != nil {
-		return false
-	} else {
-		return stat.ModTime().After(m.fstat.ModTime())
-	}
-}
-
-func (m DriverGroupManager) IndexOf(groupId string) (int, error) {
-	index := slices.IndexFunc(m.groups, func(g DriverGroup) bool {
-		return g.Id == groupId
-	})
-
-	if index == -1 {
-		return -1, errors.New("storage: no group with the same ID was found")
-	}
-	return index, nil
-}
-
-func (m DriverGroupManager) GroupOf(driverId string) (string, error) {
-	for _, group := range m.groups {
-		for _, driver := range group.Drivers {
-			if driver.Id == driverId {
-				return group.Id, nil
-			}
-		}
-	}
-	return "", errors.New("storage: no driver with the same ID was found in any group")
-}
-
-func (m *DriverGroupManager) Get(id string) (DriverGroup, error) {
-	if index, err := m.IndexOf(id); err != nil {
-		return DriverGroup{}, err
-	} else {
-		return m.groups[index], nil
-	}
-}
-
-func (m DriverGroupManager) generateGid() string {
-	for {
-		if id, err := randomString(4); err != nil {
-			continue
-		} else if _, err := m.GroupOf(id); err == nil {
-			continue
-		} else {
-			return id
-		}
-	}
-}
-
-func (m *DriverGroupManager) Add(group DriverGroup) (string, error) {
-	for group.Id = ""; group.Id == ""; {
-		if id, err := randomString(4); err != nil {
-			continue
-		} else if idx, _ := m.IndexOf(id); idx != -1 {
-			continue
-		} else {
-			group.Id = id
-		}
-	}
-
-	for idx := range group.Drivers {
-		for group.Drivers[idx].Id = ""; group.Drivers[idx].Id == ""; {
-			group.Drivers[idx].Id = m.generateGid()
-		}
-	}
-
-	m.groups = append(m.groups, group)
-	return group.Id, m.write()
-}
-
-func (m *DriverGroupManager) Update(group DriverGroup) error {
-	if index, err := m.IndexOf(group.Id); err != nil {
-		return err
-	} else {
-		for idx := range group.Drivers {
-			if group.Drivers[idx].Id == "" {
-				group.Drivers[idx].Id = m.generateGid()
-			}
-		}
-
-		m.groups[index] = group
-		return m.write()
-	}
-}
-
-func (m *DriverGroupManager) Remove(id string) error {
-	if index, err := m.IndexOf(id); err != nil {
-		return err
-	} else {
-		// for _, group := range m.groups {
-		// 	for _, driver := range group.Drivers {
-
-		// 	}
-		// }
-		m.groups = append(m.groups[:index], m.groups[index+1:]...)
-		return m.write()
-	}
-}
-
-func (m *DriverGroupManager) MoveBehind(id string, index int) ([]DriverGroup, error) {
-	if srcIndex, err := m.IndexOf(id); err != nil {
-		return m.groups, err
-	} else {
-		if index < -1 || index >= len(m.groups)-1 {
-			return m.groups, errors.New("storage: target index out of bound")
-		}
-
-		if len(m.groups) == 1 || srcIndex-index == 1 {
-			return m.groups, nil
-		}
-
-		if srcIndex <= index {
-			for i := srcIndex; i < index+1; i++ {
-				m.groups[i], m.groups[i+1] = m.groups[i+1], m.groups[i]
-			}
-		} else {
-			for i := srcIndex; i > index+1; i-- {
-				m.groups[i-1], m.groups[i] = m.groups[i], m.groups[i-1]
-			}
-		}
-		return m.groups, m.write()
-	}
-}
 
 type DriverGroup struct {
 	Id      string     `json:"id"`
 	Name    string     `json:"name"`
 	Type    DriverType `json:"type"`
-	Drivers []Driver   `json:"drivers"`
+	Drivers []*Driver  `json:"drivers"`
 }
+
+func (g DriverGroup) GetId() string { return g.Id }
+
+func (g *DriverGroup) SetId(id string) { g.Id = id }
 
 type DriverType string
 
@@ -202,4 +34,142 @@ type Driver struct {
 	MinExeTime    float32    `json:"minExeTime"`
 	AllowRtCodes  []int32    `json:"allowRtCodes"`
 	Incompatibles []string   `json:"incompatibles"`
+}
+
+func (d Driver) GetId() string { return d.Id }
+
+func (d *Driver) SetId(id string) { d.Id = id }
+
+type DriverGroupStorage struct {
+	Store Store
+	data  []*DriverGroup
+}
+
+func (s *DriverGroupStorage) All() ([]DriverGroup, error) {
+	if !s.Store.Exist() {
+		s.data = []*DriverGroup{}
+		s.Store.Write(s.data)
+	} else {
+		s.Store.Read(&s.data)
+	}
+	return s.copyOfAll(), nil
+}
+
+func (s DriverGroupStorage) Get(id string) (DriverGroup, error) {
+	if group, err := Get(id, s.data); err != nil {
+		return DriverGroup{}, err
+	} else {
+		return *group, nil
+	}
+}
+
+func (s *DriverGroupStorage) Add(group DriverGroup) (string, error) {
+	drivers := utils.FlatMap(s.data, func(g *DriverGroup) []*Driver { return g.Drivers })
+
+	for i := range group.Drivers {
+		group.Drivers[i].Id = GenerateId(drivers)
+		drivers = append(drivers, group.Drivers[i])
+	}
+
+	if id, err := Create(&group, &s.data); err != nil {
+		return "", err
+	} else {
+		return id, s.Store.Write(s.data)
+	}
+}
+
+func (s *DriverGroupStorage) Update(group DriverGroup) (DriverGroup, error) {
+	// slice of all the existing drivers
+	drivers := utils.FlatMap(s.data, func(g *DriverGroup) []*Driver { return g.Drivers })
+	// slice of all the existing drivers' ID
+	driverIds := utils.Map(drivers, func(d *Driver) string { return d.Id })
+	// slice of all the drivers' ID that will be delete after the update
+	deletedIds := slices.DeleteFunc(driverIds, func(id string) bool {
+		for _, d := range group.Drivers {
+			if d.Id == id {
+				return true
+			}
+		}
+		return false
+	})
+
+	// generate ID for new drivers
+	for i := range group.Drivers {
+		if !slices.Contains(driverIds, group.Drivers[i].Id) {
+			group.Drivers[i].Id = GenerateId(drivers)
+			drivers = append(drivers, group.Drivers[i])
+		}
+	}
+
+	// update group
+	if err := Update(&group, &s.data); err != nil {
+		return DriverGroup{}, err
+	}
+
+	// cacased deletion on Driver.Incompatibles
+	for _, g := range s.data {
+		for _, d := range g.Drivers {
+			d.Incompatibles = slices.DeleteFunc(d.Incompatibles, func(id string) bool {
+				return slices.Contains(deletedIds, id)
+			})
+		}
+	}
+
+	return group, s.Store.Write(s.data)
+}
+
+func (s *DriverGroupStorage) Remove(id string) error {
+	group, err := s.Get(id)
+	if err != nil {
+		return err
+	}
+	driverIds := utils.Map(group.Drivers, func(d *Driver) string { return d.Id })
+
+	if err := Delete(id, &s.data); err != nil {
+		return err
+	}
+
+	for _, g := range s.data {
+		for _, d := range g.Drivers {
+			d.Incompatibles = slices.DeleteFunc(d.Incompatibles, func(id string) bool {
+				return slices.Contains(driverIds, id)
+			})
+		}
+	}
+
+	return s.Store.Write(s.data)
+}
+
+func (s DriverGroupStorage) IndexOf(id string) (int, error) {
+	return IndexOf(id, s.data)
+}
+
+func (s *DriverGroupStorage) MoveBehind(id string, index int) ([]DriverGroup, error) {
+	if srcIndex, err := s.IndexOf(id); err != nil {
+		return s.copyOfAll(), err
+	} else {
+		if index < -1 || index >= len(s.data)-1 {
+			return s.copyOfAll(), errors.New("store: target index out of bound")
+		}
+
+		if len(s.data) == 1 || srcIndex-index == 1 {
+			return s.copyOfAll(), nil
+		}
+
+		if srcIndex <= index {
+			for i := srcIndex; i < index+1; i++ {
+				s.data[i], s.data[i+1] = s.data[i+1], s.data[i]
+			}
+		} else {
+			for i := srcIndex; i > index+1; i-- {
+				s.data[i-1], s.data[i] = s.data[i], s.data[i-1]
+			}
+		}
+
+		return s.copyOfAll(), s.Store.Write(s.data)
+	}
+}
+
+func (s DriverGroupStorage) copyOfAll() []DriverGroup {
+	return utils.Map(s.data, func(g *DriverGroup) DriverGroup { return *g })
 }

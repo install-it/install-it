@@ -1,17 +1,29 @@
 <script setup lang="ts">
 import { useDriverGroupStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
-import * as groupManger from '@/wailsjs/go/storage/DriverGroupManager'
+import * as driverGroupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
+import * as groupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
 import { ref } from 'vue'
 
 const groupStore = useDriverGroupStore()
-
 const reordering = ref(false)
 </script>
 
 <template>
   <div class="flex flex-col h-full gap-y-2">
     <div class="flex flex-row gap-x-3 list-none text-center">
+      <router-link
+        :to="{ path: '/drivers' }"
+        class="w-full py-3 text-xs font-bold uppercase shadow-lg rounded-sm"
+        :class="{
+          'text-half-baked-600 bg-white': $route.query.type != undefined,
+          'text-white bg-half-baked-600': $route.query.type == undefined
+        }"
+        draggable="false"
+      >
+        {{ $t(`common.all`) }}
+      </router-link>
+
       <router-link
         v-for="type in storage.DriverType"
         :key="type"
@@ -70,13 +82,13 @@ const reordering = ref(false)
             const sourceId = event.dataTransfer!.getData('id')
             const sourcePosition = event.dataTransfer!.getData('position')
 
-            groupManger.IndexOf(g.id).then(targetIndex => {
+            groupStorage.IndexOf(g.id).then(targetIndex => {
               if (parseInt(sourcePosition) <= i) {
                 // aligning MoveBehind's logic and UI draging's logic
                 targetIndex -= 1
               }
 
-              groupManger.MoveBehind(sourceId, targetIndex).then(result => {
+              groupStorage.MoveBehind(sourceId, targetIndex).then(result => {
                 groupStore.groups = result
               })
             })
@@ -102,14 +114,32 @@ const reordering = ref(false)
 
             <button
               class="px-1 bg-gray-200 hover:bg-gray-300 transition-all rounded-sm"
-              @click="groupManger.Add(g).then(() => groupStore.read())"
+              @click="
+                groupStorage.Add(g).then(() =>
+                  driverGroupStorage
+                    .All()
+                    .then(gs => (groupStore.groups = gs))
+                    .catch(() => {
+                      $toast.error($t('toast.readDriverFailed'))
+                    })
+                )
+              "
             >
               <font-awesome-icon icon="fa-solid fa-clone" class="text-gray-500" />
             </button>
 
             <button
               class="px-1 bg-gray-200 hover:bg-gray-300 transition-all rounded-sm"
-              @click="groupManger.Remove(g.id).then(() => groupStore.read())"
+              @click="
+                groupStorage.Remove(g.id).then(() =>
+                  driverGroupStorage
+                    .All()
+                    .then(gs => (groupStore.groups = gs))
+                    .catch(() => {
+                      $toast.error($t('toast.readDriverFailed'))
+                    })
+                )
+              "
             >
               <font-awesome-icon icon="fa-solid fa-trash" class="text-gray-500" />
             </button>

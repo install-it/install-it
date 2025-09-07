@@ -16,7 +16,7 @@
 
 <!-- PROJECT LOGO -->
 <div align="center">
-  <a href="https://github.com/markmybytes/driver-box">
+  <a href="https://github.com/driverbox/driver-box">
     <img src="https://github.com/user-attachments/assets/ea47a738-6f1e-4e8d-bde0-4f12118ff103" alt="Logo" width="80" height="80">
   </a>
 
@@ -25,15 +25,15 @@
   <p align="center">
     A Driver/Software Installation Tool
     <br>
-    <a href="https://github.com/markmybytes/driver-box/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    <a href="https://github.com/driverbox/driver-box/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
-    <a href="https://github.com/markmybytes/driver-box/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    <a href="https://github.com/driverbox/driver-box/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
   </p>
 
   <p align="center">
-    <a href="https://github.com/markmybytes/driver-box//README.md">English</a>
+    <a href="https://github.com/driverbox/driver-box//README.md">English</a>
     ·
-    <a href="https://github.com/markmybytes/driver-box/readme/README.zh_Hant.md">繁體中文</a>
+    <a href="https://github.com/driverbox/driver-box/readme/README.zh_Hant.md">繁體中文</a>
   </p>
 </div>
 
@@ -49,7 +49,7 @@ driver-box is a PC setup assistant tool that aims to simplify and speed up the d
 It allows you to **preload a bunch of driver installers** and then **select the most suitable ones to install** during the setup of a new PC. <br />
 Beyond drivers, installing softwares, and executing commands are also possible in driver-box, see [Usage](#usage) section for more.
 
-| Download :arrow_down: | [Latest Release](https://github.com/markmybytes/driver-box/releases/latest) |
+| Download :arrow_down: | [Latest Release](https://github.com/driverbox/driver-box/releases/latest) |
 |-----------------------|-----------------------------------------------------------------------------|
 
 > [!NOTE]  
@@ -186,15 +186,15 @@ Select all the suitable software in the home page and click `Execute`. A popup w
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
-[tag-url]: https://github.com/markmybytes/driver-box/releases
-[tag-shield]: https://img.shields.io/github/v/tag/markmybytes/driver-box?style=for-the-badge&label=LATEST&color=%23B1B1B1
-[contributors-shield]: https://img.shields.io/github/contributors/markmybytes/driver-box.svg?style=for-the-badge
-[contributors-url]: https://github.com/markmybytes/driver-box/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/markmybytes/driver-box.svg?style=for-the-badge
-[forks-url]: https://github.com/markmybytes/driver-box/network/members
-[stars-shield]: https://img.shields.io/github/stars/markmybytes/driver-box.svg?style=for-the-badge
-[stars-url]: https://github.com/markmybytes/driver-box/stargazers
-[issues-shield]: https://img.shields.io/github/issues/markmybytes/driver-box.svg?style=for-the-badge
-[issues-url]: https://github.com/markmybytes/driver-box/issues
-[license-shield]: https://img.shields.io/github/license/markmybytes/driver-box.svg?style=for-the-badge
-[license-url]: https://github.com/markmybytes/driver-box/blob/master/LICENSE.txt
+[tag-url]: https://github.com/driverbox/driver-box/releases
+[tag-shield]: https://img.shields.io/github/v/tag/driverbox/driver-box?style=for-the-badge&label=LATEST&color=%23B1B1B1
+[contributors-shield]: https://img.shields.io/github/contributors/driverbox/driver-box.svg?style=for-the-badge
+[contributors-url]: https://github.com/driverbox/driver-box/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/driverbox/driver-box.svg?style=for-the-badge
+[forks-url]: https://github.com/driverbox/driver-box/network/members
+[stars-shield]: https://img.shields.io/github/stars/driverbox/driver-box.svg?style=for-the-badge
+[stars-url]: https://github.com/driverbox/driver-box/stargazers
+[issues-shield]: https://img.shields.io/github/issues/driverbox/driver-box.svg?style=for-the-badge
+[issues-url]: https://github.com/driverbox/driver-box/issues
+[license-shield]: https://img.shields.io/github/license/driverbox/driver-box.svg?style=for-the-badge
+[license-url]: https://github.com/driverbox/driver-box/blob/master/LICENSE.txt

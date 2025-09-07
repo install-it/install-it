@@ -4,16 +4,14 @@ import {storage} from '../models';
 
 export function Add(arg1:storage.DriverGroup):Promise<string>;
 
-export function Get(arg1:string):Promise<storage.DriverGroup>;
+export function All():Promise<Array<storage.DriverGroup>>;
 
-export function GroupOf(arg1:string):Promise<string>;
+export function Get(arg1:string):Promise<storage.DriverGroup>;
 
 export function IndexOf(arg1:string):Promise<number>;
 
 export function MoveBehind(arg1:string,arg2:number):Promise<Array<storage.DriverGroup>>;
 
-export function Read():Promise<Array<storage.DriverGroup>>;
-
 export function Remove(arg1:string):Promise<void>;
 
-export function Update(arg1:storage.DriverGroup):Promise<void>;
+export function Update(arg1:storage.DriverGroup):Promise<storage.DriverGroup>;

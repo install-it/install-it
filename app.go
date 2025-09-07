@@ -46,7 +46,6 @@ func (a *App) SelectFolder(relative bool) (string, error) {
 	} else {
 		return path, nil
 	}
-
 }
 
 func (a *App) SelectFile(relative bool) (string, error) {
@@ -61,7 +60,6 @@ func (a *App) SelectFile(relative bool) (string, error) {
 	} else {
 		return path, nil
 	}
-
 }
 
 func (a App) PathExists(path string) bool {
@@ -98,10 +96,9 @@ func (a App) AppBinaryType() string {
 	arch := runtime.GOARCH
 	if arch == "amd64" {
 		arch = "x64"
-	} else if arch == "368" {
+	} else if arch == "386" {
 		arch = "x86"
 	}
-
 	return fmt.Sprintf("%s-%s", runtime.GOOS, arch)
 }
 
@@ -110,13 +107,14 @@ func (a App) Update(from string, to string, builtinWebview bool) error {
 	if err != nil {
 		return err
 	}
-
 	defer file.Close()
 
 	response, err := http.Get(
-		fmt.Sprintf("https://raw.githubusercontent.com/markmybytes/driver-box/updater/dist/updater.%s.exe", a.AppBinaryType()))
+		fmt.Sprintf("https://github.com/driverbox/driver-box/releases/download/v%s/updater.%s.exe", to, a.AppBinaryType()))
 	if err != nil {
 		return err
+	} else if response.StatusCode < 100 || response.StatusCode > 200 {
+		return fmt.Errorf("main: failed to locate the updater for \"%s\" - %s", to, response.Status)
 	}
 	defer response.Body.Close()
 

@@ -2,41 +2,61 @@
 import UnsaveConfirmModal from '@/components/modals/UnsaveConfirmModal.vue'
 import { useAppSettingStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
+import * as appSettingStorage from '@/wailsjs/go/storage/AppSettingStorage'
 import { ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onBeforeRouteLeave } from 'vue-router'
+import { useToast } from 'vue-toast-notification'
 
-const { locale } = useI18n()
+const { t, locale } = useI18n()
+
+const $toast = useToast()
 
 const questionModal = useTemplateRef('questionModal')
 
 const tabs = ref({ softwareSetting: true, defaultInstallSetting: false, displaySetting: false })
 
-const settingStore = useAppSettingStore()
+const settingEditor = useAppSettingStore().editor()
 
-onBeforeRouteLeave((to, from, next) => {
-  settingStore.restore()
-  next()
+const settings = settingEditor.settings // alias
+
+onBeforeRouteLeave(async (to, from, next) => {
+  next(await handleMoveAway())
 })
+
+async function handleMoveAway() {
+  return new Promise<boolean>(resolve => {
+    if (settingEditor.modified.value) {
+      questionModal.value?.show(answer => {
+        if (answer == 'yes') {
+          settingEditor.reset()
+        }
+        resolve(answer == 'yes')
+      })
+    } else {
+      resolve(true)
+    }
+  })
+}
+
+function handleSubmit() {
+  appSettingStorage
+    .Update(settings.value)
+    .then(newAppSettings => {
+      useAppSettingStore().settings = newAppSettings
+      settingEditor.reset()
+
+      locale.value = settings.value.language
+      $toast.success(t('toast.saved'), { duration: 1500, position: 'top-right' })
+    })
+    .catch(() => {
+      $toast.error(t('toast.failedToSave'), { duration: 1500, position: 'top-right' })
+    })
+}
 </script>
 
 <template>
-  <form
-    class="flex flex-col h-full gap-y-3"
-    @submit.prevent="
-      () => {
-        settingStore
-          .write()
-          .then(() => {
-            locale = settingStore.settings.language
-            $toast.success($t('toast.saved'), { duration: 1500, position: 'top-right' })
-          })
-          .catch(() => {
-            $toast.error($t('toast.failedToSave'), { duration: 1500, position: 'top-right' })
-          })
-      }
-    "
-  >
+  <form class="flex flex-col h-full gap-y-3" @submit.prevent="handleSubmit">
     <div class="flex items-center border-b-2">
       <button
         v-for="key in Object.keys(tabs)"
@@ -49,19 +69,11 @@ onBeforeRouteLeave((to, from, next) => {
             : ''
         "
         @click="
-          () => {
-            if (!settingStore.modified) {
+          handleMoveAway().then(leave => {
+            if (leave) {
               Object.keys(tabs).forEach(k => (tabs[k as keyof typeof tabs] = k == key))
-            } else {
-              questionModal?.show(answer => {
-                if (answer == 'yes') {
-                  settingStore.restore()
-                  Object.keys(tabs).forEach(k => (tabs[k as keyof typeof tabs] = k == key))
-                }
-                questionModal?.hide()
-              })
             }
-          }
+          })
         "
       >
         {{ $t(`setting.${key}`) }}
@@ -84,7 +96,7 @@ onBeforeRouteLeave((to, from, next) => {
               <input
                 type="checkbox"
                 name="auto_check_update"
-                v-model="settingStore.settings.auto_check_update"
+                v-model="settings.auto_check_update"
                 class="checkbox checkbox-primary me-1.5"
               />
               {{ $t('common.enable') }}
@@ -101,7 +113,7 @@ onBeforeRouteLeave((to, from, next) => {
               name="success_action_delay"
               min="0"
               step="0"
-              v-model="settingStore.settings.success_action_delay"
+              v-model="settings.success_action_delay"
               class="w-20 input input-accent shadow-xs"
               required
             />
@@ -120,7 +132,7 @@ onBeforeRouteLeave((to, from, next) => {
             <input
               type="url"
               name="driver_download_url"
-              v-model="settingStore.settings.driver_download_url"
+              v-model="settings.driver_download_url"
               class="w-full input input-accent shadow-xs"
             />
           </div>
@@ -140,7 +152,7 @@ onBeforeRouteLeave((to, from, next) => {
               <input
                 type="checkbox"
                 name="create_partition"
-                v-model="settingStore.settings.create_partition"
+                v-model="settings.create_partition"
                 class="checkbox checkbox-primary me-1.5"
               />
               {{ $t('installOption.createPartition') }}
@@ -153,7 +165,7 @@ onBeforeRouteLeave((to, from, next) => {
                 <input
                   type="checkbox"
                   name="set_password"
-                  v-model="settingStore.settings.set_password"
+                  v-model="settings.set_password"
                   class="checkbox checkbox-primary me-1.5"
                 />
                 {{ $t('installOption.setPassword') }}
@@ -164,9 +176,9 @@ onBeforeRouteLeave((to, from, next) => {
               <input
                 type="text"
                 name="password"
-                v-model="settingStore.settings.password"
+                v-model="settings.password"
                 class="input input-accent"
-                :disabled="!settingStore.settings.set_password"
+                :disabled="!settings.set_password"
               />
             </div>
           </div>
@@ -184,7 +196,7 @@ onBeforeRouteLeave((to, from, next) => {
               <input
                 type="checkbox"
                 name="parallel_install"
-                v-model="settingStore.settings.parallel_install"
+                v-model="settings.parallel_install"
                 class="checkbox checkbox-primary me-1.5"
               />
               {{ $t('installOption.parallelInstall') }}
@@ -197,7 +209,7 @@ onBeforeRouteLeave((to, from, next) => {
             </label>
             <select
               name="success_action"
-              v-model="settingStore.settings.success_action"
+              v-model="settings.success_action"
               class="select select-accent"
             >
               <option v-for="action in storage.SuccessAction" :key="action" :value="action">
@@ -216,11 +228,7 @@ onBeforeRouteLeave((to, from, next) => {
         </p>
 
         <div>
-          <select
-            name="language"
-            v-model="settingStore.settings.language"
-            class="select select-accent"
-          >
+          <select name="language" v-model="settings.language" class="select select-accent">
             <option value="en">English</option>
             <option value="zh_Hant_HK">繁體中文</option>
           </select>
@@ -238,7 +246,7 @@ onBeforeRouteLeave((to, from, next) => {
               <input
                 type="checkbox"
                 name="filter_miniport_nic"
-                v-model="settingStore.settings.filter_miniport_nic"
+                v-model="settings.filter_miniport_nic"
                 class="checkbox checkbox-primary me-1.5"
               />
               {{ $t('setting.filterMiniportNic') }}
@@ -252,7 +260,7 @@ onBeforeRouteLeave((to, from, next) => {
               <input
                 type="checkbox"
                 name="filter_microsoft_nic"
-                v-model="settingStore.settings.filter_microsoft_nic"
+                v-model="settings.filter_microsoft_nic"
                 class="checkbox checkbox-primary me-1.5"
               />
               {{ $t('setting.filterMicorsoftNic') }}

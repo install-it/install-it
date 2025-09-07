@@ -1,5 +1,6 @@
 {
   "common": {
+    "all": "全部",
     "back": "返回",
     "cancel": "取消",
     "confirm": "確定",
@@ -25,8 +26,8 @@
     "action": "動作",
     "allowedExitCode": "非錯誤狀態代碼",
     "allowedExitCodeHelp": "安裝程序返回所輸入的狀態代碼時，將會視作安裝成功。",
-    "argument": "安裝參數",
-    "commaSeparated": "以逗號分隔多個參數",
+    "argument": "參數",
+    "commaSeparated": "以逗號分隔多個輸入。",
     "create": "新增",
     "createDriver": "新增軀動程式",
     "driver": "軀動程式",
