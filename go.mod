@@ -1,4 +1,4 @@
-module driver-box
+module install-it
 
 go 1.23.0
 

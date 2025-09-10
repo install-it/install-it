@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
-	"driver-box/pkg/execute"
-	"driver-box/pkg/porter"
-	"driver-box/pkg/status"
-	"driver-box/pkg/storage"
-	"driver-box/pkg/sysinfo"
 	"embed"
+	"install-it/pkg/execute"
+	"install-it/pkg/porter"
+	"install-it/pkg/status"
+	"install-it/pkg/storage"
+	"install-it/pkg/sysinfo"
 	"os"
 	"path/filepath"
 
@@ -80,7 +80,7 @@ func main() {
 	mgt := &execute.CommandExecutor{}
 
 	err := wails.Run(&options.App{
-		Title:     "driver-box",
+		Title:     "install-it",
 		Width:     768,
 		Height:    576,
 		MinWidth:  640,

@@ -197,4 +197,4 @@ Select all the suitable software in the home page and click `Execute`. A popup w
 [issues-shield]: https://img.shields.io/github/issues/install-it/install-it.svg?style=for-the-badge
 [issues-url]: https://github.com/install-it/install-it/issues
 [license-shield]: https://img.shields.io/github/license/install-it/install-it.svg?style=for-the-badge
-[license-url]: https://github.com/install-it/install-it/blob/master/LICENSE.txt
+[license-url]: https://github.com/install-it/install-it/blob/master/LICENSE

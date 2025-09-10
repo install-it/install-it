@@ -93,7 +93,7 @@
 /* https://daisyui.com/theme-generator/#theme=eJx1k-FugyAURl_F2CxZk0oEimjfBuXSkloxoFu3Ze8-1M5hdf-Ec-53r4hfcSNuEJ9iafUb2NLc40NcmdrYxFUXGFGtz5fObyfJBErhIMFp6pG51tXl1T-_RGmU7p8lEkhFvu3Q0OHbTmWaDppu9si6X2v1TdgPr-wolLQs1yyI2UGluMoDx4Gn8jeBcymyLbrIKBVRoSWq6oFKDkSSFQqrMcEcs0BpoO-sqAfGcs7EBlt0B4UX3XWjzHxCfDhthNkxIhgjRvdP4upI6XCkKGVZREiBsoKFFa734zv3l54NMqE0wjRF-Za7_mZ8bMCJryEIp0VY9C5so5vzLOdkHD8vovyIjmTL_bcBj44MZXQxFFhr7GxmdBqfR4QhSvHKXGUXUzb2L8wRzacCK6Tunb8bNVTdGO9DmYVbSJWGWm6j4WcbwLzv9Ccs47C_CAsaxIWsNFbCUILb-7ghoe0uw3pcNUY7eKwkKNHX_tU628Mhbi0osM7f7Wt8UqJ28P0DHf4yOQ */
 
 @plugin "daisyui/theme" {
-  name: 'driverbox';
+  name: 'install-it';
   default: true;
   prefersdark: true;
   color-scheme: 'light';

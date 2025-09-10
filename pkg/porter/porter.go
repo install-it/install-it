@@ -2,9 +2,9 @@ package porter
 
 import (
 	"context"
-	"driver-box/pkg/status"
-	"driver-box/pkg/utils"
 	"errors"
+	"install-it/pkg/status"
+	"install-it/pkg/utils"
 	"os"
 	"path/filepath"
 	"strings"

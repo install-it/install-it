@@ -137,7 +137,7 @@ onBeforeMount(() => {
             <input
               type="text"
               name="driver_download_url"
-              placeholder="driver-box.zip"
+              placeholder="install-it.zip"
               v-model="importInput.filePath"
               class="grow input input-accent pointer-events-none"
               :required="importInput.from == 'file'"

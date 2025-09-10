@@ -100,7 +100,7 @@ function checkUpdate() {
 
 <template>
   <div class="flex flex-col gap-y-6 h-full">
-    <h1 class="text-lg font-bold">{{ $t('info.about') }} driver-box</h1>
+    <h1 class="text-lg font-bold">{{ $t('info.about') }} install-it</h1>
 
     <div>
       <h2 class="font-bold">{{ $t('info.thisSoftware') }}</h2>
@@ -162,11 +162,11 @@ function checkUpdate() {
         <div class="col-span-2">{{ $t('info.sourceCode') }}</div>
         <div class="col-span-5">
           <a
-            href="https://github.com/driverbox/driver-box"
+            href="https://github.com/install-it/install-it"
             class="text-sky-700 underline"
             @click.prevent="event => BrowserOpenURL((event.target as HTMLAnchorElement).href)"
           >
-            https://github.com/driverbox/driver-box
+            https://github.com/install-it/install-it
           </a>
         </div>
       </div>
@@ -175,11 +175,11 @@ function checkUpdate() {
         <div class="col-span-2">{{ $t('info.reportBug') }}</div>
         <div class="col-span-5">
           <a
-            href="https://github.com/driverbox/driver-box/issues"
+            href="https://github.com/install-it/install-it/issues"
             class="text-sky-700 underline"
             @click.prevent="event => BrowserOpenURL((event.target as HTMLAnchorElement).href)"
           >
-            https://github.com/driverbox/driver-box/issues
+            https://github.com/install-it/install-it/issues
           </a>
         </div>
       </div>
@@ -193,7 +193,7 @@ function checkUpdate() {
             <button
               type="button"
               class="ml-2"
-              @click="BrowserOpenURL('https://github.com/driverbox/driver-box/blob/main/LICENSE')"
+              @click="BrowserOpenURL('https://github.com/install-it/install-it/blob/main/LICENSE')"
             >
               <BoxArrowUpRight></BoxArrowUpRight>
             </button>

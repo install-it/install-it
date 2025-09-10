@@ -51,7 +51,7 @@ func toZip(tracker *Progress, dest string, directories ...string) (err error) {
 		}
 	}
 
-	file, err := os.Create(path.Join(dest, "driver-box.zip"))
+	file, err := os.Create(path.Join(dest, "install-it.zip"))
 	if err != nil {
 		return err
 	}

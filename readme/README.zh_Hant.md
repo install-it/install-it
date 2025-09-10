@@ -5,34 +5,34 @@
   
   [![Tag][tag-shield]][tag-url]
   [![Contributors][contributors-shield]][contributors-url]
-  [![Forks][forks-shield]][forks-url]
+  [![Forks][forks-shield]][forks-url]s
   [![Stargazers][stars-shield]][stars-url]
   [![Issues][issues-shield]][issues-url]
   [![MIT License][license-shield]][license-url]
   
 </div>
-
+Ks
 
 <!-- PROJECT LOGO -->
 <div align="center">
-  <a href="https://github.com/driverbox/driver-box">
+  <a href="https://github.com/install-it/install-it">
     <img src="https://github.com/user-attachments/assets/ea47a738-6f1e-4e8d-bde0-4f12118ff103" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">driver-box</h3>
+  <h3 align="center">install-it</h3>
 
   <p align="center">
     程式／軀動安裝工具
     <br>
-    <a href="https://github.com/driverbox/driver-box/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    <a href="https://github.com/install-it/install-it/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
-    <a href="https://github.com/driverbox/driver-box/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    <a href="https://github.com/install-it/install-it/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
   </p>
 
   <p align="center">
-    <a href="https://github.com/driverbox/driver-box//README.md">English</a>
+    <a href="https://github.com/install-it/install-it//README.md">English</a>
     ·
-    <a href="https://github.com/driverbox/driver-box/readme/README.zh_Hant.md">繁體中文</a>
+    <a href="https://github.com/install-it/install-it/readme/README.zh_Hant.md">繁體中文</a>
   </p>
 </div>
 
@@ -44,14 +44,14 @@
   <img src="https://github.com/user-attachments/assets/a8c6f316-87d7-4b9f-8ccd-6a732326643d" width="754" height="569">
 <p align="right">
 
-driver-box 是一個軀動程式安裝工具，旨在減少安裝大量硬件軀動所需的時間。它允許您預先加入驅動程式安裝檔至工具內，並在新電腦設定過程中選擇最合適的驅動程式進行安裝。<br />
-除了驅動程式之外，driver-box 還支援安裝軟體及執行指令，詳情請參閱[使用](#使用)。
+install-it 是一個軀動程式安裝工具，旨在減少安裝大量硬件軀動所需的時間。它允許您預先加入驅動程式安裝檔至工具內，並在新電腦設定過程中選擇最合適的驅動程式進行安裝。<br />
+除了驅動程式之外，install-it 還支援安裝軟體及執行指令，詳情請參閱[使用](#使用)。
 
-| 下載 :arrow_down: | [Latest Release](https://github.com/driverbox/driver-box/releases/latest) |
+| 下載 :arrow_down: | [Latest Release](https://github.com/install-it/install-it/releases/latest) |
 |-------------------|-----------------------------------------------------------------------------|
 
 > [!NOTE]
-> driver-box 並沒有內置任何軀動程式。如有需要，可使用 [driver-claw](https://github.com/markmybytes/driver-claw) 工具，一鍵自動下載所有最新的常見硬件軀動程式。
+> install-it 並沒有內置任何軀動程式。如有需要，可使用 [driver-claw](https://github.com/markmybytes/driver-claw) 工具，一鍵自動下載所有最新的常見硬件軀動程式。
 
 
 <p align="right">(<a href="#readme-top">回到最頂</a>)</p>
@@ -113,22 +113,22 @@ driver-box 是一個軀動程式安裝工具，旨在減少安裝大量硬件軀
 
 <img src="https://github.com/user-attachments/assets/8fb85b19-133e-4cbf-9ee4-21e5237c9089" width="754" height="569">
 
-加入安裝程式至 driver-box 內的步驟：
+加入安裝程式至 install-it 內的步驟：
 
 1. 裝安裝程式的檔案移動至 `driver/<category>` 資料夾內
 2. 新增一個「安裝程式群組」
      - 你可以加入多個安裝程式至同一個群組內
-     - driver-box 提供了三個分類可供選擇：`網絡介面卡`、`顯示卡`及`其他`，只有`其他`可以多選
+     - install-it 提供了三個分類可供選擇：`網絡介面卡`、`顯示卡`及`其他`，只有`其他`可以多選
 3. 輸入安裝程式的詳細資料
 4. 完成
 
 > [!TIP]
-> 為更好發揮 driver-box 的功能，請務必為所有安裝程式輸入相應的命令列選項（Command-line option），使其能以零人手操作的模式（unattended）下自動執行。
+> 為更好發揮 install-it 的功能，請務必為所有安裝程式輸入相應的命令列選項（Command-line option），使其能以零人手操作的模式（unattended）下自動執行。
 
 <details>
   <summary>[範例] 執行指令</summary>
 
-  driver-box 支援執行在作業系統 `PATH` 的環境變數內的程序。在 Windows 上，你可以透過 CMD 或 Powershell 執行指令碼。
+  install-it 支援執行在作業系統 `PATH` 的環境變數內的程序。在 Windows 上，你可以透過 CMD 或 Powershell 執行指令碼。
 
   就 CMD 而言，輸入 `cmd` 至路徑中；`/c,<command>` 至執行參數中，即可執行 CMD 指令：
 
@@ -153,7 +153,7 @@ driver-box 是一個軀動程式安裝工具，旨在減少安裝大量硬件軀
 
 [程式命令行選項](https://en.wikipedia.org/wiki/Command-line_interface#Arguments) 是用作控制程式的行為或輸入資料至程式中。大部份安裝程式都設有「零人手操作模式」（unattend/silent mode），即整個安裝過程中，毋須進行進何操作。
 
-而 driver-box 內置了一些常見軀動程式的零人手操作模式參數：
+而 install-it 內置了一些常見軀動程式的零人手操作模式參數：
 
 | 選項           | 適用的軀動程式                                                                                                                                                    |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -175,21 +175,21 @@ driver-box 是一個軀動程式安裝工具，旨在減少安裝大量硬件軀
 在首頁選擇所有合適的軟體後，點擊「執行」即可開始安裝。系統會跳出提示視窗，顯示執行狀態。
  
 > [!IMPORTANT]  
-> driver-box 會根據程式的退出狀態碼來判斷執行結果。但有些程式即使安裝尚未完成或失敗，仍可能回傳 0（代表成功），因此執行狀態可能不完全準確。
+> install-it 會根據程式的退出狀態碼來判斷執行結果。但有些程式即使安裝尚未完成或失敗，仍可能回傳 0（代表成功），因此執行狀態可能不完全準確。
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
-[tag-url]: https://github.com/driverbox/driver-box/releases
-[tag-shield]: https://img.shields.io/github/v/tag/driverbox/driver-box?style=for-the-badge&label=LATEST&color=%23B1B1B1
-[contributors-shield]: https://img.shields.io/github/contributors/driverbox/driver-box.svg?style=for-the-badge
-[contributors-url]: https://github.com/driverbox/driver-box/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/driverbox/driver-box.svg?style=for-the-badge
-[forks-url]: https://github.com/driverbox/driver-box/network/members
-[stars-shield]: https://img.shields.io/github/stars/driverbox/driver-box.svg?style=for-the-badge
-[stars-url]: https://github.com/driverbox/driver-box/stargazers
-[issues-shield]: https://img.shields.io/github/issues/driverbox/driver-box.svg?style=for-the-badge
-[issues-url]: https://github.com/driverbox/driver-box/issues
-[license-shield]: https://img.shields.io/github/license/driverbox/driver-box.svg?style=for-the-badge
-[license-url]: https://github.com/driverbox/driver-box/blob/master/LICENSE.txt
+[tag-url]: https://github.com/install-it/install-it/releases
+[tag-shield]: https://img.shields.io/github/v/tag/install-it/install-it?style=for-the-badge&label=LATEST&color=%23B1B1B1
+[contributors-shield]: https://img.shields.io/github/contributors/install-it/install-it.svg?style=for-the-badge
+[contributors-url]: https://github.com/install-it/install-it/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/install-it/install-it.svg?style=for-the-badge
+[forks-url]: https://github.com/install-it/install-it/network/members
+[stars-shield]: https://img.shields.io/github/stars/install-it/install-it.svg?style=for-the-badge
+[stars-url]: https://github.com/install-it/install-it/stargazers
+[issues-shield]: https://img.shields.io/github/issues/install-it/install-it.svg?style=for-the-badge
+[issues-url]: https://github.com/install-it/install-it/issues
+[license-shield]: https://img.shields.io/github/license/install-it/install-it.svg?style=for-the-badge
+[license-url]: https://github.com/install-it/install-it/blob/master/LICENSE.txt

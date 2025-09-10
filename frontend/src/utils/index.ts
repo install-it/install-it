@@ -2,7 +2,7 @@ import { marked } from 'marked'
 import * as semver from 'semver'
 
 export async function latestRelease(currentVersion: string) {
-  return fetch('https://api.github.com/repos/driverbox/driver-box/releases/latest')
+  return fetch('https://api.github.com/repos/install-it/install-it/releases/latest')
     .then(response => response.json())
     .then(async body => {
       const version = semver.clean(body.tag_name) || '0.0.0'

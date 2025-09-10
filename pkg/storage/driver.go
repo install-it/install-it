@@ -1,8 +1,8 @@
 package storage
 
 import (
-	"driver-box/pkg/utils"
 	"errors"
+	"install-it/pkg/utils"
 	"slices"
 )
 
