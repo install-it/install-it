@@ -16,24 +16,24 @@
 
 <!-- PROJECT LOGO -->
 <div align="center">
-  <a href="https://github.com/driverbox/driver-box">
+  <a href="https://github.com/install-it/install-it">
     <img src="https://github.com/user-attachments/assets/ea47a738-6f1e-4e8d-bde0-4f12118ff103" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">driver-box</h3>
+  <h3 align="center">install-it</h3>
 
   <p align="center">
     A Driver/Software Installation Tool
     <br>
-    <a href="https://github.com/driverbox/driver-box/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    <a href="https://github.com/install-it/install-it/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
-    <a href="https://github.com/driverbox/driver-box/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    <a href="https://github.com/install-it/install-it/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
   </p>
 
   <p align="center">
-    <a href="https://github.com/driverbox/driver-box//README.md">English</a>
+    <a href="https://github.com/install-it/install-it//README.md">English</a>
     ·
-    <a href="https://github.com/driverbox/driver-box/readme/README.zh_Hant.md">繁體中文</a>
+    <a href="https://github.com/install-it/install-it/readme/README.zh_Hant.md">繁體中文</a>
   </p>
 </div>
 
@@ -45,15 +45,15 @@
   <img src="https://github.com/user-attachments/assets/35606055-7ce6-4e97-8152-a7042d7fe001" width="754" height="569">
 </p>
 
-driver-box is a PC setup assistant tool that aims to simplify and speed up the driver installation process. <br />
+install-it is a PC setup assistant tool that aims to simplify and speed up the driver installation process. <br />
 It allows you to **preload a bunch of driver installers** and then **select the most suitable ones to install** during the setup of a new PC. <br />
-Beyond drivers, installing softwares, and executing commands are also possible in driver-box, see [Usage](#usage) section for more.
+Beyond drivers, installing softwares, and executing commands are also possible in install-it, see [Usage](#usage) section for more.
 
-| Download :arrow_down: | [Latest Release](https://github.com/driverbox/driver-box/releases/latest) |
+| Download :arrow_down: | [Latest Release](https://github.com/install-it/install-it/releases/latest) |
 |-----------------------|-----------------------------------------------------------------------------|
 
 > [!NOTE]  
-> driver-box does not include any driver installers in releases. You may check out [driver-claw](https://github.com/markmybytes/driver-claw), a CLI tool that automatically download common hardware drivers.
+> install-it does not include any driver installers in releases. You may check out [driver-claw](https://github.com/markmybytes/driver-claw), a CLI tool that automatically download common hardware drivers.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -117,17 +117,17 @@ Beyond drivers, installing softwares, and executing commands are also possible i
 
 <img src="https://github.com/user-attachments/assets/909dcbbd-9b02-4c06-941e-a77035e1250f" width="754" height="569">
 
-To add an installer into driver-box:
+To add an installer into install-it:
 
 1. Place all your installer under the `driver/<category>` folder
 2. Create a installer group
    - you can add multiple installer into a single group
-   - driver-box predefined three categroies: `network`, `display`, and `miscellaneous`, only `miscellaneous` allow multiple selection
+   - install-it predefined three categroies: `network`, `display`, and `miscellaneous`, only `miscellaneous` allow multiple selection
 3. Enter the details for each installer
 4. Done
 
 > [!TIP]
-> It is highly recommended to provide the correct command-line options so that the installer can be executed in unattended mode to maximise functionality of driver-box. <br />
+> It is highly recommended to provide the correct command-line options so that the installer can be executed in unattended mode to maximise functionality of install-it. <br />
 > See [Exection Option](#exection-option) section for more information.
 
 <details>
@@ -151,7 +151,7 @@ To add an installer into driver-box:
 <details>
   <summary>[Example] Install non-driver software</summary>
 
-  Software installer usually provides a slient install options like driver installers. For example, Steam support silent install by supplying `/S` option when you executing `SteamSetup.exe`. Explore yourself and turn driver-box to your PC setup toolbox :)
+  Software installer usually provides a slient install options like driver installers. For example, Steam support silent install by supplying `/S` option when you executing `SteamSetup.exe`. Explore yourself and turn install-it to your PC setup toolbox :)
 </details>
 
 ### Execution Option
@@ -159,7 +159,7 @@ To add an installer into driver-box:
 [Command-line Option/Argument](https://en.wikipedia.org/wiki/Command-line_interface#Arguments) is to control the execution behaviour, or input data into the program. <br />
 Many installers support unattend mode or silent mode, where the software will be installed automatically without any interactions.
 
-driver-box provides installation parameters preset for the following common drivers:
+install-it provides installation parameters preset for the following common drivers:
 
 | Option         | Applicable Installer                                                                                                                                             |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -180,21 +180,21 @@ For software that is not in the preset, you can try searching online with `softw
 Select all the suitable software in the home page and click `Execute`. A popup will be displayed for execution status.
  
 > [!IMPORTANT]  
-> driver-box uses the exit status code to determine the execution status. Some programs may return 0 (indicating successful) even if the installation not yet completed, or failed.
+> install-it uses the exit status code to determine the execution status. Some programs may return 0 (indicating successful) even if the installation not yet completed, or failed.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
-[tag-url]: https://github.com/driverbox/driver-box/releases
-[tag-shield]: https://img.shields.io/github/v/tag/driverbox/driver-box?style=for-the-badge&label=LATEST&color=%23B1B1B1
-[contributors-shield]: https://img.shields.io/github/contributors/driverbox/driver-box.svg?style=for-the-badge
-[contributors-url]: https://github.com/driverbox/driver-box/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/driverbox/driver-box.svg?style=for-the-badge
-[forks-url]: https://github.com/driverbox/driver-box/network/members
-[stars-shield]: https://img.shields.io/github/stars/driverbox/driver-box.svg?style=for-the-badge
-[stars-url]: https://github.com/driverbox/driver-box/stargazers
-[issues-shield]: https://img.shields.io/github/issues/driverbox/driver-box.svg?style=for-the-badge
-[issues-url]: https://github.com/driverbox/driver-box/issues
-[license-shield]: https://img.shields.io/github/license/driverbox/driver-box.svg?style=for-the-badge
-[license-url]: https://github.com/driverbox/driver-box/blob/master/LICENSE.txt
+[tag-url]: https://github.com/install-it/install-it/releases
+[tag-shield]: https://img.shields.io/github/v/tag/install-it/install-it?style=for-the-badge&label=LATEST&color=%23B1B1B1
+[contributors-shield]: https://img.shields.io/github/contributors/install-it/install-it.svg?style=for-the-badge
+[contributors-url]: https://github.com/install-it/install-it/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/install-it/install-it.svg?style=for-the-badge
+[forks-url]: https://github.com/install-it/install-it/network/members
+[stars-shield]: https://img.shields.io/github/stars/install-it/install-it.svg?style=for-the-badge
+[stars-url]: https://github.com/install-it/install-it/stargazers
+[issues-shield]: https://img.shields.io/github/issues/install-it/install-it.svg?style=for-the-badge
+[issues-url]: https://github.com/install-it/install-it/issues
+[license-shield]: https://img.shields.io/github/license/install-it/install-it.svg?style=for-the-badge
+[license-url]: https://github.com/install-it/install-it/blob/master/LICENSE.txt

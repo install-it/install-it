@@ -66,8 +66,8 @@ jobs:
       - name: Bundle binary and WebView2 files into ZIP
         run: |
           cd build\bin
-          7z a driver-box.${{ matrix.build-name }}.zip driver-box.exe -mx9
-          7z a driver-box.${{ matrix.build-name }}-wv2.zip driver-box.exe bin -mx9
+          7z a install-it.${{ matrix.build-name }}.zip install-it.exe -mx9
+          7z a install-it.${{ matrix.build-name }}-wv2.zip install-it.exe bin -mx9
 
       - name: Collect artifacts
         uses: actions/upload-artifact@v4
@@ -90,7 +90,7 @@ jobs:
       - name: Checkout updater repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository_owner }}/driver-box-updater
+          repository: ${{ github.repository_owner }}/install-it-updater
 
       - name: Setup Python environment
         uses: actions/setup-python@v5
