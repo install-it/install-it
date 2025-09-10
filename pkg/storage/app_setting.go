@@ -30,7 +30,10 @@ type AppSettingStorage struct {
 
 func (s *AppSettingStorage) All() (AppSetting, error) {
 	if !s.Store.Exist() {
-		s.setting = AppSetting{SuccessAction: Nothing, SuccessActionDelay: 5, Language: "en"}
+		s.setting = AppSetting{
+			AutoCheckUpdate: true, FilterMiniportNic: true, FilterMicrosoftNic: true,
+			Language: "en", SuccessAction: Nothing, SuccessActionDelay: 5,
+		}
 		s.Store.Write(s.setting)
 	} else {
 		s.Store.Read(&s.setting)
