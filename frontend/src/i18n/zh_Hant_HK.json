@@ -31,6 +31,7 @@
     "create": "新增",
     "createDriver": "新增軀動程式",
     "driver": "軀動程式",
+    "driverGroupHelp": "你可以加入多於一個安裝程式，加入至同一組的安裝程式在選擇後，將會同時執行。",
     "editDriver": "編輯軀動程式",
     "incompatibleForNewHelp": "新加入的軀動程式須在儲存後，才會顯示在「不能同時安裝」中。",
     "incompatibleWith": "不能同時安裝",

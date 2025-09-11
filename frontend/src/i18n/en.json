@@ -31,6 +31,7 @@
     "create": "Create",
     "createDriver": "Creat Driver",
     "driver": "Driver",
+    "driverGroupHelp": "You can add multiple installer into a single group. When selected, all installer will be executed.",
     "editDriver": "Edit Driver",
     "incompatibleForNewHelp": "The newly created driver will appear in \"Incompatible With\" only after you submit the changes.",
     "incompatibleWith": "Incompatible With",
