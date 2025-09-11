@@ -184,6 +184,9 @@ function handleSubmit(event: SubmitEvent) {
           </div>
 
           <p class="text-hint">
+            {{ $t('driverForm.driverGroupHelp') }}
+          </p>
+          <p v-show="groupEditor.modifiedDrivers.value" class="text-hint">
             {{ $t('driverForm.incompatibleForNewHelp') }}
           </p>
         </div>
