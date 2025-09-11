@@ -53,7 +53,7 @@ Beyond drivers, installing softwares, and executing commands are also possible i
 |-----------------------|-----------------------------------------------------------------------------|
 
 > [!NOTE]  
-> install-it does not include any driver installers in releases. You may check out [driver-claw](https://github.com/markmybytes/driver-claw), a CLI tool that automatically download common hardware drivers.
+> install-it does not include any driver installers in releases. You may check out [it-claws](https://github.com/install-it/it-claws), a CLI tool that automatically download common hardware drivers.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
