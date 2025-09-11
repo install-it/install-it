@@ -36,9 +36,9 @@ type Driver struct {
 	Incompatibles []string   `json:"incompatibles"`
 }
 
-func (d Driver) GetId() string { return d.Id }
+func (r Driver) GetId() string { return r.Id }
 
-func (d *Driver) SetId(id string) { d.Id = id }
+func (r *Driver) SetId(id string) { r.Id = id }
 
 type DriverGroupStorage struct {
 	Store Store

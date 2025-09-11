@@ -228,6 +228,56 @@ export namespace storage {
 		    return a;
 		}
 	}
+	export class Rule {
+	    source: string;
+	    type: string;
+	    values: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new Rule(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.source = source["source"];
+	        this.type = source["type"];
+	        this.values = source["values"];
+	    }
+	}
+	export class RuleSet {
+	    id: string;
+	    rules: Rule[];
+	    driver_ids: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new RuleSet(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.rules = this.convertValues(source["rules"], Rule);
+	        this.driver_ids = source["driver_ids"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 
 }
 

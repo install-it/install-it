@@ -105,6 +105,7 @@ func main() {
 			mgt,
 			&storage.AppSettingStorage{Store: &storage.FileStore{Path: filepath.Join(dirConf, "setting.json")}},
 			&storage.DriverGroupStorage{Store: &storage.FileStore{Path: filepath.Join(dirConf, "groups.json")}},
+			&storage.MatchRuleStorage{Store: &storage.FileStore{Path: filepath.Join(dirConf, "rules.json")}},
 			&porter.Porter{DirRoot: dirRoot, Message: make(chan string, 512), Targets: []string{dirConf, dirDir}},
 			&sysinfo.SysInfo{},
 		},
