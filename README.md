@@ -59,6 +59,7 @@ Beyond drivers, installing softwares, and executing commands are also possible i
 
 ### Built With
 
+[<img src="https://img.shields.io/badge/beautiful%20flat%20icons-ff4a9e?style=for-the-badge">](https://www.elegantthemes.com/blog/freebie-of-the-week/beautiful-flat-icons-for-free)
 [<img src="https://img.shields.io/badge/font%20awesome-538cd7?style=for-the-badge&logo=fontawesome&logoColor=white">](https://fontawesome.com/)
 [<img src="https://img.shields.io/badge/go-01add8?style=for-the-badge&logo=go&logoColor=white">](https://go.dev/)
 [<img src="https://img.shields.io/badge/tailwindcss-38bdf8?style=for-the-badge&logo=tailwindcss&logoColor=white">](https://tailwindcss.com/)
@@ -198,3 +199,4 @@ Select all the suitable software in the home page and click `Execute`. A popup w
 [issues-url]: https://github.com/install-it/install-it/issues
 [license-shield]: https://img.shields.io/github/license/install-it/install-it.svg?style=for-the-badge
 [license-url]: https://github.com/install-it/install-it/blob/master/LICENSE
+
