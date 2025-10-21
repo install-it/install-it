@@ -4,14 +4,37 @@ import (
 	"install-it/pkg/utils"
 )
 
+type RuleSource string
+
+const (
+	Cpu         RuleSource = "cpu"
+	Motherboard RuleSource = "motherboard"
+	Gpu         RuleSource = "gpu"
+	Memory      RuleSource = "memory"
+	Nic         RuleSource = "nic"
+	Disk        RuleSource = "disk"
+)
+
+type RuleType string
+
+const (
+	Contain    RuleType = "contain"
+	NotContain RuleType = "not_contain"
+	Equal      RuleType = "equal"
+	NotEqual   RuleType = "not_equal"
+	Regex      RuleType = "regex"
+)
+
 type Rule struct {
-	Source string   `json:"source"`
-	Type   string   `json:"type"`
-	Values []string `json:"values"`
+	Source          RuleSource `json:"source"`
+	Type            RuleType   `json:"type"`
+	IsCaseSensitive bool       `json:"is_case_sensitive"`
+	Values          []string   `json:"values"`
 }
 
 type RuleSet struct {
 	Id         string   `json:"id"`
+	Name       string   `json:"name"`
 	Rules      []Rule   `json:"rules"`
 	DriversIds []string `json:"driver_ids"`
 }

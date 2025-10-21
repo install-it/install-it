@@ -141,6 +141,27 @@ func main() {
 				{status.Speeded, "SPEEDED"},
 				{status.Errored, "ERRORED"},
 			},
+			[]struct {
+				Value  storage.RuleSource
+				TSName string
+			}{
+				{storage.Cpu, "CPU"},
+				{storage.Motherboard, "MOTHERBOARD"},
+				{storage.Gpu, "GPU"},
+				{storage.Memory, "MEMORY"},
+				{storage.Nic, "NIC"},
+				{storage.Disk, "DISK"},
+			},
+			[]struct {
+				Value  storage.RuleType
+				TSName string
+			}{
+				{storage.Contain, "CONTAIN"},
+				{storage.NotContain, "NOT_CONTAIN"},
+				{storage.Equal, "EQUAL"},
+				{storage.NotEqual, "NOT_EQUAL"},
+				{storage.Regex, "REGEX"},
+			},
 		},
 		Windows: &windows.Options{
 			WebviewBrowserPath: pathWV2,

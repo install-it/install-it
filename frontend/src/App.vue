@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { useAppSettingStore, useDriverGroupStore } from '@/store'
+import { useAppSettingStore, useDriverGroupStore, useMatchRuleStore } from '@/store'
 import { AppVersion } from '@/wailsjs/go/main/App'
 import * as appSettingStorage from '@/wailsjs/go/storage/AppSettingStorage'
 import * as driverGroupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
+import * as matchRuleStorage from '@/wailsjs/go/storage/MatchRuleStorage'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { RouteLocationRaw } from 'vue-router'
@@ -13,9 +14,11 @@ const { t, locale } = useI18n()
 
 const $toast = useToast({ position: 'top-right' })
 
-const settingsStore = useAppSettingStore()
-
-const groupStore = useDriverGroupStore()
+const [settingsStore, groupStore, matchStore] = [
+  useAppSettingStore(),
+  useDriverGroupStore(),
+  useMatchRuleStore()
+]
 
 const initilisating = ref(true)
 
@@ -33,6 +36,14 @@ Promise.all([
     .then(s => {
       settingsStore.settings = s
       locale.value = s.language
+    })
+    .catch(() => {
+      $toast.error(t('toast.readAppSettingFailed'))
+    }),
+  matchRuleStorage
+    .All()
+    .then(rs => {
+      matchStore.ruleSets = rs
     })
     .catch(() => {
       $toast.error(t('toast.readAppSettingFailed'))
@@ -57,6 +68,7 @@ Promise.all([
 const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
   { to: '/', icon: 'fa-regular fa-house' },
   { to: '/drivers', icon: 'fa-regular fa-file-code' },
+  { to: '/match-rules', icon: 'fa-solid fa-location-crosshairs' },
   { to: '/settings', icon: 'fa-solid fa-gear' },
   { to: '/porter', icon: 'fa-solid fa-people-arrows' },
   { to: '/app-info', icon: 'fa-solid fa-info' }
