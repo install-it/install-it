@@ -90,3 +90,46 @@ export const useDriverGroupStore = defineStore('driverGroup', () => {
     }
   }
 })
+
+export const useMatchRuleStore = defineStore('matchRuleGroup', () => {
+  const ruleSets = ref<storage.RuleSet[]>([])
+
+  return {
+    ruleSets,
+    editor: (id: string | null | undefined) => {
+      const ruleSetClone = ref<storage.RuleSet>(
+        structuredClone(
+          toRaw(
+            ruleSets.value.find(r => r.id == id) ??
+              new storage.RuleSet({ rules: [], driver_ids: [] })
+          )
+        )
+      )
+
+      return {
+        ruleSet: ruleSetClone,
+        modified: computed(
+          () =>
+            JSON.stringify(ruleSetClone.value) !=
+            JSON.stringify(
+              ruleSets.value.find(g => g.id == ruleSetClone.value.id) ||
+                new storage.RuleSet({ rules: [], driver_ids: [] })
+            )
+        ),
+        // modifiedDrivers: computed(
+        //   () =>
+        //     JSON.stringify(ruleSetClone.value.) !=
+        //     JSON.stringify(ruleSets.value.find(g => g.id == ruleSetClone.value.id)?.drivers || [])
+        // ),
+        reset: () => {
+          ruleSetClone.value = structuredClone(
+            toRaw(
+              ruleSets.value.find(g => g.id == ruleSetClone.value.id) ||
+                new storage.RuleSet({ rules: [], driver_ids: [] })
+            )
+          )
+        }
+      }
+    }
+  }
+})

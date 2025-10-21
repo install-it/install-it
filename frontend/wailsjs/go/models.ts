@@ -134,6 +134,21 @@ export namespace storage {
 	    SHUTDOWN = "shutdown",
 	    FIRMWARE = "firmware",
 	}
+	export enum RuleSource {
+	    CPU = "cpu",
+	    MOTHERBOARD = "motherboard",
+	    GPU = "gpu",
+	    MEMORY = "memory",
+	    NIC = "nic",
+	    DISK = "disk",
+	}
+	export enum RuleType {
+	    CONTAIN = "contain",
+	    NOT_CONTAIN = "not_contain",
+	    EQUAL = "equal",
+	    NOT_EQUAL = "not_equal",
+	    REGEX = "regex",
+	}
 	export class AppSetting {
 	    create_partition: boolean;
 	    set_password: boolean;
@@ -229,8 +244,9 @@ export namespace storage {
 		}
 	}
 	export class Rule {
-	    source: string;
-	    type: string;
+	    source: RuleSource;
+	    type: RuleType;
+	    is_case_sensitive: boolean;
 	    values: string[];
 	
 	    static createFrom(source: any = {}) {
@@ -241,11 +257,13 @@ export namespace storage {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.source = source["source"];
 	        this.type = source["type"];
+	        this.is_case_sensitive = source["is_case_sensitive"];
 	        this.values = source["values"];
 	    }
 	}
 	export class RuleSet {
 	    id: string;
+	    name: string;
 	    rules: Rule[];
 	    driver_ids: string[];
 	
@@ -256,6 +274,7 @@ export namespace storage {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.id = source["id"];
+	        this.name = source["name"];
 	        this.rules = this.convertValues(source["rules"], Rule);
 	        this.driver_ids = source["driver_ids"];
 	    }
