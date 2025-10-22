@@ -8,6 +8,8 @@ export function All():Promise<Array<storage.RuleSet>>;
 
 export function Get(arg1:string):Promise<storage.RuleSet>;
 
+export function RegisterEventHandlers():Promise<void>;
+
 export function Remove(arg1:string):Promise<void>;
 
 export function Update(arg1:storage.RuleSet):Promise<storage.RuleSet>;

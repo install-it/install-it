@@ -2,6 +2,8 @@ package storage
 
 import (
 	"install-it/pkg/utils"
+	"reflect"
+	"slices"
 )
 
 type RuleSource string
@@ -44,8 +46,27 @@ func (r RuleSet) GetId() string { return r.Id }
 func (r *RuleSet) SetId(id string) { r.Id = id }
 
 type MatchRuleStorage struct {
-	Store Store
-	data  []*RuleSet
+	Store    Store
+	EventBus *DeleteEventBus
+	data     []*RuleSet
+}
+
+func NewMatchRuleStorage(store Store, eventBus *DeleteEventBus) *MatchRuleStorage {
+	m := &MatchRuleStorage{Store: store, EventBus: eventBus}
+	m.RegisterEventHandlers()
+	return m
+}
+
+func (s *MatchRuleStorage) RegisterEventHandlers() {
+	s.EventBus.Subscribe(reflect.TypeFor[DriverGroup]().Name(),
+		func(deletedIds []string) error {
+			for _, ruleSet := range s.data {
+				ruleSet.DriversIds = slices.DeleteFunc(ruleSet.DriversIds, func(id string) bool {
+					return slices.Contains(deletedIds, id)
+				})
+			}
+			return s.Store.Write(s.data)
+		})
 }
 
 func (s *MatchRuleStorage) All() ([]RuleSet, error) {

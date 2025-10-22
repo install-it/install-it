@@ -78,6 +78,7 @@ func init() {
 func main() {
 	app := &App{}
 	mgt := &execute.CommandExecutor{}
+	eventBus := storage.NewEventBus()
 
 	err := wails.Run(&options.App{
 		Title:     "install-it",
@@ -104,8 +105,8 @@ func main() {
 			app,
 			mgt,
 			&storage.AppSettingStorage{Store: &storage.FileStore{Path: filepath.Join(dirConf, "setting.json")}},
-			&storage.DriverGroupStorage{Store: &storage.FileStore{Path: filepath.Join(dirConf, "groups.json")}},
-			&storage.MatchRuleStorage{Store: &storage.FileStore{Path: filepath.Join(dirConf, "rules.json")}},
+			storage.NewDriverGroupStorage(&storage.FileStore{Path: filepath.Join(dirConf, "groups.json")}, eventBus),
+			storage.NewMatchRuleStorage(&storage.FileStore{Path: filepath.Join(dirConf, "rules.json")}, eventBus),
 			&porter.Porter{DirRoot: dirRoot, Message: make(chan string, 512), Targets: []string{dirConf, dirDir}},
 			&sysinfo.SysInfo{},
 		},
