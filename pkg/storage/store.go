@@ -7,6 +7,7 @@ import (
 	"errors"
 	"os"
 	"slices"
+	"sync"
 )
 
 type Store interface {
@@ -134,4 +135,36 @@ func Get[T HasId](id string, data []T) (T, error) {
 	} else {
 		return data[index], nil
 	}
+}
+
+// DeleteEventBus manages event subscribers for delete operations.
+type DeleteEventBus struct {
+	subscribers map[string][]func(ids []string) error
+	mutex       sync.RWMutex
+}
+
+func NewEventBus() *DeleteEventBus {
+	return &DeleteEventBus{
+		subscribers: make(map[string][]func(ids []string) error),
+	}
+}
+
+func (d *DeleteEventBus) Subscribe(storage string, handler func(ids []string) error) {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+
+	d.subscribers[storage] = append(d.subscribers[storage], handler)
+}
+
+func (d *DeleteEventBus) Publish(storage string, ids []string) error {
+	d.mutex.RLock()
+	defer d.mutex.RUnlock()
+
+	for _, handler := range d.subscribers[storage] {
+		if err := handler(ids); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
