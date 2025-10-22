@@ -141,7 +141,7 @@ function handleSubmit(event: SubmitEvent) {
 
         <DriverSelector
           :driver-groups="groupStore.groups"
-          v-model="ruleSet.driver_ids"
+          v-model="ruleSet.driver_group_ids"
         ></DriverSelector>
       </fieldset>
 

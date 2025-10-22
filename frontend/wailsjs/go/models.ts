@@ -123,13 +123,6 @@ export namespace status {
 
 export namespace storage {
 	
-	export enum RuleType {
-	    CONTAIN = "contain",
-	    NOT_CONTAIN = "not_contain",
-	    EQUAL = "equal",
-	    NOT_EQUAL = "not_equal",
-	    REGEX = "regex",
-	}
 	export enum DriverType {
 	    NETWORK = "network",
 	    DISPLAY = "display",
@@ -148,6 +141,13 @@ export namespace storage {
 	    MEMORY = "memory",
 	    NIC = "nic",
 	    DISK = "disk",
+	}
+	export enum RuleType {
+	    CONTAIN = "contain",
+	    NOT_CONTAIN = "not_contain",
+	    EQUAL = "equal",
+	    NOT_EQUAL = "not_equal",
+	    REGEX = "regex",
 	}
 	export class AppSetting {
 	    create_partition: boolean;
@@ -265,7 +265,7 @@ export namespace storage {
 	    id: string;
 	    name: string;
 	    rules: Rule[];
-	    driver_ids: string[];
+	    driver_group_ids: string[];
 	
 	    static createFrom(source: any = {}) {
 	        return new RuleSet(source);
@@ -276,7 +276,7 @@ export namespace storage {
 	        this.id = source["id"];
 	        this.name = source["name"];
 	        this.rules = this.convertValues(source["rules"], Rule);
-	        this.driver_ids = source["driver_ids"];
+	        this.driver_group_ids = source["driver_group_ids"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

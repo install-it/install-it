@@ -35,10 +35,10 @@ type Rule struct {
 }
 
 type RuleSet struct {
-	Id         string   `json:"id"`
-	Name       string   `json:"name"`
-	Rules      []Rule   `json:"rules"`
-	DriversIds []string `json:"driver_ids"`
+	Id             string   `json:"id"`
+	Name           string   `json:"name"`
+	Rules          []Rule   `json:"rules"`
+	DriverGroupIds []string `json:"driver_group_ids"`
 }
 
 func (r RuleSet) GetId() string { return r.Id }
@@ -61,7 +61,7 @@ func (s *MatchRuleStorage) RegisterEventHandlers() {
 	s.EventBus.Subscribe(reflect.TypeFor[DriverGroup]().Name(),
 		func(deletedIds []string) error {
 			for _, ruleSet := range s.data {
-				ruleSet.DriversIds = slices.DeleteFunc(ruleSet.DriversIds, func(id string) bool {
+				ruleSet.DriverGroupIds = slices.DeleteFunc(ruleSet.DriverGroupIds, func(id string) bool {
 					return slices.Contains(deletedIds, id)
 				})
 			}

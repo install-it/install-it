@@ -19,7 +19,7 @@ const driverStore = useDriverGroupStore()
           <p class="my-1 truncate oveflow-x-hidden align-middle">
             <span class="text-sm">
               {{
-                rs.driver_ids
+                rs.driver_group_ids
                   .map(id => driverStore.groups.find(g => g.id == id)?.name ?? '')
                   .join(', ')
               }}
