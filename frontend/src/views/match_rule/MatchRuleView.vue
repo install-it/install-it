@@ -69,9 +69,9 @@ const driverStore = useDriverGroupStore()
         </div>
 
         <div class="grid grid-cols-7 gap-1 py-1 text-xs bg-gray-100">
-          <div class="col-span-2 font-medium">目標</div>
-          <div class="col-span-2 font-medium">規則類型</div>
-          <div class="col-span-3 font-medium">規則</div>
+          <div class="col-span-2 font-medium">{{ $t('matchRule.source') }}</div>
+          <div class="col-span-2 font-medium">{{ $t('matchRule.operator') }}</div>
+          <div class="col-span-3 font-medium">{{ $t('matchRule.matchTo') }}</div>
         </div>
 
         <div v-for="(r, ri) in rs.rules" :key="ri" class="grid grid-cols-7 gap-1 py-1 text-xs">
@@ -89,7 +89,9 @@ const driverStore = useDriverGroupStore()
 
     <div class="flex justify-end gap-x-3">
       <button class="btn btn-primary">
-        <RouterLink :to="{ path: '/match-rules/create' }"> 建立配對規則 </RouterLink>
+        <RouterLink :to="{ path: '/match-rules/create' }">
+          {{ $t('matchRule.createRule') }}
+        </RouterLink>
       </button>
     </div>
   </div>

@@ -24,7 +24,7 @@ const ruleSet = ruleEditor.ruleSet // alias
 
 function handleSubmit(event: SubmitEvent) {
   if (ruleSet.value.rules.length == 0) {
-    $toast.warning('請加入最少一項規則')
+    $toast.warning(t('toast.addAtLeastOneRule'))
     return
   }
 
@@ -65,23 +65,29 @@ function handleSubmit(event: SubmitEvent) {
     @submit.prevent="event => handleSubmit(event as SubmitEvent)"
   >
     <div class="h-full content-center space-y-3 max-w-full lg:max-w-2xl xl:max-w-4xl mx-auto">
-      <h1 class="mb-2 text-xl font-bold">建立配對規則</h1>
+      <h1 class="mb-2 text-xl font-bold">
+        {{ $t('matchRule.createRule') }}
+      </h1>
 
       <fieldset class="fieldset">
-        <legend class="fieldset-legend text-sm">名稱</legend>
+        <legend class="fieldset-legend text-sm">
+          {{ $t('matchRule.name') }}
+        </legend>
         <input type="text" class="input input-accent ms-1" v-model="ruleSet.name" />
       </fieldset>
 
       <fieldset class="fieldset">
-        <legend class="fieldset-legend text-sm text-required">規則</legend>
+        <legend class="fieldset-legend text-sm text-required">
+          {{ $t('matchRule.rule') }}
+        </legend>
 
         <div>
           <div class="grid grid-rows text-sm">
-            <div class="grid grid-cols-10 gap-2 py-1.5 border-y">
-              <div class="col-span-2">來源</div>
-              <div class="col-span-3">類別</div>
-              <div class="col-span-2">值</div>
-              <div class="col-span-2">動作</div>
+            <div class="grid grid-cols-6 gap-2 py-1.5 border-y">
+              <div class="col-span-1">{{ $t('matchRule.source') }}</div>
+              <div class="col-span-1">{{ $t('matchRule.operator') }}</div>
+              <div class="col-span-3">{{ $t('matchRule.pattern') }}</div>
+              <div class="col-span-1">{{ $t('common.action') }}</div>
             </div>
 
             <div class="max-h-38 overflow-y-auto">
@@ -96,13 +102,15 @@ function handleSubmit(event: SubmitEvent) {
                 v-else
                 v-for="(r, i) in ruleSet.rules"
                 :key="i"
-                class="grid grid-cols-10 items-center gap-2 py-1.5 text-xs border-b"
+                class="grid grid-cols-6 items-center gap-2 py-1.5 text-xs border-b"
               >
-                <div class="col-span-2">
-                  <p class="break-all line-clamp-2">{{ $t(`common.${r.source}`) }}</p>
+                <div class="col-span-1">
+                  <p class="break-all line-clamp-2">
+                    {{ $t(`common.${r.source}`) }}
+                  </p>
                 </div>
 
-                <div class="col-span-3">
+                <div class="col-span-1">
                   <p class="font-mono break-all line-clamp-2">
                     <span class="bg-gray-200 rounded-sm">
                       <font-awesome-icon v-if="r.is_case_sensitive" icon="fa-solid fa-a" />
@@ -111,11 +119,11 @@ function handleSubmit(event: SubmitEvent) {
                   </p>
                 </div>
 
-                <div class="col-span-2">
+                <div class="col-span-3">
                   <p class="break-all line-clamp-2">{{ r.values }}</p>
                 </div>
 
-                <div class="flex col-span-2 gap-x-1">
+                <div class="flex col-span-1 gap-x-1">
                   <div class="flex gap-x-2">
                     <button
                       type="button"
@@ -145,7 +153,9 @@ function handleSubmit(event: SubmitEvent) {
       <hr />
 
       <fieldset class="fieldset">
-        <legend class="fieldset-legend text-sm">目標</legend>
+        <legend class="fieldset-legend text-sm">
+          {{ $t('matchRule.matchTo') }}
+        </legend>
 
         <DriverSelector
           group-by="group"

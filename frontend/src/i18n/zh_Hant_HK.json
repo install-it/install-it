@@ -1,5 +1,6 @@
 {
   "common": {
+    "action": "動作",
     "all": "全部",
     "back": "返回",
     "cancel": "取消",
@@ -7,10 +8,10 @@
     "cpu": "中央處理器",
     "enable": "啟用",
     "gpu": "顯示卡",
+    "memory": "記憶體",
     "motherboard": "底板",
     "nic": "網絡介面卡",
     "pleaseSelect": "請選擇",
-    "memory": "記憶體",
     "save": "儲存",
     "select": "選擇",
     "storage": "儲存裝置",
@@ -95,6 +96,22 @@
     "successAction": "關機設定",
     "title": "額外工作及安裝設定"
   },
+  "matchRule": {
+    "caseSensitive": "區分大小寫",
+    "contain": "包含",
+    "createRule": "建立配對規則",
+    "equal": "等於",
+    "matchRule": "配對規則",
+    "matchTo": "配對至",
+    "name": "名稱",
+    "not_contain": "不包含",
+    "not_equal": "不等於",
+    "operator": "類型",
+    "pattern": "匹配值",
+    "regex": "REGEX",
+    "rule": "規則",
+    "source": "來源"
+  },
   "porter": {
     "backup": "備份",
     "cleanup": "清理檔案",
@@ -160,6 +177,8 @@
   },
   "toast": {
     "addAtLeastOneDriver": "請至少加入一個軀動程式。",
+    "addAtLeastOnePattern": "請至少加入一項匹配值。",
+    "addAtLeastOneRule": "請至少加入一項規則。",
     "cancelCompletedFailed": "[{name}] 無法取消，可能已經完成執行。",
     "cancelFailed": "[{name}] 無法取消。",
     "checkUpdateFailed": "因為未能獲取程式版本資訊，所以沒法檢查更新。",

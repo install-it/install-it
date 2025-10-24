@@ -2,7 +2,10 @@
 import ModalFrame from '@/components/modals/ModalFrame.vue'
 import { storage } from '@/wailsjs/go/models'
 import { ref, useTemplateRef } from 'vue'
+import { useI18n } from 'vue-i18n'
 import TaggedInput from './TaggedInput.vue'
+
+const { t } = useI18n()
 
 defineExpose({
   show: (rule?: { _id: number | undefined } & storage.Rule) => {
@@ -37,7 +40,9 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
     <div class="w-4/5">
       <div class="bg-white rounded-lg shadow-sm">
         <div class="flex items-center justify-between h-12 px-4 border-b rounded-t">
-          <h3 class="font-semibold">配對規則</h3>
+          <h3 class="font-semibold">
+            {{ $t('matchRule.matchRule') }}
+          </h3>
 
           <button
             type="button"
@@ -54,7 +59,7 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
           @submit.prevent="
             () => {
               if (input.values.length == 0) {
-                $toast.warning('請加入最少一項配條件')
+                $toast.warning(t('matchRule.addAtLeastOnePattern'))
               } else {
                 $emit('submit', input)
                 frame?.hide()
@@ -65,7 +70,9 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
           <div class="flex flex-col gap-y-2 max-h-[75vh] overflow-auto p-4" ref="modalBody">
             <div class="flex gap-1">
               <fieldset class="fieldset flex-1">
-                <legend class="fieldset-legend text-sm">來源</legend>
+                <legend class="fieldset-legend text-sm">
+                  {{ $t('matchRule.source') }}
+                </legend>
                 <select v-model="input.source" class="select select-accent" required>
                   <option v-for="s in storage.RuleSource" :value="s" :key="s">
                     {{ $t(`common.${s}`) }}
@@ -74,15 +81,21 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
               </fieldset>
 
               <fieldset class="fieldset flex-1">
-                <legend class="fieldset-legend text-sm">模式</legend>
+                <legend class="fieldset-legend text-sm">
+                  {{ $t('matchRule.operator') }}
+                </legend>
                 <select v-model="input.type" class="select select-accent" required>
-                  <option v-for="t in storage.RuleType" :value="t" :key="t">{{ t }}</option>
+                  <option v-for="t in storage.RuleType" :value="t" :key="t">
+                    {{ $t(`matchRule.${t}`) }}
+                  </option>
                 </select>
               </fieldset>
             </div>
 
             <fieldset class="fieldset flex-1">
-              <legend class="fieldset-legend text-sm">區分大小寫</legend>
+              <legend class="fieldset-legend text-sm">
+                {{ $t('matchRule.caseSensitive') }}
+              </legend>
               <label class="flex items-center select-none cursor-pointer">
                 <input
                   type="checkbox"
@@ -90,14 +103,14 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
                   class="checkbox checkbox-sm checkbox-primary me-1.5"
                   :disabled="input.type === 'regex'"
                 />
-                啟用
+                {{ $t('common.enable') }}
               </label>
-
-              <p class="label">不適用於 REGEX</p>
             </fieldset>
 
             <fieldset class="border input-bordered rounded w-full py-1">
-              <legend class="fieldset-legend text-sm text-required">條件</legend>
+              <legend class="fieldset-legend text-sm text-required">
+                {{ $t('matchRule.pattern') }}
+              </legend>
               <TaggedInput v-model="input.values"></TaggedInput>
             </fieldset>
           </div>
