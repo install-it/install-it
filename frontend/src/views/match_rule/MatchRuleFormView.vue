@@ -119,8 +119,14 @@ function handleSubmit(event: SubmitEvent) {
                   </p>
                 </div>
 
-                <div class="col-span-3">
-                  <p class="break-all line-clamp-2">{{ r.values }}</p>
+                <div class="col-span-3 space-x-0.5 md:space-x-1.5 space-y-0.5">
+                  <span
+                    v-for="(v, i) in r.values"
+                    :key="i"
+                    class="badge badge-neutral badge-sm px-0.5"
+                  >
+                    {{ v }}
+                  </span>
                 </div>
 
                 <div class="flex col-span-1 gap-x-1">

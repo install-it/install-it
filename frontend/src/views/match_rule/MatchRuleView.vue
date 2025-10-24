@@ -82,9 +82,13 @@ const driverStore = useDriverGroupStore()
             <span class="bg-gray-200 rounded-sm">
               <font-awesome-icon v-if="r.is_case_sensitive" icon="fa-solid fa-a" />
             </span>
-            {{ $t(`matchRule.${r.type}`) }}
+            {{ $t(`matchRule.${r.operator}`) }}
           </div>
-          <div class="col-span-3 font-medium">{{ r.values }}</div>
+          <div class="col-span-3 font-medium space-x-1 space-y-0.5 line-clamp-3">
+            <span v-for="(v, i) in r.values" :key="i" class="badge badge-neutral badge-sm px-0.5">
+              {{ v }}
+            </span>
+          </div>
         </div>
       </div>
     </div>
