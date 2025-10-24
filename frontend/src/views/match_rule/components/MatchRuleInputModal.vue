@@ -12,7 +12,7 @@ defineExpose({
     input.value = rule || {
       _id: undefined,
       source: storage.RuleSource.CPU,
-      type: storage.RuleType.CONTAIN,
+      operator: storage.RuleOperator.CONTAIN,
       is_case_sensitive: false,
       values: []
     }
@@ -29,7 +29,7 @@ const [frame, modalBody] = [useTemplateRef('frame'), useTemplateRef('modalBody')
 const input = ref<{ _id: number | undefined } & storage.Rule>({
   _id: undefined,
   source: storage.RuleSource.CPU,
-  type: storage.RuleType.CONTAIN,
+  operator: storage.RuleOperator.CONTAIN,
   is_case_sensitive: false,
   values: []
 })
@@ -84,8 +84,8 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
                 <legend class="fieldset-legend text-sm">
                   {{ $t('matchRule.operator') }}
                 </legend>
-                <select v-model="input.type" class="select select-accent" required>
-                  <option v-for="t in storage.RuleType" :value="t" :key="t">
+                <select v-model="input.operator" class="select select-accent" required>
+                  <option v-for="t in storage.RuleOperator" :value="t" :key="t">
                     {{ $t(`matchRule.${t}`) }}
                   </option>
                 </select>
@@ -101,7 +101,7 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
                   type="checkbox"
                   v-model="input.is_case_sensitive"
                   class="checkbox checkbox-sm checkbox-primary me-1.5"
-                  :disabled="input.type === 'regex'"
+                  :disabled="input.operator === 'regex'"
                 />
                 {{ $t('common.enable') }}
               </label>
