@@ -151,7 +151,7 @@ func main() {
 				{storage.Gpu, "GPU"},
 				{storage.Memory, "MEMORY"},
 				{storage.Nic, "NIC"},
-				{storage.Disk, "DISK"},
+				{storage.Storage, "DISK"},
 			},
 			[]struct {
 				Value  storage.RuleType

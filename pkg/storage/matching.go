@@ -14,7 +14,7 @@ const (
 	Gpu         RuleSource = "gpu"
 	Memory      RuleSource = "memory"
 	Nic         RuleSource = "nic"
-	Disk        RuleSource = "disk"
+	Storage     RuleSource = "storage"
 )
 
 type RuleType string

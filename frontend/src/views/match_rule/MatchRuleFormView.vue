@@ -24,7 +24,7 @@ const ruleSet = ruleEditor.ruleSet // alias
 
 function handleSubmit(event: SubmitEvent) {
   if (ruleSet.value.rules.length == 0) {
-    $toast.warning(t('toast.addAtLeastOneDriver'))
+    $toast.warning('請加入最少一項規則')
     return
   }
 
@@ -68,7 +68,12 @@ function handleSubmit(event: SubmitEvent) {
       <h1 class="mb-2 text-xl font-bold">建立配對規則</h1>
 
       <fieldset class="fieldset">
-        <legend class="fieldset-legend text-sm">規則</legend>
+        <legend class="fieldset-legend text-sm">名稱</legend>
+        <input type="text" class="input input-accent ms-1" v-model="ruleSet.name" />
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend text-sm text-required">規則</legend>
 
         <div>
           <div class="grid grid-rows text-sm">
@@ -79,8 +84,11 @@ function handleSubmit(event: SubmitEvent) {
               <div class="col-span-2">動作</div>
             </div>
 
-            <div class="h-16 max-h-[23vh] overflow-y-auto border-b">
-              <div v-if="ruleSet.rules.length == 0" class="h-full content-center py-1 text-center">
+            <div class="max-h-38 overflow-y-auto">
+              <div
+                v-if="ruleSet.rules.length == 0"
+                class="h-full content-center py-1 text-center border-b"
+              >
                 N/A
               </div>
 
@@ -91,7 +99,7 @@ function handleSubmit(event: SubmitEvent) {
                 class="grid grid-cols-10 items-center gap-2 py-1.5 text-xs border-b"
               >
                 <div class="col-span-2">
-                  <p class="break-all line-clamp-2">{{ r.source }}</p>
+                  <p class="break-all line-clamp-2">{{ $t(`common.${r.source}`) }}</p>
                 </div>
 
                 <div class="col-span-3">
@@ -123,7 +131,7 @@ function handleSubmit(event: SubmitEvent) {
               </div>
             </div>
 
-            <p class="text-hint">規則幫助</p>
+            <p class="text-hint"></p>
           </div>
 
           <div class="flex justify-end gap-x-3">
@@ -140,6 +148,7 @@ function handleSubmit(event: SubmitEvent) {
         <legend class="fieldset-legend text-sm">目標</legend>
 
         <DriverSelector
+          group-by="group"
           :driver-groups="groupStore.groups"
           v-model="ruleSet.driver_group_ids"
         ></DriverSelector>
@@ -178,6 +187,7 @@ function handleSubmit(event: SubmitEvent) {
 </template>
 
 <style scoped>
+.text-required:after,
 legend:has(+ input:required, + select:required):after,
 legend:has(+ div > input:required):after {
   content: ' *';

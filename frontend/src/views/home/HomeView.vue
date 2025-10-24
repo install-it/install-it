@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAppSettingStore, useDriverGroupStore } from '@/store'
+import { useAppSettingStore, useDriverGroupStore, useMatchRuleStore } from '@/store'
 import CommandStatueModal from '@/views/home/components/CommandStatusModal.vue'
 import * as executor from '@/wailsjs/go/execute/CommandExecutor'
 import { storage, sysinfo } from '@/wailsjs/go/models'
@@ -17,9 +17,11 @@ const statusModal = useTemplateRef('statusModal')
 
 const form = useTemplateRef('form')
 
-const settingStore = useAppSettingStore()
-
-const groupStore = useDriverGroupStore()
+const [groupStore, settingStore, ruleStore] = [
+  useDriverGroupStore(),
+  useAppSettingStore(),
+  useMatchRuleStore()
+]
 
 const hwinfos = ref<{
   motherboard: Array<sysinfo.Win32_BaseBoard>
@@ -27,7 +29,7 @@ const hwinfos = ref<{
   gpu: Array<sysinfo.Win32_VideoController>
   memory: Array<sysinfo.Win32_PhysicalMemory>
   nic: Array<sysinfo.Win32_NetworkAdapter>
-  disk: Array<sysinfo.Win32_DiskDrive>
+  storage: Array<sysinfo.Win32_DiskDrive>
 } | null>(null)
 
 onBeforeMount(() => {
@@ -39,7 +41,7 @@ onBeforeMount(() => {
     sysinfoqy.NicInfo(),
     sysinfoqy.DiskInfo()
   ]).then(infos => {
-    hwinfos.value = ['motherboard', 'cpu', 'gpu', 'memory', 'nic', 'disk'].reduce(
+    hwinfos.value = ['motherboard', 'cpu', 'gpu', 'memory', 'nic', 'storage'].reduce(
       (obj, key, index) => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
@@ -50,6 +52,63 @@ onBeforeMount(() => {
     )
   })
 })
+
+function match() {
+  if (hwinfos.value === null) {
+    $toast.error('沒有資訊')
+    return
+  }
+
+  ruleStore.ruleSets.forEach(rs => {
+    const hasMatched = rs.rules.some(rule => {
+      const parts = hwinfos.value![rule.source]
+      if (!parts || parts.length === 0) {
+        return false
+      }
+
+      return parts.some(part => {
+        if (rule.type == 'regex') {
+          return rule.values.some(v => {
+            try {
+              return new RegExp(v, rule.is_case_sensitive ? undefined : 'i').test(part.Name)
+            } catch {
+              return false
+            }
+          })
+        } else {
+          const name = rule.is_case_sensitive ? part.Name : part.Name.toLowerCase()
+          const accepts = rule.values.map(v => (rule.is_case_sensitive ? v : v.toLowerCase()))
+          switch (rule.type) {
+            case 'contain':
+              return accepts.some(v => name.includes(v))
+            case 'not_contain':
+              return accepts.every(v => !name.includes(v))
+            case 'equal':
+              return accepts.some(v => name === v)
+            case 'not_equal':
+              return accepts.every(v => name !== v)
+            default:
+              return false
+          }
+        }
+      })
+    })
+
+    if (hasMatched && form.value !== null) {
+      rs.driver_group_ids.forEach(gid => {
+        const input = form.value!.querySelector(`input[value="${gid}"], option[value="${gid}"]`) as
+          | HTMLInputElement
+          | HTMLOptionElement
+
+        if (input instanceof HTMLInputElement) {
+          input.checked = true
+        } else if (input instanceof HTMLOptionElement) {
+          input.selected = true
+        }
+      })
+    }
+  })
+}
 
 async function handleSubmit() {
   if (!form.value) {
@@ -155,7 +214,7 @@ async function handleSubmit() {
         </div>
 
         <div>
-          <h2 class="text-sm font-bold">{{ $t('common.ram') }}</h2>
+          <h2 class="text-sm font-bold">{{ $t('common.memory') }}</h2>
 
           <p v-for="(mem, i) in hwinfos.memory" :key="i" class="text-sm">
             {{
@@ -197,7 +256,7 @@ async function handleSubmit() {
         <div>
           <h2 class="text-sm font-bold">{{ $t('common.storage') }}</h2>
 
-          <p v-for="(dp, i) in hwinfos.disk" :key="i" class="text-sm">
+          <p v-for="(dp, i) in hwinfos.storage" :key="i" class="text-sm">
             {{ `${dp.Model} (${Math.round(dp.Size / Math.pow(1024, 3))}GB)` }}
           </p>
         </div>
@@ -352,6 +411,10 @@ async function handleSubmit() {
         </div>
 
         <div class="flex flex-row gap-x-3 justify-end items-center mt-2 h-8">
+          <button type="button" class="btn btn-outline btn-neutral border-2" @click="match">
+            配對
+          </button>
+
           <button
             type="button"
             class="btn btn-outline btn-secondary border-2"
@@ -364,6 +427,7 @@ async function handleSubmit() {
           >
             {{ $t('installOption.reset') }}
           </button>
+
           <button class="btn btn-secondary" @click="handleSubmit">
             {{ $t('installOption.execute') }}
           </button>

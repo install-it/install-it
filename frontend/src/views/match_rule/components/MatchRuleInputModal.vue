@@ -53,22 +53,28 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
           autocomplete="off"
           @submit.prevent="
             () => {
-              $emit('submit', input)
-              frame?.hide()
+              if (input.values.length == 0) {
+                $toast.warning('請加入最少一項配條件')
+              } else {
+                $emit('submit', input)
+                frame?.hide()
+              }
             }
           "
         >
           <div class="flex flex-col gap-y-2 max-h-[75vh] overflow-auto p-4" ref="modalBody">
             <div class="flex gap-1">
               <fieldset class="fieldset flex-1">
-                <legend class="fieldset-legend text-sm">規則</legend>
+                <legend class="fieldset-legend text-sm">來源</legend>
                 <select v-model="input.source" class="select select-accent" required>
-                  <option v-for="s in storage.RuleSource" :value="s" :key="s">{{ s }}</option>
+                  <option v-for="s in storage.RuleSource" :value="s" :key="s">
+                    {{ $t(`common.${s}`) }}
+                  </option>
                 </select>
               </fieldset>
 
               <fieldset class="fieldset flex-1">
-                <legend class="fieldset-legend text-sm">規則</legend>
+                <legend class="fieldset-legend text-sm">模式</legend>
                 <select v-model="input.type" class="select select-accent" required>
                   <option v-for="t in storage.RuleType" :value="t" :key="t">{{ t }}</option>
                 </select>
@@ -80,21 +86,18 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
               <label class="flex items-center select-none cursor-pointer">
                 <input
                   type="checkbox"
-                  value="set_password"
                   v-model="input.is_case_sensitive"
                   class="checkbox checkbox-sm checkbox-primary me-1.5"
+                  :disabled="input.type === 'regex'"
                 />
                 啟用
               </label>
+
+              <p class="label">不適用於 REGEX</p>
             </fieldset>
 
-            <!-- <fieldset class="fieldset flex-1">
-              <legend class="fieldset-legend text-sm">區分大小寫</legend>
-              <input type="checkbox" class="checkbox" v-model="input.is_case_sensitive" />
-            </fieldset> -->
-
             <fieldset class="border input-bordered rounded w-full py-1">
-              <legend class="fieldset-legend text-sm">值</legend>
+              <legend class="fieldset-legend text-sm text-required">條件</legend>
               <TaggedInput v-model="input.values"></TaggedInput>
             </fieldset>
           </div>
@@ -109,3 +112,12 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
     </div>
   </ModalFrame>
 </template>
+
+<style scoped>
+.text-required:after,
+legend:has(+ input:required, + select:required):after,
+legend:has(+ div > input:required):after {
+  content: ' *';
+  color: red;
+}
+</style>
