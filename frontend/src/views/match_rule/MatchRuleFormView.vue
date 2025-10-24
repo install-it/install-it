@@ -115,7 +115,7 @@ function handleSubmit(event: SubmitEvent) {
                     <span class="bg-gray-200 rounded-sm">
                       <font-awesome-icon v-if="r.is_case_sensitive" icon="fa-solid fa-a" />
                     </span>
-                    {{ r.operator }}
+                    {{ $t(`matchRule.${r.operator}`) }}
                   </p>
                 </div>
 
