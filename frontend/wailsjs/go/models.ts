@@ -140,7 +140,7 @@ export namespace storage {
 	    GPU = "gpu",
 	    MEMORY = "memory",
 	    NIC = "nic",
-	    DISK = "disk",
+	    DISK = "storage",
 	}
 	export enum RuleType {
 	    CONTAIN = "contain",
