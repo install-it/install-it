@@ -68,19 +68,21 @@ const driverStore = useDriverGroupStore()
           </div>
         </div>
 
-        <div class="grid grid-cols-7 gap-1 py-1 text-xs bg-gray-100">
-          <div class="col-span-2 font-medium">{{ $t('matchRule.source') }}</div>
-          <div class="col-span-2 font-medium">{{ $t('matchRule.operator') }}</div>
+        <div class="grid grid-cols-5 gap-1 py-1 text-xs bg-gray-100">
+          <div class="col-span-1 font-medium">{{ $t('matchRule.source') }}</div>
+          <div class="col-span-1 font-medium">{{ $t('matchRule.operator') }}</div>
           <div class="col-span-3 font-medium">{{ $t('matchRule.matchTo') }}</div>
         </div>
 
-        <div v-for="(r, ri) in rs.rules" :key="ri" class="grid grid-cols-7 gap-1 py-1 text-xs">
-          <div class="col-span-2 font-medium">{{ r.source }}</div>
-          <div class="col-span-2 font-medium">
+        <div v-for="(r, ri) in rs.rules" :key="ri" class="grid grid-cols-5 gap-1 py-1 text-xs">
+          <div class="col-span-1 font-medium">
+            {{ $t(`common.${r.source}`) }}
+          </div>
+          <div class="col-span-1 font-medium">
             <span class="bg-gray-200 rounded-sm">
               <font-awesome-icon v-if="r.is_case_sensitive" icon="fa-solid fa-a" />
             </span>
-            {{ r.type }}
+            {{ $t(`matchRule.${r.type}`) }}
           </div>
           <div class="col-span-3 font-medium">{{ r.values }}</div>
         </div>
