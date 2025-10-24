@@ -123,15 +123,7 @@ export namespace status {
 
 export namespace storage {
 	
-	export enum RuleSource {
-	    CPU = "cpu",
-	    MOTHERBOARD = "motherboard",
-	    GPU = "gpu",
-	    MEMORY = "memory",
-	    NIC = "nic",
-	    DISK = "storage",
-	}
-	export enum RuleType {
+	export enum RuleOperator {
 	    CONTAIN = "contain",
 	    NOT_CONTAIN = "not_contain",
 	    EQUAL = "equal",
@@ -148,6 +140,14 @@ export namespace storage {
 	    REBOOT = "reboot",
 	    SHUTDOWN = "shutdown",
 	    FIRMWARE = "firmware",
+	}
+	export enum RuleSource {
+	    CPU = "cpu",
+	    MOTHERBOARD = "motherboard",
+	    GPU = "gpu",
+	    MEMORY = "memory",
+	    NIC = "nic",
+	    DISK = "storage",
 	}
 	export class AppSetting {
 	    create_partition: boolean;
@@ -245,7 +245,7 @@ export namespace storage {
 	}
 	export class Rule {
 	    source: RuleSource;
-	    type: RuleType;
+	    operator: RuleOperator;
 	    is_case_sensitive: boolean;
 	    values: string[];
 	
@@ -256,7 +256,7 @@ export namespace storage {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.source = source["source"];
-	        this.type = source["type"];
+	        this.operator = source["operator"];
 	        this.is_case_sensitive = source["is_case_sensitive"];
 	        this.values = source["values"];
 	    }

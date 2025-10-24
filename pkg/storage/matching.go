@@ -17,21 +17,21 @@ const (
 	Storage     RuleSource = "storage"
 )
 
-type RuleType string
+type RuleOperator string
 
 const (
-	Contain    RuleType = "contain"
-	NotContain RuleType = "not_contain"
-	Equal      RuleType = "equal"
-	NotEqual   RuleType = "not_equal"
-	Regex      RuleType = "regex"
+	Contain    RuleOperator = "contain"
+	NotContain RuleOperator = "not_contain"
+	Equal      RuleOperator = "equal"
+	NotEqual   RuleOperator = "not_equal"
+	Regex      RuleOperator = "regex"
 )
 
 type Rule struct {
-	Source          RuleSource `json:"source"`
-	Type            RuleType   `json:"type"`
-	IsCaseSensitive bool       `json:"is_case_sensitive"`
-	Values          []string   `json:"values"`
+	Source          RuleSource   `json:"source"`
+	Operator        RuleOperator `json:"operator"`
+	IsCaseSensitive bool         `json:"is_case_sensitive"`
+	Values          []string     `json:"values"`
 }
 
 type RuleSet struct {

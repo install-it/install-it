@@ -67,7 +67,7 @@ function match() {
       }
 
       return parts.some(part => {
-        if (rule.type == 'regex') {
+        if (rule.operator == 'regex') {
           return rule.values.some(v => {
             try {
               return new RegExp(v, rule.is_case_sensitive ? undefined : 'i').test(part.Name)
@@ -78,7 +78,7 @@ function match() {
         } else {
           const name = rule.is_case_sensitive ? part.Name : part.Name.toLowerCase()
           const accepts = rule.values.map(v => (rule.is_case_sensitive ? v : v.toLowerCase()))
-          switch (rule.type) {
+          switch (rule.operator) {
             case 'contain':
               return accepts.some(v => name.includes(v))
             case 'not_contain':

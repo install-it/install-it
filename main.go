@@ -154,7 +154,7 @@ func main() {
 				{storage.Storage, "DISK"},
 			},
 			[]struct {
-				Value  storage.RuleType
+				Value  storage.RuleOperator
 				TSName string
 			}{
 				{storage.Contain, "CONTAIN"},
