@@ -160,7 +160,11 @@ function handleSubmit(event: SubmitEvent) {
         <legend class="fieldset-legend text-sm">{{ $t('matchRule.multiRuleMatching') }}</legend>
 
         <label class="flex items-center w-full select-none cursor-pointer">
-          <input type="checkbox" class="me-1.5 checkbox checkbox-primary" />
+          <input
+            type="checkbox"
+            class="me-1.5 checkbox checkbox-primary"
+            v-model="ruleSet.should_hit_all"
+          />
           {{ $t('matchRule.hitAllRule') }}
         </label>
 
