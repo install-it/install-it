@@ -31,6 +31,7 @@ type Rule struct {
 	Source          RuleSource   `json:"source"`
 	Operator        RuleOperator `json:"operator"`
 	IsCaseSensitive bool         `json:"is_case_sensitive"`
+	ShouldHitAll    bool         `json:"should_hit_all"`
 	Values          []string     `json:"values"`
 }
 

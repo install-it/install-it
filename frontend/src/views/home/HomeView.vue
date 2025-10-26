@@ -66,6 +66,7 @@ function match() {
         return false
       }
 
+      // TODO: integrate rule.should_hit_all
       return parts.some(part => {
         if (rule.operator == 'regex') {
           return rule.values.some(v => {
