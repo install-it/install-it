@@ -60,7 +60,7 @@ function match() {
   }
 
   ruleStore.ruleSets.forEach(rs => {
-    const hasMatched = rs.rules.some(rule => {
+    const hits = rs.rules.map(rule => {
       const parts = hwinfos.value![rule.source]
       if (!parts || parts.length === 0) {
         return false
@@ -94,7 +94,7 @@ function match() {
       })
     })
 
-    if (hasMatched && form.value !== null) {
+    if (rs.should_hit_all ? hits.every(h => h) : hits.some(h => h) && form.value !== null) {
       rs.driver_group_ids.forEach(gid => {
         const input = form.value!.querySelector(`input[value="${gid}"], option[value="${gid}"]`) as
           | HTMLInputElement

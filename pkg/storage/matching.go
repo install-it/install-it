@@ -38,6 +38,7 @@ type RuleSet struct {
 	Id             string   `json:"id"`
 	Name           string   `json:"name"`
 	Rules          []Rule   `json:"rules"`
+	ShouldHitAll   bool     `json:"should_hit_all"`
 	DriverGroupIds []string `json:"driver_group_ids"`
 }
 

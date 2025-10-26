@@ -265,6 +265,7 @@ export namespace storage {
 	    id: string;
 	    name: string;
 	    rules: Rule[];
+	    should_hit_all: boolean;
 	    driver_group_ids: string[];
 	
 	    static createFrom(source: any = {}) {
@@ -276,6 +277,7 @@ export namespace storage {
 	        this.id = source["id"];
 	        this.name = source["name"];
 	        this.rules = this.convertValues(source["rules"], Rule);
+	        this.should_hit_all = source["should_hit_all"];
 	        this.driver_group_ids = source["driver_group_ids"];
 	    }
 	
