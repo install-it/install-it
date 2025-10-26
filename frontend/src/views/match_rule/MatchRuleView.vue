@@ -77,7 +77,7 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
             </span>
             {{ $t(`matchRule.${r.operator}`) }}
           </div>
-          <div class="col-span-3 space-x-1 space-y-0.5 line-clamp-3">
+          <div class="col-span-3 space-x-1 space-y-0.5 line-clamp-2">
             <span v-for="(v, i) in r.values" :key="i" class="badge badge-neutral badge-sm px-0.5">
               {{ v }}
             </span>
