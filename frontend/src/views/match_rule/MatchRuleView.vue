@@ -88,7 +88,7 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
 
         <div class="flex gap-2 text-xs">
           <p class="font-semibold">{{ $t('matchRule.matchTo') }}</p>
-          <div class="flex-1 line-clamp-2 space-x-1 space-y-1">
+          <div class="flex-1 line-clamp-2 space-x-1 space-y-0.5">
             <span
               v-for="(group, i) in driverStore.groups.filter(g =>
                 rs.driver_group_ids.includes(g.id)
