@@ -111,12 +111,17 @@ function handleSubmit(event: SubmitEvent) {
                 </div>
 
                 <div class="col-span-1">
-                  <p class="font-mono break-all line-clamp-2">
-                    <span class="bg-gray-200 rounded-sm">
-                      <font-awesome-icon v-if="r.is_case_sensitive" icon="fa-solid fa-a" />
+                  <div class="flex gap-0.5">
+                    <span v-if="r.is_case_sensitive">
+                      <font-awesome-icon
+                        icon="fa-solid fa-a"
+                        class="bg-gray-200 rounded-sm p-0.5"
+                      />
                     </span>
-                    {{ $t(`matchRule.${r.operator}`) }}
-                  </p>
+                    <span class="font-mono">
+                      {{ $t(`matchRule.${r.operator}`) }}
+                    </span>
+                  </div>
                 </div>
 
                 <div class="col-span-3 space-x-0.5 md:space-x-1.5 space-y-0.5">
