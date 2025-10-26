@@ -79,10 +79,14 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
             {{ $t(`common.${r.source}`) }}
           </div>
           <div class="col-span-1">
-            <span class="bg-gray-200 rounded-sm">
-              <font-awesome-icon v-if="r.is_case_sensitive" icon="fa-solid fa-a" />
-            </span>
-            {{ $t(`matchRule.${r.operator}`) }}
+            <div class="flex gap-0.5">
+              <span v-if="r.is_case_sensitive">
+                <font-awesome-icon icon="fa-solid fa-a" class="bg-gray-200 rounded-sm p-0.5" />
+              </span>
+              <span class="font-mono">
+                {{ $t(`matchRule.${r.operator}`) }}
+              </span>
+            </div>
           </div>
           <div class="col-span-3 space-x-1 space-y-0.5 line-clamp-2">
             <span v-for="(v, i) in r.values" :key="i" class="badge badge-neutral badge-sm px-0.5">
