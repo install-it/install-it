@@ -16,6 +16,13 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
       >
         <div class="flex justify-between">
           <h2 class="my-1 truncate oveflow-x-hidden align-middle text-sm font-bold">
+            <span
+              v-if="rs.should_hit_all"
+              class="bg-orange-300 rounded-sm px-0.5"
+              :title="$t('matchRule.hitAllRule')"
+            >
+              <font-awesome-icon icon="fa-solid fa-check-double" />
+            </span>
             {{ rs.name }}
           </h2>
 
