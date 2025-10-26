@@ -156,6 +156,17 @@ function handleSubmit(event: SubmitEvent) {
         </div>
       </fieldset>
 
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend text-sm">{{ $t('matchRule.multiRuleMatching') }}</legend>
+
+        <label class="flex items-center w-full select-none cursor-pointer">
+          <input type="checkbox" class="me-1.5 checkbox checkbox-primary" />
+          {{ $t('matchRule.hitAllRule') }}
+        </label>
+
+        <p class="text-hint">{{ $t('matchRule.multiRuleMatchingHelp') }}</p>
+      </fieldset>
+
       <hr />
 
       <fieldset class="fieldset">
