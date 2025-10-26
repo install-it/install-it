@@ -71,7 +71,7 @@ const driverStore = useDriverGroupStore()
         <div class="grid grid-cols-5 gap-1 py-1 text-xs bg-gray-100">
           <div class="col-span-1 font-medium">{{ $t('matchRule.source') }}</div>
           <div class="col-span-1 font-medium">{{ $t('matchRule.operator') }}</div>
-          <div class="col-span-3 font-medium">{{ $t('matchRule.matchTo') }}</div>
+          <div class="col-span-3 font-medium">{{ $t('matchRule.pattern') }}</div>
         </div>
 
         <div v-for="(r, ri) in rs.rules" :key="ri" class="grid grid-cols-5 gap-1 py-1 text-xs">
