@@ -123,13 +123,6 @@ export namespace status {
 
 export namespace storage {
 	
-	export enum RuleOperator {
-	    CONTAIN = "contain",
-	    NOT_CONTAIN = "not_contain",
-	    EQUAL = "equal",
-	    NOT_EQUAL = "not_equal",
-	    REGEX = "regex",
-	}
 	export enum DriverType {
 	    NETWORK = "network",
 	    DISPLAY = "display",
@@ -148,6 +141,13 @@ export namespace storage {
 	    MEMORY = "memory",
 	    NIC = "nic",
 	    DISK = "storage",
+	}
+	export enum RuleOperator {
+	    CONTAIN = "contain",
+	    NOT_CONTAIN = "not_contain",
+	    EQUAL = "equal",
+	    NOT_EQUAL = "not_equal",
+	    REGEX = "regex",
 	}
 	export class AppSetting {
 	    create_partition: boolean;
