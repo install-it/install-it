@@ -83,9 +83,9 @@ function handleSubmit(event: SubmitEvent) {
 
         <div>
           <div class="grid grid-rows text-sm">
-            <div class="grid grid-cols-6 gap-2 py-1.5 border-y">
+            <div class="grid grid-cols-7 gap-2 py-1.5 border-y">
               <div class="col-span-1">{{ $t('matchRule.source') }}</div>
-              <div class="col-span-1">{{ $t('matchRule.operator') }}</div>
+              <div class="col-span-2">{{ $t('matchRule.operator') }}</div>
               <div class="col-span-3">{{ $t('matchRule.pattern') }}</div>
               <div class="col-span-1">{{ $t('common.action') }}</div>
             </div>
@@ -102,7 +102,7 @@ function handleSubmit(event: SubmitEvent) {
                 v-else
                 v-for="(r, i) in ruleSet.rules"
                 :key="i"
-                class="grid grid-cols-6 items-center gap-2 py-1.5 text-xs border-b"
+                class="grid grid-cols-7 items-center gap-2 py-1.5 text-xs border-b"
               >
                 <div class="col-span-1">
                   <p class="break-all line-clamp-2">
@@ -110,12 +110,18 @@ function handleSubmit(event: SubmitEvent) {
                   </p>
                 </div>
 
-                <div class="col-span-1">
+                <div class="col-span-2">
                   <div class="flex gap-0.5">
-                    <span v-if="r.is_case_sensitive">
+                    <span v-if="r.is_case_sensitive" :title="$t('matchRule.caseSensitive')">
                       <font-awesome-icon
                         icon="fa-solid fa-a"
                         class="bg-gray-200 rounded-sm p-0.5"
+                      />
+                    </span>
+                    <span v-if="r.should_hit_all" :title="$t('matchRule.hitAllPatterns')">
+                      <font-awesome-icon
+                        icon="fa-solid fa-check-double"
+                        class="bg-orange-300 rounded-sm p-0.5"
                       />
                     </span>
                     <span class="font-mono">

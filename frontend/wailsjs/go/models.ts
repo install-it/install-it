@@ -247,6 +247,7 @@ export namespace storage {
 	    source: RuleSource;
 	    operator: RuleOperator;
 	    is_case_sensitive: boolean;
+	    should_hit_all: boolean;
 	    values: string[];
 	
 	    static createFrom(source: any = {}) {
@@ -258,6 +259,7 @@ export namespace storage {
 	        this.source = source["source"];
 	        this.operator = source["operator"];
 	        this.is_case_sensitive = source["is_case_sensitive"];
+	        this.should_hit_all = source["should_hit_all"];
 	        this.values = source["values"];
 	    }
 	}

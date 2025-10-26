@@ -68,18 +68,28 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
           </div>
         </div>
 
-        <div class="grid grid-cols-5 gap-1 py-1 text-xs bg-gray-100">
+        <div class="grid grid-cols-6 gap-1 py-1 text-xs bg-gray-100">
           <div class="col-span-1 font-semibold">{{ $t('matchRule.source') }}</div>
-          <div class="col-span-1 font-semibold">{{ $t('matchRule.operator') }}</div>
+          <div class="col-span-2 font-semibold">{{ $t('matchRule.operator') }}</div>
           <div class="col-span-3 font-semibold">{{ $t('matchRule.pattern') }}</div>
         </div>
 
-        <div v-for="(r, ri) in rs.rules" :key="ri" class="grid grid-cols-5 gap-1 py-1 text-xs">
+        <div
+          v-for="(r, ri) in rs.rules"
+          :key="ri"
+          class="grid grid-cols-6 items-center gap-1 py-1 text-xs"
+        >
           <div class="col-span-1">
             {{ $t(`common.${r.source}`) }}
           </div>
-          <div class="col-span-1">
+          <div class="col-span-2">
             <div class="flex gap-0.5">
+              <span v-if="r.should_hit_all" :title="$t('matchRule.hitAllPatterns')">
+                <font-awesome-icon
+                  icon="fa-solid fa-check-double"
+                  class="bg-orange-300 rounded-sm p-0.5"
+                />
+              </span>
               <span v-if="r.is_case_sensitive">
                 <font-awesome-icon icon="fa-solid fa-a" class="bg-gray-200 rounded-sm p-0.5" />
               </span>

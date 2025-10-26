@@ -14,6 +14,7 @@ defineExpose({
       source: storage.RuleSource.CPU,
       operator: storage.RuleOperator.CONTAIN,
       is_case_sensitive: false,
+      should_hit_all: false,
       values: []
     }
 
@@ -31,6 +32,7 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
   source: storage.RuleSource.CPU,
   operator: storage.RuleOperator.CONTAIN,
   is_case_sensitive: false,
+  should_hit_all: false,
   values: []
 })
 </script>
@@ -92,20 +94,38 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
               </fieldset>
             </div>
 
-            <fieldset class="fieldset flex-1">
-              <legend class="fieldset-legend text-sm">
-                {{ $t('matchRule.caseSensitive') }}
-              </legend>
-              <label class="flex items-center select-none cursor-pointer">
-                <input
-                  type="checkbox"
-                  v-model="input.is_case_sensitive"
-                  class="checkbox checkbox-sm checkbox-primary me-1.5"
-                  :disabled="input.operator === 'regex'"
-                />
-                {{ $t('common.enable') }}
-              </label>
-            </fieldset>
+            <div class="flex">
+              <fieldset class="fieldset flex-1">
+                <legend class="fieldset-legend text-sm">
+                  {{ $t('matchRule.caseSensitive') }}
+                </legend>
+                <label class="flex items-center select-none cursor-pointer">
+                  <input
+                    type="checkbox"
+                    v-model="input.is_case_sensitive"
+                    class="checkbox checkbox-sm checkbox-primary me-1.5"
+                    :disabled="input.operator === 'regex'"
+                  />
+                  {{ $t('common.enable') }}
+                </label>
+              </fieldset>
+
+              <fieldset class="fieldset flex-1">
+                <legend class="fieldset-legend text-sm">
+                  {{ $t('matchRule.multiPatternMatching') }}
+                </legend>
+                <label class="flex items-center select-none cursor-pointer">
+                  <input
+                    type="checkbox"
+                    v-model="input.should_hit_all"
+                    class="checkbox checkbox-sm checkbox-primary me-1.5"
+                  />
+                  {{ $t('matchRule.hitAllPatterns') }}
+                </label>
+
+                <p class="text-hint">{{ $t('matchRule.multiPatternMatchingHelp') }}</p>
+              </fieldset>
+            </div>
 
             <fieldset class="border input-bordered rounded w-full py-1">
               <legend class="fieldset-legend text-sm text-required">
