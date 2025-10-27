@@ -53,58 +53,57 @@ onBeforeMount(() => {
   })
 })
 
-function match() {
+function selectMatchedOptions() {
   if (hwinfos.value === null) {
     $toast.error('沒有資訊')
     return
   }
 
-  ruleStore.ruleSets.forEach(rs => {
-    const hits = rs.rules.map(rule => {
-      const parts = hwinfos.value![rule.source]
-      if (!parts || parts.length === 0) {
-        return false
-      }
-
-      // TODO: integrate rule.should_hit_all
-      return parts.some(part => {
-        if (rule.operator == 'regex') {
-          return rule.values.some(v => {
-            try {
-              return new RegExp(v, rule.is_case_sensitive ? undefined : 'i').test(part.Name)
-            } catch {
-              return false
-            }
-          })
-        } else {
-          const name = rule.is_case_sensitive ? part.Name : part.Name.toLowerCase()
-          const accepts = rule.values.map(v => (rule.is_case_sensitive ? v : v.toLowerCase()))
-          switch (rule.operator) {
-            case 'contain':
-              return accepts.some(v => name.includes(v))
-            case 'not_contain':
-              return accepts.every(v => !name.includes(v))
-            case 'equal':
-              return accepts.some(v => name === v)
-            case 'not_equal':
-              return accepts.every(v => name !== v)
-            default:
-              return false
+  /** Tests whether the given input string satisfies the specified rule. */
+  const ruleTest = (rule: storage.Rule, input: string): boolean => {
+    const name = rule.is_case_sensitive ? input : input.toLowerCase()
+    const values = rule.is_case_sensitive ? rule.values : rule.values.map(v => v.toLowerCase())
+    const hits = values.map((v: string): boolean => {
+      switch (rule.operator) {
+        case 'contain':
+          return name.includes(v)
+        case 'not_contain':
+          return !name.includes(v)
+        case 'equal':
+          return name === v
+        case 'not_equal':
+          return name !== v
+        case 'regex': {
+          try {
+            return new RegExp(v, rule.is_case_sensitive ? '' : 'i').test(name)
+          } catch {
+            return false
           }
         }
-      })
+        default:
+          return false
+      }
     })
+    return rule.should_hit_all ? hits.every(Boolean) : hits.some(Boolean)
+  }
 
-    if (rs.should_hit_all ? hits.every(h => h) : hits.some(h => h) && form.value !== null) {
+  /** Determines if there is any hardware name matches the provided rule */
+  const nameTest = (rule: storage.Rule): boolean => {
+    return hwinfos.value![rule.source].some(src => ruleTest(rule, src.Name))
+  }
+
+  ruleStore.ruleSets.forEach(rs => {
+    const matched = rs.should_hit_all
+      ? rs.rules.map(nameTest).every(Boolean)
+      : rs.rules.map(nameTest).some(Boolean)
+
+    if (form.value && matched) {
       rs.driver_group_ids.forEach(gid => {
-        const input = form.value!.querySelector(`input[value="${gid}"], option[value="${gid}"]`) as
-          | HTMLInputElement
-          | HTMLOptionElement
-
-        if (input instanceof HTMLInputElement) {
-          input.checked = true
-        } else if (input instanceof HTMLOptionElement) {
-          input.selected = true
+        const el = form.value!.querySelector(`input[value="${gid}"], option[value="${gid}"]`)
+        if (el instanceof HTMLInputElement) {
+          el.checked = true
+        } else if (el instanceof HTMLOptionElement) {
+          el.selected = true
         }
       })
     }
@@ -412,7 +411,11 @@ async function handleSubmit() {
         </div>
 
         <div class="flex flex-row gap-x-3 justify-end items-center mt-2 h-8">
-          <button type="button" class="btn btn-outline btn-neutral border-2" @click="match">
+          <button
+            type="button"
+            class="btn btn-outline btn-neutral border-2"
+            @click="selectMatchedOptions"
+          >
             配對
           </button>
 
