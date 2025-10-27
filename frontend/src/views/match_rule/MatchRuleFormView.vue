@@ -111,7 +111,7 @@ function handleSubmit(event: SubmitEvent) {
                 </div>
 
                 <div class="col-span-2">
-                  <div class="flex gap-0.5">
+                  <div class="flex gap-0.5 items-center">
                     <span v-if="r.is_case_sensitive" :title="$t('matchRule.caseSensitive')">
                       <font-awesome-icon
                         icon="fa-solid fa-a"
@@ -130,14 +130,16 @@ function handleSubmit(event: SubmitEvent) {
                   </div>
                 </div>
 
-                <div class="col-span-3 space-x-0.5 md:space-x-1.5 space-y-0.5">
-                  <span
-                    v-for="(v, i) in r.values"
-                    :key="i"
-                    class="badge badge-neutral badge-sm px-0.5"
-                  >
-                    {{ v }}
-                  </span>
+                <div class="col-span-3">
+                  <div>
+                    <span
+                      v-for="(v, i) in r.values"
+                      :key="i"
+                      class="badge badge-neutral badge-sm px-0.5 me-0.5 sm:me-1.5 sm:my-0.5"
+                    >
+                      {{ v }}
+                    </span>
+                  </div>
                 </div>
 
                 <div class="flex col-span-1 gap-x-1">
