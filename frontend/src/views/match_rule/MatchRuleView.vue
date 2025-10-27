@@ -83,7 +83,7 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
             {{ $t(`common.${r.source}`) }}
           </div>
           <div class="col-span-2">
-            <div class="flex gap-0.5">
+            <div class="flex gap-0.5 items-center">
               <span v-if="r.should_hit_all" :title="$t('matchRule.hitAllPatterns')">
                 <font-awesome-icon
                   icon="fa-solid fa-check-double"
@@ -98,10 +98,16 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
               </span>
             </div>
           </div>
-          <div class="col-span-3 space-x-1 space-y-0.5 line-clamp-2">
-            <span v-for="(v, i) in r.values" :key="i" class="badge badge-neutral badge-sm px-0.5">
-              {{ v }}
-            </span>
+          <div class="col-span-3">
+            <div class="line-clamp-2">
+              <span
+                v-for="(v, i) in r.values"
+                :key="i"
+                class="badge badge-neutral badge-sm px-0.5 me-0.5"
+              >
+                {{ v }}
+              </span>
+            </div>
           </div>
         </div>
 
