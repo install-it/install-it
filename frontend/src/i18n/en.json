@@ -99,6 +99,7 @@
     "contain": "Contain",
     "createRule": "Create Match Rules",
     "equal": "Equal",
+    "hitAll": "Hit All",
     "hitAllPatterns": "Hit All Patterns",
     "hitAllRule": "Hit All Rules",
     "matchRule": "Match Rule",

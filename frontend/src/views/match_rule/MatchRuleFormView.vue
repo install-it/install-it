@@ -83,9 +83,9 @@ function handleSubmit(event: SubmitEvent) {
 
         <div>
           <div class="grid grid-rows text-sm">
-            <div class="grid grid-cols-7 gap-2 py-1.5 border-y">
+            <div class="grid grid-cols-6 gap-2 py-1.5 border-y">
               <div class="col-span-1">{{ $t('matchRule.source') }}</div>
-              <div class="col-span-2">{{ $t('matchRule.operator') }}</div>
+              <div class="col-span-1">{{ $t('matchRule.operator') }}</div>
               <div class="col-span-3">{{ $t('matchRule.pattern') }}</div>
               <div class="col-span-1">{{ $t('common.action') }}</div>
             </div>
@@ -102,7 +102,7 @@ function handleSubmit(event: SubmitEvent) {
                 v-else
                 v-for="(r, i) in ruleSet.rules"
                 :key="i"
-                class="grid grid-cols-7 items-center gap-2 py-1.5 text-xs border-b"
+                class="grid grid-cols-6 items-center gap-2 py-1.5 text-xs border-b"
               >
                 <div class="col-span-1">
                   <p class="break-all line-clamp-2">
@@ -110,32 +110,34 @@ function handleSubmit(event: SubmitEvent) {
                   </p>
                 </div>
 
-                <div class="col-span-2">
-                  <div class="flex gap-0.5 items-center">
-                    <span v-if="r.is_case_sensitive" :title="$t('matchRule.caseSensitive')">
-                      <font-awesome-icon
-                        icon="fa-solid fa-a"
-                        class="bg-gray-200 rounded-sm p-0.5"
-                      />
-                    </span>
-                    <span v-if="r.should_hit_all" :title="$t('matchRule.hitAllPatterns')">
-                      <font-awesome-icon
-                        icon="fa-solid fa-check-double"
-                        class="bg-orange-300 rounded-sm p-0.5"
-                      />
-                    </span>
-                    <span class="font-mono">
-                      {{ $t(`matchRule.${r.operator}`) }}
-                    </span>
-                  </div>
+                <div class="col-span-1">
+                  <span class="font-mono">
+                    {{ $t(`matchRule.${r.operator}`) }}
+                  </span>
                 </div>
 
                 <div class="col-span-3">
                   <div>
                     <span
+                      v-if="r.should_hit_all"
+                      class="badge px-0.5 me-0.5 h-4 text-white text-xs"
+                      style="--badge-color: var(--color-rose-400)"
+                    >
+                      {{ $t('matchRule.hitAll') }}
+                    </span>
+
+                    <span
+                      v-if="r.is_case_sensitive"
+                      class="badge px-0.5 me-0.5 h-4 text-xs"
+                      style="--badge-color: var(--color-orange-300)"
+                    >
+                      Aa
+                    </span>
+
+                    <span
                       v-for="(v, i) in r.values"
                       :key="i"
-                      class="badge badge-neutral badge-sm px-0.5 me-0.5 sm:me-1.5 sm:my-0.5"
+                      class="badge badge-neutral px-0.5 me-0.5 h-4 text-xs"
                     >
                       {{ v }}
                     </span>

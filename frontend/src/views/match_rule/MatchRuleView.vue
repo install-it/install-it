@@ -15,16 +15,19 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
         class="driver-card m-1 px-2 py-1 border border-gray-200 rounded-lg shadow-sm"
       >
         <div class="flex justify-between">
-          <h2 class="my-1 truncate oveflow-x-hidden align-middle text-sm font-bold">
+          <div class="flex items-center gap-1">
             <span
               v-if="rs.should_hit_all"
-              class="bg-orange-300 rounded-sm px-0.5"
-              :title="$t('matchRule.hitAllRule')"
+              class="badge px-1.5 text-xs text-white"
+              style="--badge-color: var(--color-rose-400)"
             >
-              <font-awesome-icon icon="fa-solid fa-check-double" />
+              {{ $t('matchRule.hitAll') }}
             </span>
-            {{ rs.name }}
-          </h2>
+
+            <h2 class="truncate oveflow-x-hidden text-sm font-bold">
+              {{ rs.name }}
+            </h2>
+          </div>
 
           <div class="flex gap-x-1.5 py-1">
             <RouterLink
@@ -68,42 +71,49 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
           </div>
         </div>
 
-        <div class="grid grid-cols-6 gap-1 py-1 text-xs bg-gray-100">
-          <div class="col-span-1 font-semibold">{{ $t('matchRule.source') }}</div>
+        <div class="grid grid-cols-10 gap-1 py-1 text-xs bg-gray-100">
+          <div class="col-span-2 font-semibold">{{ $t('matchRule.source') }}</div>
           <div class="col-span-2 font-semibold">{{ $t('matchRule.operator') }}</div>
-          <div class="col-span-3 font-semibold">{{ $t('matchRule.pattern') }}</div>
+          <div class="col-span-6 font-semibold">{{ $t('matchRule.pattern') }}</div>
         </div>
 
         <div
           v-for="(r, ri) in rs.rules"
           :key="ri"
-          class="grid grid-cols-6 items-center gap-1 py-1 text-xs"
+          class="grid grid-cols-10 items-center gap-1 py-1 text-xs"
         >
-          <div class="col-span-1">
+          <div class="col-span-2">
             {{ $t(`common.${r.source}`) }}
           </div>
+
           <div class="col-span-2">
-            <div class="flex gap-0.5 items-center">
-              <span v-if="r.should_hit_all" :title="$t('matchRule.hitAllPatterns')">
-                <font-awesome-icon
-                  icon="fa-solid fa-check-double"
-                  class="bg-orange-300 rounded-sm p-0.5"
-                />
-              </span>
-              <span v-if="r.is_case_sensitive">
-                <font-awesome-icon icon="fa-solid fa-a" class="bg-gray-200 rounded-sm p-0.5" />
-              </span>
-              <span class="font-mono">
-                {{ $t(`matchRule.${r.operator}`) }}
-              </span>
-            </div>
+            <span class="font-mono">
+              {{ $t(`matchRule.${r.operator}`) }}
+            </span>
           </div>
-          <div class="col-span-3">
+
+          <div class="col-span-6">
             <div class="line-clamp-2">
+              <span
+                v-if="r.should_hit_all"
+                class="badge px-0.5 me-0.5 h-4 text-white text-xs"
+                style="--badge-color: var(--color-rose-400)"
+              >
+                {{ $t('matchRule.hitAll') }}
+              </span>
+
+              <span
+                v-if="r.is_case_sensitive"
+                class="badge px-0.5 me-0.5 h-4 text-xs"
+                style="--badge-color: var(--color-orange-300)"
+              >
+                Aa
+              </span>
+
               <span
                 v-for="(v, i) in r.values"
                 :key="i"
-                class="badge badge-neutral badge-sm px-0.5 me-0.5"
+                class="badge badge-neutral px-0.5 me-0.5 h-4 text-xs"
               >
                 {{ v }}
               </span>
@@ -114,14 +124,15 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
         <hr class="my-1" />
 
         <div class="flex gap-2 text-xs">
-          <p class="font-semibold">{{ $t('matchRule.matchTo') }}</p>
-          <div class="flex-1 line-clamp-2 space-x-1 space-y-0.5">
+          <p class="content-center font-semibold">{{ $t('matchRule.matchTo') }}</p>
+
+          <div class="flex-1 line-clamp-2">
             <span
               v-for="(group, i) in driverStore.groups.filter(g =>
                 rs.driver_group_ids.includes(g.id)
               )"
               :key="i"
-              class="badge badge-sm px-0.5"
+              class="badge px-0.5 me-0.5 h-4 text-xs"
               :style="`--badge-color: var(--color-${group.type})`"
             >
               {{ group.name }}
