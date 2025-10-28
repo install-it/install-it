@@ -5,6 +5,7 @@ import { computed, ref } from 'vue'
 const props = defineProps<{
   driverGroups: Array<storage.DriverGroup>
   excludes?: Array<string>
+  excludeBuiltin?: boolean
   groupBy: 'group' | 'driver'
 }>()
 
@@ -71,6 +72,7 @@ const filteredGroups = computed(() => {
 
     <ul class="h-44 p-1.5 overflow-auto border rounded-lg">
       <li
+        v-if="!excludeBuiltin"
         class="py-2 px-4 text-sm"
         v-show="
           searchPhrase === '' ||
@@ -95,6 +97,7 @@ const filteredGroups = computed(() => {
       </li>
 
       <li
+        v-if="!excludeBuiltin"
         class="py-2 px-4 text-sm"
         v-show="
           searchPhrase === '' ||
