@@ -3,6 +3,7 @@ package storage
 import (
 	"errors"
 	"install-it/pkg/utils"
+	"reflect"
 	"slices"
 )
 
@@ -36,13 +37,19 @@ type Driver struct {
 	Incompatibles []string   `json:"incompatibles"`
 }
 
-func (d Driver) GetId() string { return d.Id }
+func (r Driver) GetId() string { return r.Id }
 
-func (d *Driver) SetId(id string) { d.Id = id }
+func (r *Driver) SetId(id string) { r.Id = id }
 
 type DriverGroupStorage struct {
-	Store Store
-	data  []*DriverGroup
+	Store    Store
+	EventBus *DeleteEventBus
+	data     []*DriverGroup
+}
+
+func NewDriverGroupStorage(store Store, eventBus *DeleteEventBus) *DriverGroupStorage {
+	m := &DriverGroupStorage{Store: store, EventBus: eventBus}
+	return m
 }
 
 func (s *DriverGroupStorage) All() ([]DriverGroup, error) {
@@ -110,6 +117,7 @@ func (s *DriverGroupStorage) Update(group DriverGroup) (DriverGroup, error) {
 	for _, g := range s.data {
 		for _, d := range g.Drivers {
 			d.Incompatibles = slices.DeleteFunc(d.Incompatibles, func(id string) bool {
+				s.EventBus.Publish(reflect.TypeFor[Driver]().Name(), deletedIds)
 				return slices.Contains(deletedIds, id)
 			})
 		}
@@ -137,6 +145,7 @@ func (s *DriverGroupStorage) Remove(id string) error {
 		}
 	}
 
+	s.EventBus.Publish(reflect.TypeFor[DriverGroup]().Name(), driverIds)
 	return s.Store.Write(s.data)
 }
 

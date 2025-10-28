@@ -6,6 +6,11 @@
     line-height: 1rem;
     color: var(--color-apple-green-800);
   }
+
+  .text-required:after {
+    content: ' *';
+    color: red;
+  }
 }
 
 /* status badge */

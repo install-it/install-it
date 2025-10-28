@@ -134,6 +134,21 @@ export namespace storage {
 	    SHUTDOWN = "shutdown",
 	    FIRMWARE = "firmware",
 	}
+	export enum RuleSource {
+	    CPU = "cpu",
+	    MOTHERBOARD = "motherboard",
+	    GPU = "gpu",
+	    MEMORY = "memory",
+	    NIC = "nic",
+	    DISK = "storage",
+	}
+	export enum RuleOperator {
+	    CONTAIN = "contain",
+	    NOT_CONTAIN = "not_contain",
+	    EQUAL = "equal",
+	    NOT_EQUAL = "not_equal",
+	    REGEX = "regex",
+	}
 	export class AppSetting {
 	    create_partition: boolean;
 	    set_password: boolean;
@@ -208,6 +223,64 @@ export namespace storage {
 	        this.name = source["name"];
 	        this.type = source["type"];
 	        this.drivers = this.convertValues(source["drivers"], Driver);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class Rule {
+	    source: RuleSource;
+	    operator: RuleOperator;
+	    is_case_sensitive: boolean;
+	    should_hit_all: boolean;
+	    values: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new Rule(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.source = source["source"];
+	        this.operator = source["operator"];
+	        this.is_case_sensitive = source["is_case_sensitive"];
+	        this.should_hit_all = source["should_hit_all"];
+	        this.values = source["values"];
+	    }
+	}
+	export class RuleSet {
+	    id: string;
+	    name: string;
+	    rules: Rule[];
+	    should_hit_all: boolean;
+	    driver_group_ids: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new RuleSet(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.name = source["name"];
+	        this.rules = this.convertValues(source["rules"], Rule);
+	        this.should_hit_all = source["should_hit_all"];
+	        this.driver_group_ids = source["driver_group_ids"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

@@ -78,6 +78,7 @@ func init() {
 func main() {
 	app := &App{}
 	mgt := &execute.CommandExecutor{}
+	eventBus := storage.NewEventBus()
 
 	err := wails.Run(&options.App{
 		Title:     "install-it",
@@ -104,7 +105,8 @@ func main() {
 			app,
 			mgt,
 			&storage.AppSettingStorage{Store: &storage.FileStore{Path: filepath.Join(dirConf, "setting.json")}},
-			&storage.DriverGroupStorage{Store: &storage.FileStore{Path: filepath.Join(dirConf, "groups.json")}},
+			storage.NewDriverGroupStorage(&storage.FileStore{Path: filepath.Join(dirConf, "groups.json")}, eventBus),
+			storage.NewMatchRuleStorage(&storage.FileStore{Path: filepath.Join(dirConf, "rules.json")}, eventBus),
 			&porter.Porter{DirRoot: dirRoot, Message: make(chan string, 512), Targets: []string{dirConf, dirDir}},
 			&sysinfo.SysInfo{},
 		},
@@ -139,6 +141,27 @@ func main() {
 				{status.Skiped, "SKIPED"},
 				{status.Speeded, "SPEEDED"},
 				{status.Errored, "ERRORED"},
+			},
+			[]struct {
+				Value  storage.RuleSource
+				TSName string
+			}{
+				{storage.Cpu, "CPU"},
+				{storage.Motherboard, "MOTHERBOARD"},
+				{storage.Gpu, "GPU"},
+				{storage.Memory, "MEMORY"},
+				{storage.Nic, "NIC"},
+				{storage.Storage, "DISK"},
+			},
+			[]struct {
+				Value  storage.RuleOperator
+				TSName string
+			}{
+				{storage.Contain, "CONTAIN"},
+				{storage.NotContain, "NOT_CONTAIN"},
+				{storage.Equal, "EQUAL"},
+				{storage.NotEqual, "NOT_EQUAL"},
+				{storage.Regex, "REGEX"},
 			},
 		},
 		Windows: &windows.Options{
