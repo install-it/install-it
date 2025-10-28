@@ -102,7 +102,7 @@ function handleSubmit(event: SubmitEvent) {
                 v-else
                 v-for="(r, i) in ruleSet.rules"
                 :key="i"
-                class="grid grid-cols-6 items-center gap-2 py-1.5 text-xs border-b"
+                class="grid grid-cols-6 items-center gap-2 py-1.5 text-xs lg:text-sm border-b"
               >
                 <div class="col-span-1">
                   <p class="break-all line-clamp-2">
@@ -120,7 +120,7 @@ function handleSubmit(event: SubmitEvent) {
                   <div>
                     <span
                       v-if="r.should_hit_all"
-                      class="badge px-0.5 me-0.5 h-4 text-white text-xs"
+                      class="badge badge-sm px-1 me-0.5 md:me-1 text-white"
                       style="--badge-color: var(--color-rose-400)"
                     >
                       {{ $t('matchRule.hitAll') }}
@@ -128,7 +128,7 @@ function handleSubmit(event: SubmitEvent) {
 
                     <span
                       v-if="r.is_case_sensitive"
-                      class="badge px-0.5 me-0.5 h-4 text-xs"
+                      class="badge badge-sm px-1 me-0.5 md:me-1"
                       style="--badge-color: var(--color-orange-300)"
                     >
                       Aa
@@ -137,7 +137,7 @@ function handleSubmit(event: SubmitEvent) {
                     <span
                       v-for="(v, i) in r.values"
                       :key="i"
-                      class="badge badge-neutral px-0.5 me-0.5 h-4 text-xs"
+                      class="badge badge-sm badge-neutral px-1 me-0.5 md:me-1"
                     >
                       {{ v }}
                     </span>
