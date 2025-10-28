@@ -110,13 +110,14 @@ const reordering = ref(false)
           <div class="flex gap-x-1.5 py-1">
             <RouterLink
               :to="`/drivers/edit/${g.id}`"
-              class="px-1 bg-gray-200 hover:bg-gray-300 transition-all rounded-sm"
+              class="btn btn-xs size-6"
+              :title="$t('common.edit')"
             >
               <font-awesome-icon icon="fa-solid fa-pen-to-square" class="text-gray-500" />
             </RouterLink>
 
             <button
-              class="px-1 bg-gray-200 hover:bg-gray-300 transition-all rounded-sm"
+              class="btn btn-xs size-6"
               @click="
                 groupStorage.Add(g).then(() =>
                   driverGroupStorage
@@ -127,12 +128,13 @@ const reordering = ref(false)
                     })
                 )
               "
+              :title="$t('common.clone')"
             >
               <font-awesome-icon icon="fa-solid fa-clone" class="text-gray-500" />
             </button>
 
             <button
-              class="px-1 bg-gray-200 hover:bg-gray-300 transition-all rounded-sm"
+              class="btn btn-xs size-6"
               @click="
                 groupStorage.Remove(g.id).then(() =>
                   driverGroupStorage
@@ -143,6 +145,7 @@ const reordering = ref(false)
                     })
                 )
               "
+              :title="$t('common.delete')"
             >
               <font-awesome-icon icon="fa-solid fa-trash" class="text-gray-500" />
             </button>
