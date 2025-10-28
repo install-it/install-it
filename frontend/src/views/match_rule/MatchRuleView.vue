@@ -15,18 +15,16 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
         class="driver-card m-1 px-2 py-1 border border-gray-200 rounded-lg shadow-sm"
       >
         <div class="flex justify-between">
-          <div class="flex items-center gap-1">
+          <div class="flex items-center gap-1 min-w-0">
             <span
               v-if="rs.should_hit_all"
-              class="badge px-1.5 text-xs text-white"
+              class="badge badge-sm px-1 text-white text-nowrap"
               style="--badge-color: var(--color-rose-400)"
             >
               {{ $t('matchRule.hitAll') }}
             </span>
 
-            <h2 class="truncate oveflow-x-hidden text-sm font-bold">
-              {{ rs.name }}
-            </h2>
+            <h2 class="truncate">{{ rs.name }}</h2>
           </div>
 
           <div class="flex gap-x-1.5 py-1">
@@ -96,7 +94,7 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
             <div class="line-clamp-2">
               <span
                 v-if="r.should_hit_all"
-                class="badge px-0.5 me-0.5 h-4 text-white text-xs"
+                class="badge badge-sm px-1 me-0.5 md:me-1 text-white"
                 style="--badge-color: var(--color-rose-400)"
               >
                 {{ $t('matchRule.hitAll') }}
@@ -104,7 +102,7 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
 
               <span
                 v-if="r.is_case_sensitive"
-                class="badge px-0.5 me-0.5 h-4 text-xs"
+                class="badge badge-sm px-1 me-0.5 md:me-1"
                 style="--badge-color: var(--color-orange-300)"
               >
                 Aa
@@ -113,7 +111,7 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
               <span
                 v-for="(v, i) in r.values"
                 :key="i"
-                class="badge badge-neutral px-0.5 me-0.5 h-4 text-xs"
+                class="badge badge-sm badge-neutral px-1 me-0.5 md:me-1"
               >
                 {{ v }}
               </span>
@@ -132,7 +130,7 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
                 rs.driver_group_ids.includes(g.id)
               )"
               :key="i"
-              class="badge px-0.5 me-0.5 h-4 text-xs"
+              class="badge badge-xs md:badge-sm px-1 md:px-1.5 me-0.5"
               :style="`--badge-color: var(--color-${group.type})`"
             >
               {{ group.name }}
