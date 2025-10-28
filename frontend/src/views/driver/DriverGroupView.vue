@@ -97,12 +97,15 @@ const reordering = ref(false)
         :draggable="reordering"
       >
         <div class="flex justify-between">
-          <p class="my-1 truncate oveflow-x-hidden align-middle">
-            <span class="badge h-4 px-1 me-1" :style="`--badge-color: var(--color-${g.type})`">
+          <div class="flex items-center gap-1 min-w-0">
+            <span class="badge badge-sm px-1" :style="`--badge-color: var(--color-${g.type})`">
               &nbsp;
             </span>
-            <span>{{ g.name }}</span>
-          </p>
+
+            <h2 class="truncate">
+              {{ g.name }}
+            </h2>
+          </div>
 
           <div class="flex gap-x-1.5 py-1">
             <RouterLink
