@@ -18,15 +18,13 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
           <div class="flex items-center gap-1 min-w-0">
             <span
               v-if="rs.should_hit_all"
-              class="badge badge-sm px-1 text-white"
+              class="badge badge-sm px-1 text-white text-nowrap"
               style="--badge-color: var(--color-rose-400)"
             >
               {{ $t('matchRule.hitAll') }}
             </span>
 
-            <h2 class="truncate">
-              {{ rs.name }}
-            </h2>
+            <h2 class="truncate">{{ rs.name }}</h2>
           </div>
 
           <div class="flex gap-x-1.5 py-1">
