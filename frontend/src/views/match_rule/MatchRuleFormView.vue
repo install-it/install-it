@@ -189,7 +189,7 @@ function handleSubmit(event: SubmitEvent) {
       <hr />
 
       <fieldset class="fieldset">
-        <legend class="fieldset-legend text-sm">
+        <legend class="fieldset-legend text-sm text-required">
           {{ $t('matchRule.matchTo') }}
         </legend>
 
