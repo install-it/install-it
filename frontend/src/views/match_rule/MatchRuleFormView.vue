@@ -149,10 +149,15 @@ function handleSubmit(event: SubmitEvent) {
                     <button
                       type="button"
                       @click="inputModal?.show(JSON.parse(JSON.stringify({ ...r, _id: i })))"
+                      :title="$t('common.edit')"
                     >
                       <font-awesome-icon icon="fa-solid fa-pen-to-square" />
                     </button>
-                    <button type="button" @click="ruleSet.rules.splice(i, 1)">
+                    <button
+                      type="button"
+                      @click="ruleSet.rules.splice(i, 1)"
+                      :title="$t('common.delete')"
+                    >
                       <font-awesome-icon icon="fa-solid fa-trash" />
                     </button>
                   </div>
