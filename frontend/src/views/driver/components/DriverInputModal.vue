@@ -57,16 +57,16 @@ const driver = ref<
   <ModalFrame :on-demand="true" :immediate="false" ref="frame">
     <div class="w-[75vw] max-w-[650px]">
       <!-- Modal content -->
-      <div class="bg-white rounded-lg shadow-sm">
+      <div class="rounded-lg bg-white shadow-sm">
         <!-- Modal header -->
-        <div class="flex items-center justify-between h-12 px-4 border-b rounded-t">
+        <div class="flex h-12 items-center justify-between rounded-t border-b px-4">
           <h3 class="font-semibold">
             {{ driver ? $t('driverForm.editDriver') : $t('driverForm.createDriver') }}
           </h3>
 
           <button
             type="button"
-            class="p-3 text-sm text-gray-400 hover:text-gray-900 bg-transparent hover:bg-gray-100 rounded-lg"
+            class="rounded-lg bg-transparent p-3 text-sm text-gray-400 hover:bg-gray-100 hover:text-gray-900"
             @click="frame?.hide()"
           >
             <font-awesome-icon icon="fa-solid fa-xmark" />
@@ -74,7 +74,7 @@ const driver = ref<
         </div>
 
         <!-- Modal body -->
-        <div class="max-h-[70vh] overflow-auto py-2 px-4" ref="modalBody">
+        <div class="max-h-[70vh] overflow-auto px-4 py-2" ref="modalBody">
           <form
             class="flex flex-col gap-y-2"
             autocomplete="off"
@@ -106,7 +106,7 @@ const driver = ref<
                 type="text"
                 name="name"
                 v-model="driver.name"
-                class="input input-accent w-full"
+                class="input w-full input-accent"
               />
             </fieldset>
 
@@ -116,7 +116,7 @@ const driver = ref<
               <div class="join">
                 <button
                   type="button"
-                  class="w-32 btn join-item"
+                  class="btn join-item w-32"
                   @click="
                     SelectFile(true).then(path => {
                       driver.path = path
@@ -130,7 +130,7 @@ const driver = ref<
                   type="text"
                   name="path"
                   v-model="driver.path"
-                  class="input input-accent w-full join-item"
+                  class="input join-item w-full input-accent"
                   ref="pathInput"
                   required
                 />
@@ -161,12 +161,12 @@ const driver = ref<
                   </option>
                 </select> -->
                 <div class="dropdown">
-                  <div tabindex="0" role="button" class="join-item btn m-1 w-30">
+                  <div tabindex="0" role="button" class="btn m-1 join-item w-30">
                     {{ $t('common.select') }}
                   </div>
                   <ul
                     tabindex="0"
-                    class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
+                    class="dropdown-content menu z-1 w-52 rounded-box bg-base-100 p-2 shadow-sm"
                   >
                     <div class="h-36 overflow-y-auto">
                       <li
@@ -193,7 +193,7 @@ const driver = ref<
                   type="text"
                   name="flags"
                   v-model="driver.flags"
-                  class="input input-accent w-full join-item"
+                  class="input join-item w-full input-accent"
                 />
               </div>
 
@@ -213,11 +213,11 @@ const driver = ref<
                   name="minExeTime"
                   v-model="driver.minExeTime"
                   step="0.1"
-                  class="input input-accent w-full"
+                  class="input w-full input-accent"
                   required
                 />
 
-                <p class="label text-apple-green-800 text-wrap">
+                <p class="label text-wrap text-apple-green-800">
                   {{ $t('driverForm.minExecuteTimeHelp') }}
                 </p>
               </fieldset>
@@ -234,7 +234,7 @@ const driver = ref<
                   class="input input-accent"
                 />
 
-                <p class="label text-apple-green-800 text-wrap">
+                <p class="label text-wrap text-apple-green-800">
                   {{ $t('driverForm.commaSeparated') }}
                 </p>
               </fieldset>

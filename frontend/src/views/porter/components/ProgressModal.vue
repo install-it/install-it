@@ -113,9 +113,9 @@ function toastErrMsg(err: string) {
   <ModalFrame :on-demand="true" :immediate="false" ref="frame">
     <div>
       <!-- Modal content -->
-      <div class="bg-white rounded-lg shadow-sm">
+      <div class="rounded-lg bg-white shadow-sm">
         <!-- Modal header -->
-        <div class="flex items-center justify-between h-12 px-4 border-b rounded-t">
+        <div class="flex h-12 items-center justify-between rounded-t border-b px-4">
           <h3 class="font-semibold">
             {{ t('porter.progress') }}
           </h3>
@@ -123,7 +123,7 @@ function toastErrMsg(err: string) {
           <button
             v-show="progress?.status.includes('ed')"
             type="button"
-            class="p-3 text-sm text-gray-400 hover:text-gray-900 bg-transparent hover:bg-gray-100 rounded-lg"
+            class="rounded-lg bg-transparent p-3 text-sm text-gray-400 hover:bg-gray-100 hover:text-gray-900"
             @click="
               () => {
                 if (progress?.status == 'completed') {
@@ -139,17 +139,17 @@ function toastErrMsg(err: string) {
         </div>
 
         <!-- Modal body -->
-        <div class="h-[70vh] w-[70vw] overflow-auto py-2 px-4">
-          <div class="flex flex-col gap-y-2 h-full">
+        <div class="h-[70vh] w-[70vw] overflow-auto px-4 py-2">
+          <div class="flex h-full flex-col gap-y-2">
             <div class="flex items-center gap-x-3">
               <h2 class="text-lg font-bold">{{ title }}</h2>
 
-              <p class="h-6 proc-badge" :class="[`proc-badge-${progress?.status}`]">
+              <p class="proc-badge h-6" :class="[`proc-badge-${progress?.status}`]">
                 <span class="truncate capitalize">{{ $t(`status.${progress?.status}`) }}</span>
               </p>
             </div>
 
-            <ol class="flex items-center w-full">
+            <ol class="flex w-full items-center">
               <ProgressNode v-for="(progress, i) in progress?.tasks ?? []" :progress :key="i">
                 <i class="text-xs lg:text-base">
                   <font-awesome-icon
@@ -173,10 +173,10 @@ function toastErrMsg(err: string) {
             </ol>
 
             <div
-              class="flex flex-col flex-1 gap-y-2 overflow-y-auto min-h-48 p-1 border rounded-sm"
+              class="flex min-h-48 flex-1 flex-col gap-y-2 overflow-y-auto rounded-sm border p-1"
               ref="message-box"
             >
-              <p v-for="(m, i) in messages" :key="i" class="text-xs text-gray-400 break-all">
+              <p v-for="(m, i) in messages" :key="i" class="text-xs break-all text-gray-400">
                 {{ m }}
               </p>
             </div>

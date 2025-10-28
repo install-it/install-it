@@ -84,7 +84,7 @@ function handleSubmit(event: SubmitEvent) {
 
 <template>
   <form
-    class="flex flex-col justify-center h-full max-w-full lg:max-w-2xl xl:max-w-4xl mx-auto gap-y-8 overflow-y-auto"
+    class="mx-auto flex h-full max-w-full flex-col justify-center gap-y-8 overflow-y-auto lg:max-w-2xl xl:max-w-4xl"
     autocomplete="off"
     @submit.prevent="event => handleSubmit(event as SubmitEvent)"
   >
@@ -93,7 +93,7 @@ function handleSubmit(event: SubmitEvent) {
         <fieldset class="fieldset">
           <legend class="fieldset-legend text-sm">{{ $t('driverForm.type') }}</legend>
 
-          <select name="type" v-model="group.type" class="w-full select select-accent" required>
+          <select name="type" v-model="group.type" class="select w-full select-accent" required>
             <option v-for="type in storage.DriverType" :key="type" :value="type">
               {{ $t(`driverCatetory.${type}`) }}
             </option>
@@ -104,7 +104,7 @@ function handleSubmit(event: SubmitEvent) {
       <div class="grow">
         <fieldset class="fieldset">
           <legend class="fieldset-legend text-sm">{{ $t('driverForm.name') }}</legend>
-          <input type="text" v-model="group.name" class="input input-accent w-full" required />
+          <input type="text" v-model="group.name" class="input w-full input-accent" required />
         </fieldset>
       </div>
     </div>
@@ -114,8 +114,8 @@ function handleSubmit(event: SubmitEvent) {
 
       <div>
         <div class="max-h-[40vh] overflow-y-auto">
-          <div class="grid grid-rows text-sm">
-            <div class="grid grid-cols-10 gap-2 py-1.5 border-y">
+          <div class="grid-rows grid text-sm">
+            <div class="grid grid-cols-10 gap-2 border-y py-1.5">
               <div class="col-span-2">{{ $t('driverForm.name') }}</div>
               <div class="col-span-3">{{ $t('driverForm.path') }}</div>
               <div class="col-span-2">{{ $t('driverForm.argument') }}</div>
@@ -128,18 +128,18 @@ function handleSubmit(event: SubmitEvent) {
               v-else
               v-for="(d, i) in group.drivers"
               :key="d.id"
-              class="grid grid-cols-10 items-center gap-2 py-1.5 text-xs border-b"
+              class="grid grid-cols-10 items-center gap-2 border-b py-1.5 text-xs"
               :class="{ 'bg-lime-50': d.id.includes('new:') }"
             >
               <div class="col-span-2">
-                <p class="break-all line-clamp-2">
+                <p class="line-clamp-2 break-all">
                   {{ d.name }}
                 </p>
               </div>
 
               <div class="col-span-3">
                 <p
-                  class="font-mono break-all line-clamp-2"
+                  class="line-clamp-2 font-mono break-all"
                   :class="{ 'text-red-600': groupEditor.notFoundDrivers.value.includes(d.id) }"
                 >
                   {{ d.path }}
@@ -147,15 +147,15 @@ function handleSubmit(event: SubmitEvent) {
               </div>
 
               <div class="col-span-2">
-                <p class="break-all line-clamp-2">
+                <p class="line-clamp-2 break-all">
                   {{ d.flags.join(', ') }}
                 </p>
               </div>
 
-              <div class="flex col-span-2 gap-x-1">
+              <div class="col-span-2 flex gap-x-1">
                 <span
                   v-show="d.incompatibles.length > 0"
-                  class="inline-block p-0.5 max-h-5 bg-yellow-300 rounded-xs"
+                  class="inline-block max-h-5 rounded-xs bg-yellow-300 p-0.5"
                   :title="$t('driverForm.incompatibleWith')"
                 >
                   <font-awesome-icon icon="fa-solid fa-code-merge" />
@@ -163,7 +163,7 @@ function handleSubmit(event: SubmitEvent) {
 
                 <span
                   v-show="d.allowRtCodes.length > 0"
-                  class="inline-block p-0.5 max-h-5 bg-blue-300 rounded-xs"
+                  class="inline-block max-h-5 rounded-xs bg-blue-300 p-0.5"
                   :title="$t('driverForm.allowedExitCode')"
                 >
                   <font-awesome-icon icon="fa-solid fa-0" />
@@ -200,12 +200,12 @@ function handleSubmit(event: SubmitEvent) {
             v-show="groupEditor.modifiedDrivers.value"
             type="submit"
             id="driver-submit-btn"
-            class="btn btn-secondary px-2"
+            class="btn px-2 btn-secondary"
           >
             <font-awesome-icon icon="fa-solid fa-floppy-disk" />
           </button>
 
-          <button type="button" class="btn btn-primary px-2" @click="inputModal?.show()">
+          <button type="button" class="btn px-2 btn-primary" @click="inputModal?.show()">
             <font-awesome-icon icon="fa-regular fa-square-plus" />
           </button>
         </div>
@@ -215,14 +215,14 @@ function handleSubmit(event: SubmitEvent) {
     <div class="flex h-8 gap-x-5">
       <button
         type="button"
-        class="grow btn"
+        class="btn grow"
         style="--btn-color: var(--color-gray-100)"
         @click="$router.back()"
       >
         {{ $t('common.back') }}
       </button>
 
-      <button type="submit" class="grow btn btn-secondary">
+      <button type="submit" class="btn grow btn-secondary">
         {{ $t('common.save') }}
       </button>
     </div>
