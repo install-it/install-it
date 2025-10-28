@@ -147,7 +147,6 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
 </template>
 
 <style scoped>
-.text-required:after,
 legend:has(+ input:required, + select:required):after,
 legend:has(+ div > input:required):after {
   content: ' *';
