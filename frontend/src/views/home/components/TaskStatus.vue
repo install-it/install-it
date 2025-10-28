@@ -7,19 +7,19 @@ defineEmits<{ abort: [] }>()
 </script>
 
 <template>
-  <div class="flex min-h-9 border-t last:border-b border-kashmir-blue-100">
-    <div class="content-center w-2/6 pe-1 text-xs truncate">
-      <p class="font-medium truncate">{{ props.process.command.groupName }}</p>
+  <div class="flex min-h-9 border-t border-kashmir-blue-100 last:border-b">
+    <div class="w-2/6 content-center truncate pe-1 text-xs">
+      <p class="truncate font-medium">{{ props.process.command.groupName }}</p>
       <p v-if="props.process.command.name" class="truncate">
         &nbsp;&nbsp;{{ `⤷ ${props.process.command.name}` }}
       </p>
     </div>
 
-    <div class="flex items-center w-4/6 ps-1 py-1">
+    <div class="flex w-4/6 items-center py-1 ps-1">
       <!-- status badget -->
-      <div class="shrink-0 w-[4.1rem]">
-        <p class="h-6 proc-badge" :class="[`proc-badge-${props.process.status}`]">
-          <span class="text-sm truncate">
+      <div class="w-[4.1rem] shrink-0">
+        <p class="proc-badge h-6" :class="[`proc-badge-${props.process.status}`]">
+          <span class="truncate text-sm">
             {{ $t(`status.@${props.process.status}`).toUpperCase() }}
           </span>
         </p>
@@ -27,7 +27,7 @@ defineEmits<{ abort: [] }>()
 
       <!-- messages -->
       <template v-if="props.process.status == 'speeded' || props.process.status == 'failed'">
-        <div class="text-sm break-all line-clamp-3">
+        <div class="line-clamp-3 text-sm break-all">
           {{ $t('execute.exitCode', { code: props.process.result?.exitCode }) }}
 
           <p v-if="props.process.status == 'speeded'" class="text-xs text-orange-300">
@@ -43,7 +43,7 @@ defineEmits<{ abort: [] }>()
               props.process.result.error !== '' &&
               !props.process.result.error.includes('exit status')
             "
-            class="text-xs text-red-400 font-mono"
+            class="font-mono text-xs text-red-400"
           >
             {{
               props.process.result.error.includes('file does not exist') ||
@@ -53,14 +53,14 @@ defineEmits<{ abort: [] }>()
                 : props.process.result.error.split(':').slice(1).join(':').trim()
             }}
           </p>
-          <p v-else class="text-xs text-red-400 font-mono">
+          <p v-else class="font-mono text-xs text-red-400">
             {{ props.process.result?.stderr || props.process.result?.stdout }}
           </p>
         </div>
       </template>
 
       <template v-else-if="props.process.status == 'errored'">
-        <div class="text-sm break-all line-clamp-2 font-mono">
+        <div class="line-clamp-2 font-mono text-sm break-all">
           {{
             props.process.result?.error?.split(':').slice(1).join(':').trim() ??
             $t('execute.startFailed')
@@ -84,7 +84,7 @@ defineEmits<{ abort: [] }>()
       <!-- abort button -->
       <button
         v-show="props.process.status == 'pending' || props.process.status == 'running'"
-        class="ms-auto btn btn-xs font-normal"
+        class="btn ms-auto font-normal btn-xs"
         @click="$emit('abort')"
       >
         {{ $t('execute.abort') }}

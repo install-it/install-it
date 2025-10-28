@@ -64,7 +64,7 @@ function handleSubmit(event: SubmitEvent) {
     autocomplete="off"
     @submit.prevent="event => handleSubmit(event as SubmitEvent)"
   >
-    <div class="h-full content-center space-y-3 max-w-full lg:max-w-2xl xl:max-w-4xl mx-auto">
+    <div class="mx-auto h-full max-w-full content-center space-y-3 lg:max-w-2xl xl:max-w-4xl">
       <h1 class="mb-2 text-xl font-bold">
         {{ $t('matchRule.createRule') }}
       </h1>
@@ -73,17 +73,17 @@ function handleSubmit(event: SubmitEvent) {
         <legend class="fieldset-legend text-sm">
           {{ $t('matchRule.name') }}
         </legend>
-        <input type="text" class="input input-accent ms-1" v-model="ruleSet.name" />
+        <input type="text" class="input ms-1 input-accent" v-model="ruleSet.name" />
       </fieldset>
 
       <fieldset class="fieldset">
-        <legend class="fieldset-legend text-sm text-required">
+        <legend class="text-required fieldset-legend text-sm">
           {{ $t('matchRule.rule') }}
         </legend>
 
         <div>
-          <div class="grid grid-rows text-sm">
-            <div class="grid grid-cols-6 gap-2 py-1.5 border-y">
+          <div class="grid-rows grid text-sm">
+            <div class="grid grid-cols-6 gap-2 border-y py-1.5">
               <div class="col-span-1">{{ $t('matchRule.source') }}</div>
               <div class="col-span-1">{{ $t('matchRule.operator') }}</div>
               <div class="col-span-3">{{ $t('matchRule.pattern') }}</div>
@@ -93,7 +93,7 @@ function handleSubmit(event: SubmitEvent) {
             <div class="max-h-38 overflow-y-auto">
               <div
                 v-if="ruleSet.rules.length == 0"
-                class="h-full content-center py-1 text-center border-b"
+                class="h-full content-center border-b py-1 text-center"
               >
                 N/A
               </div>
@@ -102,10 +102,10 @@ function handleSubmit(event: SubmitEvent) {
                 v-else
                 v-for="(r, i) in ruleSet.rules"
                 :key="i"
-                class="grid grid-cols-6 items-center gap-2 py-1.5 text-xs lg:text-sm border-b"
+                class="grid grid-cols-6 items-center gap-2 border-b py-1.5 text-xs lg:text-sm"
               >
                 <div class="col-span-1">
-                  <p class="break-all line-clamp-2">
+                  <p class="line-clamp-2 break-all">
                     {{ $t(`common.${r.source}`) }}
                   </p>
                 </div>
@@ -120,7 +120,7 @@ function handleSubmit(event: SubmitEvent) {
                   <div>
                     <span
                       v-if="r.should_hit_all"
-                      class="badge badge-sm px-1 me-0.5 md:me-1 text-white"
+                      class="me-0.5 badge badge-sm px-1 text-white md:me-1"
                       style="--badge-color: var(--color-rose-400)"
                     >
                       {{ $t('matchRule.hitAll') }}
@@ -128,7 +128,7 @@ function handleSubmit(event: SubmitEvent) {
 
                     <span
                       v-if="r.is_case_sensitive"
-                      class="badge badge-sm px-1 me-0.5 md:me-1"
+                      class="me-0.5 badge badge-sm px-1 md:me-1"
                       style="--badge-color: var(--color-orange-300)"
                     >
                       Aa
@@ -137,14 +137,14 @@ function handleSubmit(event: SubmitEvent) {
                     <span
                       v-for="(v, i) in r.values"
                       :key="i"
-                      class="badge badge-sm badge-neutral px-1 me-0.5 md:me-1"
+                      class="me-0.5 badge badge-sm px-1 badge-neutral md:me-1"
                     >
                       {{ v }}
                     </span>
                   </div>
                 </div>
 
-                <div class="flex col-span-1 gap-x-1">
+                <div class="col-span-1 flex gap-x-1">
                   <div class="flex gap-x-2">
                     <button
                       type="button"
@@ -169,7 +169,7 @@ function handleSubmit(event: SubmitEvent) {
           </div>
 
           <div class="flex justify-end gap-x-3">
-            <button type="button" class="btn btn-primary px-2" @click="inputModal?.show()">
+            <button type="button" class="btn px-2 btn-primary" @click="inputModal?.show()">
               <font-awesome-icon icon="fa-regular fa-square-plus" />
             </button>
           </div>
@@ -179,10 +179,10 @@ function handleSubmit(event: SubmitEvent) {
       <fieldset class="fieldset">
         <legend class="fieldset-legend text-sm">{{ $t('matchRule.multiRuleMatching') }}</legend>
 
-        <label class="flex items-center w-full select-none cursor-pointer">
+        <label class="flex w-full cursor-pointer items-center select-none">
           <input
             type="checkbox"
-            class="me-1.5 checkbox checkbox-primary"
+            class="checkbox me-1.5 checkbox-primary"
             v-model="ruleSet.should_hit_all"
           />
           {{ $t('matchRule.hitAllRule') }}
@@ -194,7 +194,7 @@ function handleSubmit(event: SubmitEvent) {
       <hr />
 
       <fieldset class="fieldset">
-        <legend class="fieldset-legend text-sm text-required">
+        <legend class="text-required fieldset-legend text-sm">
           {{ $t('matchRule.matchTo') }}
         </legend>
 
@@ -209,14 +209,14 @@ function handleSubmit(event: SubmitEvent) {
       <div class="flex h-8 gap-x-5">
         <button
           type="button"
-          class="grow btn"
+          class="btn grow"
           style="--btn-color: var(--color-gray-100)"
           @click="$router.back()"
         >
           {{ $t('common.back') }}
         </button>
 
-        <button type="submit" class="grow btn btn-secondary">
+        <button type="submit" class="btn grow btn-secondary">
           {{ $t('common.save') }}
         </button>
       </div>

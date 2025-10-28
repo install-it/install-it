@@ -80,12 +80,12 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
     <template v-if="!initilisating">
       <div class="flex h-screen w-screen">
         <aside class="w-12">
-          <div class="flex justify-center h-full bg-gray-50">
+          <div class="flex h-full justify-center bg-gray-50">
             <ul class="mt-6 space-y-3 font-medium">
               <li v-for="(link, i) in routes" :key="i">
                 <RouterLink
                   :to="link.to"
-                  class="flex p-2 rounded-lg hover:bg-gray-200"
+                  class="flex rounded-lg p-2 hover:bg-gray-200"
                   activeClass="text-apple-green-900 bg-powder-blue-400"
                   draggable="false"
                 >
@@ -103,7 +103,7 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
           </div>
         </aside>
 
-        <main class="flex-1 p-3 overflow-hidden">
+        <main class="flex-1 overflow-hidden p-3">
           <RouterView></RouterView>
         </main>
       </div>
@@ -111,7 +111,7 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
 
     <template v-else>
       <div class="flex h-screen w-screen justify-center">
-        <span class="loading loading-dots loading-xl"></span>
+        <span class="loading loading-xl loading-dots"></span>
       </div>
     </template>
   </Transition>
