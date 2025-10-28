@@ -29,7 +29,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="flex flex-col h-full gap-y-6">
+  <div class="flex h-full flex-col gap-y-6">
     <div>
       <h1 class="text-xl font-bold">{{ $t('porter.title') }}</h1>
       <p class="text-gray-400">{{ $t('porter.titleHint') }}</p>
@@ -45,12 +45,12 @@ onBeforeMount(() => {
           {{ $t('porter.exportDestination') }}
         </label>
 
-        <div class="flex gap-x-2 w-full">
+        <div class="flex w-full gap-x-2">
           <input
             type="url"
             name="export_directory"
             v-model="exportDirectory"
-            class="grow input input-accent"
+            class="input grow input-accent"
           />
 
           <button
@@ -74,7 +74,7 @@ onBeforeMount(() => {
       <div class="flex justify-end">
         <button
           type="button"
-          class="btn btn-secondary mt-3 w-28"
+          class="btn mt-3 w-28 btn-secondary"
           @click="
             () => {
               if (!exportDirectory) {
@@ -96,23 +96,23 @@ onBeforeMount(() => {
           {{ $t('porter.import') }}
         </h2>
 
-        <div class="relative inline-flex p-0.5 border rounded-3xl">
+        <div class="relative inline-flex rounded-3xl border p-0.5">
           <button
-            class="z-10 px-3 text-center text-xs rounded-3xl select-none"
+            class="z-10 rounded-3xl px-3 text-center text-xs select-none"
             @click="importInput.from = 'file'"
           >
             {{ $t('porter.importFromFile') }}
           </button>
 
           <button
-            class="z-10 px-3 text-center text-xs rounded-3xl select-none"
+            class="z-10 rounded-3xl px-3 text-center text-xs select-none"
             @click="importInput.from = 'url'"
           >
             {{ $t('porter.importFromNetwork') }}
           </button>
 
           <span
-            class="absolute top-1 bg-gray-300 rounded-3xl transition duration-200"
+            class="absolute top-1 rounded-3xl bg-gray-300 transition duration-200"
             :class="{ 'translate-x-full': importInput.from == 'url' }"
             style="width: calc(50% - 2px); height: calc(100% - 8px)"
           ></span>
@@ -133,13 +133,13 @@ onBeforeMount(() => {
             {{ $t('porter.file') }}
           </label>
 
-          <div class="flex gap-x-2 w-full">
+          <div class="flex w-full gap-x-2">
             <input
               type="text"
               name="driver_download_url"
               placeholder="install-it.zip"
               v-model="importInput.filePath"
-              class="grow input input-accent pointer-events-none"
+              class="pointer-events-none input grow input-accent"
               :required="importInput.from == 'file'"
             />
 
@@ -167,19 +167,19 @@ onBeforeMount(() => {
             {{ $t('porter.url') }}
           </label>
 
-          <div class="flex gap-x-2 w-full">
+          <div class="flex w-full gap-x-2">
             <input
               type="url"
               placeholder="https://..."
               v-model="importInput.url"
-              class="grow input input-accent"
+              class="input grow input-accent"
               :required="importInput.from == 'url'"
             />
           </div>
         </div>
 
         <div class="flex justify-end">
-          <button type="submit" class="btn btn-secondary mt-3 w-28">
+          <button type="submit" class="btn mt-3 w-28 btn-secondary">
             {{ $t('porter.import') }}
           </button>
         </div>

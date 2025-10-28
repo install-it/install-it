@@ -26,17 +26,17 @@ const filteredGroups = computed(() => {
 
 <template>
   <div>
-    <div class="mb-1 text-xs line-clamp-1">
+    <div class="mb-1 line-clamp-1 text-xs">
       <span class="inline">
         {{ $t('driverForm.selectedWithCount', { count: model.length }) }}
       </span>
     </div>
 
-    <div class="flex mb-2 gap-x-2">
+    <div class="mb-2 flex gap-x-2">
       <input
         v-model="searchPhrase"
         :placeholder="$t('driverForm.search')"
-        class="input border-none focus:outline-gray-200 bg-gray-100 grow ms-1"
+        class="input ms-1 grow border-none bg-gray-100 focus:outline-gray-200"
       />
 
       <button
@@ -70,24 +70,24 @@ const filteredGroups = computed(() => {
       </button>
     </div>
 
-    <ul class="h-44 p-1.5 overflow-auto border rounded-lg">
+    <ul class="h-44 overflow-auto rounded-lg border p-1.5">
       <li
         v-if="!excludeBuiltin"
-        class="py-2 px-4 text-sm"
+        class="px-4 py-2 text-sm"
         v-show="
           searchPhrase === '' ||
           'set password'.includes(searchPhrase) ||
           $t('installOption.setPassword').includes(searchPhrase)
         "
       >
-        <label class="flex items-center w-full select-none cursor-pointer">
+        <label class="flex w-full cursor-pointer items-center select-none">
           <input
             type="checkbox"
             value="set_password"
             v-model="model"
-            class="checkbox checkbox-sm checkbox-primary me-1.5"
+            class="checkbox me-1.5 checkbox-sm checkbox-primary"
           />
-          <span class="badge px-1 me-1" :style="`--badge-color: var(--color-builtin)`">
+          <span class="me-1 badge px-1" :style="`--badge-color: var(--color-builtin)`">
             &nbsp;
           </span>
           <span class="line-clamp-2">
@@ -98,21 +98,21 @@ const filteredGroups = computed(() => {
 
       <li
         v-if="!excludeBuiltin"
-        class="py-2 px-4 text-sm"
+        class="px-4 py-2 text-sm"
         v-show="
           searchPhrase === '' ||
           'create partition'.includes(searchPhrase) ||
           $t('installOption.createPartition').includes(searchPhrase)
         "
       >
-        <label class="flex items-center w-full select-none cursor-pointer">
+        <label class="flex w-full cursor-pointer items-center select-none">
           <input
             type="checkbox"
             value="create_partition"
             v-model="model"
-            class="checkbox checkbox-sm checkbox-primary me-1.5"
+            class="checkbox me-1.5 checkbox-sm checkbox-primary"
           />
-          <span class="badge px-1 me-1" :style="`--badge-color: var(--color-builtin)`">
+          <span class="me-1 badge px-1" :style="`--badge-color: var(--color-builtin)`">
             &nbsp;
           </span>
           <span class="line-clamp-2">
@@ -123,16 +123,16 @@ const filteredGroups = computed(() => {
 
       <template v-for="g in filteredGroups" :key="g.id">
         <template v-if="$props.groupBy === 'group'">
-          <li class="py-2 px-4 text-sm">
-            <label class="flex items-center w-full select-none cursor-pointer">
+          <li class="px-4 py-2 text-sm">
+            <label class="flex w-full cursor-pointer items-center select-none">
               <input
                 type="checkbox"
                 :value="g.id"
                 v-model="model"
-                class="checkbox checkbox-sm checkbox-primary me-1.5"
+                class="checkbox me-1.5 checkbox-sm checkbox-primary"
               />
               <span
-                class="badge px-1 me-1"
+                class="me-1 badge px-1"
                 :class="[`badge-${g.type}`]"
                 :style="`--badge-color: var(--color-${g.type})`"
               >
@@ -147,16 +147,16 @@ const filteredGroups = computed(() => {
 
         <template v-else>
           <template v-for="d in g.drivers.filter(d => !excludes?.includes(d.id))" :key="d.id">
-            <li class="py-2 px-4 text-sm">
-              <label class="flex items-center w-full select-none cursor-pointer">
+            <li class="px-4 py-2 text-sm">
+              <label class="flex w-full cursor-pointer items-center select-none">
                 <input
                   type="checkbox"
                   :value="d.id"
                   v-model="model"
-                  class="checkbox checkbox-sm checkbox-primary me-1.5"
+                  class="checkbox me-1.5 checkbox-sm checkbox-primary"
                 />
                 <span
-                  class="badge px-1 me-1"
+                  class="me-1 badge px-1"
                   :class="[`badge-${g.type}`]"
                   :style="`--badge-color: var(--color-${g.type})`"
                 >

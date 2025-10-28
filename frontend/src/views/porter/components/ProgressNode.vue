@@ -12,7 +12,7 @@ const inProgress = computed(
 <template>
   <li class="flex items-center" :class="{ grow: progress !== undefined }">
     <span
-      class="flex items-center justify-center h-7 md:h-9 lg:h-11 aspect-square border-4 lg:border-6 border-gray-100 rounded-full"
+      class="flex aspect-square h-7 items-center justify-center rounded-full border-4 border-gray-100 md:h-9 lg:h-11 lg:border-6"
       :style="[
         progress != undefined
           ? {
@@ -25,15 +25,15 @@ const inProgress = computed(
       <slot></slot>
     </span>
 
-    <div class="relative flex flex-col w-full text-center" v-if="progress !== undefined">
+    <div class="relative flex w-full flex-col text-center" v-if="progress !== undefined">
       <span
-        class="text-xs lg:text-sm absolute -top-4.5 lg:-top-5.5 truncate w-full px-1"
+        class="absolute -top-4.5 w-full truncate px-1 text-xs lg:-top-5.5 lg:text-sm"
         :class="{ 'text-gray-400': !inProgress }"
       >
         {{ $t(`porter.${progress.name}`) }}
       </span>
 
-      <div class="w-full h-1.5 lg:h-2 bg-gray-100">
+      <div class="h-1.5 w-full bg-gray-100 lg:h-2">
         <div
           class="h-full transition-all"
           :class="[{ 'animate-pulse': inProgress }]"
@@ -45,7 +45,7 @@ const inProgress = computed(
       </div>
 
       <span
-        class="text-xs absolute -bottom-4 lg:-bottom-5 truncate w-full px-1 text-gray-400"
+        class="absolute -bottom-4 w-full truncate px-1 text-xs text-gray-400 lg:-bottom-5"
         v-if="inProgress"
       >
         {{ `${Math.floor((progress.current / progress.total) * 100)}%` }}

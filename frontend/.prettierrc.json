@@ -5,5 +5,7 @@
   "singleQuote": true,
   "arrowParens": "avoid",
   "printWidth": 100,
-  "trailingComma": "none"
+  "trailingComma": "none",
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "tailwindStylesheet": "./src/assets/main.css"
 }

@@ -194,8 +194,8 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="flex flex-col h-full">
-    <div id="sysinfo" class="flex flex-col flex-1 gap-y-1 overflow-y-auto p-1 border rounded-sm">
+  <div class="flex h-full flex-col">
+    <div id="sysinfo" class="flex flex-1 flex-col gap-y-1 overflow-y-auto rounded-sm border p-1">
       <template v-if="hwinfos !== null">
         <div>
           <h2 class="text-sm font-bold">{{ $t('common.motherboard') }}</h2>
@@ -265,24 +265,24 @@ async function handleSubmit() {
       <template v-else>
         <div v-for="i in 6" :key="i">
           <h2
-            class="skeleton h-5 mb-1"
+            class="mb-1 h-5 skeleton"
             :style="{ width: `${Math.random() * (25 - 15) + 15}%` }"
           ></h2>
-          <p class="skeleton h-5" :style="{ width: `${Math.random() * (85 - 30) + 30}%` }"></p>
+          <p class="h-5 skeleton" :style="{ width: `${Math.random() * (85 - 30) + 30}%` }"></p>
         </div>
       </template>
     </div>
 
-    <form class="flex gap-x-3 h-28 mt-3" ref="form">
-      <div class="flex flex-col flex-1 justify-between">
+    <form class="mt-3 flex h-28 gap-x-3" ref="form">
+      <div class="flex flex-1 flex-col justify-between">
         <div class="relative w-full">
           <label
-            class="absolute top-0 start-4 h-full translate-y-1 text-xs text-gray-500 pointer-events-none"
+            class="pointer-events-none absolute start-4 top-0 h-full translate-y-1 text-xs text-gray-500"
           >
             {{ $t('driverCatetory.network') }}
           </label>
 
-          <select name="network" class="w-full ps-3 pe-9 pt-5 pb-1 rounded-lg">
+          <select name="network" class="w-full rounded-lg ps-3 pe-9 pt-5 pb-1">
             <option>{{ $t('common.pleaseSelect') }}</option>
             <option
               v-for="d in groupStore.groups.filter(d => d.type == 'network')"
@@ -296,12 +296,12 @@ async function handleSubmit() {
 
         <div class="relative w-full">
           <label
-            class="absolute top-0 start-4 h-full translate-y-1 text-xs text-gray-500 pointer-events-none"
+            class="pointer-events-none absolute start-4 top-0 h-full translate-y-1 text-xs text-gray-500"
           >
             {{ $t('driverCatetory.display') }}
           </label>
 
-          <select name="display" class="w-full ps-3 pe-9 pt-5 pb-1 rounded-lg">
+          <select name="display" class="w-full rounded-lg ps-3 pe-9 pt-5 pb-1">
             <option>{{ $t('common.pleaseSelect') }}</option>
             <option
               v-for="d in groupStore.groups.filter(d => d.type == 'display')"
@@ -315,23 +315,23 @@ async function handleSubmit() {
       </div>
 
       <div class="flex flex-1">
-        <div class="relative w-full h-full mb-3">
+        <div class="relative mb-3 h-full w-full">
           <label
-            class="absolute left-3 top-1 origin-[0_0] -translate-y-[0.55rem] px-2 bg-white text-xs scale-[0.9] text-gray-500 pointer-events-none"
+            class="pointer-events-none absolute top-1 left-3 origin-[0_0] -translate-y-[0.55rem] scale-[0.9] bg-white px-2 text-xs text-gray-500"
           >
             {{ $t('driverCatetory.miscellaneous') }}
           </label>
 
-          <div class="h-full overflow-y-scroll px-2 pt-3 rounded-lg border border-apple-green-600">
+          <div class="h-full overflow-y-scroll rounded-lg border border-apple-green-600 px-2 pt-3">
             <template
               v-for="d in groupStore.groups.filter(d => d.type == 'miscellaneous')"
               :key="d.id"
             >
-              <label class="flex items-center w-full select-none cursor-pointer">
+              <label class="flex w-full cursor-pointer items-center select-none">
                 <input
                   type="checkbox"
                   name="miscellaneous"
-                  class="checkbox checkbox-sm checkbox-primary me-1.5"
+                  class="checkbox me-1.5 checkbox-sm checkbox-primary"
                   :value="d.id"
                 />
                 {{ `${d.name}${groupStore.notFoundDrivers.includes(d.id) ? ' ⚠' : ''}` }}
@@ -348,9 +348,9 @@ async function handleSubmit() {
       <div class="flex flex-col">
         <p class="font-semibold">{{ $t('installOption.title') }}</p>
 
-        <div class="flex flex-col flex-1 justify-around">
+        <div class="flex flex-1 flex-col justify-around">
           <div class="flex gap-x-4">
-            <label class="flex items-center gap-x-1.5 select-none cursor-pointer">
+            <label class="flex cursor-pointer items-center gap-x-1.5 select-none">
               <input
                 type="checkbox"
                 name="create_partition"
@@ -360,7 +360,7 @@ async function handleSubmit() {
               {{ $t('installOption.createPartition') }}
             </label>
 
-            <label class="flex items-center gap-x-1.5 select-none cursor-pointer">
+            <label class="flex cursor-pointer items-center gap-x-1.5 select-none">
               <input
                 type="checkbox"
                 name="parallel_install"
@@ -372,7 +372,7 @@ async function handleSubmit() {
           </div>
 
           <div class="flex gap-x-2">
-            <label class="flex items-center gap-x-1.5 select-none cursor-pointer">
+            <label class="flex cursor-pointer items-center gap-x-1.5 select-none">
               <input
                 type="checkbox"
                 name="set_password"
@@ -386,23 +386,23 @@ async function handleSubmit() {
               type="text"
               name="password"
               v-model="settingStore.settings.password"
-              class="max-w-28 input input-sm input-accent"
+              class="input input-sm max-w-28 input-accent"
               :disabled="!settingStore.settings.set_password"
             />
           </div>
         </div>
       </div>
 
-      <div class="flex flex-col grow justify-between">
+      <div class="flex grow flex-col justify-between">
         <div>
-          <label class="block mb-1 text-sm text-gray-900">
+          <label class="mb-1 block text-sm text-gray-900">
             {{ $t('installOption.successAction') }}
           </label>
 
           <select
             name="success_action"
             v-model="settingStore.settings.success_action"
-            class="select select-accent w-full"
+            class="select w-full select-accent"
           >
             <option v-for="action in storage.SuccessAction" :key="action" :value="action">
               {{ $t(`successAction.${action}`) }}
@@ -410,10 +410,10 @@ async function handleSubmit() {
           </select>
         </div>
 
-        <div class="flex flex-row gap-x-3 justify-end items-center mt-2 h-8">
+        <div class="mt-2 flex h-8 flex-row items-center justify-end gap-x-3">
           <button
             type="button"
-            class="btn btn-outline btn-neutral border-2"
+            class="btn border-2 btn-outline btn-neutral"
             @click="selectMatchedOptions"
           >
             配對
@@ -421,7 +421,7 @@ async function handleSubmit() {
 
           <button
             type="button"
-            class="btn btn-outline btn-secondary border-2"
+            class="btn border-2 btn-outline btn-secondary"
             @click="
               () => {
                 form?.reset()

@@ -35,7 +35,7 @@ function removeTag(index: number) {
 
     <input
       type="text"
-      class="input input-sm input-accent grow focus:outline-0"
+      class="input input-sm grow input-accent focus:outline-0"
       v-model="input"
       @keydown.backspace="
         () => {

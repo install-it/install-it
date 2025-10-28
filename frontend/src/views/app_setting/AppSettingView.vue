@@ -56,7 +56,7 @@ function handleSubmit() {
 </script>
 
 <template>
-  <form class="flex flex-col h-full gap-y-3" @submit.prevent="handleSubmit">
+  <form class="flex h-full flex-col gap-y-3" @submit.prevent="handleSubmit">
     <div class="flex items-center border-b-2">
       <button
         v-for="key in Object.keys(tabs)"
@@ -65,7 +65,7 @@ function handleSubmit() {
         class="px-4 py-2"
         :class="
           tabs[key as keyof typeof tabs]
-            ? 'font-semibold border-b-2 border-b-kashmir-blue-500 -mb-[2px]'
+            ? '-mb-[2px] border-b-2 border-b-kashmir-blue-500 font-semibold'
             : ''
         "
         @click="
@@ -82,29 +82,29 @@ function handleSubmit() {
 
     <div v-show="tabs.softwareSetting" class="flex flex-col gap-y-3">
       <section>
-        <p class="font-bold mb-2">
+        <p class="mb-2 font-bold">
           {{ $t('setting.generalSetting') }}
         </p>
 
         <div class="flex flex-col gap-y-3">
           <div>
-            <p class="block mb-2 text-gray-900">
+            <p class="mb-2 block text-gray-900">
               {{ $t('setting.autoCheckUpdate') }}
             </p>
 
-            <label class="flex items-center w-full select-none cursor-pointer">
+            <label class="flex w-full cursor-pointer items-center select-none">
               <input
                 type="checkbox"
                 name="auto_check_update"
                 v-model="settings.auto_check_update"
-                class="checkbox checkbox-primary me-1.5"
+                class="checkbox me-1.5 checkbox-primary"
               />
               {{ $t('common.enable') }}
             </label>
           </div>
 
           <div>
-            <label class="block mb-2 text-gray-900">
+            <label class="mb-2 block text-gray-900">
               {{ $t('setting.successActionDelay') }}
             </label>
 
@@ -114,7 +114,7 @@ function handleSubmit() {
               min="0"
               step="0"
               v-model="settings.success_action_delay"
-              class="w-20 input input-accent shadow-xs"
+              class="input w-20 shadow-xs input-accent"
               required
             />
             &nbsp; {{ $t('setting.second') }}
@@ -123,17 +123,17 @@ function handleSubmit() {
       </section>
 
       <section>
-        <p class="font-bold mb-2">{{ $t('setting.porter') }}</p>
+        <p class="mb-2 font-bold">{{ $t('setting.porter') }}</p>
 
         <div class="flex flex-col gap-y-3">
           <div>
-            <label class="block mb-2 text-gray-900">{{ $t('setting.importUrl') }}</label>
+            <label class="mb-2 block text-gray-900">{{ $t('setting.importUrl') }}</label>
 
             <input
               type="url"
               name="driver_download_url"
               v-model="settings.driver_download_url"
-              class="w-full input input-accent shadow-xs"
+              class="input w-full shadow-xs input-accent"
             />
           </div>
         </div>
@@ -142,18 +142,18 @@ function handleSubmit() {
 
     <div v-show="tabs.defaultInstallSetting" class="flex flex-col gap-y-3">
       <section>
-        <p class="font-bold mb-2">
+        <p class="mb-2 font-bold">
           {{ $t('setting.task') }}
         </p>
 
         <div class="flex flex-col gap-y-3">
           <div class="flex">
-            <label class="flex items-center w-full select-none cursor-pointer">
+            <label class="flex w-full cursor-pointer items-center select-none">
               <input
                 type="checkbox"
                 name="create_partition"
                 v-model="settings.create_partition"
-                class="checkbox checkbox-primary me-1.5"
+                class="checkbox me-1.5 checkbox-primary"
               />
               {{ $t('installOption.createPartition') }}
             </label>
@@ -161,12 +161,12 @@ function handleSubmit() {
 
           <div class="flex gap-3">
             <div class="flex">
-              <label class="flex items-center w-full select-none cursor-pointer">
+              <label class="flex w-full cursor-pointer items-center select-none">
                 <input
                   type="checkbox"
                   name="set_password"
                   v-model="settings.set_password"
-                  class="checkbox checkbox-primary me-1.5"
+                  class="checkbox me-1.5 checkbox-primary"
                 />
                 {{ $t('installOption.setPassword') }}
               </label>
@@ -186,25 +186,25 @@ function handleSubmit() {
       </section>
 
       <section>
-        <p class="font-bold mb-2">
+        <p class="mb-2 font-bold">
           {{ $t('setting.installOption') }}
         </p>
 
         <div class="flex flex-col gap-y-3">
           <div class="flex">
-            <label class="flex items-center w-full select-none cursor-pointer">
+            <label class="flex w-full cursor-pointer items-center select-none">
               <input
                 type="checkbox"
                 name="parallel_install"
                 v-model="settings.parallel_install"
-                class="checkbox checkbox-primary me-1.5"
+                class="checkbox me-1.5 checkbox-primary"
               />
               {{ $t('installOption.parallelInstall') }}
             </label>
           </div>
 
           <div>
-            <label class="block mb-2 text-gray-900">
+            <label class="mb-2 block text-gray-900">
               {{ $t('installOption.successAction') }}
             </label>
             <select
@@ -223,7 +223,7 @@ function handleSubmit() {
 
     <div v-show="tabs.displaySetting" class="flex flex-col gap-y-3">
       <section>
-        <p class="font-bold mb-2">
+        <p class="mb-2 font-bold">
           {{ $t('setting.language') }}
         </p>
 
@@ -236,18 +236,18 @@ function handleSubmit() {
       </section>
 
       <section>
-        <p class="font-bold mb-2">
+        <p class="mb-2 font-bold">
           {{ $t('setting.hardwareInfo') }}
         </p>
 
         <div class="flex flex-col gap-y-3">
           <div class="flex">
-            <label class="flex items-center w-full select-none cursor-pointer">
+            <label class="flex w-full cursor-pointer items-center select-none">
               <input
                 type="checkbox"
                 name="filter_miniport_nic"
                 v-model="settings.filter_miniport_nic"
-                class="checkbox checkbox-primary me-1.5"
+                class="checkbox me-1.5 checkbox-primary"
               />
               {{ $t('setting.filterMiniportNic') }}
             </label>
@@ -256,12 +256,12 @@ function handleSubmit() {
 
         <div class="flex flex-col gap-y-3">
           <div class="flex">
-            <label class="flex items-center w-full select-none cursor-pointer">
+            <label class="flex w-full cursor-pointer items-center select-none">
               <input
                 type="checkbox"
                 name="filter_microsoft_nic"
                 v-model="settings.filter_microsoft_nic"
-                class="checkbox checkbox-primary me-1.5"
+                class="checkbox me-1.5 checkbox-primary"
               />
               {{ $t('setting.filterMicorsoftNic') }}
             </label>

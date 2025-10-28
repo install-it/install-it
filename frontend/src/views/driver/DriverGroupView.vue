@@ -10,14 +10,14 @@ const reordering = ref(false)
 </script>
 
 <template>
-  <div class="flex flex-col h-full gap-y-2">
-    <div class="flex flex-row gap-x-3 list-none text-center">
+  <div class="flex h-full flex-col gap-y-2">
+    <div class="flex list-none flex-row gap-x-3 text-center">
       <router-link
         :to="{ path: '/drivers' }"
-        class="w-full py-3 text-xs font-bold uppercase shadow-lg rounded-sm"
+        class="w-full rounded-sm py-3 text-xs font-bold uppercase shadow-lg"
         :class="{
-          'text-half-baked-600 bg-white': $route.query.type != undefined,
-          'text-white bg-half-baked-600': $route.query.type == undefined
+          'bg-white text-half-baked-600': $route.query.type != undefined,
+          'bg-half-baked-600 text-white': $route.query.type == undefined
         }"
         draggable="false"
       >
@@ -28,10 +28,10 @@ const reordering = ref(false)
         v-for="type in storage.DriverType"
         :key="type"
         :to="{ path: '/drivers', query: { type: type } }"
-        class="w-full py-3 text-xs font-bold uppercase shadow-lg rounded-sm"
+        class="w-full rounded-sm py-3 text-xs font-bold uppercase shadow-lg"
         :class="{
-          'text-half-baked-600 bg-white': $route.query.type !== type,
-          'text-white bg-half-baked-600': $route.query.type === type
+          'bg-white text-half-baked-600': $route.query.type !== type,
+          'bg-half-baked-600 text-white': $route.query.type === type
         }"
         draggable="false"
       >
@@ -39,14 +39,14 @@ const reordering = ref(false)
       </router-link>
     </div>
 
-    <div class="flex flex-col grow p-1.5 min-h-48 overflow-y-scroll shadow-md rounded-md">
+    <div class="flex min-h-48 grow flex-col overflow-y-scroll rounded-md p-1.5 shadow-md">
       <div
         v-for="(g, i) in groupStore.groups.filter(
           g => $route.query.type == undefined || g.type == $route.query.type
         )"
         :key="g.id"
-        class="driver-card m-1 px-2 py-1 border border-gray-200 rounded-lg shadow-sm"
-        :class="reordering ? 'select-none cursor-pointer' : ''"
+        class="driver-card m-1 rounded-lg border border-gray-200 px-2 py-1 shadow-sm"
+        :class="reordering ? 'cursor-pointer select-none' : ''"
         @dragstart="
           event => {
             if (!reordering) {
@@ -97,7 +97,7 @@ const reordering = ref(false)
         :draggable="reordering"
       >
         <div class="flex justify-between">
-          <div class="flex items-center gap-1 min-w-0">
+          <div class="flex min-w-0 items-center gap-1">
             <span class="badge badge-sm px-1" :style="`--badge-color: var(--color-${g.type})`">
               &nbsp;
             </span>
@@ -110,14 +110,14 @@ const reordering = ref(false)
           <div class="flex gap-x-1.5 py-1">
             <RouterLink
               :to="`/drivers/edit/${g.id}`"
-              class="btn btn-xs size-6"
+              class="btn size-6 btn-xs"
               :title="$t('common.edit')"
             >
               <font-awesome-icon icon="fa-solid fa-pen-to-square" class="text-gray-500" />
             </RouterLink>
 
             <button
-              class="btn btn-xs size-6"
+              class="btn size-6 btn-xs"
               @click="
                 groupStorage.Add(g).then(() =>
                   driverGroupStorage
@@ -134,7 +134,7 @@ const reordering = ref(false)
             </button>
 
             <button
-              class="btn btn-xs size-6"
+              class="btn size-6 btn-xs"
               @click="
                 groupStorage.Remove(g.id).then(() =>
                   driverGroupStorage
@@ -152,35 +152,35 @@ const reordering = ref(false)
           </div>
         </div>
 
-        <div class="grid grid-cols-12 gap-1 py-1 text-xs bg-gray-100">
-          <div class="col-span-2 lg:col-span-3 font-medium">{{ $t('driverForm.name') }}</div>
-          <div class="col-span-5 lg:col-span-5 font-medium">{{ $t('driverForm.path') }}</div>
-          <div class="col-span-3 lg:col-span-3 font-medium">{{ $t('driverForm.argument') }}</div>
-          <div class="col-span-2 lg:col-span-1 font-medium">
+        <div class="grid grid-cols-12 gap-1 bg-gray-100 py-1 text-xs">
+          <div class="col-span-2 font-medium lg:col-span-3">{{ $t('driverForm.name') }}</div>
+          <div class="col-span-5 font-medium lg:col-span-5">{{ $t('driverForm.path') }}</div>
+          <div class="col-span-3 font-medium lg:col-span-3">{{ $t('driverForm.argument') }}</div>
+          <div class="col-span-2 font-medium lg:col-span-1">
             {{ $t('driverForm.otherSetting') }}
           </div>
         </div>
 
         <div v-for="d in g.drivers" :key="d.id" class="grid grid-cols-12 gap-1 py-1 text-xs">
-          <div class="col-span-2 lg:col-span-3 break-all line-clamp-2">
+          <div class="col-span-2 line-clamp-2 break-all lg:col-span-3">
             {{ d.name }}
           </div>
 
           <div
-            class="col-span-5 lg:col-span-5 break-all line-clamp-2"
+            class="col-span-5 line-clamp-2 break-all lg:col-span-5"
             :class="{ 'text-red-600': groupStore.notFoundDrivers.includes(d.id) }"
           >
             {{ d.path }}
           </div>
 
-          <div class="col-span-3 lg:col-span-3 break-all line-clamp-2">
+          <div class="col-span-3 line-clamp-2 break-all lg:col-span-3">
             {{ d.flags }}
           </div>
 
-          <div class="flex col-span-2 lg:col-span-1 gap-x-1">
+          <div class="col-span-2 flex gap-x-1 lg:col-span-1">
             <span
               v-show="d.incompatibles.length > 0"
-              class="inline-block p-0.5 max-h-5 bg-yellow-300 rounded-xs"
+              class="inline-block max-h-5 rounded-xs bg-yellow-300 p-0.5"
               :title="$t('driverForm.incompatibleWith')"
             >
               <font-awesome-icon icon="fa-solid fa-code-merge" />
@@ -188,7 +188,7 @@ const reordering = ref(false)
 
             <span
               v-show="d.allowRtCodes.length > 0"
-              class="inline-block p-0.5 max-h-5 bg-blue-300 rounded-xs"
+              class="inline-block max-h-5 rounded-xs bg-blue-300 p-0.5"
               :title="$t('driverForm.allowedExitCode')"
             >
               <font-awesome-icon icon="fa-solid fa-0" />
