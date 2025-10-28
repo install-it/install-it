@@ -36,6 +36,18 @@ const router = createRouter({
       path: '/app-info',
       name: 'appInfo',
       component: () => import('../views/app_info/AppInfoView.vue')
+    },
+    {
+      path: '/match-rules',
+      component: () => import('../views/match_rule/MatchRuleView.vue')
+    },
+    {
+      path: '/match-rules/create',
+      component: () => import('../views/match_rule/MatchRuleFormView.vue')
+    },
+    {
+      path: '/match-rules/edit/:id',
+      component: () => import('../views/match_rule/MatchRuleFormView.vue')
     }
   ]
 })

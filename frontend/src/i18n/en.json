@@ -1,5 +1,6 @@
 {
   "common": {
+    "action": "Action",
     "all": "All",
     "back": "Back",
     "cancel": "Cancel",
@@ -7,10 +8,10 @@
     "cpu": "CPU",
     "enable": "Enable",
     "gpu": "GPU",
+    "memory": "Memory",
     "motherboard": "Motherboard",
     "nic": "Network Interface Card",
     "pleaseSelect": "Please Select",
-    "ram": "RAM",
     "save": "Save",
     "select": "Select",
     "storage": "Storage",
@@ -23,7 +24,6 @@
     "network": "Network"
   },
   "driverForm": {
-    "action": "Action",
     "allowedExitCode": "Allowed Exit Code",
     "allowedExitCodeHelp": "If the exit code of the execution is in specificied value,  the execution will be treated as successful.",
     "argument": "Execution Option",
@@ -94,6 +94,29 @@
     "successAction": "Shutdown Option",
     "title": "Tasks & Settings"
   },
+  "matchRule": {
+    "caseSensitive": "Case Sensitive",
+    "contain": "Contain",
+    "createRule": "Create Match Rules",
+    "equal": "Equal",
+    "hitAll": "Hit All",
+    "hitAllPatterns": "Hit All Patterns",
+    "hitAllRule": "Hit All Rules",
+    "matchRule": "Match Rule",
+    "matchTo": "Match To",
+    "multiPatternMatching": "Multi-pattern Matching",
+    "multiPatternMatchingHelp": "Require hitting all partterns",
+    "multiRuleMatching": "Multi-rules Matching",
+    "multiRuleMatchingHelp": "By default, any rules hit will trigger the match. Check to require hitting all rules",
+    "name": "Name",
+    "not_contain": "Not Contain",
+    "not_equal": "Not Equal",
+    "operator": "Operator",
+    "pattern": "Pattern",
+    "regex": "REGEX",
+    "rule": "Rule",
+    "source": "Source"
+  },
   "porter": {
     "backup": "Backup",
     "cleanup": "Cleanup",
@@ -159,6 +182,8 @@
   },
   "toast": {
     "addAtLeastOneDriver": "Please add at least one driver.",
+    "addAtLeastOnePattern": "Please add at lease on pattern.",
+    "addAtLeastOneRule": "Please add at least one rule.",
     "cancelCompletedFailed": "[{name}] Failed to abort. The execution is probably completed.",
     "cancelFailed": "[{name}] Failed to abort.",
     "checkUpdateFailed": "Unable to check update due to unable to retrieve version info.",
