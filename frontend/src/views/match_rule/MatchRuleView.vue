@@ -15,7 +15,7 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
         class="driver-card m-1 px-2 py-1 border border-gray-200 rounded-lg shadow-sm"
       >
         <div class="flex justify-between">
-          <div class="flex items-center gap-1">
+          <div class="flex items-center gap-1 min-w-0">
             <span
               v-if="rs.should_hit_all"
               class="badge badge-sm px-1 text-white"
@@ -24,7 +24,7 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
               {{ $t('matchRule.hitAll') }}
             </span>
 
-            <h2 class="truncate oveflow-x-hidden text-sm font-bold">
+            <h2 class="truncate">
               {{ rs.name }}
             </h2>
           </div>
