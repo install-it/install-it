@@ -30,16 +30,16 @@ const webviewVersion = ref(false)
   <ModalFrame :on-demand="true" :immediate="false" ref="frame">
     <div class="w-4/5 max-w-4xl">
       <!-- Modal content -->
-      <div class="bg-white rounded-lg shadow-sm">
+      <div class="rounded-lg bg-white shadow-sm">
         <!-- Modal header -->
-        <div class="flex items-center justify-between h-12 px-4 border-b rounded-t">
+        <div class="flex h-12 items-center justify-between rounded-t border-b px-4">
           <h3 class="font-semibold">
             {{ $t('info.updateInfoTitle') }}
           </h3>
 
           <button
             type="button"
-            class="p-3 text-sm text-gray-400 hover:text-gray-900 bg-transparent hover:bg-gray-100 rounded-lg"
+            class="rounded-lg bg-transparent p-3 text-sm text-gray-400 hover:bg-gray-100 hover:text-gray-900"
             @click="
               () => {
                 frame?.hide()
@@ -51,8 +51,8 @@ const webviewVersion = ref(false)
         </div>
 
         <!-- Modal body -->
-        <div class="flex flex-col gap-y-3 min-h-40 max-h-96 overflow-y-auto py-2 px-4">
-          <div class="flex flex-col gap-y-2 grow">
+        <div class="flex max-h-96 min-h-40 flex-col gap-y-3 overflow-y-auto px-4 py-2">
+          <div class="flex grow flex-col gap-y-2">
             <div class="flex">
               <h1 class="min-w-34 font-medium">
                 {{ $t('info.currentVersion') }}
@@ -73,15 +73,15 @@ const webviewVersion = ref(false)
 
             <hr />
 
-            <div class="flex flex-col grow">
-              <h1 class="min-w-32 mb-1 font-medium">
+            <div class="flex grow flex-col">
+              <h1 class="mb-1 min-w-32 font-medium">
                 {{ $t('info.updateInfo') }}
               </h1>
 
               <div
                 v-html="releaseInfo?.releaseNotes || `<i>${$t('info.noUpdateInfo')}</i>`"
                 id="release-notes"
-                class="px-1 border rounded-lg"
+                class="rounded-lg border px-1"
               ></div>
             </div>
 
@@ -92,12 +92,12 @@ const webviewVersion = ref(false)
                 {{ $t('info.updateOption') }}
               </h1>
 
-              <label class="flex items-center w-full select-none cursor-pointer">
+              <label class="flex w-full cursor-pointer items-center select-none">
                 <input
                   type="checkbox"
                   name="create_partition"
                   v-model="webviewVersion"
-                  class="checkbox checkbox-primary me-1.5"
+                  class="checkbox me-1.5 checkbox-primary"
                 />
                 {{ $t('info.downloadBuiltInWebView2Version') }}
               </label>
@@ -105,7 +105,7 @@ const webviewVersion = ref(false)
           </div>
 
           <button
-            class="w-full btn btn-secondary"
+            class="btn w-full btn-secondary"
             @click="
               () => {
                 if (!releaseInfo) {

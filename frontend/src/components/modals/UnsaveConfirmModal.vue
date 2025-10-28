@@ -19,16 +19,16 @@ let callback: (answer: 'yes' | 'no') => void
   <ModalFrame :on-demand="false" :immediate="false" ref="frame">
     <div class="max-w-[60vw]">
       <!-- Modal content -->
-      <div class="bg-white rounded-lg shadow-sm">
+      <div class="rounded-lg bg-white shadow-sm">
         <!-- Modal header -->
-        <div class="flex items-center justify-between h-12 px-4 border-b rounded-t">
+        <div class="flex h-12 items-center justify-between rounded-t border-b px-4">
           <h3 class="font-semibold">
             {{ $t('common.unsaveConfirmTitle') }}
           </h3>
 
           <button
             type="button"
-            class="p-3 text-sm text-gray-400 hover:text-gray-900 bg-transparent rounded-lg"
+            class="rounded-lg bg-transparent p-3 text-sm text-gray-400 hover:text-gray-900"
             @click="
               () => {
                 frame?.hide()
@@ -47,10 +47,10 @@ let callback: (answer: 'yes' | 'no') => void
           </p>
         </div>
 
-        <div class="flex gap-x-2 px-4 py-2 border-t">
+        <div class="flex gap-x-2 border-t px-4 py-2">
           <button
             type="button"
-            class="flex-1 btn btn-accent text-gray-700"
+            class="btn flex-1 text-gray-700 btn-accent"
             @click="
               () => {
                 frame?.hide()
@@ -63,7 +63,7 @@ let callback: (answer: 'yes' | 'no') => void
 
           <button
             type="button"
-            class="flex-1 btn"
+            class="btn flex-1"
             @click="
               () => {
                 frame?.hide()

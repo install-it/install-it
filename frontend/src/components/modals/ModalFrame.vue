@@ -29,7 +29,7 @@ const render = ref(props.onDemand)
     <div class="fixed inset-0 z-40 bg-gray-900/50" v-show="show" key="0"></div>
 
     <div
-      class="fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-full"
+      class="fixed top-0 right-0 left-0 z-50 flex h-full w-full items-center justify-center"
       v-show="show"
       key="1"
     >

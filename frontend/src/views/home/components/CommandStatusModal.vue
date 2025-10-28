@@ -161,15 +161,15 @@ async function handleAbort(process: Process) {
   <ModalFrame :on-demand="true" :immediate="false" ref="frame">
     <div class="w-[65vw] max-w-3xl">
       <!-- Modal content -->
-      <div class="bg-white rounded-sm shadow-sm">
+      <div class="rounded-sm bg-white shadow-sm">
         <!-- Modal header -->
-        <div class="flex items-center justify-between px-3 py-1.5 border-b rounded-t">
+        <div class="flex items-center justify-between rounded-t border-b px-3 py-1.5">
           <h3 class="font-semibold">
             {{ $t('execute.title') }}
           </h3>
           <button
             type="button"
-            class="inline-flex justify-center items-center h-8 w-8 ms-auto text-sm text-gray-400 enabled:hover:text-gray-900 bg-transparent enabled:hover:bg-gray-200 rounded-lg"
+            class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 enabled:hover:bg-gray-200 enabled:hover:text-gray-900"
             @click="frame?.hide()"
             :disabled="
               processes.some(cmd => ['pending', 'running', 'aborting'].includes(cmd.status))
@@ -180,21 +180,21 @@ async function handleAbort(process: Process) {
         </div>
 
         <!-- Modal body -->
-        <div class="max-h-[70vh] overflow-y-auto py-2 px-4">
+        <div class="max-h-[70vh] overflow-y-auto px-4 py-2">
           <template v-for="(process, i) in processes" :key="i">
             <TaskStatus :process="process" @abort="handleAbort(process)"></TaskStatus>
           </template>
         </div>
 
         <div
-          class="flex justify-end pb-2 px-4"
+          class="flex justify-end px-4 pb-2"
           v-show="
             processes.every(p => p.status.includes('ed')) &&
             processes.some(p => p.status != 'completed')
           "
         >
           <button
-            class="btn btn-sm btn-secondary font-normal"
+            class="btn font-normal btn-sm btn-secondary"
             @click="
               event => {
                 $emit('completed')

@@ -40,15 +40,15 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
 <template>
   <ModalFrame :on-demand="true" :immediate="false" ref="frame">
     <div class="w-4/5">
-      <div class="bg-white rounded-lg shadow-sm">
-        <div class="flex items-center justify-between h-12 px-4 border-b rounded-t">
+      <div class="rounded-lg bg-white shadow-sm">
+        <div class="flex h-12 items-center justify-between rounded-t border-b px-4">
           <h3 class="font-semibold">
             {{ $t('matchRule.matchRule') }}
           </h3>
 
           <button
             type="button"
-            class="p-3 text-sm text-gray-400 hover:text-gray-900 bg-transparent rounded-lg"
+            class="rounded-lg bg-transparent p-3 text-sm text-gray-400 hover:text-gray-900"
             @click="frame?.hide()"
           >
             <font-awesome-icon icon="fa-solid fa-xmark" />
@@ -69,7 +69,7 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
             }
           "
         >
-          <div class="flex flex-col gap-y-2 max-h-[75vh] overflow-auto p-4" ref="modalBody">
+          <div class="flex max-h-[75vh] flex-col gap-y-2 overflow-auto p-4" ref="modalBody">
             <div class="flex gap-1">
               <fieldset class="fieldset flex-1">
                 <legend class="fieldset-legend text-sm">
@@ -99,11 +99,11 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
                 <legend class="fieldset-legend text-sm">
                   {{ $t('matchRule.caseSensitive') }}
                 </legend>
-                <label class="flex items-center select-none cursor-pointer">
+                <label class="flex cursor-pointer items-center select-none">
                   <input
                     type="checkbox"
                     v-model="input.is_case_sensitive"
-                    class="checkbox checkbox-sm checkbox-primary me-1.5"
+                    class="checkbox me-1.5 checkbox-sm checkbox-primary"
                     :disabled="input.operator === 'regex'"
                   />
                   {{ $t('common.enable') }}
@@ -114,11 +114,11 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
                 <legend class="fieldset-legend text-sm">
                   {{ $t('matchRule.multiPatternMatching') }}
                 </legend>
-                <label class="flex items-center select-none cursor-pointer">
+                <label class="flex cursor-pointer items-center select-none">
                   <input
                     type="checkbox"
                     v-model="input.should_hit_all"
-                    class="checkbox checkbox-sm checkbox-primary me-1.5"
+                    class="checkbox me-1.5 checkbox-sm checkbox-primary"
                   />
                   {{ $t('matchRule.hitAllPatterns') }}
                 </label>
@@ -127,16 +127,16 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
               </fieldset>
             </div>
 
-            <fieldset class="border input-bordered rounded w-full py-1">
-              <legend class="fieldset-legend text-sm text-required">
+            <fieldset class="input-bordered w-full rounded border py-1">
+              <legend class="text-required fieldset-legend text-sm">
                 {{ $t('matchRule.pattern') }}
               </legend>
               <TaggedInput v-model="input.values"></TaggedInput>
             </fieldset>
           </div>
 
-          <div class="flex gap-x-2 px-4 py-2 border-t">
-            <button type="submit" class="btn btn-sm btn-secondary w-full">
+          <div class="flex gap-x-2 border-t px-4 py-2">
+            <button type="submit" class="btn w-full btn-sm btn-secondary">
               {{ $t('common.save') }}
             </button>
           </div>

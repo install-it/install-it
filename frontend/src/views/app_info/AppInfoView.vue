@@ -99,7 +99,7 @@ function checkUpdate() {
 </script>
 
 <template>
-  <div class="flex flex-col gap-y-6 h-full">
+  <div class="flex h-full flex-col gap-y-6">
     <h1 class="text-lg font-bold">{{ $t('info.about') }} install-it</h1>
 
     <div>
@@ -107,12 +107,12 @@ function checkUpdate() {
 
       <div class="grid grid-cols-7 gap-4">
         <div class="col-span-2">{{ $t('info.version') }}</div>
-        <div class="flex col-span-5 gap-x-5 items-center">
+        <div class="col-span-5 flex items-center gap-x-5">
           <p>
             {{ info.app.version }}
           </p>
 
-          <button class="btn btn-xs font-normal" @click="checkUpdate()" :disabled="onCheck">
+          <button class="btn font-normal btn-xs" @click="checkUpdate()" :disabled="onCheck">
             {{ $t('info.checkUpdate') }}
           </button>
         </div>
@@ -130,7 +130,7 @@ function checkUpdate() {
 
           <button
             type="button"
-            class="btn btn-xs ms-1.5"
+            class="btn ms-1.5 btn-xs"
             @click="RunAndOutput('cmd', ['/c', `explorer.exe ${info.app.pathDriver}`], true)"
           >
             <font-awesome-icon icon="fa-solid fa-arrow-up-right-from-square" />
