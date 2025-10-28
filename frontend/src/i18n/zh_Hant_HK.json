@@ -101,6 +101,7 @@
     "contain": "包含",
     "createRule": "建立配對規則",
     "equal": "等於",
+    "hitAll": "符合所有",
     "hitAllPatterns": "符合所有匹配值",
     "hitAllRule": "符合所有規則",
     "matchRule": "配對規則",
