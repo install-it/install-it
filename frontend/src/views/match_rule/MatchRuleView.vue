@@ -33,6 +33,7 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
             <RouterLink
               :to="`/match-rules/edit/${rs.id}`"
               class="px-1 bg-gray-200 hover:bg-gray-300 transition-all rounded-sm"
+              :title="$t('common.edit')"
             >
               <font-awesome-icon icon="fa-solid fa-pen-to-square" class="text-gray-500" />
             </RouterLink>
@@ -49,6 +50,7 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
                     })
                 )
               "
+              :title="$t('common.clone')"
             >
               <font-awesome-icon icon="fa-solid fa-clone" class="text-gray-500" />
             </button>
@@ -65,6 +67,7 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
                     })
                 )
               "
+              :title="$t('common.delete')"
             >
               <font-awesome-icon icon="fa-solid fa-trash" class="text-gray-500" />
             </button>
