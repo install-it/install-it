@@ -172,10 +172,14 @@ function handleSubmit(event: SubmitEvent) {
 
               <div>
                 <div class="flex gap-x-2">
-                  <button type="button" @click="inputModal?.show(d)">
+                  <button type="button" @click="inputModal?.show(d)" :title="$t('common.edit')">
                     <font-awesome-icon icon="fa-solid fa-pen-to-square" />
                   </button>
-                  <button type="button" @click="group.drivers.splice(i, 1)">
+                  <button
+                    type="button"
+                    @click="group.drivers.splice(i, 1)"
+                    :title="$t('common.delete')"
+                  >
                     <font-awesome-icon icon="fa-solid fa-trash" />
                   </button>
                 </div>
