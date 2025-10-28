@@ -32,14 +32,14 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
           <div class="flex gap-x-1.5 py-1">
             <RouterLink
               :to="`/match-rules/edit/${rs.id}`"
-              class="px-1 bg-gray-200 hover:bg-gray-300 transition-all rounded-sm"
+              class="btn btn-xs size-6"
               :title="$t('common.edit')"
             >
               <font-awesome-icon icon="fa-solid fa-pen-to-square" class="text-gray-500" />
             </RouterLink>
 
             <button
-              class="px-1 bg-gray-200 hover:bg-gray-300 transition-all rounded-sm"
+              class="btn btn-xs size-6"
               @click="
                 matchRuleStorage.Add(rs).then(() =>
                   matchRuleStorage
@@ -56,7 +56,7 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
             </button>
 
             <button
-              class="px-1 bg-gray-200 hover:bg-gray-300 transition-all rounded-sm"
+              class="btn btn-xs size-6"
               @click="
                 matchRuleStorage.Remove(rs.id).then(() =>
                   matchRuleStorage
