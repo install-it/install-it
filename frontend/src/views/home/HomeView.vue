@@ -292,8 +292,8 @@ async function handleSubmit() {
 
           <select name="network" class="w-full rounded-lg ps-3 pe-9 pt-5 pb-1">
             <option>{{ $t('common.pleaseSelect') }}</option>
-            <option v-for="d in groups.filter(d => d.type == 'network')" :key="d.id" :value="d.id">
-              {{ `${d.name}${groupStore.notFoundDrivers.includes(d.id) ? ' ⚠' : ''}` }}
+            <option v-for="g in groups.filter(g => g.type == 'network')" :key="g.id" :value="g.id">
+              {{ `${g.name}${groupStore.notFoundDrivers.includes(g.id) ? ' ⚠' : ''}` }}
             </option>
           </select>
         </div>
@@ -307,8 +307,8 @@ async function handleSubmit() {
 
           <select name="display" class="w-full rounded-lg ps-3 pe-9 pt-5 pb-1">
             <option>{{ $t('common.pleaseSelect') }}</option>
-            <option v-for="d in groups.filter(d => d.type == 'display')" :key="d.id" :value="d.id">
-              {{ `${d.name}${groupStore.notFoundDrivers.includes(d.id) ? ' ⚠' : ''}` }}
+            <option v-for="g in groups.filter(g => g.type == 'display')" :key="g.id" :value="g.id">
+              {{ `${g.name}${groupStore.notFoundDrivers.includes(g.id) ? ' ⚠' : ''}` }}
             </option>
           </select>
         </div>
@@ -323,15 +323,15 @@ async function handleSubmit() {
           </label>
 
           <div class="h-full overflow-y-scroll rounded-lg border border-apple-green-600 px-2 pt-3">
-            <template v-for="d in groups.filter(d => d.type == 'miscellaneous')" :key="d.id">
+            <template v-for="g in groups.filter(g => g.type == 'miscellaneous')" :key="g.id">
               <label class="flex w-full cursor-pointer items-center select-none">
                 <input
                   type="checkbox"
                   name="miscellaneous"
                   class="checkbox me-1.5 checkbox-sm checkbox-primary"
-                  :value="d.id"
+                  :value="g.id"
                 />
-                {{ `${d.name}${groupStore.notFoundDrivers.includes(d.id) ? ' ⚠' : ''}` }}
+                {{ `${g.name}${groupStore.notFoundDrivers.includes(g.id) ? ' ⚠' : ''}` }}
               </label>
             </template>
           </div>
