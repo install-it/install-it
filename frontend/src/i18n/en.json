@@ -148,7 +148,7 @@
     "filterMiniportNic": "Filter Miniport NICs",
     "generalSetting": "General",
     "hardwareInfo": "Hardware Info",
-    "hideNotFound": "Hide Not Found Options",
+    "hideNotFound": "Hide Options Containing Not Founds",
     "importUrl": "Import URL",
     "installOption": "Install Option",
     "installSetting": "Install Setting",

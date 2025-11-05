@@ -150,7 +150,7 @@
     "filterMiniportNic": "過濾 Miniport 網卡",
     "generalSetting": "一般設定",
     "hardwareInfo": "硬件資訊",
-    "hideNotFound": "隱藏找不到安裝檔／指令的選項",
+    "hideNotFound": "隱藏包含找不到安裝檔／指令的選項",
     "importUrl": "匯入資料下載網址",
     "installOption": "安裝選項",
     "installSetting": "安裝設定",
