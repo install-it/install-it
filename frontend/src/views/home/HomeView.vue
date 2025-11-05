@@ -4,7 +4,7 @@ import CommandStatueModal from '@/views/home/components/CommandStatusModal.vue'
 import * as executor from '@/wailsjs/go/execute/CommandExecutor'
 import { storage, sysinfo } from '@/wailsjs/go/models'
 import * as sysinfoqy from '@/wailsjs/go/sysinfo/SysInfo'
-import { onBeforeMount, ref, useTemplateRef } from 'vue'
+import { computed, onBeforeMount, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
 import type { Command } from './types'
@@ -22,6 +22,14 @@ const [groupStore, settingStore, ruleStore] = [
   useAppSettingStore(),
   useMatchRuleStore()
 ]
+
+const groups = computed(() =>
+  settingStore.settings.hide_not_found
+    ? groupStore.groups.filter(g =>
+        g.drivers.flatMap(d => d.id).every(id => !groupStore.notFoundDrivers.includes(id))
+      )
+    : groupStore.groups
+)
 
 const hwinfos = ref<{
   motherboard: Array<sysinfo.Win32_BaseBoard>
@@ -284,11 +292,7 @@ async function handleSubmit() {
 
           <select name="network" class="w-full rounded-lg ps-3 pe-9 pt-5 pb-1">
             <option>{{ $t('common.pleaseSelect') }}</option>
-            <option
-              v-for="d in groupStore.groups.filter(d => d.type == 'network')"
-              :key="d.id"
-              :value="d.id"
-            >
+            <option v-for="d in groups.filter(d => d.type == 'network')" :key="d.id" :value="d.id">
               {{ `${d.name}${groupStore.notFoundDrivers.includes(d.id) ? ' ⚠' : ''}` }}
             </option>
           </select>
@@ -303,11 +307,7 @@ async function handleSubmit() {
 
           <select name="display" class="w-full rounded-lg ps-3 pe-9 pt-5 pb-1">
             <option>{{ $t('common.pleaseSelect') }}</option>
-            <option
-              v-for="d in groupStore.groups.filter(d => d.type == 'display')"
-              :key="d.id"
-              :value="d.id"
-            >
+            <option v-for="d in groups.filter(d => d.type == 'display')" :key="d.id" :value="d.id">
               {{ `${d.name}${groupStore.notFoundDrivers.includes(d.id) ? ' ⚠' : ''}` }}
             </option>
           </select>
@@ -323,10 +323,7 @@ async function handleSubmit() {
           </label>
 
           <div class="h-full overflow-y-scroll rounded-lg border border-apple-green-600 px-2 pt-3">
-            <template
-              v-for="d in groupStore.groups.filter(d => d.type == 'miscellaneous')"
-              :key="d.id"
-            >
+            <template v-for="d in groups.filter(d => d.type == 'miscellaneous')" :key="d.id">
               <label class="flex w-full cursor-pointer items-center select-none">
                 <input
                   type="checkbox"

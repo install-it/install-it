@@ -268,6 +268,24 @@ function handleSubmit() {
           </div>
         </div>
       </section>
+
+      <section>
+        <p class="mb-2 font-bold">{{ $t('setting.installOption') }}</p>
+
+        <div class="flex flex-col gap-y-3">
+          <div class="flex">
+            <label class="flex w-full cursor-pointer items-center select-none">
+              <input
+                type="checkbox"
+                name="hide_not_found"
+                v-model="settings.hide_not_found"
+                class="checkbox me-1.5 checkbox-primary"
+              />
+              {{ $t('setting.hideNotFound') }}
+            </label>
+          </div>
+        </div>
+      </section>
     </div>
 
     <div class="mt-6">
