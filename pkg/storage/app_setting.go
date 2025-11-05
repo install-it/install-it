@@ -12,6 +12,7 @@ type AppSetting struct {
 	Language           string        `json:"language"`
 	DriverDownloadUrl  string        `json:"driver_download_url"`
 	AutoCheckUpdate    bool          `json:"auto_check_update"`
+	HideNotFound       bool          `json:"hide_not_found"`
 }
 
 type SuccessAction string
