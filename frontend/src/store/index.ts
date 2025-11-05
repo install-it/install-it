@@ -45,8 +45,6 @@ export const useDriverGroupStore = defineStore('driverGroup', () => {
   return {
     groups,
     notFoundDrivers,
-    isAllDriversExist: (g: storage.DriverGroup) =>
-      g.drivers.flatMap(d => d.id).every(id => !notFoundDrivers.value.includes(id)),
     editor: (id: string | null | undefined, defaultType?: storage.DriverType) => {
       const groupClone = ref<storage.DriverGroup>(
         structuredClone(
