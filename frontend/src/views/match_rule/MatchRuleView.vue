@@ -8,6 +8,11 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
 
 <template>
   <div class="flex h-full flex-col gap-y-2">
+    <div>
+      <h1 class="font-bold">{{ $t('matchRule.matchRule') }}</h1>
+      <p class="text-xs">{{ $t('matchRule.matchRuleHelp') }}</p>
+    </div>
+
     <div class="flex min-h-48 grow flex-col overflow-y-scroll rounded-md p-1.5 shadow-md">
       <div
         v-for="rs in ruleStore.ruleSets"
@@ -144,7 +149,7 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
     </div>
 
     <div class="flex justify-end gap-x-3">
-      <button class="btn btn-primary">
+      <button class="btn btn-sm btn-primary">
         <RouterLink :to="{ path: '/match-rules/create' }">
           {{ $t('common.create') }}
         </RouterLink>
