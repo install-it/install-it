@@ -26,9 +26,7 @@ const [groupStore, settingStore, ruleStore] = [
 /** Driver groups with conditional exclusion based on app configuration */
 const groups = computed(() =>
   settingStore.settings.hide_not_found
-    ? groupStore.groups.filter(g =>
-        g.drivers.flatMap(d => d.id).every(id => !groupStore.notFoundDrivers.includes(id))
-      )
+    ? groupStore.groups.filter(g => groupStore.isAllDriversExist(g))
     : groupStore.groups
 )
 
@@ -294,7 +292,7 @@ async function handleSubmit() {
           <select name="network" class="w-full rounded-lg ps-3 pe-9 pt-5 pb-1">
             <option>{{ $t('common.pleaseSelect') }}</option>
             <option v-for="g in groups.filter(g => g.type == 'network')" :key="g.id" :value="g.id">
-              {{ g.name }}
+              {{ `${g.name}${groupStore.isAllDriversExist(g) ? '' : ' ⚠'}` }}
             </option>
           </select>
         </div>
@@ -309,7 +307,7 @@ async function handleSubmit() {
           <select name="display" class="w-full rounded-lg ps-3 pe-9 pt-5 pb-1">
             <option>{{ $t('common.pleaseSelect') }}</option>
             <option v-for="g in groups.filter(g => g.type == 'display')" :key="g.id" :value="g.id">
-              {{ g.name }}
+              {{ `${g.name}${groupStore.isAllDriversExist(g) ? '' : ' ⚠'}` }}
             </option>
           </select>
         </div>
@@ -332,7 +330,7 @@ async function handleSubmit() {
                   class="checkbox me-1.5 checkbox-sm checkbox-primary"
                   :value="g.id"
                 />
-                {{ g.name }}
+                {{ `${g.name}${groupStore.isAllDriversExist(g) ? '' : ' ⚠'}` }}
               </label>
             </template>
           </div>
