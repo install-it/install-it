@@ -146,7 +146,7 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
     <div class="flex justify-end gap-x-3">
       <button class="btn btn-primary">
         <RouterLink :to="{ path: '/match-rules/create' }">
-          {{ $t('matchRule.createRule') }}
+          {{ $t('common.create') }}
         </RouterLink>
       </button>
     </div>
