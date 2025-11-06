@@ -38,6 +38,8 @@
     "editDriver": "Edit Driver",
     "incompatibleForNewHelp": "The newly created driver will appear in \"Incompatible With\" only after you submit the changes.",
     "incompatibleWith": "Incompatible With",
+    "installOption": "Install Option",
+    "installOptionHelp": "Create options for installers or commands.",
     "manualInput": "Manual",
     "minExecuteTime": "Execution Time (sec)",
     "minExecuteTimeHelp": "If the execution time is less than the specificied, the execution will be treated as failed.",
