@@ -11,32 +11,39 @@ const reordering = ref(false)
 
 <template>
   <div class="flex h-full flex-col gap-y-2">
-    <div class="flex list-none flex-row gap-x-3 text-center">
-      <router-link
-        :to="{ path: '/drivers' }"
-        class="w-full rounded-sm py-3 text-xs font-bold uppercase shadow-lg"
-        :class="{
-          'bg-white text-half-baked-600': $route.query.type != undefined,
-          'bg-half-baked-600 text-white': $route.query.type == undefined
-        }"
-        draggable="false"
-      >
-        {{ $t(`common.all`) }}
-      </router-link>
+    <div class="flex">
+      <div class="w-2/3">
+        <h1 class="font-bold">{{ $t('driverForm.installOption') }}</h1>
+        <p class="text-xs">{{ $t('driverForm.installOptionHelp') }}</p>
+      </div>
 
-      <router-link
-        v-for="type in storage.DriverType"
-        :key="type"
-        :to="{ path: '/drivers', query: { type: type } }"
-        class="w-full rounded-sm py-3 text-xs font-bold uppercase shadow-lg"
-        :class="{
-          'bg-white text-half-baked-600': $route.query.type !== type,
-          'bg-half-baked-600 text-white': $route.query.type === type
-        }"
-        draggable="false"
-      >
-        {{ $t(`driverCatetory.${type}`) }}
-      </router-link>
+      <div class="flex w-1/3 flex-wrap justify-center gap-0.5 px-0.5 text-xs select-none">
+        <router-link
+          :to="{ path: '/drivers' }"
+          class="flex-1/3 truncate rounded-sm text-center font-bold uppercase shadow-xs"
+          :class="{
+            'bg-white text-half-baked-600': $route.query.type != undefined,
+            'bg-half-baked-600 text-white': $route.query.type == undefined
+          }"
+          draggable="false"
+        >
+          {{ $t(`common.all`) }}
+        </router-link>
+
+        <router-link
+          v-for="type in storage.DriverType"
+          :key="type"
+          :to="{ path: '/drivers', query: { type: type } }"
+          class="flex-1/3 truncate rounded-sm text-center font-bold uppercase shadow-xs"
+          :class="{
+            'bg-white text-half-baked-600': $route.query.type !== type,
+            'bg-half-baked-600 text-white': $route.query.type === type
+          }"
+          draggable="false"
+        >
+          {{ $t(`driverCatetory.${type}`) }}
+        </router-link>
+      </div>
     </div>
 
     <div class="flex min-h-48 grow flex-col overflow-y-scroll rounded-md p-1.5 shadow-md">
@@ -202,7 +209,7 @@ const reordering = ref(false)
       <button
         v-show="groupStore.groups?.filter(d => d.type == $route.query.type).length > 1"
         type="button"
-        class="btn text-white"
+        class="btn text-white btn-sm"
         :style="
           reordering
             ? '--btn-color: var(--color-apple-green-800); animation: var(--animate-blink-75);'
@@ -213,7 +220,7 @@ const reordering = ref(false)
         {{ reordering ? $t('driverForm.view') : $t('driverForm.order') }}
       </button>
 
-      <button class="btn btn-primary">
+      <button class="btn btn-sm btn-primary">
         <RouterLink :to="{ path: '/drivers/create', query: { type: $route.query.type } }">
           {{ $t('common.create') }}
         </RouterLink>

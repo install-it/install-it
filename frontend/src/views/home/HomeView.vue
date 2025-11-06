@@ -342,7 +342,7 @@ async function handleSubmit() {
 
     <div class="flex gap-x-6">
       <div class="flex flex-col">
-        <p class="font-semibold">{{ $t('installOption.title') }}</p>
+        <p class="font-semibold">{{ $t('installSetting.title') }}</p>
 
         <div class="flex flex-1 flex-col justify-around">
           <div class="flex gap-x-4">
@@ -353,7 +353,7 @@ async function handleSubmit() {
                 v-model="settingStore.settings.create_partition"
                 class="checkbox checkbox-sm checkbox-primary"
               />
-              {{ $t('installOption.createPartition') }}
+              {{ $t('installSetting.createPartition') }}
             </label>
 
             <label class="flex cursor-pointer items-center gap-x-1.5 select-none">
@@ -363,7 +363,7 @@ async function handleSubmit() {
                 v-model="settingStore.settings.parallel_install"
                 class="checkbox checkbox-sm checkbox-primary"
               />
-              {{ $t('installOption.parallelInstall') }}
+              {{ $t('installSetting.parallelInstall') }}
             </label>
           </div>
 
@@ -375,7 +375,7 @@ async function handleSubmit() {
                 v-model="settingStore.settings.set_password"
                 class="checkbox checkbox-sm checkbox-primary"
               />
-              {{ $t('installOption.setPassword') }}
+              {{ $t('installSetting.setPassword') }}
             </label>
 
             <input
@@ -392,7 +392,7 @@ async function handleSubmit() {
       <div class="flex grow flex-col justify-between">
         <div>
           <label class="mb-1 block text-sm text-gray-900">
-            {{ $t('installOption.successAction') }}
+            {{ $t('installSetting.successAction') }}
           </label>
 
           <select
@@ -412,7 +412,7 @@ async function handleSubmit() {
             class="btn border-2 btn-outline btn-neutral"
             @click="selectMatchedOptions"
           >
-            配對
+            {{ $t('matchRule.match') }}
           </button>
 
           <button
@@ -425,11 +425,11 @@ async function handleSubmit() {
               }
             "
           >
-            {{ $t('installOption.reset') }}
+            {{ $t('installSetting.reset') }}
           </button>
 
           <button class="btn btn-secondary" @click="handleSubmit">
-            {{ $t('installOption.execute') }}
+            {{ $t('installSetting.execute') }}
           </button>
         </div>
       </div>
