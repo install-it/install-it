@@ -77,7 +77,7 @@ const filteredGroups = computed(() => {
         v-show="
           searchPhrase === '' ||
           'set password'.includes(searchPhrase) ||
-          $t('installOption.setPassword').includes(searchPhrase)
+          $t('installSetting.setPassword').includes(searchPhrase)
         "
       >
         <label class="flex w-full cursor-pointer items-center select-none">
@@ -91,7 +91,7 @@ const filteredGroups = computed(() => {
             &nbsp;
           </span>
           <span class="line-clamp-2">
-            {{ $t('installOption.setPassword') }}
+            {{ $t('installSetting.setPassword') }}
           </span>
         </label>
       </li>
@@ -102,7 +102,7 @@ const filteredGroups = computed(() => {
         v-show="
           searchPhrase === '' ||
           'create partition'.includes(searchPhrase) ||
-          $t('installOption.createPartition').includes(searchPhrase)
+          $t('installSetting.createPartition').includes(searchPhrase)
         "
       >
         <label class="flex w-full cursor-pointer items-center select-none">
@@ -116,7 +116,7 @@ const filteredGroups = computed(() => {
             &nbsp;
           </span>
           <span class="line-clamp-2">
-            {{ $t('installOption.createPartition') }}
+            {{ $t('installSetting.createPartition') }}
           </span>
         </label>
       </li>
