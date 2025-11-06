@@ -161,6 +161,7 @@ export namespace storage {
 	    language: string;
 	    driver_download_url: string;
 	    auto_check_update: boolean;
+	    hide_not_found: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new AppSetting(source);
@@ -179,6 +180,7 @@ export namespace storage {
 	        this.language = source["language"];
 	        this.driver_download_url = source["driver_download_url"];
 	        this.auto_check_update = source["auto_check_update"];
+	        this.hide_not_found = source["hide_not_found"];
 	    }
 	}
 	export class Driver {
