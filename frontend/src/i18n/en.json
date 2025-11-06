@@ -200,6 +200,7 @@
     "readAppSettingFailed": "Failed to read app settings, reconfigure might solve the error.",
     "readDriverFailed": "Failed to read drivers list, reconfigure might solve the error.",
     "readInputFailed": "Failed to read inputs due to software errors.",
+    "saved": "Saved",
     "updateAvailable": "Updates Available.",
     "updated": "Updated."
   }

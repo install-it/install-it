@@ -196,7 +196,7 @@
     "checkUpdateFailed": "因為未能獲取程式版本資訊，所以沒法檢查更新。",
     "downloadingUpdater": "下載更新程式中，完成後程序將會被關閉及更新。",
     "enterExportPath": "請先輸入儲存匯出檔案的路徑。",
-    "failedToSave": "儲存失敗。",
+    "failedToSave": "保存失敗。",
     "finished": "完成",
     "invalidZipFile": "非有效的檔案。",
     "noInputWarning": "請先選擇軀動或工作。",
@@ -206,6 +206,7 @@
     "readAppSettingFailed": "無法讀預設選項資料，重新設定或可解決問題。",
     "readDriverFailed": "無法讀取軀動資料，重新設定或可解決問題。",
     "readInputFailed": "程式出錯，無法取得輸入。",
+    "saved": "已保存",
     "unsupportUrlProtocal": "不支援輸入的 URL。",
     "updateAvailable": "有更新可供下載。",
     "updated": "已更新。"
