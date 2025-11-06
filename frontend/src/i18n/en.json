@@ -106,6 +106,7 @@
     "hitAllPatterns": "Hit All Patterns",
     "hitAllRule": "Hit All Rules",
     "matchRule": "Match Rule",
+    "matchRuleHelp": "Automatically selects the appropriate option based on system device names.",
     "matchTo": "Match To",
     "multiPatternMatching": "Multi-pattern Matching",
     "multiPatternMatchingHelp": "Require hitting all partterns",

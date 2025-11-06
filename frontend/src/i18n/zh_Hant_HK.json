@@ -108,6 +108,7 @@
     "hitAllPatterns": "符合所有匹配值",
     "hitAllRule": "符合所有規則",
     "matchRule": "配對規則",
+    "matchRuleHelp": "以系統裝置名稱進行比對，自動配對並選擇最合適的選項。",
     "matchTo": "配對至",
     "multiPatternMatching": "多匹配值配對",
     "multiPatternMatchingHelp": "勾選代表需符合所有匹配值才算命中。",
