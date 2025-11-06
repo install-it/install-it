@@ -88,7 +88,7 @@
     "usingBuiltInWebView2": "Using OS built-in WebView2",
     "version": "Version"
   },
-  "installOption": {
+  "installSetting": {
     "createPartition": "Create Partitions",
     "execute": "Execute",
     "parallelInstall": "Parallel",

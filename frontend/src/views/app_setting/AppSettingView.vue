@@ -155,7 +155,7 @@ function handleSubmit() {
                 v-model="settings.create_partition"
                 class="checkbox me-1.5 checkbox-primary"
               />
-              {{ $t('installOption.createPartition') }}
+              {{ $t('installSetting.createPartition') }}
             </label>
           </div>
 
@@ -168,7 +168,7 @@ function handleSubmit() {
                   v-model="settings.set_password"
                   class="checkbox me-1.5 checkbox-primary"
                 />
-                {{ $t('installOption.setPassword') }}
+                {{ $t('installSetting.setPassword') }}
               </label>
             </div>
 
@@ -187,7 +187,7 @@ function handleSubmit() {
 
       <section>
         <p class="mb-2 font-bold">
-          {{ $t('setting.installOption') }}
+          {{ $t('setting.installSetting') }}
         </p>
 
         <div class="flex flex-col gap-y-3">
@@ -199,13 +199,13 @@ function handleSubmit() {
                 v-model="settings.parallel_install"
                 class="checkbox me-1.5 checkbox-primary"
               />
-              {{ $t('installOption.parallelInstall') }}
+              {{ $t('installSetting.parallelInstall') }}
             </label>
           </div>
 
           <div>
             <label class="mb-2 block text-gray-900">
-              {{ $t('installOption.successAction') }}
+              {{ $t('installSetting.successAction') }}
             </label>
             <select
               name="success_action"

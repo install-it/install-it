@@ -90,7 +90,7 @@
     "usingBuiltInWebView2": "正使用系統預裝的 WebView2",
     "version": "版本"
   },
-  "installOption": {
+  "installSetting": {
     "createPartition": "建立磁區",
     "execute": "執行",
     "parallelInstall": "同步安裝",
