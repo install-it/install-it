@@ -61,7 +61,7 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
           @submit.prevent="
             () => {
               if (input.values.length == 0) {
-                $toast.warning(t('matchRule.addAtLeastOnePattern'))
+                $toast.warning(t('toast.addAtLeastOnePattern'))
               } else {
                 $emit('submit', input)
                 frame?.hide()
