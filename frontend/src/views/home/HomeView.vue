@@ -412,7 +412,7 @@ async function handleSubmit() {
             class="btn border-2 btn-outline btn-neutral"
             @click="selectMatchedOptions"
           >
-            配對
+            {{ $t('matchRule.match') }}
           </button>
 
           <button
