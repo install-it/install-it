@@ -7,6 +7,7 @@
     "clone": "複製",
     "confirm": "確定",
     "cpu": "中央處理器",
+    "create": "建立",
     "delete": "刪除",
     "edit": "編輯",
     "enable": "啟用",
@@ -32,7 +33,6 @@
     "allowedExitCodeHelp": "安裝程序返回所輸入的狀態代碼時，將會視作安裝成功。",
     "argument": "參數",
     "commaSeparated": "以逗號分隔多個輸入。",
-    "create": "新增",
     "createDriver": "新增軀動程式",
     "driver": "軀動程式",
     "driverGroupHelp": "你可以加入多於一個安裝程式，加入至同一組的安裝程式在選擇後，將會同時執行。",
@@ -184,7 +184,7 @@
     "shutdown": "關機"
   },
   "task": {
-    "createPartition": "建立磁碟分區及掛載檔案系統",
+    "createPartitions": "建立磁碟分區及掛載檔案系統",
     "setPassword": "設定密碼"
   },
   "toast": {

@@ -215,7 +215,7 @@ const reordering = ref(false)
 
       <button class="btn btn-primary">
         <RouterLink :to="{ path: '/drivers/create', query: { type: $route.query.type } }">
-          {{ $t('driverForm.create') }}
+          {{ $t('common.create') }}
         </RouterLink>
       </button>
     </div>
