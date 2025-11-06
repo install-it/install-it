@@ -184,7 +184,7 @@
     "shutdown": "關機"
   },
   "task": {
-    "createPartition": "建立磁碟分區及掛載檔案系統",
+    "createPartitions": "建立磁碟分區及掛載檔案系統",
     "setPassword": "設定密碼"
   },
   "toast": {
