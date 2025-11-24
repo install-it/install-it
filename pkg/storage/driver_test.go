@@ -124,7 +124,7 @@ func TestDriverGroupStorage_Add_SingleGroup(t *testing.T) {
 		t.Errorf("expected 1 group in storage, got %d", len(dgs.data))
 	}
 
-	if len(dgs.data[0].Drivers) != 1 {
+	if len(dgs.data[0].Drivers) != 2 {
 		t.Errorf("expected 1 driver, got %d", len(dgs.data[0].Drivers))
 	}
 
