@@ -10,7 +10,23 @@ permissions:
   contents: write
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - name: Run tests
+        run: go test ./pkg/...
+
   build:
+    needs: test
     runs-on: windows-latest
     strategy:
       matrix:
@@ -76,6 +92,7 @@ jobs:
           path: build/bin/*.zip
 
   build-updater:
+    needs: test
     runs-on: windows-latest
     strategy:
       matrix:
