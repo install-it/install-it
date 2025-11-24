@@ -13,13 +13,11 @@ import (
 type Store interface {
 	Read(v any) error
 	Write(v any) error
-	Modified() bool
 	Exist() bool
 }
 
 type FileStore struct {
 	Path string
-	stat os.FileInfo
 }
 
 func (s *FileStore) Read(v any) error {
@@ -44,29 +42,60 @@ func (s *FileStore) Write(v any) error {
 		return err
 	}
 
-	if err := os.WriteFile(s.Path, bytes, os.ModePerm); err == nil {
-		s.stat, _ = os.Stat(s.Path)
-		return nil
-	} else {
+	if err := os.WriteFile(s.Path, bytes, os.ModePerm); err != nil {
 		return err
 	}
-}
-
-func (s FileStore) Modified() bool {
-	if s.stat == nil {
-		return true
-	}
-
-	if stat, err := os.Stat(s.Path); err != nil {
-		return false
-	} else {
-		return stat.ModTime().After(s.stat.ModTime())
-	}
+	return nil
 }
 
 func (s FileStore) Exist() bool {
 	_, err := os.Stat(s.Path)
 	return err == nil
+}
+
+// MemoryStore implements Store interface for in-memory storage with no persistent mechanism
+type MemoryStore struct {
+	data  any
+	mutex sync.RWMutex
+}
+
+func (m *MemoryStore) Read(v any) error {
+	m.mutex.RLock()
+	defer m.mutex.RUnlock()
+
+	if m.data == nil {
+		return nil
+	}
+
+	// Marshal and unmarshal to simulate file storage behavior
+	bytes, err := json.Marshal(m.data)
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(bytes, v); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *MemoryStore) Write(v any) error {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	// Validate by marshaling
+	if _, err := json.Marshal(v); err != nil {
+		return err
+	}
+
+	m.data = v
+	return nil
+}
+
+func (m *MemoryStore) Exist() bool {
+	m.mutex.RLock()
+	defer m.mutex.RUnlock()
+	return m.data != nil
 }
 
 type HasId interface {

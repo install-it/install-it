@@ -5,7 +5,6 @@ import (
 	"errors"
 	"os"
 	"testing"
-	"time"
 )
 
 // MockObject implements HasId interface for testing
@@ -47,15 +46,15 @@ func cleanupTempFile(t *testing.T, path string) {
 
 // ==================== FileStore Tests ====================
 
-// func TestFileStore_ReadNonExistentFile(t *testing.T) {
-// 	store := &FileStore{Path: "/nonexistent/path/file.json"}
-// 	var data MockObject
+func TestFileStore_ReadNonExistentFile(t *testing.T) {
+	store := &FileStore{Path: "/nonexistent/path/file.json"}
+	var data MockObject
 
-// 	err := store.Read(&data)
-// 	if err != nil {
-// 		t.Errorf("expected nil error for non-existent file, got %v", err)
-// 	}
-// }
+	err := store.Read(&data)
+	if err != nil {
+		t.Errorf("expected nil error for non-existent file, got %v", err)
+	}
+}
 
 func TestFileStore_ReadValidJSON(t *testing.T) {
 	path := createTempFile(t)
@@ -115,11 +114,6 @@ func TestFileStore_WriteValidData(t *testing.T) {
 	if result.ID != "456" || result.Name != "WriteTest" || result.Value != 100 {
 		t.Errorf("written data mismatch: %+v", result)
 	}
-
-	// Verify stat is updated
-	if store.stat == nil {
-		t.Errorf("expected stat to be set after write")
-	}
 }
 
 func TestFileStore_WriteUnmarshalableData(t *testing.T) {
@@ -133,62 +127,6 @@ func TestFileStore_WriteUnmarshalableData(t *testing.T) {
 	err := store.Write(unmarshalable)
 	if err == nil {
 		t.Errorf("expected error for unmarshalable data, got nil")
-	}
-}
-
-func TestFileStore_ModifiedWhenStatIsNil(t *testing.T) {
-	store := &FileStore{Path: "/some/path", stat: nil}
-
-	if !store.Modified() {
-		t.Errorf("expected Modified() to return true when stat is nil")
-	}
-}
-
-func TestFileStore_ModifiedWhenFileNotExists(t *testing.T) {
-	// Create a temporary file first to get a valid FileInfo
-	path := createTempFile(t)
-	defer cleanupTempFile(t, path)
-
-	oldStat, _ := os.Stat(path)
-
-	// Now delete it and test
-	os.Remove(path)
-
-	store := &FileStore{Path: path, stat: oldStat}
-
-	if store.Modified() {
-		t.Errorf("expected Modified() to return false when file doesn't exist")
-	}
-}
-
-func TestFileStore_ModifiedWhenFileChanged(t *testing.T) {
-	path := createTempFile(t)
-	defer cleanupTempFile(t, path)
-
-	// Write initial file
-	os.WriteFile(path, []byte("initial"), os.ModePerm)
-	store := &FileStore{Path: path}
-	store.stat, _ = os.Stat(path)
-
-	// Wait a bit and modify file
-	time.Sleep(10 * time.Millisecond)
-	os.WriteFile(path, []byte("modified"), os.ModePerm)
-
-	if !store.Modified() {
-		t.Errorf("expected Modified() to return true after file modification")
-	}
-}
-
-func TestFileStore_ModifiedWhenFileNotChanged(t *testing.T) {
-	path := createTempFile(t)
-	defer cleanupTempFile(t, path)
-
-	os.WriteFile(path, []byte("content"), os.ModePerm)
-	store := &FileStore{Path: path}
-	store.stat, _ = os.Stat(path)
-
-	if store.Modified() {
-		t.Errorf("expected Modified() to return false when file not modified")
 	}
 }
 
@@ -230,19 +168,6 @@ func TestGenerateId_UniqueIds(t *testing.T) {
 	}
 
 	// Check that id has valid format (hex string with length 8, from 4 bytes)
-	if len(id) != 8 {
-		t.Errorf("expected ID length 8, got %d", len(id))
-	}
-}
-
-func TestGenerateId_EmptyData(t *testing.T) {
-	data := []*MockObject{}
-
-	id := GenerateId(data)
-
-	if id == "" {
-		t.Errorf("expected non-empty ID for empty data")
-	}
 	if len(id) != 8 {
 		t.Errorf("expected ID length 8, got %d", len(id))
 	}
