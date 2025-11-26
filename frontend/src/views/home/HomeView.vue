@@ -292,7 +292,7 @@ async function handleSubmit() {
           <select name="network" class="w-full rounded-lg ps-3 pe-9 pt-5 pb-1">
             <option>{{ $t('common.pleaseSelect') }}</option>
             <option v-for="g in groups.filter(g => g.type == 'network')" :key="g.id" :value="g.id">
-              {{ `${groupStore.isAllDriversExist(g) ? '' : '� '}${g.name}` }}
+              {{ g.name }}
             </option>
           </select>
         </div>
@@ -307,7 +307,7 @@ async function handleSubmit() {
           <select name="display" class="w-full rounded-lg ps-3 pe-9 pt-5 pb-1">
             <option>{{ $t('common.pleaseSelect') }}</option>
             <option v-for="g in groups.filter(g => g.type == 'display')" :key="g.id" :value="g.id">
-              {{ `${groupStore.isAllDriversExist(g) ? '' : '� '}${g.name}` }}
+              {{ g.name }}
             </option>
           </select>
         </div>
@@ -330,7 +330,7 @@ async function handleSubmit() {
                   class="checkbox me-1.5 checkbox-sm checkbox-primary"
                   :value="g.id"
                 />
-                {{ `${groupStore.isAllDriversExist(g) ? '' : '� '}${g.name}` }}
+                {{ g.name }}
               </label>
             </template>
           </div>
