@@ -1,12 +1,26 @@
 <script setup lang="ts">
+import { useScrollPosition } from '@/composables/useScrollPosition'
 import { useDriverGroupStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
 import * as driverGroupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
 import * as groupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const groupStore = useDriverGroupStore()
+
 const reordering = ref(false)
+
+const { scrollContainer } = useScrollPosition('driverGroup', () =>
+  ['/drivers/edit', '/drivers/create'].some(
+    v =>
+      (router.options.history.state.forward ?? router.options.history.state.back)
+        ?.toString()
+        .includes(v) ?? false
+  )
+)
 </script>
 
 <template>
@@ -46,7 +60,10 @@ const reordering = ref(false)
       </div>
     </div>
 
-    <div class="flex min-h-48 grow flex-col overflow-y-scroll rounded-md p-1.5 shadow-md">
+    <div
+      class="flex min-h-48 grow flex-col overflow-y-scroll rounded-md p-1.5 shadow-md"
+      ref="scrollContainer"
+    >
       <div
         v-for="(g, i) in groupStore.groups.filter(
           g => $route.query.type == undefined || g.type == $route.query.type
