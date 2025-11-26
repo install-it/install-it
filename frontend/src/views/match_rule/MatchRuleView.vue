@@ -1,9 +1,22 @@
 <script setup lang="ts">
+import { useScrollPosition } from '@/composables/useScrollPosition'
 import { useDriverGroupStore, useMatchRuleStore } from '@/store'
 // import { storage } from '@/wailsjs/go/models'
 import * as matchRuleStorage from '@/wailsjs/go/storage/MatchRuleStorage'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
+
+const { scrollContainer } = useScrollPosition('matchRule', () =>
+  ['/match-rules/edit', '/match-rules/create'].some(
+    v =>
+      (router.options.history.state.forward ?? router.options.history.state.back)
+        ?.toString()
+        .includes(v) ?? false
+  )
+)
 </script>
 
 <template>
@@ -13,7 +26,10 @@ const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
       <p class="text-xs">{{ $t('matchRule.matchRuleHelp') }}</p>
     </div>
 
-    <div class="flex min-h-48 grow flex-col overflow-y-scroll rounded-md p-1.5 shadow-md">
+    <div
+      class="flex min-h-48 grow flex-col overflow-y-scroll rounded-md p-1.5 shadow-md"
+      ref="scrollContainer"
+    >
       <div
         v-for="rs in ruleStore.ruleSets"
         :key="rs.id"
