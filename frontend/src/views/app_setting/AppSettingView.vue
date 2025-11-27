@@ -94,9 +94,9 @@ function handleSubmit() {
 
             <label class="flex w-full cursor-pointer items-center select-none">
               <input
+                v-model="settings.auto_check_update"
                 type="checkbox"
                 name="auto_check_update"
-                v-model="settings.auto_check_update"
                 class="checkbox me-1.5 checkbox-primary"
               />
               {{ $t('common.enable') }}
@@ -109,11 +109,11 @@ function handleSubmit() {
             </label>
 
             <input
+              v-model="settings.success_action_delay"
               type="number"
               name="success_action_delay"
               min="0"
               step="0"
-              v-model="settings.success_action_delay"
               class="input w-20 shadow-xs input-accent"
               required
             />
@@ -130,9 +130,9 @@ function handleSubmit() {
             <label class="mb-2 block text-gray-900">{{ $t('setting.importUrl') }}</label>
 
             <input
+              v-model="settings.driver_download_url"
               type="url"
               name="driver_download_url"
-              v-model="settings.driver_download_url"
               class="input w-full shadow-xs input-accent"
             />
           </div>
@@ -150,9 +150,9 @@ function handleSubmit() {
           <div class="flex">
             <label class="flex w-full cursor-pointer items-center select-none">
               <input
+                v-model="settings.create_partition"
                 type="checkbox"
                 name="create_partition"
-                v-model="settings.create_partition"
                 class="checkbox me-1.5 checkbox-primary"
               />
               {{ $t('installSetting.createPartition') }}
@@ -163,9 +163,9 @@ function handleSubmit() {
             <div class="flex">
               <label class="flex w-full cursor-pointer items-center select-none">
                 <input
+                  v-model="settings.set_password"
                   type="checkbox"
                   name="set_password"
-                  v-model="settings.set_password"
                   class="checkbox me-1.5 checkbox-primary"
                 />
                 {{ $t('installSetting.setPassword') }}
@@ -174,9 +174,9 @@ function handleSubmit() {
 
             <div class="flex shrink">
               <input
+                v-model="settings.password"
                 type="text"
                 name="password"
-                v-model="settings.password"
                 class="input input-accent"
                 :disabled="!settings.set_password"
               />
@@ -194,9 +194,9 @@ function handleSubmit() {
           <div class="flex">
             <label class="flex w-full cursor-pointer items-center select-none">
               <input
+                v-model="settings.parallel_install"
                 type="checkbox"
                 name="parallel_install"
-                v-model="settings.parallel_install"
                 class="checkbox me-1.5 checkbox-primary"
               />
               {{ $t('installSetting.parallelInstall') }}
@@ -208,8 +208,8 @@ function handleSubmit() {
               {{ $t('installSetting.successAction') }}
             </label>
             <select
-              name="success_action"
               v-model="settings.success_action"
+              name="success_action"
               class="select select-accent"
             >
               <option v-for="action in storage.SuccessAction" :key="action" :value="action">
@@ -228,7 +228,7 @@ function handleSubmit() {
         </p>
 
         <div>
-          <select name="language" v-model="settings.language" class="select select-accent">
+          <select v-model="settings.language" name="language" class="select select-accent">
             <option value="en">English</option>
             <option value="zh_Hant_HK">繁體中文</option>
           </select>
@@ -244,9 +244,9 @@ function handleSubmit() {
           <div class="flex">
             <label class="flex w-full cursor-pointer items-center select-none">
               <input
+                v-model="settings.filter_miniport_nic"
                 type="checkbox"
                 name="filter_miniport_nic"
-                v-model="settings.filter_miniport_nic"
                 class="checkbox me-1.5 checkbox-primary"
               />
               {{ $t('setting.filterMiniportNic') }}
@@ -258,9 +258,9 @@ function handleSubmit() {
           <div class="flex">
             <label class="flex w-full cursor-pointer items-center select-none">
               <input
+                v-model="settings.filter_microsoft_nic"
                 type="checkbox"
                 name="filter_microsoft_nic"
-                v-model="settings.filter_microsoft_nic"
                 class="checkbox me-1.5 checkbox-primary"
               />
               {{ $t('setting.filterMicorsoftNic') }}
@@ -276,9 +276,9 @@ function handleSubmit() {
           <div class="flex">
             <label class="flex w-full cursor-pointer items-center select-none">
               <input
+                v-model="settings.hide_not_found"
                 type="checkbox"
                 name="hide_not_found"
-                v-model="settings.hide_not_found"
                 class="checkbox me-1.5 checkbox-primary"
               />
               {{ $t('setting.hideNotFound') }}

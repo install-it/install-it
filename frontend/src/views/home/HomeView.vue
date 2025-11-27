@@ -186,7 +186,7 @@ async function handleSubmit() {
       </template>
     </div>
 
-    <form class="mt-3 flex h-28 gap-x-3" ref="form">
+    <form ref="form" class="mt-3 flex h-28 gap-x-3">
       <div class="flex flex-1 flex-col justify-between">
         <div class="relative w-full">
           <label
@@ -254,9 +254,9 @@ async function handleSubmit() {
           <div class="flex gap-x-4">
             <label class="flex cursor-pointer items-center gap-x-1.5 select-none">
               <input
+                v-model="settingStore.settings.create_partition"
                 type="checkbox"
                 name="create_partition"
-                v-model="settingStore.settings.create_partition"
                 class="checkbox checkbox-sm checkbox-primary"
               />
               {{ $t('installSetting.createPartition') }}
@@ -264,9 +264,9 @@ async function handleSubmit() {
 
             <label class="flex cursor-pointer items-center gap-x-1.5 select-none">
               <input
+                v-model="settingStore.settings.parallel_install"
                 type="checkbox"
                 name="parallel_install"
-                v-model="settingStore.settings.parallel_install"
                 class="checkbox checkbox-sm checkbox-primary"
               />
               {{ $t('installSetting.parallelInstall') }}
@@ -276,18 +276,18 @@ async function handleSubmit() {
           <div class="flex gap-x-2">
             <label class="flex cursor-pointer items-center gap-x-1.5 select-none">
               <input
+                v-model="settingStore.settings.set_password"
                 type="checkbox"
                 name="set_password"
-                v-model="settingStore.settings.set_password"
                 class="checkbox checkbox-sm checkbox-primary"
               />
               {{ $t('installSetting.setPassword') }}
             </label>
 
             <input
+              v-model="settingStore.settings.password"
               type="text"
               name="password"
-              v-model="settingStore.settings.password"
               class="input input-sm max-w-28 input-accent"
               :disabled="!settingStore.settings.set_password"
             />
@@ -302,8 +302,8 @@ async function handleSubmit() {
           </label>
 
           <select
-            name="success_action"
             v-model="settingStore.settings.success_action"
+            name="success_action"
             class="select w-full select-accent"
           >
             <option v-for="action in storage.SuccessAction" :key="action" :value="action">

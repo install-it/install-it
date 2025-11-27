@@ -47,9 +47,9 @@ onBeforeMount(() => {
 
         <div class="flex w-full gap-x-2">
           <input
+            v-model="exportDirectory"
             type="url"
             name="export_directory"
-            v-model="exportDirectory"
             class="input grow input-accent"
           />
 
@@ -135,10 +135,10 @@ onBeforeMount(() => {
 
           <div class="flex w-full gap-x-2">
             <input
+              v-model="importInput.filePath"
               type="text"
               name="driver_download_url"
               placeholder="install-it.zip"
-              v-model="importInput.filePath"
               class="pointer-events-none input grow input-accent"
               :required="importInput.from == 'file'"
             />
@@ -169,9 +169,9 @@ onBeforeMount(() => {
 
           <div class="flex w-full gap-x-2">
             <input
+              v-model="importInput.url"
               type="url"
               placeholder="https://..."
-              v-model="importInput.url"
               class="input grow input-accent"
               :required="importInput.from == 'url'"
             />

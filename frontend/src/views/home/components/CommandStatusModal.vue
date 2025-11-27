@@ -158,7 +158,7 @@ async function handleAbort(process: Process) {
 </script>
 
 <template>
-  <ModalFrame :on-demand="true" :immediate="false" ref="frame">
+  <ModalFrame ref="frame" :on-demand="true" :immediate="false">
     <div class="w-[65vw] max-w-3xl">
       <!-- Modal content -->
       <div class="rounded-sm bg-white shadow-sm">
@@ -170,10 +170,10 @@ async function handleAbort(process: Process) {
           <button
             type="button"
             class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 enabled:hover:bg-gray-200 enabled:hover:text-gray-900"
-            @click="frame?.hide()"
             :disabled="
               processes.some(cmd => ['pending', 'running', 'aborting'].includes(cmd.status))
             "
+            @click="frame?.hide()"
           >
             <font-awesome-icon icon="fa-solid fa-xmark" />
           </button>
@@ -187,11 +187,11 @@ async function handleAbort(process: Process) {
         </div>
 
         <div
-          class="flex justify-end px-4 pb-2"
           v-show="
             processes.every(p => p.status.includes('ed')) &&
             processes.some(p => p.status != 'completed')
           "
+          class="flex justify-end px-4 pb-2"
         >
           <button
             class="btn font-normal btn-sm btn-secondary"
