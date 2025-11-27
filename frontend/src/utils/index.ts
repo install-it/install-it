@@ -1,3 +1,4 @@
+import type { storage } from '@/wailsjs/go/models'
 import * as libsysi from '@/wailsjs/go/sysinfo/SysInfo'
 import { marked } from 'marked'
 import * as semver from 'semver'
@@ -50,4 +51,35 @@ export async function getHardware() {
     nic: parts[4],
     storage: parts[5]
   }))
+}
+
+/**
+ * Tests whether the given input string satisfies the specified match rule.
+ */
+export function testMatchRule(rule: storage.Rule, input: string) {
+  input = rule.is_case_sensitive ? input : input.toLowerCase()
+  const values = rule.is_case_sensitive ? rule.values : rule.values.map(v => v.toLowerCase())
+  const hits = values.map((v: string): boolean => {
+    switch (rule.operator) {
+      case 'contain':
+        return input.includes(v)
+      case 'not_contain':
+        return !input.includes(v)
+      case 'equal':
+        return input === v
+      case 'not_equal':
+        return input !== v
+      case 'regex': {
+        try {
+          return new RegExp(v, rule.is_case_sensitive ? '' : 'i').test(input)
+        } catch {
+          return false
+        }
+      }
+      default:
+        return false
+    }
+  })
+
+  return rule.should_hit_all ? hits.every(Boolean) : hits.some(Boolean)
 }
