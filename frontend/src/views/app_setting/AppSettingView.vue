@@ -65,7 +65,7 @@ function handleSubmit() {
         class="px-4 py-2"
         :class="
           tabs[key as keyof typeof tabs]
-            ? '-mb-[2px] border-b-2 border-b-kashmir-blue-500 font-semibold'
+            ? '-mb-0.5 border-b-2 border-b-kashmir-blue-500 font-semibold'
             : ''
         "
         @click="

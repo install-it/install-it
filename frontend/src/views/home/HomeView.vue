@@ -225,7 +225,7 @@ async function handleSubmit() {
       <div class="flex flex-1">
         <div class="relative mb-3 h-full w-full">
           <label
-            class="pointer-events-none absolute top-1 left-3 origin-[0_0] -translate-y-[0.55rem] scale-[0.9] bg-white px-2 text-xs text-gray-500"
+            class="pointer-events-none absolute top-1 left-3 origin-top-left -translate-y-[0.55rem] scale-[0.9] bg-white px-2 text-xs text-gray-500"
           >
             {{ $t('driverCatetory.miscellaneous') }}
           </label>
