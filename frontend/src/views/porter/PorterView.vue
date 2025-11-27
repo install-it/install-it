@@ -32,6 +32,7 @@ onBeforeMount(() => {
   <div class="flex h-full flex-col gap-y-6">
     <div>
       <h1 class="text-xl font-bold">{{ $t('porter.title') }}</h1>
+
       <p class="text-gray-400">{{ $t('porter.titleHint') }}</p>
 
       <hr class="mt-2 -mb-3" />

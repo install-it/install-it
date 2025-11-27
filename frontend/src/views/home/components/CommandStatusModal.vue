@@ -10,6 +10,8 @@ import { useToast } from 'vue-toast-notification'
 import type { Command, Process } from '../types'
 import TaskStatus from './TaskStatus.vue'
 
+const emit = defineEmits<{ completed: [] }>()
+
 const frame = useTemplateRef('frame')
 
 defineExpose({
@@ -23,8 +25,6 @@ defineExpose({
   },
   hide: frame.value?.hide || (() => {})
 })
-
-const emit = defineEmits<{ completed: [] }>()
 
 const { t } = useI18n()
 
@@ -167,6 +167,7 @@ async function handleAbort(process: Process) {
           <h3 class="font-semibold">
             {{ $t('execute.title') }}
           </h3>
+
           <button
             type="button"
             class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 enabled:hover:bg-gray-200 enabled:hover:text-gray-900"

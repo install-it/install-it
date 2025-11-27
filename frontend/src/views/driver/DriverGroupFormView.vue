@@ -104,6 +104,7 @@ function handleSubmit(event: SubmitEvent) {
       <div class="grow">
         <fieldset class="fieldset">
           <legend class="fieldset-legend text-sm">{{ $t('driverForm.name') }}</legend>
+
           <input v-model="group.name" type="text" class="input w-full input-accent" required />
         </fieldset>
       </div>
@@ -117,8 +118,11 @@ function handleSubmit(event: SubmitEvent) {
           <div class="grid-rows grid text-sm">
             <div class="grid grid-cols-10 gap-2 border-y py-1.5">
               <div class="col-span-2">{{ $t('driverForm.name') }}</div>
+
               <div class="col-span-3">{{ $t('driverForm.path') }}</div>
+
               <div class="col-span-2">{{ $t('driverForm.argument') }}</div>
+
               <div class="col-span-2">{{ $t('driverForm.otherSetting') }}</div>
             </div>
 
@@ -175,6 +179,7 @@ function handleSubmit(event: SubmitEvent) {
                   <button type="button" :title="$t('common.edit')" @click="inputModal?.show(d)">
                     <font-awesome-icon icon="fa-solid fa-pen-to-square" />
                   </button>
+
                   <button
                     type="button"
                     :title="$t('common.delete')"
@@ -190,6 +195,7 @@ function handleSubmit(event: SubmitEvent) {
           <p class="text-hint">
             {{ $t('driverForm.driverGroupHelp') }}
           </p>
+
           <p v-show="groupEditor.modifiedDrivers.value" class="text-hint">
             {{ $t('driverForm.incompatibleForNewHelp') }}
           </p>

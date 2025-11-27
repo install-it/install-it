@@ -181,6 +181,7 @@ async function handleSubmit() {
             class="mb-1 h-5 skeleton"
             :style="{ width: `${Math.random() * (25 - 15) + 15}%` }"
           ></h2>
+
           <p class="h-5 skeleton" :style="{ width: `${Math.random() * (85 - 30) + 30}%` }"></p>
         </div>
       </template>
@@ -197,6 +198,7 @@ async function handleSubmit() {
 
           <select name="network" class="w-full rounded-lg ps-3 pe-9 pt-5 pb-1">
             <option>{{ $t('common.pleaseSelect') }}</option>
+
             <option v-for="g in groups.filter(g => g.type == 'network')" :key="g.id" :value="g.id">
               {{ g.name }}
             </option>
@@ -212,6 +214,7 @@ async function handleSubmit() {
 
           <select name="display" class="w-full rounded-lg ps-3 pe-9 pt-5 pb-1">
             <option>{{ $t('common.pleaseSelect') }}</option>
+
             <option v-for="g in groups.filter(g => g.type == 'display')" :key="g.id" :value="g.id">
               {{ g.name }}
             </option>

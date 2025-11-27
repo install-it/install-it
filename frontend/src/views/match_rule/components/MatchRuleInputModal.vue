@@ -5,6 +5,8 @@ import { ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import TaggedInput from './TaggedInput.vue'
 
+defineEmits<{ submit: [rules: { _id: number | undefined } & storage.Rule] }>()
+
 const { t } = useI18n()
 
 defineExpose({
@@ -22,8 +24,6 @@ defineExpose({
   },
   hide: () => frame.value?.hide()
 })
-
-defineEmits<{ submit: [rules: { _id: number | undefined } & storage.Rule] }>()
 
 const [frame, modalBody] = [useTemplateRef('frame'), useTemplateRef('modalBody')]
 
@@ -75,6 +75,7 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
                 <legend class="fieldset-legend text-sm">
                   {{ $t('matchRule.source') }}
                 </legend>
+
                 <select v-model="input.source" class="select select-accent" required>
                   <option v-for="s in storage.RuleSource" :key="s" :value="s">
                     {{ $t(`common.${s}`) }}
@@ -86,6 +87,7 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
                 <legend class="fieldset-legend text-sm">
                   {{ $t('matchRule.operator') }}
                 </legend>
+
                 <select v-model="input.operator" class="select select-accent" required>
                   <option v-for="o in storage.RuleOperator" :key="o" :value="o">
                     {{ $t(`matchRule.${o}`) }}
@@ -99,6 +101,7 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
                 <legend class="fieldset-legend text-sm">
                   {{ $t('matchRule.caseSensitive') }}
                 </legend>
+
                 <label class="flex cursor-pointer items-center select-none">
                   <input
                     v-model="input.is_case_sensitive"
@@ -114,6 +117,7 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
                 <legend class="fieldset-legend text-sm">
                   {{ $t('matchRule.multiPatternMatching') }}
                 </legend>
+
                 <label class="flex cursor-pointer items-center select-none">
                   <input
                     v-model="input.should_hit_all"
@@ -131,6 +135,7 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
               <legend class="text-required fieldset-legend text-sm">
                 {{ $t('matchRule.pattern') }}
               </legend>
+
               <TaggedInput v-model="input.values"></TaggedInput>
             </fieldset>
           </div>

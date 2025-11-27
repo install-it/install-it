@@ -23,6 +23,7 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
   <div class="flex h-full flex-col gap-y-2">
     <div>
       <h1 class="font-bold">{{ $t('matchRule.matchRule') }}</h1>
+
       <p class="text-xs">{{ $t('matchRule.matchRuleHelp') }}</p>
     </div>
 
@@ -95,7 +96,9 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
 
         <div class="grid grid-cols-10 gap-1 bg-gray-100 py-1 text-xs">
           <div class="col-span-2 font-semibold">{{ $t('matchRule.source') }}</div>
+
           <div class="col-span-2 font-semibold">{{ $t('matchRule.operator') }}</div>
+
           <div class="col-span-6 font-semibold">{{ $t('matchRule.pattern') }}</div>
         </div>
 

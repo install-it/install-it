@@ -95,6 +95,7 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
                       class="indicator-item status status-neutral"
                       style="background-image: unset"
                     ></span>
+
                     <font-awesome-icon :icon="link.icon" />
                   </div>
                 </RouterLink>
