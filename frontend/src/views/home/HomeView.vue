@@ -49,37 +49,9 @@ function selectMatchedOptions() {
     return
   }
 
-  /** Tests whether the given input string satisfies the specified rule. */
-  const ruleTest = (rule: storage.Rule, input: string): boolean => {
-    const name = rule.is_case_sensitive ? input : input.toLowerCase()
-    const values = rule.is_case_sensitive ? rule.values : rule.values.map(v => v.toLowerCase())
-    const hits = values.map((v: string): boolean => {
-      switch (rule.operator) {
-        case 'contain':
-          return name.includes(v)
-        case 'not_contain':
-          return !name.includes(v)
-        case 'equal':
-          return name === v
-        case 'not_equal':
-          return name !== v
-        case 'regex': {
-          try {
-            return new RegExp(v, rule.is_case_sensitive ? '' : 'i').test(name)
-          } catch {
-            return false
-          }
-        }
-        default:
-          return false
-      }
-    })
-    return rule.should_hit_all ? hits.every(Boolean) : hits.some(Boolean)
-  }
-
   /** Determines if there is any hardware name matches the provided rule */
   const nameTest = (rule: storage.Rule): boolean => {
-    return hwinfos.value![rule.source].some(src => ruleTest(rule, src))
+    return hwinfos.value![rule.source].some(src => utils.testMatchRule(rule, src))
   }
 
   ruleStore.ruleSets.forEach(rs => {
