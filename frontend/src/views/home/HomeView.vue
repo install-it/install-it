@@ -13,9 +13,7 @@ const { t } = useI18n()
 
 const $toast = useToast({ position: 'top-right' })
 
-const statusModal = useTemplateRef('statusModal')
-
-const form = useTemplateRef('form')
+const [statusModal, form] = [useTemplateRef('statusModal'), useTemplateRef('form')]
 
 const [groupStore, settingStore, ruleStore] = [
   useDriverGroupStore(),
