@@ -23,12 +23,13 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
   <div class="flex h-full flex-col gap-y-2">
     <div>
       <h1 class="font-bold">{{ $t('matchRule.matchRule') }}</h1>
+
       <p class="text-xs">{{ $t('matchRule.matchRuleHelp') }}</p>
     </div>
 
     <div
-      class="flex min-h-48 grow flex-col overflow-y-scroll rounded-md p-1.5 shadow-md"
       ref="scrollContainer"
+      class="flex min-h-48 grow flex-col overflow-y-scroll rounded-md p-1.5 shadow-md"
     >
       <div
         v-for="rs in ruleStore.ruleSets"
@@ -59,6 +60,7 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
 
             <button
               class="btn size-6 btn-xs"
+              :title="$t('common.clone')"
               @click="
                 matchRuleStorage.Add(rs).then(() =>
                   matchRuleStorage
@@ -69,13 +71,13 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
                     })
                 )
               "
-              :title="$t('common.clone')"
             >
               <font-awesome-icon icon="fa-solid fa-clone" class="text-gray-500" />
             </button>
 
             <button
               class="btn size-6 btn-xs"
+              :title="$t('common.delete')"
               @click="
                 matchRuleStorage.Remove(rs.id).then(() =>
                   matchRuleStorage
@@ -86,7 +88,6 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
                     })
                 )
               "
-              :title="$t('common.delete')"
             >
               <font-awesome-icon icon="fa-solid fa-trash" class="text-gray-500" />
             </button>
@@ -95,7 +96,9 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
 
         <div class="grid grid-cols-10 gap-1 bg-gray-100 py-1 text-xs">
           <div class="col-span-2 font-semibold">{{ $t('matchRule.source') }}</div>
+
           <div class="col-span-2 font-semibold">{{ $t('matchRule.operator') }}</div>
+
           <div class="col-span-6 font-semibold">{{ $t('matchRule.pattern') }}</div>
         </div>
 

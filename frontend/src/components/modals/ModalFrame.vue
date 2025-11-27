@@ -25,13 +25,13 @@ const render = ref(props.onDemand)
 </script>
 
 <template>
-  <TransitionGroup name="modal" v-if="render">
-    <div class="fixed inset-0 z-40 bg-gray-900/50" v-show="show" key="0"></div>
+  <TransitionGroup v-if="render" name="modal">
+    <div v-show="show" key="0" class="fixed inset-0 z-40 bg-gray-900/50"></div>
 
     <div
-      class="fixed top-0 right-0 left-0 z-50 flex h-full w-full items-center justify-center"
       v-show="show"
       key="1"
+      class="fixed top-0 right-0 left-0 z-50 flex h-full w-full items-center justify-center"
     >
       <slot></slot>
     </div>

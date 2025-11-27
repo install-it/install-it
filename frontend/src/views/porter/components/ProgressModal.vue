@@ -110,7 +110,7 @@ function toastErrMsg(err: string) {
 </script>
 
 <template>
-  <ModalFrame :on-demand="true" :immediate="false" ref="frame">
+  <ModalFrame ref="frame" :on-demand="true" :immediate="false">
     <div>
       <!-- Modal content -->
       <div class="rounded-lg bg-white shadow-sm">
@@ -150,21 +150,24 @@ function toastErrMsg(err: string) {
             </div>
 
             <ol class="flex w-full items-center">
-              <ProgressNode v-for="(progress, i) in progress?.tasks ?? []" :progress :key="i">
+              <ProgressNode v-for="(task, i) in progress?.tasks ?? []" :key="i" :task>
                 <i class="text-xs lg:text-base">
                   <font-awesome-icon
-                    v-if="progress.status == 'pending'"
+                    v-if="task.status == 'pending'"
                     icon="fa-solid fa-hourglass-start"
                   />
+
                   <font-awesome-icon
-                    v-else-if="progress.status.includes('ing')"
+                    v-else-if="task.status.includes('ing')"
                     icon="fa-solid fa-spinner"
                     spin
                   />
+
                   <font-awesome-icon
-                    v-else-if="progress.status == 'completed'"
+                    v-else-if="task.status == 'completed'"
                     icon="fa-solid fa-check"
                   />
+
                   <font-awesome-icon v-else icon="fa-solid fa-exclamation" />
                 </i>
               </ProgressNode>
@@ -173,8 +176,8 @@ function toastErrMsg(err: string) {
             </ol>
 
             <div
-              class="flex min-h-48 flex-1 flex-col gap-y-2 overflow-y-auto rounded-sm border p-1"
               ref="message-box"
+              class="flex min-h-48 flex-1 flex-col gap-y-2 overflow-y-auto rounded-sm border p-1"
             >
               <p v-for="(m, i) in messages" :key="i" class="text-xs break-all text-gray-400">
                 {{ m }}

@@ -73,7 +73,8 @@ function handleSubmit(event: SubmitEvent) {
         <legend class="fieldset-legend text-sm">
           {{ $t('matchRule.name') }}
         </legend>
-        <input type="text" class="input ms-1 input-accent" v-model="ruleSet.name" />
+
+        <input v-model="ruleSet.name" type="text" class="input ms-1 input-accent" />
       </fieldset>
 
       <fieldset class="fieldset">
@@ -85,8 +86,11 @@ function handleSubmit(event: SubmitEvent) {
           <div class="grid-rows grid text-sm">
             <div class="grid grid-cols-6 gap-2 border-y py-1.5">
               <div class="col-span-1">{{ $t('matchRule.source') }}</div>
+
               <div class="col-span-1">{{ $t('matchRule.operator') }}</div>
+
               <div class="col-span-3">{{ $t('matchRule.pattern') }}</div>
+
               <div class="col-span-1">{{ $t('common.action') }}</div>
             </div>
 
@@ -99,8 +103,8 @@ function handleSubmit(event: SubmitEvent) {
               </div>
 
               <div
-                v-else
                 v-for="(r, i) in ruleSet.rules"
+                v-else
                 :key="i"
                 class="grid grid-cols-6 items-center gap-2 border-b py-1.5 text-xs lg:text-sm"
               >
@@ -135,8 +139,8 @@ function handleSubmit(event: SubmitEvent) {
                     </span>
 
                     <span
-                      v-for="(v, i) in r.values"
-                      :key="i"
+                      v-for="(v, vi) in r.values"
+                      :key="vi"
                       class="me-0.5 badge badge-sm px-1 badge-neutral md:me-1"
                     >
                       {{ v }}
@@ -148,15 +152,16 @@ function handleSubmit(event: SubmitEvent) {
                   <div class="flex gap-x-2">
                     <button
                       type="button"
-                      @click="inputModal?.show(JSON.parse(JSON.stringify({ ...r, _id: i })))"
                       :title="$t('common.edit')"
+                      @click="inputModal?.show(JSON.parse(JSON.stringify({ ...r, _id: i })))"
                     >
                       <font-awesome-icon icon="fa-solid fa-pen-to-square" />
                     </button>
+
                     <button
                       type="button"
-                      @click="ruleSet.rules.splice(i, 1)"
                       :title="$t('common.delete')"
+                      @click="ruleSet.rules.splice(i, 1)"
                     >
                       <font-awesome-icon icon="fa-solid fa-trash" />
                     </button>
@@ -181,9 +186,9 @@ function handleSubmit(event: SubmitEvent) {
 
         <label class="flex w-full cursor-pointer items-center select-none">
           <input
+            v-model="ruleSet.should_hit_all"
             type="checkbox"
             class="checkbox me-1.5 checkbox-primary"
-            v-model="ruleSet.should_hit_all"
           />
           {{ $t('matchRule.hitAllRule') }}
         </label>
@@ -199,10 +204,10 @@ function handleSubmit(event: SubmitEvent) {
         </legend>
 
         <DriverSelector
+          v-model="ruleSet.driver_group_ids"
           group-by="group"
           :driver-groups="groupStore.groups"
           :exclude-builtin="true"
-          v-model="ruleSet.driver_group_ids"
         ></DriverSelector>
       </fieldset>
 

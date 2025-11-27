@@ -28,6 +28,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
     <div class="flex">
       <div class="w-2/3">
         <h1 class="font-bold">{{ $t('driverForm.installOption') }}</h1>
+
         <p class="text-xs">{{ $t('driverForm.installOptionHelp') }}</p>
       </div>
 
@@ -61,8 +62,8 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
     </div>
 
     <div
-      class="flex min-h-48 grow flex-col overflow-y-scroll rounded-md p-1.5 shadow-md"
       ref="scrollContainer"
+      class="flex min-h-48 grow flex-col overflow-y-scroll rounded-md p-1.5 shadow-md"
     >
       <div
         v-for="(g, i) in groupStore.groups.filter(
@@ -71,6 +72,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
         :key="g.id"
         class="driver-card m-1 rounded-lg border border-gray-200 px-2 py-1 shadow-sm"
         :class="reordering ? 'cursor-pointer select-none' : ''"
+        :draggable="reordering"
         @dragstart="
           event => {
             if (!reordering) {
@@ -118,7 +120,6 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
             })
           }
         "
-        :draggable="reordering"
       >
         <div class="flex justify-between">
           <div class="flex min-w-0 items-center gap-1">
@@ -142,6 +143,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
 
             <button
               class="btn size-6 btn-xs"
+              :title="$t('common.clone')"
               @click="
                 groupStorage.Add(g).then(() =>
                   driverGroupStorage
@@ -152,13 +154,13 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
                     })
                 )
               "
-              :title="$t('common.clone')"
             >
               <font-awesome-icon icon="fa-solid fa-clone" class="text-gray-500" />
             </button>
 
             <button
               class="btn size-6 btn-xs"
+              :title="$t('common.delete')"
               @click="
                 groupStorage.Remove(g.id).then(() =>
                   driverGroupStorage
@@ -169,7 +171,6 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
                     })
                 )
               "
-              :title="$t('common.delete')"
             >
               <font-awesome-icon icon="fa-solid fa-trash" class="text-gray-500" />
             </button>
@@ -178,8 +179,11 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
 
         <div class="grid grid-cols-12 gap-1 bg-gray-100 py-1 text-xs">
           <div class="col-span-2 font-medium lg:col-span-3">{{ $t('driverForm.name') }}</div>
+
           <div class="col-span-5 font-medium lg:col-span-5">{{ $t('driverForm.path') }}</div>
+
           <div class="col-span-3 font-medium lg:col-span-3">{{ $t('driverForm.argument') }}</div>
+
           <div class="col-span-2 font-medium lg:col-span-1">
             {{ $t('driverForm.otherSetting') }}
           </div>

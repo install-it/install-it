@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
-    "lint": "eslint . --fix",
+    "lint": "eslint .",
     "format": "prettier --write src/",
     "i18n-sync": "node ./src/i18n/sync.js"
   },

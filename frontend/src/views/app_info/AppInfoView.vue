@@ -107,12 +107,13 @@ function checkUpdate() {
 
       <div class="grid grid-cols-7 gap-4">
         <div class="col-span-2">{{ $t('info.version') }}</div>
+
         <div class="col-span-5 flex items-center gap-x-5">
           <p>
             {{ info.app.version }}
           </p>
 
-          <button class="btn font-normal btn-xs" @click="checkUpdate()" :disabled="onCheck">
+          <button class="btn font-normal btn-xs" :disabled="onCheck" @click="checkUpdate()">
             {{ $t('info.checkUpdate') }}
           </button>
         </div>
@@ -120,11 +121,13 @@ function checkUpdate() {
 
       <div class="grid grid-cols-7 gap-4">
         <div class="col-span-2">{{ $t('info.buildType') }}</div>
+
         <div class="col-span-5">{{ $t(`info.${info.app.buildType}`) }}</div>
       </div>
 
       <div class="grid grid-cols-7 gap-4">
         <div class="col-span-2">{{ $t('info.pathDriver') }}</div>
+
         <div class="col-span-5 break-all">
           {{ info.app.pathDriver }}
 
@@ -144,11 +147,13 @@ function checkUpdate() {
 
       <div class="grid grid-cols-7 gap-4">
         <div class="col-span-2">{{ $t('info.version') }}</div>
+
         <div class="col-span-5">{{ info.webview.version }}</div>
       </div>
 
       <div class="grid grid-cols-7 gap-4">
         <div class="col-span-2">{{ $t('info.path') }}</div>
+
         <div class="col-span-5">
           {{ info.webview.location || $t('info.usingBuiltInWebView2') }}
         </div>
@@ -160,6 +165,7 @@ function checkUpdate() {
 
       <div class="grid grid-cols-7 gap-4">
         <div class="col-span-2">{{ $t('info.sourceCode') }}</div>
+
         <div class="col-span-5">
           <a
             href="https://github.com/install-it/install-it"
@@ -173,6 +179,7 @@ function checkUpdate() {
 
       <div class="grid grid-cols-7 gap-4">
         <div class="col-span-2">{{ $t('info.reportBug') }}</div>
+
         <div class="col-span-5">
           <a
             href="https://github.com/install-it/install-it/issues"
@@ -186,6 +193,7 @@ function checkUpdate() {
 
       <div class="grid grid-cols-7 gap-4">
         <div class="col-span-2">{{ $t('info.license') }}</div>
+
         <div class="col-span-5">
           <div class="flex">
             <p class="inline font-mono">GNU General Public License v2.0</p>
@@ -204,10 +212,10 @@ function checkUpdate() {
   </div>
 
   <UpdateModal
+    ref="modal"
     :app="{
       version: info.app.version,
       binaryType: info.app.binaryType
     }"
-    ref="modal"
   ></UpdateModal>
 </template>

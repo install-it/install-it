@@ -6,6 +6,8 @@ import { SelectFile } from '@/wailsjs/go/main/App'
 import { storage } from '@/wailsjs/go/models'
 import { nextTick, ref, toRaw, useTemplateRef } from 'vue'
 
+defineEmits<{ submit: [dri: storage.Driver] }>()
+
 const frame = useTemplateRef('frame')
 
 defineExpose({
@@ -30,8 +32,6 @@ defineExpose({
   hide: frame.value?.hide || (() => {})
 })
 
-defineEmits<{ submit: [dri: storage.Driver] }>()
-
 const FLAGS = {
   'Intel LAN': ['/s'],
   'Realtek LAN': ['-s'],
@@ -54,7 +54,7 @@ const driver = ref<
 </script>
 
 <template>
-  <ModalFrame :on-demand="true" :immediate="false" ref="frame">
+  <ModalFrame ref="frame" :on-demand="true" :immediate="false">
     <div class="w-[75vw] max-w-[650px]">
       <!-- Modal content -->
       <div class="rounded-lg bg-white shadow-sm">
@@ -74,7 +74,7 @@ const driver = ref<
         </div>
 
         <!-- Modal body -->
-        <div class="max-h-[70vh] overflow-auto px-4 py-2" ref="modalBody">
+        <div ref="modalBody" class="max-h-[70vh] overflow-auto px-4 py-2">
           <form
             class="flex flex-col gap-y-2"
             autocomplete="off"
@@ -103,9 +103,9 @@ const driver = ref<
               <legend class="fieldset-legend text-sm">{{ $t('driverForm.name') }}</legend>
 
               <input
+                v-model="driver.name"
                 type="text"
                 name="name"
-                v-model="driver.name"
                 class="input w-full input-accent"
               />
             </fieldset>
@@ -127,11 +127,11 @@ const driver = ref<
                 </button>
 
                 <input
+                  ref="pathInput"
+                  v-model="driver.path"
                   type="text"
                   name="path"
-                  v-model="driver.path"
                   class="input join-item w-full input-accent"
-                  ref="pathInput"
                   required
                 />
               </div>
@@ -164,6 +164,7 @@ const driver = ref<
                   <div tabindex="0" role="button" class="btn m-1 join-item w-30">
                     {{ $t('common.select') }}
                   </div>
+
                   <ul
                     tabindex="0"
                     class="dropdown-content menu z-1 w-52 rounded-box bg-base-100 p-2 shadow-sm"
@@ -190,9 +191,9 @@ const driver = ref<
                 </div>
 
                 <input
+                  v-model="driver.flags"
                   type="text"
                   name="flags"
-                  v-model="driver.flags"
                   class="input join-item w-full input-accent"
                 />
               </div>
@@ -209,9 +210,9 @@ const driver = ref<
                 </legend>
 
                 <input
+                  v-model="driver.minExeTime"
                   type="number"
                   name="minExeTime"
-                  v-model="driver.minExeTime"
                   step="0.1"
                   class="input w-full input-accent"
                   required
@@ -228,9 +229,9 @@ const driver = ref<
                 </legend>
 
                 <input
+                  v-model="driver.allowRtCodes"
                   type="text"
                   name="allowRtCodes"
-                  v-model="driver.allowRtCodes"
                   class="input input-accent"
                 />
 
@@ -241,9 +242,9 @@ const driver = ref<
             </div>
 
             <DriverSelector
+              v-model="driver.incompatibles"
               group-by="driver"
               :driver-groups="groupStore.groups"
-              v-model="driver.incompatibles"
             ></DriverSelector>
 
             <button type="submit" class="btn btn-secondary">
