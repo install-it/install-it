@@ -16,7 +16,7 @@ let callback: (answer: 'yes' | 'no') => void
 </script>
 
 <template>
-  <ModalFrame :on-demand="false" :immediate="false" ref="frame">
+  <ModalFrame ref="frame" :on-demand="false" :immediate="false">
     <div class="max-w-[60vw]">
       <!-- Modal content -->
       <div class="rounded-lg bg-white shadow-sm">

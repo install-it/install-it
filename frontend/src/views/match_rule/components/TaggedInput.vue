@@ -34,9 +34,9 @@ function removeTag(index: number) {
     </button>
 
     <input
+      v-model="input"
       type="text"
       class="input input-sm grow input-accent focus:outline-0"
-      v-model="input"
       @keydown.backspace="
         () => {
           if (input.length == 0) {

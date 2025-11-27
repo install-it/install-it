@@ -25,7 +25,7 @@ const inProgress = computed(
       <slot></slot>
     </span>
 
-    <div class="relative flex w-full flex-col text-center" v-if="progress !== undefined">
+    <div v-if="progress !== undefined" class="relative flex w-full flex-col text-center">
       <span
         class="absolute -top-4.5 w-full truncate px-1 text-xs lg:-top-5.5 lg:text-sm"
         :class="{ 'text-gray-400': !inProgress }"
@@ -45,8 +45,8 @@ const inProgress = computed(
       </div>
 
       <span
-        class="absolute -bottom-4 w-full truncate px-1 text-xs text-gray-400 lg:-bottom-5"
         v-if="inProgress"
+        class="absolute -bottom-4 w-full truncate px-1 text-xs text-gray-400 lg:-bottom-5"
       >
         {{ `${Math.floor((progress.current / progress.total) * 100)}%` }}
       </span>

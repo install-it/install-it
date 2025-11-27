@@ -112,7 +112,7 @@ function checkUpdate() {
             {{ info.app.version }}
           </p>
 
-          <button class="btn font-normal btn-xs" @click="checkUpdate()" :disabled="onCheck">
+          <button class="btn font-normal btn-xs" :disabled="onCheck" @click="checkUpdate()">
             {{ $t('info.checkUpdate') }}
           </button>
         </div>
@@ -204,10 +204,10 @@ function checkUpdate() {
   </div>
 
   <UpdateModal
+    ref="modal"
     :app="{
       version: info.app.version,
       binaryType: info.app.binaryType
     }"
-    ref="modal"
   ></UpdateModal>
 </template>
