@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useAppSettingStore, useDriverGroupStore, useMatchRuleStore } from '@/store'
+import * as utils from '@/utils'
 import CommandStatueModal from '@/views/home/components/CommandStatusModal.vue'
 import * as executor from '@/wailsjs/go/execute/CommandExecutor'
-import { storage, sysinfo } from '@/wailsjs/go/models'
-import * as sysinfoqy from '@/wailsjs/go/sysinfo/SysInfo'
+import { storage } from '@/wailsjs/go/models'
 import { computed, onBeforeMount, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
@@ -31,33 +31,16 @@ const groups = computed(() =>
 )
 
 const hwinfos = ref<{
-  motherboard: Array<sysinfo.Win32_BaseBoard>
-  cpu: Array<sysinfo.Win32_Processor>
-  gpu: Array<sysinfo.Win32_VideoController>
-  memory: Array<sysinfo.Win32_PhysicalMemory>
-  nic: Array<sysinfo.Win32_NetworkAdapter>
-  storage: Array<sysinfo.Win32_DiskDrive>
+  cpu: Array<string>
+  gpu: Array<string>
+  motherboard: Array<string>
+  memory: Array<string>
+  nic: Array<string>
+  storage: Array<string>
 } | null>(null)
 
 onBeforeMount(() => {
-  Promise.all([
-    sysinfoqy.MotherboardInfo(),
-    sysinfoqy.CpuInfo(),
-    sysinfoqy.GpuInfo(),
-    sysinfoqy.MemoryInfo(),
-    sysinfoqy.NicInfo(),
-    sysinfoqy.DiskInfo()
-  ]).then(infos => {
-    hwinfos.value = ['motherboard', 'cpu', 'gpu', 'memory', 'nic', 'storage'].reduce(
-      (obj, key, index) => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        obj[key] = infos[index]
-        return obj
-      },
-      {} as typeof hwinfos.value
-    )
-  })
+  utils.getHardware().then(v => (hwinfos.value = v))
 })
 
 function selectMatchedOptions() {
@@ -96,7 +79,7 @@ function selectMatchedOptions() {
 
   /** Determines if there is any hardware name matches the provided rule */
   const nameTest = (rule: storage.Rule): boolean => {
-    return hwinfos.value![rule.source].some(src => ruleTest(rule, src.Name))
+    return hwinfos.value![rule.source].some(src => ruleTest(rule, src))
   }
 
   ruleStore.ruleSets.forEach(rs => {
@@ -204,67 +187,20 @@ async function handleSubmit() {
   <div class="flex h-full flex-col">
     <div id="sysinfo" class="flex flex-1 flex-col gap-y-1 overflow-y-auto rounded-sm border p-1">
       <template v-if="hwinfos !== null">
-        <div>
-          <h2 class="text-sm font-bold">{{ $t('common.motherboard') }}</h2>
-
-          <p v-for="(mb, i) in hwinfos.motherboard" :key="i" class="text-sm">
-            {{ `${mb.Manufacturer} ${mb.Product}` }}
-          </p>
-        </div>
-
-        <div>
-          <h2 class="text-sm font-bold">{{ $t('common.cpu') }}</h2>
-
-          <p v-for="(cpu, i) in hwinfos.cpu" :key="i" class="text-sm">
-            {{ cpu.Name }}
-          </p>
-        </div>
-
-        <div>
-          <h2 class="text-sm font-bold">{{ $t('common.memory') }}</h2>
-
-          <p v-for="(mem, i) in hwinfos.memory" :key="i" class="text-sm">
-            {{
-              `${mem.Manufacturer} ${mem.PartNumber.trim()} ${mem.Capacity / Math.pow(1024, 3)}GB ${mem.Speed}MHz`
-            }}
-          </p>
-        </div>
-
-        <div>
-          <h2 class="text-sm font-bold">{{ $t('common.gpu') }}</h2>
-
-          <p v-for="(dp, i) in hwinfos.gpu" :key="i" class="text-sm">
-            {{ `${dp.Name} (${dp.AdapterRAM / Math.pow(1024, 3)}GB)` }}
-          </p>
-        </div>
-
-        <div>
-          <h2 class="text-sm font-bold">{{ $t('common.nic') }}</h2>
+        <div v-for="[part, names] in Object.entries(hwinfos)" :key="part">
+          <h2 class="text-sm font-bold">{{ $t(`common.${part}`) }}</h2>
 
           <p
-            v-for="(dp, i) in hwinfos.nic
-              .filter(
-                n =>
-                  !settingStore.settings.filter_miniport_nic ||
-                  (settingStore.settings.filter_miniport_nic && !n.Name.includes('Miniport'))
-              )
-              .filter(
-                n =>
-                  !settingStore.settings.filter_microsoft_nic ||
-                  (settingStore.settings.filter_microsoft_nic && !n.Name.includes('Microsoft'))
-              )"
+            v-for="(name, i) in names.filter(
+              n =>
+                part !== 'nic' ||
+                ((!settingStore.settings.filter_miniport_nic || !n.includes('Miniport')) &&
+                  (!settingStore.settings.filter_microsoft_nic || !n.includes('Microsoft')))
+            )"
             :key="i"
             class="text-sm"
           >
-            {{ dp.Name }}
-          </p>
-        </div>
-
-        <div>
-          <h2 class="text-sm font-bold">{{ $t('common.storage') }}</h2>
-
-          <p v-for="(dp, i) in hwinfos.storage" :key="i" class="text-sm">
-            {{ `${dp.Model} (${Math.round(dp.Size / Math.pow(1024, 3))}GB)` }}
+            {{ name }}
           </p>
         </div>
       </template>
