@@ -156,15 +156,18 @@ function toastErrMsg(err: string) {
                     v-if="task.status == 'pending'"
                     icon="fa-solid fa-hourglass-start"
                   />
+
                   <font-awesome-icon
                     v-else-if="task.status.includes('ing')"
                     icon="fa-solid fa-spinner"
                     spin
                   />
+
                   <font-awesome-icon
                     v-else-if="task.status == 'completed'"
                     icon="fa-solid fa-check"
                   />
+
                   <font-awesome-icon v-else icon="fa-solid fa-exclamation" />
                 </i>
               </ProgressNode>

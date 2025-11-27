@@ -6,6 +6,8 @@ import { SelectFile } from '@/wailsjs/go/main/App'
 import { storage } from '@/wailsjs/go/models'
 import { nextTick, ref, toRaw, useTemplateRef } from 'vue'
 
+defineEmits<{ submit: [dri: storage.Driver] }>()
+
 const frame = useTemplateRef('frame')
 
 defineExpose({
@@ -29,8 +31,6 @@ defineExpose({
   },
   hide: frame.value?.hide || (() => {})
 })
-
-defineEmits<{ submit: [dri: storage.Driver] }>()
 
 const FLAGS = {
   'Intel LAN': ['/s'],
@@ -164,6 +164,7 @@ const driver = ref<
                   <div tabindex="0" role="button" class="btn m-1 join-item w-30">
                     {{ $t('common.select') }}
                   </div>
+
                   <ul
                     tabindex="0"
                     class="dropdown-content menu z-1 w-52 rounded-box bg-base-100 p-2 shadow-sm"

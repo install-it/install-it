@@ -87,9 +87,11 @@ const filteredGroups = computed(() => {
             value="set_password"
             class="checkbox me-1.5 checkbox-sm checkbox-primary"
           />
+
           <span class="me-1 badge px-1" :style="`--badge-color: var(--color-builtin)`">
             &nbsp;
           </span>
+
           <span class="line-clamp-2">
             {{ $t('installSetting.setPassword') }}
           </span>
@@ -112,9 +114,11 @@ const filteredGroups = computed(() => {
             value="create_partition"
             class="checkbox me-1.5 checkbox-sm checkbox-primary"
           />
+
           <span class="me-1 badge px-1" :style="`--badge-color: var(--color-builtin)`">
             &nbsp;
           </span>
+
           <span class="line-clamp-2">
             {{ $t('installSetting.createPartition') }}
           </span>
@@ -131,6 +135,7 @@ const filteredGroups = computed(() => {
                 :value="g.id"
                 class="checkbox me-1.5 checkbox-sm checkbox-primary"
               />
+
               <span
                 class="me-1 badge px-1"
                 :class="[`badge-${g.type}`]"
@@ -138,6 +143,7 @@ const filteredGroups = computed(() => {
               >
                 &nbsp;
               </span>
+
               <span class="line-clamp-2">
                 {{ g.name }}
               </span>
@@ -155,6 +161,7 @@ const filteredGroups = computed(() => {
                   :value="d.id"
                   class="checkbox me-1.5 checkbox-sm checkbox-primary"
                 />
+
                 <span
                   class="me-1 badge px-1"
                   :class="[`badge-${g.type}`]"
@@ -162,6 +169,7 @@ const filteredGroups = computed(() => {
                 >
                   &nbsp;
                 </span>
+
                 <span class="line-clamp-2">
                   {{ `[${g.name}] ${d.name}` }}
                 </span>

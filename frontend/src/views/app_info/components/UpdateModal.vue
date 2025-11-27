@@ -1,5 +1,3 @@
-<!-- eslint-disable vue/no-v-html -->
-
 <script setup lang="ts">
 import ModalFrame from '@/components/modals/ModalFrame.vue'
 import { latestRelease } from '@/utils'
@@ -8,9 +6,9 @@ import { Quit } from '@/wailsjs/runtime/runtime'
 import { ref, useTemplateRef } from 'vue'
 import { useLoading } from 'vue-loading-overlay'
 
-const frame = useTemplateRef('frame')
-
 defineProps<{ app: { version: string; binaryType: string } }>()
+
+const frame = useTemplateRef('frame')
 
 defineExpose({
   show: (releaseInfo_: typeof releaseInfo.value, isWebview: boolean) => {
@@ -29,6 +27,8 @@ const webviewVersion = ref(false)
 </script>
 
 <template>
+  <!-- eslint-disable vue/no-v-html -->
+
   <ModalFrame ref="frame" :on-demand="true" :immediate="false">
     <div class="w-4/5 max-w-4xl">
       <!-- Modal content -->

@@ -10,6 +10,7 @@ defineEmits<{ abort: [] }>()
   <div class="flex min-h-9 border-t border-kashmir-blue-100 last:border-b">
     <div class="w-2/6 content-center truncate pe-1 text-xs">
       <p class="truncate font-medium">{{ props.process.command.groupName }}</p>
+
       <p v-if="props.process.command.name" class="truncate">
         &nbsp;&nbsp;{{ `⤷ ${props.process.command.name}` }}
       </p>
@@ -37,6 +38,7 @@ defineEmits<{ abort: [] }>()
               })
             }}
           </p>
+
           <p
             v-else-if="
               props.process.result &&
@@ -53,6 +55,7 @@ defineEmits<{ abort: [] }>()
                 : props.process.result.error.split(':').slice(1).join(':').trim()
             }}
           </p>
+
           <p v-else class="font-mono text-xs text-red-400">
             {{ props.process.result?.stderr || props.process.result?.stdout }}
           </p>
@@ -73,6 +76,7 @@ defineEmits<{ abort: [] }>()
           <p class="truncate">
             {{ $t('execute.exitCode', { code: props.process.result?.exitCode }) }}
           </p>
+
           <p class="truncate">
             {{
               $t('execute.executeTime', { second: Math.round(props.process.result?.lapse ?? -1) })

@@ -3,9 +3,9 @@ import { ref } from 'vue'
 
 defineProps<{ title?: string }>()
 
-const input = ref<string>('')
-
 const tags = defineModel<Array<string>>({ default: [] })
+
+const input = ref<string>('')
 
 function pushTag() {
   if (input.value.trim()) {
@@ -30,6 +30,7 @@ function removeTag(index: number) {
     >
       {{ tag }}
       <font-awesome-icon v-if="i < tags.length - 1" icon="fa-solid fa-xmark" class="h-6 w-6" />
+
       <font-awesome-icon v-else icon="fa-solid fa-delete-left" class="h-6 w-6" />
     </button>
 

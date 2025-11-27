@@ -73,6 +73,7 @@ function handleSubmit(event: SubmitEvent) {
         <legend class="fieldset-legend text-sm">
           {{ $t('matchRule.name') }}
         </legend>
+
         <input v-model="ruleSet.name" type="text" class="input ms-1 input-accent" />
       </fieldset>
 
@@ -85,8 +86,11 @@ function handleSubmit(event: SubmitEvent) {
           <div class="grid-rows grid text-sm">
             <div class="grid grid-cols-6 gap-2 border-y py-1.5">
               <div class="col-span-1">{{ $t('matchRule.source') }}</div>
+
               <div class="col-span-1">{{ $t('matchRule.operator') }}</div>
+
               <div class="col-span-3">{{ $t('matchRule.pattern') }}</div>
+
               <div class="col-span-1">{{ $t('common.action') }}</div>
             </div>
 
@@ -153,6 +157,7 @@ function handleSubmit(event: SubmitEvent) {
                     >
                       <font-awesome-icon icon="fa-solid fa-pen-to-square" />
                     </button>
+
                     <button
                       type="button"
                       :title="$t('common.delete')"

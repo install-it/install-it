@@ -207,6 +207,7 @@ function handleSubmit() {
             <label class="mb-2 block text-gray-900">
               {{ $t('installSetting.successAction') }}
             </label>
+
             <select
               v-model="settings.success_action"
               name="success_action"
@@ -230,6 +231,7 @@ function handleSubmit() {
         <div>
           <select v-model="settings.language" name="language" class="select select-accent">
             <option value="en">English</option>
+
             <option value="zh_Hant_HK">繁體中文</option>
           </select>
         </div>

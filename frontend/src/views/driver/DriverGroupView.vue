@@ -28,6 +28,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
     <div class="flex">
       <div class="w-2/3">
         <h1 class="font-bold">{{ $t('driverForm.installOption') }}</h1>
+
         <p class="text-xs">{{ $t('driverForm.installOptionHelp') }}</p>
       </div>
 
@@ -178,8 +179,11 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
 
         <div class="grid grid-cols-12 gap-1 bg-gray-100 py-1 text-xs">
           <div class="col-span-2 font-medium lg:col-span-3">{{ $t('driverForm.name') }}</div>
+
           <div class="col-span-5 font-medium lg:col-span-5">{{ $t('driverForm.path') }}</div>
+
           <div class="col-span-3 font-medium lg:col-span-3">{{ $t('driverForm.argument') }}</div>
+
           <div class="col-span-2 font-medium lg:col-span-1">
             {{ $t('driverForm.otherSetting') }}
           </div>
