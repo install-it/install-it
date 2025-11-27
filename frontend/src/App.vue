@@ -86,15 +86,16 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
                 <RouterLink
                   :to="link.to"
                   class="flex rounded-lg p-2 hover:bg-gray-200"
-                  activeClass="text-apple-green-900 bg-powder-blue-400"
+                  active-class="text-apple-green-900 bg-powder-blue-400"
                   draggable="false"
                 >
                   <div class="indicator">
                     <span
+                      v-if="link.to == '/app-info' && hasUpdate"
                       class="indicator-item status status-neutral"
                       style="background-image: unset"
-                      v-if="link.to == '/app-info' && hasUpdate"
                     ></span>
+
                     <font-awesome-icon :icon="link.icon" />
                   </div>
                 </RouterLink>

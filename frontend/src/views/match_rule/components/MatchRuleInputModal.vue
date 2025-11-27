@@ -5,6 +5,8 @@ import { ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import TaggedInput from './TaggedInput.vue'
 
+defineEmits<{ submit: [rules: { _id: number | undefined } & storage.Rule] }>()
+
 const { t } = useI18n()
 
 defineExpose({
@@ -23,8 +25,6 @@ defineExpose({
   hide: () => frame.value?.hide()
 })
 
-defineEmits<{ submit: [rules: { _id: number | undefined } & storage.Rule] }>()
-
 const [frame, modalBody] = [useTemplateRef('frame'), useTemplateRef('modalBody')]
 
 const input = ref<{ _id: number | undefined } & storage.Rule>({
@@ -38,7 +38,7 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
 </script>
 
 <template>
-  <ModalFrame :on-demand="true" :immediate="false" ref="frame">
+  <ModalFrame ref="frame" :on-demand="true" :immediate="false">
     <div class="w-4/5">
       <div class="rounded-lg bg-white shadow-sm">
         <div class="flex h-12 items-center justify-between rounded-t border-b px-4">
@@ -69,14 +69,15 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
             }
           "
         >
-          <div class="flex max-h-[75vh] flex-col gap-y-2 overflow-auto p-4" ref="modalBody">
+          <div ref="modalBody" class="flex max-h-[75vh] flex-col gap-y-2 overflow-auto p-4">
             <div class="flex gap-1">
               <fieldset class="fieldset flex-1">
                 <legend class="fieldset-legend text-sm">
                   {{ $t('matchRule.source') }}
                 </legend>
+
                 <select v-model="input.source" class="select select-accent" required>
-                  <option v-for="s in storage.RuleSource" :value="s" :key="s">
+                  <option v-for="s in storage.RuleSource" :key="s" :value="s">
                     {{ $t(`common.${s}`) }}
                   </option>
                 </select>
@@ -86,9 +87,10 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
                 <legend class="fieldset-legend text-sm">
                   {{ $t('matchRule.operator') }}
                 </legend>
+
                 <select v-model="input.operator" class="select select-accent" required>
-                  <option v-for="t in storage.RuleOperator" :value="t" :key="t">
-                    {{ $t(`matchRule.${t}`) }}
+                  <option v-for="o in storage.RuleOperator" :key="o" :value="o">
+                    {{ $t(`matchRule.${o}`) }}
                   </option>
                 </select>
               </fieldset>
@@ -99,10 +101,11 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
                 <legend class="fieldset-legend text-sm">
                   {{ $t('matchRule.caseSensitive') }}
                 </legend>
+
                 <label class="flex cursor-pointer items-center select-none">
                   <input
-                    type="checkbox"
                     v-model="input.is_case_sensitive"
+                    type="checkbox"
                     class="checkbox me-1.5 checkbox-sm checkbox-primary"
                     :disabled="input.operator === 'regex'"
                   />
@@ -114,10 +117,11 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
                 <legend class="fieldset-legend text-sm">
                   {{ $t('matchRule.multiPatternMatching') }}
                 </legend>
+
                 <label class="flex cursor-pointer items-center select-none">
                   <input
-                    type="checkbox"
                     v-model="input.should_hit_all"
+                    type="checkbox"
                     class="checkbox me-1.5 checkbox-sm checkbox-primary"
                   />
                   {{ $t('matchRule.hitAllPatterns') }}
@@ -131,6 +135,7 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
               <legend class="text-required fieldset-legend text-sm">
                 {{ $t('matchRule.pattern') }}
               </legend>
+
               <TaggedInput v-model="input.values"></TaggedInput>
             </fieldset>
           </div>

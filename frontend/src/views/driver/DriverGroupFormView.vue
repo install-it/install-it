@@ -93,7 +93,7 @@ function handleSubmit(event: SubmitEvent) {
         <fieldset class="fieldset">
           <legend class="fieldset-legend text-sm">{{ $t('driverForm.type') }}</legend>
 
-          <select name="type" v-model="group.type" class="select w-full select-accent" required>
+          <select v-model="group.type" name="type" class="select w-full select-accent" required>
             <option v-for="type in storage.DriverType" :key="type" :value="type">
               {{ $t(`driverCatetory.${type}`) }}
             </option>
@@ -104,7 +104,8 @@ function handleSubmit(event: SubmitEvent) {
       <div class="grow">
         <fieldset class="fieldset">
           <legend class="fieldset-legend text-sm">{{ $t('driverForm.name') }}</legend>
-          <input type="text" v-model="group.name" class="input w-full input-accent" required />
+
+          <input v-model="group.name" type="text" class="input w-full input-accent" required />
         </fieldset>
       </div>
     </div>
@@ -117,16 +118,19 @@ function handleSubmit(event: SubmitEvent) {
           <div class="grid-rows grid text-sm">
             <div class="grid grid-cols-10 gap-2 border-y py-1.5">
               <div class="col-span-2">{{ $t('driverForm.name') }}</div>
+
               <div class="col-span-3">{{ $t('driverForm.path') }}</div>
+
               <div class="col-span-2">{{ $t('driverForm.argument') }}</div>
+
               <div class="col-span-2">{{ $t('driverForm.otherSetting') }}</div>
             </div>
 
             <div v-if="group.drivers.length == 0" class="py-1 text-center last:border-b">N/A</div>
 
             <div
-              v-else
               v-for="(d, i) in group.drivers"
+              v-else
               :key="d.id"
               class="grid grid-cols-10 items-center gap-2 border-b py-1.5 text-xs"
               :class="{ 'bg-lime-50': d.id.includes('new:') }"
@@ -172,13 +176,14 @@ function handleSubmit(event: SubmitEvent) {
 
               <div>
                 <div class="flex gap-x-2">
-                  <button type="button" @click="inputModal?.show(d)" :title="$t('common.edit')">
+                  <button type="button" :title="$t('common.edit')" @click="inputModal?.show(d)">
                     <font-awesome-icon icon="fa-solid fa-pen-to-square" />
                   </button>
+
                   <button
                     type="button"
-                    @click="group.drivers.splice(i, 1)"
                     :title="$t('common.delete')"
+                    @click="group.drivers.splice(i, 1)"
                   >
                     <font-awesome-icon icon="fa-solid fa-trash" />
                   </button>
@@ -190,6 +195,7 @@ function handleSubmit(event: SubmitEvent) {
           <p class="text-hint">
             {{ $t('driverForm.driverGroupHelp') }}
           </p>
+
           <p v-show="groupEditor.modifiedDrivers.value" class="text-hint">
             {{ $t('driverForm.incompatibleForNewHelp') }}
           </p>
@@ -198,8 +204,8 @@ function handleSubmit(event: SubmitEvent) {
         <div class="flex justify-end gap-x-3">
           <button
             v-show="groupEditor.modifiedDrivers.value"
-            type="submit"
             id="driver-submit-btn"
+            type="submit"
             class="btn px-2 btn-secondary"
           >
             <font-awesome-icon icon="fa-solid fa-floppy-disk" />
@@ -229,6 +235,7 @@ function handleSubmit(event: SubmitEvent) {
   </form>
 
   <DriverInputModal
+    ref="inputModal"
     @submit="
       newDriver => {
         console.log(newDriver)
@@ -245,7 +252,6 @@ function handleSubmit(event: SubmitEvent) {
         inputModal?.hide()
       }
     "
-    ref="inputModal"
   ></DriverInputModal>
 
   <UnsaveConfirmModal ref="questionModal"></UnsaveConfirmModal>

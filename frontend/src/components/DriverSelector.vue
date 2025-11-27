@@ -73,23 +73,25 @@ const filteredGroups = computed(() => {
     <ul class="h-44 overflow-auto rounded-lg border p-1.5">
       <li
         v-if="!excludeBuiltin"
-        class="px-4 py-2 text-sm"
         v-show="
           searchPhrase === '' ||
           'set password'.includes(searchPhrase) ||
           $t('installSetting.setPassword').includes(searchPhrase)
         "
+        class="px-4 py-2 text-sm"
       >
         <label class="flex w-full cursor-pointer items-center select-none">
           <input
+            v-model="model"
             type="checkbox"
             value="set_password"
-            v-model="model"
             class="checkbox me-1.5 checkbox-sm checkbox-primary"
           />
+
           <span class="me-1 badge px-1" :style="`--badge-color: var(--color-builtin)`">
             &nbsp;
           </span>
+
           <span class="line-clamp-2">
             {{ $t('installSetting.setPassword') }}
           </span>
@@ -98,23 +100,25 @@ const filteredGroups = computed(() => {
 
       <li
         v-if="!excludeBuiltin"
-        class="px-4 py-2 text-sm"
         v-show="
           searchPhrase === '' ||
           'create partition'.includes(searchPhrase) ||
           $t('installSetting.createPartition').includes(searchPhrase)
         "
+        class="px-4 py-2 text-sm"
       >
         <label class="flex w-full cursor-pointer items-center select-none">
           <input
+            v-model="model"
             type="checkbox"
             value="create_partition"
-            v-model="model"
             class="checkbox me-1.5 checkbox-sm checkbox-primary"
           />
+
           <span class="me-1 badge px-1" :style="`--badge-color: var(--color-builtin)`">
             &nbsp;
           </span>
+
           <span class="line-clamp-2">
             {{ $t('installSetting.createPartition') }}
           </span>
@@ -126,11 +130,12 @@ const filteredGroups = computed(() => {
           <li class="px-4 py-2 text-sm">
             <label class="flex w-full cursor-pointer items-center select-none">
               <input
+                v-model="model"
                 type="checkbox"
                 :value="g.id"
-                v-model="model"
                 class="checkbox me-1.5 checkbox-sm checkbox-primary"
               />
+
               <span
                 class="me-1 badge px-1"
                 :class="[`badge-${g.type}`]"
@@ -138,6 +143,7 @@ const filteredGroups = computed(() => {
               >
                 &nbsp;
               </span>
+
               <span class="line-clamp-2">
                 {{ g.name }}
               </span>
@@ -150,11 +156,12 @@ const filteredGroups = computed(() => {
             <li class="px-4 py-2 text-sm">
               <label class="flex w-full cursor-pointer items-center select-none">
                 <input
+                  v-model="model"
                   type="checkbox"
                   :value="d.id"
-                  v-model="model"
                   class="checkbox me-1.5 checkbox-sm checkbox-primary"
                 />
+
                 <span
                   class="me-1 badge px-1"
                   :class="[`badge-${g.type}`]"
@@ -162,6 +169,7 @@ const filteredGroups = computed(() => {
                 >
                   &nbsp;
                 </span>
+
                 <span class="line-clamp-2">
                   {{ `[${g.name}] ${d.name}` }}
                 </span>

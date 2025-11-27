@@ -6,9 +6,9 @@ import { Quit } from '@/wailsjs/runtime/runtime'
 import { ref, useTemplateRef } from 'vue'
 import { useLoading } from 'vue-loading-overlay'
 
-const frame = useTemplateRef('frame')
-
 defineProps<{ app: { version: string; binaryType: string } }>()
+
+const frame = useTemplateRef('frame')
 
 defineExpose({
   show: (releaseInfo_: typeof releaseInfo.value, isWebview: boolean) => {
@@ -27,7 +27,9 @@ const webviewVersion = ref(false)
 </script>
 
 <template>
-  <ModalFrame :on-demand="true" :immediate="false" ref="frame">
+  <!-- eslint-disable vue/no-v-html -->
+
+  <ModalFrame ref="frame" :on-demand="true" :immediate="false">
     <div class="w-4/5 max-w-4xl">
       <!-- Modal content -->
       <div class="rounded-lg bg-white shadow-sm">
@@ -79,9 +81,9 @@ const webviewVersion = ref(false)
               </h1>
 
               <div
-                v-html="releaseInfo?.releaseNotes || `<i>${$t('info.noUpdateInfo')}</i>`"
                 id="release-notes"
                 class="rounded-lg border px-1"
+                v-html="releaseInfo?.releaseNotes || `<i>${$t('info.noUpdateInfo')}</i>`"
               ></div>
             </div>
 
@@ -94,9 +96,9 @@ const webviewVersion = ref(false)
 
               <label class="flex w-full cursor-pointer items-center select-none">
                 <input
+                  v-model="webviewVersion"
                   type="checkbox"
                   name="create_partition"
-                  v-model="webviewVersion"
                   class="checkbox me-1.5 checkbox-primary"
                 />
                 {{ $t('info.downloadBuiltInWebView2Version') }}
