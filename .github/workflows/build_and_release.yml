@@ -11,19 +11,7 @@ permissions:
 
 jobs:
   test:
-    runs-on: windows-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Go environment
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: "go.mod"
-
-      - name: Run tests
-        run: go test ./pkg/...
+    uses: install-it/install-it/.github/workflows/test.yml@main
 
   build:
     needs: test
