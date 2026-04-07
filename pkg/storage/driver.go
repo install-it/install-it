@@ -91,13 +91,9 @@ func (s *DriverGroupStorage) Update(group DriverGroup) (DriverGroup, error) {
 	// slice of all the existing drivers' ID
 	driverIds := utils.Map(drivers, func(d *Driver) string { return d.Id })
 	// slice of all the drivers' ID that will be delete after the update
-	deletedIds := slices.DeleteFunc(driverIds, func(id string) bool {
-		for _, d := range group.Drivers {
-			if d.Id == id {
-				return true
-			}
-		}
-		return false
+	newDriverIds := utils.Map(group.Drivers, func(d *Driver) string { return d.Id })
+	deletedIds := slices.DeleteFunc(slices.Clone(driverIds), func(id string) bool {
+		return slices.Contains(newDriverIds, id)
 	})
 
 	// generate ID for new drivers
@@ -113,14 +109,16 @@ func (s *DriverGroupStorage) Update(group DriverGroup) (DriverGroup, error) {
 		return DriverGroup{}, err
 	}
 
-	// cacased deletion on Driver.Incompatibles
-	for _, g := range s.data {
-		for _, d := range g.Drivers {
-			d.Incompatibles = slices.DeleteFunc(d.Incompatibles, func(id string) bool {
-				s.EventBus.Publish(reflect.TypeFor[Driver]().Name(), deletedIds)
-				return slices.Contains(deletedIds, id)
-			})
+	// cascaded deletion on Driver.Incompatibles - only if there are actually deleted drivers
+	if len(deletedIds) > 0 {
+		for _, g := range s.data {
+			for _, d := range g.Drivers {
+				d.Incompatibles = slices.DeleteFunc(d.Incompatibles, func(id string) bool {
+					return slices.Contains(deletedIds, id)
+				})
+			}
 		}
+		s.EventBus.Publish(reflect.TypeFor[Driver]().Name(), deletedIds)
 	}
 
 	return group, s.Store.Write(s.data)

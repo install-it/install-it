@@ -493,6 +493,168 @@ func TestDriverGroupStorage_CopyOfAll_Isolation(t *testing.T) {
 
 // ==================== Integration Tests ====================
 
+func TestDriverGroupStorage_Update_PreserveIncompatibles(t *testing.T) {
+	existingData := []*DriverGroup{
+		{
+			Id:   "group1",
+			Name: "Network Drivers",
+			Type: Network,
+			Drivers: []*Driver{
+				{Id: "driver1", Name: "Driver 1", Type: Network, Incompatibles: []string{"driver2", "driver3"}},
+				{Id: "driver2", Name: "Driver 2", Type: Network, Incompatibles: []string{"driver1"}},
+				{Id: "driver3", Name: "Driver 3", Type: Network},
+			},
+		},
+	}
+
+	store := &MemoryStore{}
+	store.Write(existingData)
+	eventBus := NewEventBus()
+	dgs := NewDriverGroupStorage(store, eventBus)
+	dgs.data = existingData
+
+	_, err := dgs.Update(DriverGroup{
+		Id:   "group1",
+		Name: "Updated Network Drivers",
+		Type: Network,
+		Drivers: []*Driver{
+			{Id: "driver1", Name: "Updated Driver 1", Type: Network, Incompatibles: []string{"driver2", "driver3"}},
+			{Id: "driver2", Name: "Updated Driver 2", Type: Network, Incompatibles: []string{"driver1"}},
+			{Id: "driver3", Name: "Updated Driver 3", Type: Network},
+		},
+	})
+
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(dgs.data[0].Drivers[0].Incompatibles) != 2 {
+		t.Errorf("expected driver1 to have 2 incompatibles, got %d", len(dgs.data[0].Drivers[0].Incompatibles))
+	}
+	if dgs.data[0].Drivers[0].Incompatibles[0] != "driver2" || dgs.data[0].Drivers[0].Incompatibles[1] != "driver3" {
+		t.Errorf("expected driver1 incompatibles [driver2, driver3], got %v", dgs.data[0].Drivers[0].Incompatibles)
+	}
+
+	if len(dgs.data[0].Drivers[1].Incompatibles) != 1 {
+		t.Errorf("expected driver2 to have 1 incompatible, got %d", len(dgs.data[0].Drivers[1].Incompatibles))
+	}
+	if dgs.data[0].Drivers[1].Incompatibles[0] != "driver1" {
+		t.Errorf("expected driver2 incompatibles [driver1], got %v", dgs.data[0].Drivers[1].Incompatibles)
+	}
+}
+
+func TestDriverGroupStorage_Update_AddNewDriverWithExistingIncompatibles(t *testing.T) {
+	existingData := []*DriverGroup{
+		{
+			Id:   "group1",
+			Name: "Network Drivers",
+			Type: Network,
+			Drivers: []*Driver{
+				{Id: "driver1", Name: "Driver 1", Type: Network, Incompatibles: []string{"driver2"}},
+				{Id: "driver2", Name: "Driver 2", Type: Network},
+			},
+		},
+	}
+
+	store := &MemoryStore{}
+	store.Write(existingData)
+	eventBus := NewEventBus()
+	dgs := NewDriverGroupStorage(store, eventBus)
+	dgs.data = existingData
+
+	_, err := dgs.Update(DriverGroup{
+		Id:   "group1",
+		Name: "Network Drivers",
+		Type: Network,
+		Drivers: []*Driver{
+			{Id: "driver1", Name: "Driver 1", Type: Network, Incompatibles: []string{"driver2"}},
+			{Id: "driver2", Name: "Driver 2", Type: Network},
+			{Id: "", Name: "Driver 3", Type: Network},
+		},
+	})
+
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(dgs.data[0].Drivers[0].Incompatibles) != 1 {
+		t.Errorf("expected driver1 to have 1 incompatible, got %d", len(dgs.data[0].Drivers[0].Incompatibles))
+	}
+	if dgs.data[0].Drivers[0].Incompatibles[0] != "driver2" {
+		t.Errorf("expected driver1 incompatibles [driver2], got %v", dgs.data[0].Drivers[0].Incompatibles)
+	}
+
+	if len(dgs.data[0].Drivers) != 3 {
+		t.Errorf("expected 3 drivers, got %d", len(dgs.data[0].Drivers))
+	}
+	if dgs.data[0].Drivers[2].Id == "" {
+		t.Error("expected new driver to have generated ID")
+	}
+}
+
+func TestDriverGroupStorage_Update_RemoveReferencedDrivers(t *testing.T) {
+	existingData := []*DriverGroup{
+		{
+			Id:   "group1",
+			Name: "Group 1",
+			Type: Network,
+			Drivers: []*Driver{
+				{Id: "driver1", Name: "Driver 1", Type: Network, Incompatibles: []string{"driver2", "driver3"}},
+				{Id: "driver2", Name: "Driver 2", Type: Network, Incompatibles: []string{"driver1"}},
+				{Id: "driver3", Name: "Driver 3", Type: Network},
+			},
+		},
+		{
+			Id:   "group2",
+			Name: "Group 2",
+			Type: Display,
+			Drivers: []*Driver{
+				{Id: "driver4", Name: "Driver 4", Type: Display, Incompatibles: []string{"driver2", "driver3"}},
+				{Id: "driver5", Name: "Driver 5", Type: Display},
+			},
+		},
+	}
+
+	store := &MemoryStore{}
+	store.Write(existingData)
+	eventBus := NewEventBus()
+	dgs := NewDriverGroupStorage(store, eventBus)
+	dgs.data = existingData
+
+	_, err := dgs.Update(DriverGroup{
+		Id:   "group1",
+		Name: "Group 1",
+		Type: Network,
+		Drivers: []*Driver{
+			{Id: "driver1", Name: "Driver 1", Type: Network, Incompatibles: []string{"driver2", "driver3"}},
+			{Id: "driver3", Name: "Driver 3", Type: Network},
+		},
+	})
+
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(dgs.data[0].Drivers) != 2 {
+		t.Errorf("expected 2 drivers in group1, got %d", len(dgs.data[0].Drivers))
+	}
+
+	if len(dgs.data[0].Drivers[0].Incompatibles) != 1 {
+		t.Errorf("expected driver1 to have 1 incompatible, got %d", len(dgs.data[0].Drivers[0].Incompatibles))
+	}
+	if dgs.data[0].Drivers[0].Incompatibles[0] != "driver3" {
+		t.Errorf("expected driver1 incompatibles [driver3], got %v", dgs.data[0].Drivers[0].Incompatibles)
+	}
+
+	if len(dgs.data[1].Drivers[0].Incompatibles) != 1 {
+		t.Errorf("expected driver4 to have 1 incompatible (driver2 removed), got %d", len(dgs.data[1].Drivers[0].Incompatibles))
+	}
+	if dgs.data[1].Drivers[0].Incompatibles[0] != "driver3" {
+		t.Errorf("expected driver4 incompatibles [driver3], got %v", dgs.data[1].Drivers[0].Incompatibles)
+	}
+}
+
+
 func TestDriverGroupStorage_CompleteWorkflow(t *testing.T) {
 	store := &MemoryStore{}
 	eventBus := NewEventBus()
