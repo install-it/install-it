@@ -65,7 +65,7 @@ func (a *App) SelectFile(relative bool) (string, error) {
 
 func (a App) PathExists(path string) bool {
 	_, err := os.Stat(path)
-	return err != nil
+	return err == nil
 }
 
 func (a App) ExecutableExists(path string) bool {
@@ -110,14 +110,23 @@ func (a App) Update(from string, to string, builtinWebview bool) error {
 	}
 	defer file.Close()
 
+	cleanup := true
+	defer func() {
+		if cleanup {
+			os.Remove(file.Name())
+		}
+	}()
+
 	response, err := http.Get(fmt.Sprintf(
 		"https://github.com/install-it/install-it/releases/download/v%s/updater.%s.exe", strings.TrimLeft(to, "v"), a.AppBinaryType()))
 	if err != nil {
 		return err
-	} else if response.StatusCode < 100 || response.StatusCode > 200 {
-		return fmt.Errorf("main: failed to locate the updater for \"%s\" - %s", to, response.Status)
 	}
 	defer response.Body.Close()
+
+	if response.StatusCode < 200 || response.StatusCode >= 300 {
+		return fmt.Errorf("main: failed to locate the updater for \"%s\" - %s", to, response.Status)
+	}
 
 	if _, err := io.Copy(file, response.Body); err != nil {
 		return err
@@ -135,10 +144,11 @@ func (a App) Update(from string, to string, builtinWebview bool) error {
 		Env:   os.Environ(),
 		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
 	})
-
 	if err != nil {
 		return err
 	}
+
+	cleanup = false
 
 	if err := process.Release(); err != nil {
 		return err
