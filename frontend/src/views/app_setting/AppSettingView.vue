@@ -175,7 +175,7 @@ function handleSubmit() {
             <div class="flex shrink">
               <input
                 v-model="settings.password"
-                type="text"
+                type="password"
                 name="password"
                 class="input input-accent"
                 :disabled="!settings.set_password"

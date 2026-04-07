@@ -1,5 +1,6 @@
 import type { storage } from '@/wailsjs/go/models'
 import * as libsysi from '@/wailsjs/go/sysinfo/SysInfo'
+import DOMPurify from 'dompurify'
 import { marked } from 'marked'
 import * as semver from 'semver'
 
@@ -13,7 +14,7 @@ export async function latestRelease(currentVersion: string) {
         hasUpdate: semver.gt(version, currentVersion),
         name: body.name as string,
         releaseAt: new Date(Date.parse(body.published_at)),
-        releaseNotes: await marked.parse(body.body),
+        releaseNotes: DOMPurify.sanitize(await marked.parse(body.body)),
         tag: body.tag_name as string,
         url: body.html_url as string,
         version: version
