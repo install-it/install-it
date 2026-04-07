@@ -42,7 +42,7 @@ func (s *FileStore) Write(v any) error {
 		return err
 	}
 
-	if err := os.WriteFile(s.Path, bytes, os.ModePerm); err != nil {
+	if err := os.WriteFile(s.Path, bytes, 0600); err != nil {
 		return err
 	}
 	return nil

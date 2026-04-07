@@ -87,7 +87,7 @@ func (t Command) DecodeStdout() string {
 
 func (t Command) DecodeStderr() string {
 	if s, err := t.DecodeStdPipe(t.stderr); err != nil {
-		return t.stdout.String()
+		return t.stderr.String()
 	} else {
 		return s
 	}
