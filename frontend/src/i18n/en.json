@@ -199,6 +199,7 @@
     "downloadingUpdater": "Downloading the updater. Upon finished, the software will be closed and updated.",
     "failedToSave": "Failed to save.",
     "finished": "Finished",
+    "noHardwareInfo": "No hardware information available.",
     "noInputWarning": "Please select a driver or task first.",
     "noUpdate": "No Update.",
     "readAppSettingFailed": "Failed to read app settings, reconfigure might solve the error.",

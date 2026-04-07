@@ -43,7 +43,7 @@ onBeforeMount(() => {
 
 function selectMatchedOptions() {
   if (hwinfos.value === null) {
-    $toast.error('沒有資訊')
+    $toast.error(t('toast.noHardwareInfo'))
     return
   }
 
@@ -289,7 +289,7 @@ async function handleSubmit() {
 
             <input
               v-model="settingStore.settings.password"
-              type="text"
+              type="password"
               name="password"
               class="input input-sm max-w-28 input-accent"
               :disabled="!settingStore.settings.set_password"
@@ -349,37 +349,20 @@ async function handleSubmit() {
     ref="statusModal"
     @completed="
       () => {
+        const delay = Math.max(0, Math.floor(Number(settingStore.settings.success_action_delay) || 0))
         switch (settingStore.settings.success_action) {
           case 'shutdown':
-            executor.RunAndOutput(
-              'cmd',
-              ['/C', `shutdown /s /t ${settingStore.settings.success_action_delay}`],
-              true
-            )
+            executor.RunAndOutput('cmd', ['/C', `shutdown /s /t ${delay}`], true)
             break
           case 'reboot':
-            executor.RunAndOutput(
-              'cmd',
-              ['/C', `shutdown /r /t ${settingStore.settings.success_action_delay}`],
-              true
-            )
+            executor.RunAndOutput('cmd', ['/C', `shutdown /r /t ${delay}`], true)
             break
           case 'firmware':
             executor
-              .RunAndOutput(
-                'cmd',
-                ['/C', `shutdown /r /fw /t ${settingStore.settings.success_action_delay}`],
-                true
-              )
+              .RunAndOutput('cmd', ['/C', `shutdown /r /fw /t ${delay}`], true)
               .then(result => {
                 if (result.exitCode != 0) {
-                  // sometimes, /fw would resulted in an error: 'The system could not find the environment option that was entered. (203)'
-                  // execute again normally solve the error
-                  executor.RunAndOutput(
-                    'cmd',
-                    ['/C', `shutdown /r /fw /t ${settingStore.settings.success_action_delay}`],
-                    true
-                  )
+                  executor.RunAndOutput('cmd', ['/C', `shutdown /r /fw /t ${delay}`], true)
                 }
               })
             break

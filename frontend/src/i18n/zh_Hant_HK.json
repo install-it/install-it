@@ -203,6 +203,7 @@
     "failedToSave": "保存失敗。",
     "finished": "完成",
     "invalidZipFile": "非有效的檔案。",
+    "noHardwareInfo": "沒有硬件資訊。",
     "noInputWarning": "請先選擇軀動或工作。",
     "noSuchHost": "無法連接網址。",
     "noUpdate": "沒有更新。",
