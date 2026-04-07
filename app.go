@@ -117,8 +117,13 @@ func (a App) Update(from string, to string, builtinWebview bool) error {
 		}
 	}()
 
-	response, err := http.Get(fmt.Sprintf(
-		"https://github.com/install-it/install-it/releases/download/v%s/updater.%s.exe", strings.TrimLeft(to, "v"), a.AppBinaryType()))
+	url := fmt.Sprintf(
+		"https://github.com/install-it/install-it/releases/download/v%s/updater.%s.exe",
+		strings.TrimLeft(to, "v"),
+		a.AppBinaryType(),
+	)
+
+	response, err := http.Get(url)
 	if err != nil {
 		return err
 	}
@@ -149,10 +154,5 @@ func (a App) Update(from string, to string, builtinWebview bool) error {
 	}
 
 	cleanup = false
-
-	if err := process.Release(); err != nil {
-		return err
-	}
-
-	return nil
+	return process.Release()
 }
