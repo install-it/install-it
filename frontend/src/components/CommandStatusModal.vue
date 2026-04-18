@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import ModalFrame from '@/components/modals/ModalFrame.vue'
+import TaskStatus from '@/components/TaskStatus.vue'
+import type { Command, Process } from '@/types/execute'
 import * as executor from '@/wailsjs/go/execute/CommandExecutor'
 import { status } from '@/wailsjs/go/models'
 import * as runtime from '@/wailsjs/runtime/runtime'
@@ -7,8 +9,6 @@ import AsyncLock from 'async-lock'
 import { ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
-import type { Command, Process } from '../types'
-import TaskStatus from './TaskStatus.vue'
 
 const emit = defineEmits<{ completed: [] }>()
 
