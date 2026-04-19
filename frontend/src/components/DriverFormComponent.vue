@@ -164,7 +164,7 @@ function handleSubmit(event: SubmitEvent) {
                   class="inline-block max-h-5 rounded-xs bg-yellow-300 p-0.5"
                   :title="$t('driverForm.incompatibleWith')"
                 >
-                  <font-awesome-icon icon="fa-solid fa-code-merge" />
+                  <Icon icon="mdi:source-merge" />
                 </span>
 
                 <span
@@ -172,14 +172,14 @@ function handleSubmit(event: SubmitEvent) {
                   class="inline-block max-h-5 rounded-xs bg-blue-300 p-0.5"
                   :title="$t('driverForm.allowedExitCode')"
                 >
-                  <font-awesome-icon icon="fa-solid fa-0" />
+                  <Icon icon="mdi:numeric-0-box-outline" />
                 </span>
               </div>
 
               <div>
                 <div class="flex gap-x-2">
                   <button type="button" :title="$t('common.edit')" @click="inputModal?.show(d)">
-                    <font-awesome-icon icon="fa-solid fa-pen-to-square" />
+                    <Icon icon="mdi:pencil" class="size-4" />
                   </button>
 
                   <button
@@ -187,7 +187,7 @@ function handleSubmit(event: SubmitEvent) {
                     :title="$t('common.delete')"
                     @click="group.drivers.splice(i, 1)"
                   >
-                    <font-awesome-icon icon="fa-solid fa-trash" />
+                    <Icon icon="mdi:trash-can" class="size-4" />
                   </button>
                 </div>
               </div>
@@ -210,11 +210,11 @@ function handleSubmit(event: SubmitEvent) {
             type="submit"
             class="btn px-2 btn-secondary"
           >
-            <font-awesome-icon icon="fa-solid fa-floppy-disk" />
+            <Icon icon="mdi:content-save" />
           </button>
 
           <button type="button" class="btn px-2 btn-primary" @click="inputModal?.show()">
-            <font-awesome-icon icon="fa-regular fa-square-plus" />
+            <Icon icon="mdi:plus-box" />
           </button>
         </div>
       </div>

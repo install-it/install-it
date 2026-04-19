@@ -67,7 +67,7 @@ const filteredGroups = computed(() => {
           }
         "
       >
-        <font-awesome-icon icon="fa-regular fa-square-check" />
+        <Icon icon="mdi:checkbox-marked" />
       </button>
 
       <button
@@ -77,7 +77,7 @@ const filteredGroups = computed(() => {
         :title="$t('driverForm.selectNone')"
         @click="model = []"
       >
-        <font-awesome-icon icon="fa-regular fa-square" />
+        <Icon icon="mdi:checkbox-blank-outline" />
       </button>
     </div>
 

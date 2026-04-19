@@ -1,8 +1,5 @@
 import { i18n } from '@/i18n'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { far } from '@fortawesome/free-regular-svg-icons'
-import { fas } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { Icon } from '@iconify/vue'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import { LoadingPlugin } from 'vue-loading-overlay'
@@ -13,15 +10,13 @@ import App from './App.vue'
 import './assets/main.css'
 import router from './router'
 
-library.add(fas, far)
-
 const app = createApp(App)
   .use(router)
   .use(createPinia())
   .use(ToastPlugin, { position: 'top-right' })
   .use(i18n)
   .use(LoadingPlugin)
-  .component('font-awesome-icon', FontAwesomeIcon)
+  .component('Icon', Icon)
 
 app.config.globalProperties.$window = window
 

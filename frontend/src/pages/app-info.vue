@@ -136,7 +136,7 @@ function checkUpdate() {
             class="btn ms-1.5 btn-xs"
             @click="RunAndOutput('cmd', ['/c', `explorer.exe ${info.app.pathDriver}`], true)"
           >
-            <font-awesome-icon icon="fa-solid fa-arrow-up-right-from-square" />
+            <Icon icon="mdi:open-in-new" />
           </button>
         </div>
       </div>

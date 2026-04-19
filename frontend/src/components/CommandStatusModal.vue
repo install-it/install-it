@@ -176,7 +176,7 @@ async function handleAbort(process: Process) {
             "
             @click="frame?.hide()"
           >
-            <font-awesome-icon icon="fa-solid fa-xmark" />
+            <Icon icon="mdi:close" />
           </button>
         </div>
 
@@ -206,7 +206,7 @@ async function handleAbort(process: Process) {
               }
             "
           >
-            <font-awesome-icon icon="fa-solid fa-forward" />
+            <Icon icon="mdi:arrow-right" />
             {{ $t('execute.forceComplete') }}
           </button>
         </div>
