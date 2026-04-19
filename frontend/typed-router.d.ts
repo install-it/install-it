@@ -48,18 +48,18 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/drivers/[id]/edit': RouteRecordInfo<
+      '/drivers/[id]/edit',
+      '/drivers/:id/edit',
+      { id: ParamValue<true> },
+      { id: ParamValue<false> },
+      | never
+    >,
     '/drivers/create': RouteRecordInfo<
       '/drivers/create',
       '/drivers/create',
       Record<never, never>,
       Record<never, never>,
-      | never
-    >,
-    '/drivers/edit/[id]': RouteRecordInfo<
-      '/drivers/edit/[id]',
-      '/drivers/edit/:id',
-      { id: ParamValue<true> },
-      { id: ParamValue<false> },
       | never
     >,
     '/match-rules/': RouteRecordInfo<
@@ -69,18 +69,18 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/match-rules/[id]/edit': RouteRecordInfo<
+      '/match-rules/[id]/edit',
+      '/match-rules/:id/edit',
+      { id: ParamValue<true> },
+      { id: ParamValue<false> },
+      | never
+    >,
     '/match-rules/create': RouteRecordInfo<
       '/match-rules/create',
       '/match-rules/create',
       Record<never, never>,
       Record<never, never>,
-      | never
-    >,
-    '/match-rules/edit/[id]': RouteRecordInfo<
-      '/match-rules/edit/[id]',
-      '/match-rules/edit/:id',
-      { id: ParamValue<true> },
-      { id: ParamValue<false> },
       | never
     >,
     '/porter': RouteRecordInfo<
@@ -128,15 +128,15 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/drivers/create.vue': {
+    'src/pages/drivers/[id]/edit.vue': {
       routes:
-        | '/drivers/create'
+        | '/drivers/[id]/edit'
       views:
         | never
     }
-    'src/pages/drivers/edit/[id].vue': {
+    'src/pages/drivers/create.vue': {
       routes:
-        | '/drivers/edit/[id]'
+        | '/drivers/create'
       views:
         | never
     }
@@ -146,15 +146,15 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/match-rules/create.vue': {
+    'src/pages/match-rules/[id]/edit.vue': {
       routes:
-        | '/match-rules/create'
+        | '/match-rules/[id]/edit'
       views:
         | never
     }
-    'src/pages/match-rules/edit/[id].vue': {
+    'src/pages/match-rules/create.vue': {
       routes:
-        | '/match-rules/edit/[id]'
+        | '/match-rules/create'
       views:
         | never
     }

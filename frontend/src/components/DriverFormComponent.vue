@@ -9,25 +9,21 @@ import { useI18n } from 'vue-i18n'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toast-notification'
 
+const props = defineProps<{ id?: string }>()
+
 const { t } = useI18n()
 
 const $route = useRoute()
-
 const $router = useRouter()
-
 const $toast = useToast({ position: 'top-right' })
 
 const questionModal = useTemplateRef('questionModal')
-
 const inputModal = useTemplateRef('inputModal')
 
 const groupStore = useDriverGroupStore()
 
-const params = $route.params as { id: string }
-const id = Array.isArray(params.id) ? params.id[0] : params.id
-
 const groupEditor = groupStore.editor(
-  id,
+  props.id,
   storage.DriverType[
     ($route.query.type as string | undefined)?.toUpperCase() as keyof typeof storage.DriverType
   ]
@@ -56,10 +52,11 @@ function handleSubmit(event: SubmitEvent) {
     groupStorage.All().then(newDriverGroups => {
       groupStore.groups = newDriverGroups
       groupEditor.reset()
+
       if (event.submitter?.id !== 'driver-submit-btn') {
         $router.back()
       } else {
-        $router.replace({ path: `/drivers/edit/${group.value.id}` })
+        $router.replace({ path: `/drivers/${group.value.id}/edit` })
       }
     })
   }
@@ -91,7 +88,7 @@ function handleSubmit(event: SubmitEvent) {
   <form
     class="mx-auto flex h-full max-w-full flex-col justify-center gap-y-8 overflow-y-auto lg:max-w-2xl xl:max-w-4xl"
     autocomplete="off"
-    @submit.prevent="event => handleSubmit(event as SubmitEvent)"
+    @submit.prevent="handleSubmit"
   >
     <div class="flex gap-x-3 px-1">
       <div class="w-32">
