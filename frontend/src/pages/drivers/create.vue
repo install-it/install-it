@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DriverInputModal from '@/components/DriverInputModal.vue'
 import UnsaveConfirmModal from '@/components/modals/UnsaveConfirmModal.vue'
 import { useDriverGroupStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
@@ -7,7 +8,6 @@ import { toRaw, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toast-notification'
-import DriverInputModal from './components/DriverInputModal.vue'
 
 const { t } = useI18n()
 
@@ -24,8 +24,10 @@ const inputModal = useTemplateRef('inputModal')
 const groupStore = useDriverGroupStore()
 
 const groupEditor = groupStore.editor(
-  $route.params.id as string | undefined,
-  storage.DriverType[$route.query.type?.toString().toUpperCase() as keyof typeof storage.DriverType]
+  undefined,
+  storage.DriverType[
+    ($route.query.type as string | undefined)?.toUpperCase() as keyof typeof storage.DriverType
+  ]
 )
 
 const group = groupEditor.group // alias

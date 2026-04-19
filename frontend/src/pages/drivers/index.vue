@@ -6,6 +6,9 @@ import * as driverGroupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
 import * as groupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toast-notification'
+
+const $toast = useToast()
 
 const router = useRouter()
 
