@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ModalFrame from '@/components/modals/ModalFrame.vue'
 import ProgressNode from '@/components/ProgressNode.vue'
 import { porter } from '@/wailsjs/go/models'
 import * as programPorter from '@/wailsjs/go/porter/Porter'
@@ -7,9 +6,11 @@ import * as runtime from '@/wailsjs/runtime'
 import { nextTick, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+const isOpen = ref(false)
+
 defineExpose({
   export: (destination: string) => {
-    frame.value?.show()
+    isOpen.value = true
     title.value = t('porter.export')
     progress.value = null
     messages.value = []
@@ -26,7 +27,7 @@ defineExpose({
     interval = setInterval(updateProgress, 300)
   },
   import: (from: 'url' | 'file', source: string) => {
-    frame.value?.show()
+    isOpen.value = true
     title.value = `${t('porter.import')} (${t(`porter.${from}`)})`
     progress.value = null
     messages.value = []
@@ -53,8 +54,6 @@ defineExpose({
     interval = setInterval(updateProgress, 300)
   }
 })
-
-const frame = useTemplateRef('frame')
 
 const messageBox = useTemplateRef('message-box')
 
@@ -109,91 +108,74 @@ function toastErrMsg(err: string) {
 </script>
 
 <template>
-  <ModalFrame ref="frame" :on-demand="true" :immediate="false">
-    <div>
-      <!-- Modal content -->
-      <div class="rounded-lg bg-white shadow-sm">
-        <!-- Modal header -->
-        <div class="flex h-12 items-center justify-between rounded-t border-b px-4">
-          <h3 class="font-semibold">
-            {{ t('porter.progress') }}
-          </h3>
+  <UModal
+    v-model:open="isOpen"
+    :title="t('porter.progress')"
+    :close="progress?.status.includes('ed')"
+    @close="
+      () => {
+        if (progress?.status == 'completed') {
+          runtime.WindowReloadApp()
+        }
+      }
+    "
+  >
+    <template #body>
+      <div class="h-[70vh] w-[70vw] overflow-auto">
+        <div class="flex h-full flex-col gap-y-2">
+          <div class="flex items-center gap-x-3">
+            <h2 class="text-lg font-bold">{{ title }}</h2>
 
-          <button
-            v-show="progress?.status.includes('ed')"
-            type="button"
-            class="rounded-lg bg-transparent p-3 text-sm text-gray-400 hover:bg-gray-100 hover:text-gray-900"
-            @click="
-              () => {
-                if (progress?.status == 'completed') {
-                  runtime.WindowReloadApp()
-                } else {
-                  frame?.hide()
-                }
-              }
-            "
+            <p class="proc-badge h-6" :class="[`proc-badge-${progress?.status}`]">
+              <span class="truncate capitalize">{{ $t(`status.${progress?.status}`) }}</span>
+            </p>
+          </div>
+
+          <ol class="flex w-full items-center">
+            <ProgressNode v-for="(task, i) in progress?.tasks ?? []" :key="i" :task>
+              <i class="text-xs lg:text-base">
+                <Icon v-if="task.status == 'pending'" icon="mdi:hourglass-start" />
+
+                <Icon
+                  v-else-if="task.status.includes('ing')"
+                  icon="mdi:loading"
+                  class="animate-spin"
+                />
+
+                <Icon v-else-if="task.status == 'completed'" icon="mdi:check" />
+
+                <Icon v-else icon="mdi:alert" />
+              </i>
+            </ProgressNode>
+
+            <ProgressNode></ProgressNode>
+          </ol>
+
+          <div
+            ref="message-box"
+            class="flex min-h-48 flex-1 flex-col gap-y-2 overflow-y-auto rounded-sm border p-1"
           >
-            <Icon icon="mdi:close" />
-          </button>
-        </div>
+            <p v-for="(m, i) in messages" :key="i" class="text-xs break-all text-gray-400">
+              {{ m }}
+            </p>
+          </div>
 
-        <!-- Modal body -->
-        <div class="h-[70vh] w-[70vw] overflow-auto px-4 py-2">
-          <div class="flex h-full flex-col gap-y-2">
-            <div class="flex items-center gap-x-3">
-              <h2 class="text-lg font-bold">{{ title }}</h2>
-
-              <p class="proc-badge h-6" :class="[`proc-badge-${progress?.status}`]">
-                <span class="truncate capitalize">{{ $t(`status.${progress?.status}`) }}</span>
-              </p>
-            </div>
-
-            <ol class="flex w-full items-center">
-              <ProgressNode v-for="(task, i) in progress?.tasks ?? []" :key="i" :task>
-                <i class="text-xs lg:text-base">
-                  <Icon v-if="task.status == 'pending'" icon="mdi:hourglass-start" />
-
-                  <Icon
-                    v-else-if="task.status.includes('ing')"
-                    icon="mdi:loading"
-                    class="animate-spin"
-                  />
-
-                  <Icon v-else-if="task.status == 'completed'" icon="mdi:check" />
-
-                  <Icon v-else icon="mdi:alert" />
-                </i>
-              </ProgressNode>
-
-              <ProgressNode></ProgressNode>
-            </ol>
-
-            <div
-              ref="message-box"
-              class="flex min-h-48 flex-1 flex-col gap-y-2 overflow-y-auto rounded-sm border p-1"
+          <div class="flex justify-end">
+            <UButton
+              v-show="progress?.status == 'pending' || progress?.status == 'running'"
+              type="button"
+              color="error"
+              @click="
+                () => {
+                  programPorter.Abort().catch(err => toast.add({ title: err, color: 'error' }))
+                }
+              "
             >
-              <p v-for="(m, i) in messages" :key="i" class="text-xs break-all text-gray-400">
-                {{ m }}
-              </p>
-            </div>
-
-            <div class="flex justify-end">
-              <button
-                v-show="progress?.status == 'pending' || progress?.status == 'running'"
-                type="button"
-                class="btn btn-error"
-                @click="
-                  () => {
-                    programPorter.Abort().catch(err => toast.add({ title: err, color: 'error' }))
-                  }
-                "
-              >
-                {{ $t('common.cancel') }}
-              </button>
-            </div>
+              {{ $t('common.cancel') }}
+            </UButton>
           </div>
         </div>
       </div>
-    </div>
-  </ModalFrame>
+    </template>
+  </UModal>
 </template>

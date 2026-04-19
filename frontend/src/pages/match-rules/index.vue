@@ -54,14 +54,18 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
           <div class="flex gap-x-1.5 py-1">
             <RouterLink
               :to="`/match-rules/${rs.id}/edit`"
-              class="btn h-6 btn-xs"
               :title="$t('common.edit')"
             >
-              <Icon icon="mdi:pencil" class="text-gray-500" />
+              <UButton color="neutral" variant="outline" size="xs" class="h-6">
+                <Icon icon="mdi:pencil" class="text-gray-500" />
+              </UButton>
             </RouterLink>
 
-            <button
-              class="btn h-6 btn-xs"
+            <UButton
+              color="neutral"
+              variant="outline"
+              size="xs"
+              class="h-6"
               :title="$t('common.clone')"
               @click="
                 matchRuleStorage.Add(rs).then(() =>
@@ -75,10 +79,13 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
               "
             >
               <Icon icon="mdi:content-duplicate" class="text-gray-500" />
-            </button>
+            </UButton>
 
-            <button
-              class="btn h-6 btn-xs"
+            <UButton
+              color="neutral"
+              variant="outline"
+              size="xs"
+              class="h-6"
               :title="$t('common.delete')"
               @click="
                 matchRuleStorage.Remove(rs.id).then(() =>
@@ -92,7 +99,7 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
               "
             >
               <Icon icon="mdi:trash-can" class="text-gray-500" />
-            </button>
+            </UButton>
           </div>
         </div>
 
@@ -170,11 +177,11 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
     </div>
 
     <div class="flex justify-end gap-x-3">
-      <button class="btn btn-sm btn-primary">
-        <RouterLink :to="{ path: '/match-rules/create' }">
+      <RouterLink :to="{ path: '/match-rules/create' }">
+        <UButton color="primary" size="sm">
           {{ $t('common.create') }}
-        </RouterLink>
-      </button>
+        </UButton>
+      </RouterLink>
     </div>
   </div>
 </template>

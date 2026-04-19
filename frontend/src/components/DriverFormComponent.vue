@@ -94,11 +94,18 @@ function handleSubmit(event: SubmitEvent) {
         <fieldset class="fieldset">
           <legend class="fieldset-legend text-sm">{{ $t('driverForm.type') }}</legend>
 
-          <select v-model="group.type" name="type" class="select w-full select-accent" required>
-            <option v-for="type in storage.DriverType" :key="type" :value="type">
-              {{ $t(`driverCatetory.${type}`) }}
-            </option>
-          </select>
+          <USelect
+            v-model="group.type"
+            name="type"
+            class="w-full"
+            :options="
+              Object.values(storage.DriverType).map(type => ({
+                label: $t(`driverCatetory.${type}`),
+                value: type
+              }))
+            "
+            required
+          />
         </fieldset>
       </div>
 
@@ -106,7 +113,7 @@ function handleSubmit(event: SubmitEvent) {
         <fieldset class="fieldset">
           <legend class="fieldset-legend text-sm">{{ $t('driverForm.name') }}</legend>
 
-          <input v-model="group.name" type="text" class="input w-full input-accent" required />
+          <UInput v-model="group.name" type="text" class="w-full" required />
         </fieldset>
       </div>
     </div>
@@ -203,35 +210,38 @@ function handleSubmit(event: SubmitEvent) {
         </div>
 
         <div class="flex justify-end gap-x-3">
-          <button
+          <UButton
             v-show="groupEditor.modifiedDrivers.value"
             id="driver-submit-btn"
             type="submit"
-            class="btn px-2 btn-secondary"
+            class="px-2"
+            color="secondary"
           >
             <Icon icon="mdi:content-save" />
-          </button>
+          </UButton>
 
-          <button type="button" class="btn px-2 btn-primary" @click="inputModal?.show()">
+          <UButton type="button" class="px-2" color="primary" @click="inputModal?.show()">
             <Icon icon="mdi:plus-box" />
-          </button>
+          </UButton>
         </div>
       </div>
     </fieldset>
 
     <div class="flex h-8 gap-x-5">
-      <button
+      <UButton
         type="button"
-        class="btn grow"
+        class="grow"
+        color="neutral"
+        variant="outline"
         style="--btn-color: var(--color-gray-100)"
         @click="$router.back()"
       >
         {{ $t('common.back') }}
-      </button>
+      </UButton>
 
-      <button type="submit" class="btn grow btn-secondary">
+      <UButton type="submit" class="grow" color="secondary">
         {{ $t('common.save') }}
-      </button>
+      </UButton>
     </div>
   </form>
 

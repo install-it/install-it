@@ -195,13 +195,16 @@ async function handleSubmit() {
             {{ $t('driverCatetory.network') }}
           </label>
 
-          <select name="network" class="w-full rounded-lg ps-3 pe-9 pt-5 pb-1">
-            <option>{{ $t('common.pleaseSelect') }}</option>
-
-            <option v-for="g in groups.filter(g => g.type == 'network')" :key="g.id" :value="g.id">
-              {{ g.name }}
-            </option>
-          </select>
+          <USelect
+            name="network"
+            color="primary"
+            class="w-full pt-5 pb-1"
+            :options="[
+              { value: '', label: $t('common.pleaseSelect') },
+              ...groups.filter(g => g.type == 'network').map(g => ({ value: g.id, label: g.name }))
+            ]"
+            value-attribute="value"
+          />
         </div>
 
         <div class="relative w-full">
@@ -211,13 +214,16 @@ async function handleSubmit() {
             {{ $t('driverCatetory.display') }}
           </label>
 
-          <select name="display" class="w-full rounded-lg ps-3 pe-9 pt-5 pb-1">
-            <option>{{ $t('common.pleaseSelect') }}</option>
-
-            <option v-for="g in groups.filter(g => g.type == 'display')" :key="g.id" :value="g.id">
-              {{ g.name }}
-            </option>
-          </select>
+          <USelect
+            name="display"
+            color="primary"
+            class="w-full pt-5 pb-1"
+            :options="[
+              { value: '', label: $t('common.pleaseSelect') },
+              ...groups.filter(g => g.type == 'display').map(g => ({ value: g.id, label: g.name }))
+            ]"
+            value-attribute="value"
+          />
         </div>
       </div>
 
@@ -232,10 +238,10 @@ async function handleSubmit() {
           <div class="h-full overflow-y-scroll rounded-lg border border-apple-green-600 px-2 pt-3">
             <template v-for="g in groups.filter(g => g.type == 'miscellaneous')" :key="g.id">
               <label class="flex w-full cursor-pointer items-center select-none">
-                <input
-                  type="checkbox"
+                <UCheckbox
                   name="miscellaneous"
-                  class="checkbox checkbox-sm checkbox-primary me-1.5"
+                  color="primary"
+                  class="me-1.5"
                   :value="g.id"
                 />
                 {{ g.name }}
@@ -255,21 +261,19 @@ async function handleSubmit() {
         <div class="flex flex-1 flex-col justify-around">
           <div class="flex gap-x-4">
             <label class="flex cursor-pointer items-center gap-x-1.5 select-none">
-              <input
+              <UCheckbox
                 v-model="settingStore.settings.create_partition"
-                type="checkbox"
                 name="create_partition"
-                class="checkbox checkbox-sm checkbox-primary"
+                color="primary"
               />
               {{ $t('installSetting.createPartition') }}
             </label>
 
             <label class="flex cursor-pointer items-center gap-x-1.5 select-none">
-              <input
+              <UCheckbox
                 v-model="settingStore.settings.parallel_install"
-                type="checkbox"
                 name="parallel_install"
-                class="checkbox checkbox-sm checkbox-primary"
+                color="primary"
               />
               {{ $t('installSetting.parallelInstall') }}
             </label>
@@ -277,20 +281,21 @@ async function handleSubmit() {
 
           <div class="flex gap-x-2">
             <label class="flex cursor-pointer items-center gap-x-1.5 select-none">
-              <input
+              <UCheckbox
                 v-model="settingStore.settings.set_password"
-                type="checkbox"
                 name="set_password"
-                class="checkbox checkbox-sm checkbox-primary"
+                color="primary"
               />
               {{ $t('installSetting.setPassword') }}
             </label>
 
-            <input
+            <UInput
               v-model="settingStore.settings.password"
               type="password"
               name="password"
-              class="input input-sm input-accent max-w-28"
+              color="primary"
+              size="sm"
+              class="max-w-28"
               :disabled="!settingStore.settings.set_password"
             />
           </div>
@@ -303,29 +308,30 @@ async function handleSubmit() {
             {{ $t('installSetting.successAction') }}
           </label>
 
-          <select
+          <USelect
             v-model="settingStore.settings.success_action"
             name="success_action"
-            class="select select-accent w-full"
-          >
-            <option v-for="action in storage.SuccessAction" :key="action" :value="action">
-              {{ $t(`successAction.${action}`) }}
-            </option>
-          </select>
+            color="primary"
+            class="w-full"
+            :options="storage.SuccessAction.map(action => ({ value: action, label: $t(`successAction.${action}`) }))"
+            value-attribute="value"
+          />
         </div>
 
         <div class="mt-2 flex h-8 flex-row items-center justify-end gap-x-3">
-          <button
+          <UButton
             type="button"
-            class="btn btn-outline btn-neutral border-2"
+            color="neutral"
+            variant="outline"
             @click="selectMatchedOptions"
           >
             {{ $t('matchRule.match') }}
-          </button>
+          </UButton>
 
-          <button
+          <UButton
             type="button"
-            class="btn btn-outline btn-secondary border-2"
+            color="secondary"
+            variant="outline"
             @click="
               () => {
                 form?.reset()
@@ -334,11 +340,11 @@ async function handleSubmit() {
             "
           >
             {{ $t('installSetting.reset') }}
-          </button>
+          </UButton>
 
-          <button class="btn btn-secondary" @click="handleSubmit">
+          <UButton color="secondary" @click="handleSubmit">
             {{ $t('installSetting.execute') }}
-          </button>
+          </UButton>
         </div>
       </div>
     </div>

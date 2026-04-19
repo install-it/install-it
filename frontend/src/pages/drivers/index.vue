@@ -137,14 +137,18 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
           <div class="flex gap-x-1.5 py-1">
             <RouterLink
               :to="`/drivers/${g.id}/edit`"
-              class="btn h-6 btn-xs"
               :title="$t('common.edit')"
             >
-              <Icon icon="mdi:pencil" class="text-gray-500" />
+              <UButton color="neutral" variant="outline" size="xs" class="h-6">
+                <Icon icon="mdi:pencil" class="text-gray-500" />
+              </UButton>
             </RouterLink>
 
-            <button
-              class="btn h-6 btn-xs"
+            <UButton
+              color="neutral"
+              variant="outline"
+              size="xs"
+              class="h-6"
               :title="$t('common.clone')"
               @click="
                 groupStorage.Add(g).then(() =>
@@ -158,10 +162,13 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
               "
             >
               <Icon icon="mdi:content-duplicate" class="text-gray-500" />
-            </button>
+            </UButton>
 
-            <button
-              class="btn h-6 btn-xs"
+            <UButton
+              color="neutral"
+              variant="outline"
+              size="xs"
+              class="h-6"
               :title="$t('common.delete')"
               @click="
                 groupStorage.Remove(g.id).then(() =>
@@ -175,7 +182,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
               "
             >
               <Icon icon="mdi:trash-can" class="text-gray-500" />
-            </button>
+            </UButton>
           </div>
         </div>
 
@@ -229,10 +236,11 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
     </div>
 
     <div class="flex justify-end gap-x-3">
-      <button
+      <UButton
         v-show="groupStore.groups?.filter(d => d.type == $route.query.type).length > 1"
         type="button"
-        class="btn text-white btn-sm"
+        size="sm"
+        class="text-white"
         :style="
           reordering
             ? '--btn-color: var(--color-apple-green-800); animation: var(--animate-blink-75);'
@@ -241,13 +249,13 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
         @click="reordering = !reordering"
       >
         {{ reordering ? $t('driverForm.view') : $t('driverForm.order') }}
-      </button>
+      </UButton>
 
-      <button class="btn btn-sm btn-primary">
-        <RouterLink :to="{ path: '/drivers/create', query: { type: $route.query.type } }">
+      <RouterLink :to="{ path: '/drivers/create', query: { type: $route.query.type } }">
+        <UButton color="primary" size="sm">
           {{ $t('common.create') }}
-        </RouterLink>
-      </button>
+        </UButton>
+      </RouterLink>
     </div>
   </div>
 </template>

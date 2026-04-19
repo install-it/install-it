@@ -1,28 +1,27 @@
 <script setup lang="ts">
-import ModalFrame from '@/components/modals/ModalFrame.vue'
 import TaskStatus from '@/components/TaskStatus.vue'
 import type { Command, Process } from '@/types/execute'
 import * as executor from '@/wailsjs/go/execute/CommandExecutor'
 import { status } from '@/wailsjs/go/models'
 import * as runtime from '@/wailsjs/runtime/runtime'
 import AsyncLock from 'async-lock'
-import { ref, useTemplateRef } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const emit = defineEmits<{ completed: [] }>()
 
-const frame = useTemplateRef('frame')
+const isOpen = ref(false)
 
 defineExpose({
   show: async (parallel: boolean, cmds: Array<Command>) => {
-    frame.value?.show()
+    isOpen.value = true
 
     isParallel = parallel
 
     processes.value = cmds.map(vals => ({ command: { ...vals }, status: status.Status.PENDING }))
     dispatchCommand()
   },
-  hide: frame.value?.hide || (() => {})
+  hide: () => { isOpen.value = false }
 })
 
 const { t } = useI18n()
@@ -159,59 +158,42 @@ async function handleAbort(process: Process) {
 </script>
 
 <template>
-  <ModalFrame ref="frame" :on-demand="true" :immediate="false">
-    <div class="w-[65vw] max-w-3xl">
-      <!-- Modal content -->
-      <div class="rounded-sm bg-white shadow-sm">
-        <!-- Modal header -->
-        <div class="flex items-center justify-between rounded-t border-b px-3 py-1.5">
-          <h3 class="font-semibold">
-            {{ $t('execute.title') }}
-          </h3>
-
-          <button
-            type="button"
-            class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 enabled:hover:bg-gray-200 enabled:hover:text-gray-900"
-            :disabled="
-              processes.some(cmd => ['pending', 'running', 'aborting'].includes(cmd.status))
-            "
-            @click="frame?.hide()"
-          >
-            <Icon icon="mdi:close" />
-          </button>
-        </div>
-
-        <!-- Modal body -->
-        <div class="max-h-[70vh] overflow-y-auto px-4 py-2">
-          <template v-for="(process, i) in processes" :key="i">
-            <TaskStatus :process="process" @abort="handleAbort(process)"></TaskStatus>
-          </template>
-        </div>
-
-        <div
-          v-show="
-            processes.every(p => p.status.includes('ed')) &&
-            processes.some(p => p.status != 'completed')
-          "
-          class="flex justify-end px-4 pb-2"
-        >
-          <button
-            class="btn font-normal btn-sm btn-secondary"
-            @click="
-              event => {
-                $emit('completed')
-                toast.add({ title: t('toast.finished'), color: 'success' })
-
-                // @ts-ignore
-                event.currentTarget?.remove()
-              }
-            "
-          >
-            <Icon icon="mdi:arrow-right" />
-            {{ $t('execute.forceComplete') }}
-          </button>
-        </div>
+  <UModal
+    v-model:open="isOpen"
+    :title="$t('execute.title')"
+    :close="!processes.some(cmd => ['pending', 'running', 'aborting'].includes(cmd.status))"
+  >
+    <template #body>
+      <div class="max-h-[70vh] overflow-y-auto">
+        <template v-for="(process, i) in processes" :key="i">
+          <TaskStatus :process="process" @abort="handleAbort(process)"></TaskStatus>
+        </template>
       </div>
-    </div>
-  </ModalFrame>
+
+      <div
+        v-show="
+          processes.every(p => p.status.includes('ed')) &&
+          processes.some(p => p.status != 'completed')
+        "
+        class="flex justify-end pt-2"
+      >
+        <UButton
+          color="secondary"
+          size="sm"
+          @click="
+            event => {
+              $emit('completed')
+              toast.add({ title: t('toast.finished'), color: 'success' })
+
+              // @ts-ignore
+              event.currentTarget?.remove()
+            }
+          "
+        >
+          <Icon icon="mdi:arrow-right" />
+          {{ $t('execute.forceComplete') }}
+        </UButton>
+      </div>
+    </template>
+  </UModal>
 </template>

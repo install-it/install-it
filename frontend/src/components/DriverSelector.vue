@@ -44,15 +44,17 @@ const filteredGroups = computed(() => {
     </div>
 
     <div class="mb-2 flex gap-x-2">
-      <input
+      <UInput
         v-model="searchPhrase"
         :placeholder="$t('driverForm.search')"
-        class="input ms-1 grow border-none bg-gray-100 focus:outline-gray-200"
+        class="ms-1 grow"
+        variant="none"
+        :ui="{ base: 'border-none bg-gray-100 focus:outline-gray-200' }"
       />
 
-      <button
+      <UButton
         type="button"
-        class="btn px-2 text-white"
+        class="px-2 text-white"
         style="--btn-color: var(--color-powder-blue-800)"
         :title="$t('driverForm.selectAll')"
         @click="
@@ -68,17 +70,17 @@ const filteredGroups = computed(() => {
         "
       >
         <Icon icon="mdi:checkbox-marked" />
-      </button>
+      </UButton>
 
-      <button
+      <UButton
         type="button"
-        class="btn px-2 text-white"
+        class="px-2 text-white"
         style="--btn-color: var(--color-rose-400)"
         :title="$t('driverForm.selectNone')"
         @click="model = []"
       >
         <Icon icon="mdi:checkbox-blank-outline" />
-      </button>
+      </UButton>
     </div>
 
     <ul class="h-44 overflow-auto rounded-lg border p-1.5">
@@ -92,11 +94,11 @@ const filteredGroups = computed(() => {
         class="px-4 py-2 text-sm"
       >
         <label class="flex w-full cursor-pointer items-center select-none">
-          <input
+          <UCheckbox
             v-model="model"
-            type="checkbox"
             value="set_password"
-            class="checkbox me-1.5 checkbox-sm checkbox-primary"
+            class="me-1.5"
+            size="sm"
           />
 
           <span class="me-1 badge px-1" :style="`--badge-color: var(--color-builtin)`">
@@ -119,11 +121,11 @@ const filteredGroups = computed(() => {
         class="px-4 py-2 text-sm"
       >
         <label class="flex w-full cursor-pointer items-center select-none">
-          <input
+          <UCheckbox
             v-model="model"
-            type="checkbox"
             value="create_partition"
-            class="checkbox me-1.5 checkbox-sm checkbox-primary"
+            class="me-1.5"
+            size="sm"
           />
 
           <span class="me-1 badge px-1" :style="`--badge-color: var(--color-builtin)`">
@@ -140,11 +142,11 @@ const filteredGroups = computed(() => {
         <template v-if="$props.groupBy === 'group'">
           <li class="px-4 py-2 text-sm">
             <label class="flex w-full cursor-pointer items-center select-none">
-              <input
+              <UCheckbox
                 v-model="model"
-                type="checkbox"
                 :value="g.id"
-                class="checkbox me-1.5 checkbox-sm checkbox-primary"
+                class="me-1.5"
+                size="sm"
               />
 
               <span
@@ -166,11 +168,11 @@ const filteredGroups = computed(() => {
           <template v-for="d in g.drivers.filter(d => !excludes?.includes(d.id))" :key="d.id">
             <li class="px-4 py-2 text-sm">
               <label class="flex w-full cursor-pointer items-center select-none">
-                <input
+                <UCheckbox
                   v-model="model"
-                  type="checkbox"
                   :value="d.id"
-                  class="checkbox me-1.5 checkbox-sm checkbox-primary"
+                  class="me-1.5"
+                  size="sm"
                 />
 
                 <span

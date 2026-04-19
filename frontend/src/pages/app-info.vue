@@ -112,9 +112,9 @@ function checkUpdate() {
             {{ info.app.version }}
           </p>
 
-          <button class="btn font-normal btn-xs" :disabled="onCheck" @click="checkUpdate()">
+          <UButton color="neutral" variant="outline" size="xs" :disabled="onCheck" @click="checkUpdate()">
             {{ $t('info.checkUpdate') }}
-          </button>
+          </UButton>
         </div>
       </div>
 
@@ -130,13 +130,16 @@ function checkUpdate() {
         <div class="col-span-5 break-all">
           {{ info.app.pathDriver }}
 
-          <button
+          <UButton
             type="button"
-            class="btn ms-1.5 btn-xs"
+            color="neutral"
+            variant="outline"
+            size="xs"
+            class="ms-1.5"
             @click="RunAndOutput('cmd', ['/c', `explorer.exe ${info.app.pathDriver}`], true)"
           >
             <Icon icon="mdi:open-in-new" />
-          </button>
+          </UButton>
         </div>
       </div>
     </div>

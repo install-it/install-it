@@ -1,22 +1,21 @@
 <script setup lang="ts">
-import ModalFrame from '@/components/modals/ModalFrame.vue'
 import { latestRelease } from '@/utils'
 import { Update } from '@/wailsjs/go/main/App'
 import { Quit } from '@/wailsjs/runtime/runtime'
-import { ref, useTemplateRef } from 'vue'
+import { ref } from 'vue'
 import { useLoading } from 'vue-loading-overlay'
 
 defineProps<{ app: { version: string; binaryType: string } }>()
 
-const frame = useTemplateRef('frame')
+const isOpen = ref(false)
 
 defineExpose({
   show: (releaseInfo_: typeof releaseInfo.value, isWebview: boolean) => {
     releaseInfo.value = releaseInfo_
     webviewVersion.value = isWebview
-    frame.value?.show()
+    isOpen.value = true
   },
-  hide: frame.value?.hide || (() => {})
+  hide: () => { isOpen.value = false }
 })
 
 const toast = useToast()
@@ -31,107 +30,84 @@ const webviewVersion = ref(false)
 <template>
   <!-- eslint-disable vue/no-v-html -->
 
-  <ModalFrame ref="frame" :on-demand="true" :immediate="false">
-    <div class="w-4/5 max-w-4xl">
-      <!-- Modal content -->
-      <div class="rounded-lg bg-white shadow-sm">
-        <!-- Modal header -->
-        <div class="flex h-12 items-center justify-between rounded-t border-b px-4">
-          <h3 class="font-semibold">
-            {{ $t('info.updateInfoTitle') }}
-          </h3>
+  <UModal v-model:open="isOpen" :title="$t('info.updateInfoTitle')">
+    <template #body>
+      <div class="flex max-h-96 min-h-40 flex-col gap-y-3 overflow-y-auto">
+        <div class="flex grow flex-col gap-y-2">
+          <div class="flex">
+            <h1 class="min-w-34 font-medium">
+              {{ $t('info.currentVersion') }}
+            </h1>
 
-          <button
-            type="button"
-            class="rounded-lg bg-transparent p-3 text-sm text-gray-400 hover:bg-gray-100 hover:text-gray-900"
-            @click="
-              () => {
-                frame?.hide()
-              }
-            "
-          >
-            <Icon icon="mdi:close" />
-          </button>
-        </div>
-
-        <!-- Modal body -->
-        <div class="flex max-h-96 min-h-40 flex-col gap-y-3 overflow-y-auto px-4 py-2">
-          <div class="flex grow flex-col gap-y-2">
-            <div class="flex">
-              <h1 class="min-w-34 font-medium">
-                {{ $t('info.currentVersion') }}
-              </h1>
-
-              <p>{{ $props.app.version }}</p>
-            </div>
-
-            <div class="flex">
-              <h1 class="min-w-34 font-medium">
-                {{ $t('info.latestVersion') }}
-              </h1>
-
-              <p>
-                {{ `${releaseInfo?.version} (${releaseInfo?.releaseAt.toLocaleDateString()})` }}
-              </p>
-            </div>
-
-            <hr />
-
-            <div class="flex grow flex-col">
-              <h1 class="mb-1 min-w-32 font-medium">
-                {{ $t('info.updateInfo') }}
-              </h1>
-
-              <div
-                id="release-notes"
-                class="rounded-lg border px-1"
-                v-html="releaseInfo?.releaseNotes || `<i>${$t('info.noUpdateInfo')}</i>`"
-              ></div>
-            </div>
-
-            <hr />
-
-            <div class="flex flex-col">
-              <h1 class="font-medium">
-                {{ $t('info.updateOption') }}
-              </h1>
-
-              <label class="flex w-full cursor-pointer items-center select-none">
-                <input
-                  v-model="webviewVersion"
-                  type="checkbox"
-                  name="create_partition"
-                  class="checkbox me-1.5 checkbox-primary"
-                />
-                {{ $t('info.downloadBuiltInWebView2Version') }}
-              </label>
-            </div>
+            <p>{{ $props.app.version }}</p>
           </div>
 
-          <button
-            class="btn w-full btn-secondary"
-            @click="
-              () => {
-                if (!releaseInfo) {
-                  return
-                }
+          <div class="flex">
+            <h1 class="min-w-34 font-medium">
+              {{ $t('info.latestVersion') }}
+            </h1>
 
-                toast.add({ title: $t('toast.downloadingUpdater'), color: 'info', timeout: 60 * 1000 })
-                const loader = $loading.show()
+            <p>
+              {{ `${releaseInfo?.version} (${releaseInfo?.releaseAt.toLocaleDateString()})` }}
+            </p>
+          </div>
 
-                Update($props.app.version, releaseInfo.version, webviewVersion)
-                  .then(() => Quit())
-                  .catch(reason => toast.add({ title: reason, color: 'error' }))
-                  .finally(() => loader.hide())
-              }
-            "
-          >
-            {{ $t('info.update') }}
-          </button>
+          <hr />
+
+          <div class="flex grow flex-col">
+            <h1 class="mb-1 min-w-32 font-medium">
+              {{ $t('info.updateInfo') }}
+            </h1>
+
+            <div
+              id="release-notes"
+              class="rounded-lg border px-1"
+              v-html="releaseInfo?.releaseNotes || `<i>${$t('info.noUpdateInfo')}</i>`"
+            ></div>
+          </div>
+
+          <hr />
+
+          <div class="flex flex-col">
+            <h1 class="font-medium">
+              {{ $t('info.updateOption') }}
+            </h1>
+
+            <label class="flex w-full cursor-pointer items-center select-none">
+              <UCheckbox
+                v-model="webviewVersion"
+                name="create_partition"
+                color="primary"
+              />
+              <span class="ms-1.5">{{ $t('info.downloadBuiltInWebView2Version') }}</span>
+            </label>
+          </div>
         </div>
+
+        <UButton
+          color="secondary"
+          block
+          @click="
+            () => {
+              if (!releaseInfo) {
+                return
+              }
+
+              toast.add({ title: $t('toast.downloadingUpdater'), color: 'info', timeout: 60 * 1000 })
+              const loader = $loading.show()
+
+              Update($props.app.version, releaseInfo.version, webviewVersion)
+                .then(() => Quit())
+                .catch(reason => toast.add({ title: reason, color: 'error' }))
+                .finally(() => loader.hide())
+            }
+          "
+        >
+          {{ $t('info.update') }}
+        </UButton>
       </div>
-    </div>
-  </ModalFrame>
+    </template>
+  </UModal>
 </template>
 
 <style scoped>

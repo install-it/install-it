@@ -68,7 +68,7 @@ function handleSubmit() {
           {{ $t('matchRule.name') }}
         </legend>
 
-        <input v-model="ruleSet.name" type="text" class="input ms-1 input-accent" />
+        <UInput v-model="ruleSet.name" type="text" class="ms-1" />
       </fieldset>
 
       <fieldset class="fieldset">
@@ -168,9 +168,9 @@ function handleSubmit() {
           </div>
 
           <div class="flex justify-end gap-x-3">
-            <button type="button" class="btn px-2 btn-primary" @click="inputModal?.show()">
+            <UButton type="button" class="px-2" color="primary" @click="inputModal?.show()">
               <Icon icon="mdi:plus-box" />
-            </button>
+            </UButton>
           </div>
         </div>
       </fieldset>
@@ -179,10 +179,9 @@ function handleSubmit() {
         <legend class="fieldset-legend text-sm">{{ $t('matchRule.multiRuleMatching') }}</legend>
 
         <label class="flex w-full cursor-pointer items-center select-none">
-          <input
+          <UCheckbox
             v-model="ruleSet.should_hit_all"
-            type="checkbox"
-            class="checkbox me-1.5 checkbox-primary"
+            class="me-1.5"
           />
           {{ $t('matchRule.hitAllRule') }}
         </label>
@@ -206,18 +205,20 @@ function handleSubmit() {
       </fieldset>
 
       <div class="flex h-8 gap-x-5">
-        <button
+        <UButton
           type="button"
-          class="btn grow"
+          class="grow"
+          color="neutral"
+          variant="outline"
           style="--btn-color: var(--color-gray-100)"
           @click="$router.back()"
         >
           {{ $t('common.back') }}
-        </button>
+        </UButton>
 
-        <button type="submit" class="btn grow btn-secondary">
+        <UButton type="submit" class="grow" color="secondary">
           {{ $t('common.save') }}
-        </button>
+        </UButton>
       </div>
     </div>
   </form>
