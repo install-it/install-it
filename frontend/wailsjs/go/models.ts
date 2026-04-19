@@ -123,6 +123,11 @@ export namespace status {
 
 export namespace storage {
 	
+	export enum DriverType {
+	    NETWORK = "network",
+	    DISPLAY = "display",
+	    MISCELLANEOUS = "miscellaneous",
+	}
 	export enum SuccessAction {
 	    NOTHING = "nothing",
 	    REBOOT = "reboot",
@@ -143,11 +148,6 @@ export namespace storage {
 	    EQUAL = "equal",
 	    NOT_EQUAL = "not_equal",
 	    REGEX = "regex",
-	}
-	export enum DriverType {
-	    NETWORK = "network",
-	    DISPLAY = "display",
-	    MISCELLANEOUS = "miscellaneous",
 	}
 	export class AppSetting {
 	    create_partition: boolean;
