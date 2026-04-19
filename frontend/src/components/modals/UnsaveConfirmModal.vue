@@ -16,7 +16,7 @@ defineExpose({
 </script>
 
 <template>
-  <UModal v-model:open="isOpen" title="$t('common.unsaveConfirmTitle')">
+  <UModal v-model:open="isOpen" :title="$t('common.unsaveConfirmTitle')">
     <template #body>
       <p>{{ $t('common.unsaveConfirmMessage') }}</p>
     </template>
