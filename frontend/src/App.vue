@@ -89,12 +89,13 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
                     active-class="text-apple-green-900 bg-powder-blue-400"
                     draggable="false"
                   >
-                    <div class="indicator">
-                      <span
+                    <div class="relative">
+                      <UBadge
                         v-if="link.to == '/app-info' && hasUpdate"
-                        class="indicator-item status status-neutral"
-                        style="background-image: unset"
-                      ></span>
+                        size="xs"
+                        color="primary"
+                        class="absolute -right-1 -top-1 h-2 w-2 p-0"
+                      />
 
                       <Icon :icon="link.icon" />
                     </div>
@@ -111,8 +112,11 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
       </template>
 
       <template v-else>
-        <div class="flex h-screen w-screen justify-center">
-          <span class="loading loading-xl loading-dots"></span>
+        <div class="flex h-screen w-screen items-center justify-center">
+          <div class="flex items-center gap-2">
+            <Icon icon="i-lucide-loader-circle" class="animate-spin text-4xl" />
+            <span class="text-lg">Loading...</span>
+          </div>
         </div>
       </template>
     </Transition>

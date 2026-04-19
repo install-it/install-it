@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import DriverSelector from '@/components/DriverSelector.vue'
-import ModalFrame from '@/components/modals/ModalFrame.vue'
 import { useDriverGroupStore } from '@/store'
 import { SelectFile } from '@/wailsjs/go/main/App'
 import { storage } from '@/wailsjs/go/models'
@@ -8,11 +7,11 @@ import { nextTick, ref, toRaw, useTemplateRef } from 'vue'
 
 defineEmits<{ submit: [dri: storage.Driver] }>()
 
-const frame = useTemplateRef('frame')
+const isOpen = ref(false)
 
 defineExpose({
   show: (data?: Partial<storage.Driver>) => {
-    frame.value?.show()
+    isOpen.value = true
 
     if (data) {
       driver.value = {
@@ -29,7 +28,7 @@ defineExpose({
       modalBody.value?.scrollTo({ top: 0, behavior: 'smooth' })
     })
   },
-  hide: frame.value?.hide || (() => {})
+  hide: () => { isOpen.value = false }
 })
 
 const FLAGS = {
@@ -51,30 +50,20 @@ const modalBody = useTemplateRef<HTMLDivElement>('modalBody')
 const driver = ref<
   Partial<Omit<storage.Driver, 'allowRtCodes' | 'flags'> & { allowRtCodes: string; flags: string }>
 >({})
+
+const flagItems = Object.entries(FLAGS).map(([name, flags]) => ({
+  label: name,
+  click: () => { driver.value.flags = flags.join() }
+}))
 </script>
 
 <template>
-  <ModalFrame ref="frame" :on-demand="true" :immediate="false">
-    <div class="w-[75vw] max-w-[650px]">
-      <!-- Modal content -->
-      <div class="rounded-lg bg-white shadow-sm">
-        <!-- Modal header -->
-        <div class="flex h-12 items-center justify-between rounded-t border-b px-4">
-          <h3 class="font-semibold">
-            {{ driver ? $t('driverForm.editDriver') : $t('driverForm.createDriver') }}
-          </h3>
-
-          <button
-            type="button"
-            class="rounded-lg bg-transparent p-3 text-sm text-gray-400 hover:bg-gray-100 hover:text-gray-900"
-            @click="frame?.hide()"
-          >
-            <Icon icon="mdi:close" />
-          </button>
-        </div>
-
-        <!-- Modal body -->
-        <div ref="modalBody" class="max-h-[70vh] overflow-auto px-4 py-2">
+  <UModal
+    v-model:open="isOpen"
+    :title="driver ? $t('driverForm.editDriver') : $t('driverForm.createDriver')"
+  >
+    <template #body>
+      <div ref="modalBody" class="max-h-[70vh] overflow-auto">
           <form
             class="flex flex-col gap-y-2"
             autocomplete="off"
@@ -95,28 +84,29 @@ const driver = ref<
                   })
                 )
 
-                frame?.hide()
+                isOpen.value = false
               }
             "
           >
             <fieldset class="fieldset">
               <legend class="fieldset-legend text-sm">{{ $t('driverForm.name') }}</legend>
 
-              <input
+              <UInput
                 v-model="driver.name"
                 type="text"
                 name="name"
-                class="input w-full input-accent"
+                color="primary"
               />
             </fieldset>
 
             <fieldset class="fieldset">
               <legend class="fieldset-legend text-sm">{{ $t('driverForm.path') }}</legend>
 
-              <div class="join">
-                <button
+              <div class="flex gap-2">
+                <UButton
                   type="button"
-                  class="btn join-item w-32"
+                  color="neutral"
+                  variant="outline"
                   @click="
                     SelectFile(true).then(path => {
                       driver.path = path
@@ -124,14 +114,15 @@ const driver = ref<
                   "
                 >
                   {{ $t('driverForm.selectFile') }}
-                </button>
+                </UButton>
 
-                <input
+                <UInput
                   ref="pathInput"
                   v-model="driver.path"
                   type="text"
                   name="path"
-                  class="input join-item w-full input-accent"
+                  color="primary"
+                  class="flex-1"
                   required
                 />
               </div>
@@ -140,61 +131,19 @@ const driver = ref<
             <fieldset class="fieldset">
               <legend class="fieldset-legend text-sm">{{ $t('driverForm.argument') }}</legend>
 
-              <div class="join items-center">
-                <!-- <select
-                  name="flags"
-                  class="w-32 select select-accent join-item ps-1"
-                  @change="
-                    event => {
-                      driver.flags = (event.target as HTMLSelectElement).value
-                    }
-                  "
-                >
-                  <option value="">{{ $t('driverForm.manualInput') }}</option>
-                  <option
-                    v-for="(flag, name) in FLAGS"
-                    :key="name"
-                    :value="flag.join(',')"
-                    :selected="driver.flags === flag.join()"
-                  >
-                    {{ name }}
-                  </option>
-                </select> -->
-                <div class="dropdown">
-                  <div tabindex="0" role="button" class="btn m-1 join-item w-30">
+              <div class="flex gap-2 items-center">
+                <UDropdown :items="[flagItems]">
+                  <UButton color="neutral" variant="outline">
                     {{ $t('common.select') }}
-                  </div>
+                  </UButton>
+                </UDropdown>
 
-                  <ul
-                    tabindex="0"
-                    class="dropdown-content menu z-1 w-52 rounded-box bg-base-100 p-2 shadow-sm"
-                  >
-                    <div class="h-36 overflow-y-auto">
-                      <li
-                        v-for="(flag, name) in FLAGS"
-                        :key="name"
-                        @click="
-                          event => {
-                            driver.flags = flag.join()
-                            ;(
-                              event.currentTarget as HTMLLIElement
-                            ).parentElement?.parentElement?.blur()
-                          }
-                        "
-                      >
-                        <a>
-                          {{ name }}
-                        </a>
-                      </li>
-                    </div>
-                  </ul>
-                </div>
-
-                <input
+                <UInput
                   v-model="driver.flags"
                   type="text"
                   name="flags"
-                  class="input join-item w-full input-accent"
+                  color="primary"
+                  class="flex-1"
                 />
               </div>
 
@@ -209,12 +158,12 @@ const driver = ref<
                   {{ $t('driverForm.minExecuteTime') }}
                 </legend>
 
-                <input
+                <UInput
                   v-model="driver.minExeTime"
                   type="number"
                   name="minExeTime"
                   step="0.1"
-                  class="input w-full input-accent"
+                  color="primary"
                   required
                 />
 
@@ -228,11 +177,11 @@ const driver = ref<
                   {{ $t('driverForm.allowedExitCode') }}
                 </legend>
 
-                <input
+                <UInput
                   v-model="driver.allowRtCodes"
                   type="text"
                   name="allowRtCodes"
-                  class="input input-accent"
+                  color="primary"
                 />
 
                 <p class="label text-wrap text-apple-green-800">
@@ -247,14 +196,13 @@ const driver = ref<
               :driver-groups="groupStore.groups"
             ></DriverSelector>
 
-            <button type="submit" class="btn btn-secondary">
+            <UButton type="submit" color="secondary" block>
               {{ $t('common.save') }}
-            </button>
+            </UButton>
           </form>
         </div>
-      </div>
-    </div>
-  </ModalFrame>
+      </template>
+  </UModal>
 </template>
 
 <style scoped>

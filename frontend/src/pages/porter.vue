@@ -49,16 +49,17 @@ onBeforeMount(() => {
         </label>
 
         <div class="flex w-full gap-x-2">
-          <input
+          <UInput
             v-model="exportDirectory"
             type="url"
             name="export_directory"
-            class="input input-accent grow"
+            color="primary"
+            class="grow"
           />
 
-          <button
+          <UButton
             type="button"
-            class="btn btn-primary"
+            color="primary"
             @click="
               () => {
                 SelectFolder(false).then(path => {
@@ -70,14 +71,15 @@ onBeforeMount(() => {
             "
           >
             {{ $t('common.select') }}
-          </button>
+          </UButton>
         </div>
       </div>
 
       <div class="flex justify-end">
-        <button
+        <UButton
           type="button"
-          class="btn btn-secondary mt-3 w-28"
+          color="secondary"
+          class="mt-3 w-28"
           @click="
             () => {
               if (!exportDirectory) {
@@ -89,7 +91,7 @@ onBeforeMount(() => {
           "
         >
           {{ $t('porter.export') }}
-        </button>
+        </UButton>
       </div>
     </div>
 
@@ -137,18 +139,19 @@ onBeforeMount(() => {
           </label>
 
           <div class="flex w-full gap-x-2">
-            <input
+            <UInput
               v-model="importInput.filePath"
               type="text"
               name="driver_download_url"
               placeholder="install-it.zip"
-              class="input input-accent pointer-events-none grow"
+              color="primary"
+              class="pointer-events-none grow"
               :required="importInput.from == 'file'"
             />
 
-            <button
+            <UButton
               type="button"
-              class="btn btn-primary"
+              color="primary"
               @click="
                 () => {
                   SelectFile(false).then(path => {
@@ -160,7 +163,7 @@ onBeforeMount(() => {
               "
             >
               {{ $t('common.select') }}
-            </button>
+            </UButton>
           </div>
         </div>
 
@@ -171,20 +174,21 @@ onBeforeMount(() => {
           </label>
 
           <div class="flex w-full gap-x-2">
-            <input
+            <UInput
               v-model="importInput.url"
               type="url"
               placeholder="https://..."
-              class="input input-accent grow"
+              color="primary"
+              class="grow"
               :required="importInput.from == 'url'"
             />
           </div>
         </div>
 
         <div class="flex justify-end">
-          <button type="submit" class="btn btn-secondary mt-3 w-28">
+          <UButton type="submit" color="secondary" class="mt-3 w-28">
             {{ $t('porter.import') }}
-          </button>
+          </UButton>
         </div>
       </form>
     </div>

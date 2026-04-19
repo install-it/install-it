@@ -17,13 +17,17 @@ defineEmits<{ abort: [] }>()
     </div>
 
     <div class="flex w-4/6 items-center py-1 ps-1">
-      <!-- status badget -->
+      <!-- status badge -->
       <div class="w-[4.1rem] shrink-0">
-        <p class="proc-badge h-6" :class="[`proc-badge-${props.process.status}`]">
+        <UBadge
+          :class="[`proc-badge-${props.process.status}`]"
+          class="h-6 max-w-[96%]"
+          size="md"
+        >
           <span class="truncate text-sm">
             {{ $t(`status.@${props.process.status}`).toUpperCase() }}
           </span>
-        </p>
+        </UBadge>
       </div>
 
       <!-- messages -->
@@ -86,13 +90,14 @@ defineEmits<{ abort: [] }>()
       </template>
 
       <!-- abort button -->
-      <button
+      <UButton
         v-show="props.process.status == 'pending' || props.process.status == 'running'"
-        class="btn ms-auto font-normal btn-xs"
+        class="ms-auto font-normal"
+        size="xs"
         @click="$emit('abort')"
       >
         {{ $t('execute.abort') }}
-      </button>
+      </UButton>
     </div>
   </div>
 </template>

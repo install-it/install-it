@@ -21,23 +21,18 @@ function removeTag(index: number) {
 
 <template>
   <div class="flex flex-wrap gap-1 p-1">
-    <button
-      v-for="(tag, i) in tags"
-      :key="tag"
-      class="btn btn-sm"
-      type="button"
-      @click="removeTag(i)"
-    >
+    <UButton v-for="(tag, i) in tags" :key="tag" size="sm" type="button" @click="removeTag(i)">
       {{ tag }}
       <Icon v-if="i < tags.length - 1" icon="mdi:close" class="h-6 w-6" />
 
       <Icon v-else icon="mdi:backspace" class="h-6 w-6" />
-    </button>
+    </UButton>
 
-    <input
+    <UInput
       v-model="input"
       type="text"
-      class="input input-sm grow input-accent focus:outline-0"
+      class="grow"
+      size="sm"
       @keydown.backspace="
         () => {
           if (input.length == 0) {
