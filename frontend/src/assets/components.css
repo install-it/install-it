@@ -19,55 +19,52 @@
     @apply inline-flex max-w-[96%] items-center justify-center rounded-sm px-1 select-none;
   }
 
-  .proc-badge.proc-badge-pending {
+  /* UBadge custom badge colors */
+  .proc-badge-pending {
     @apply bg-pending;
   }
 
-  .proc-badge.proc-badge-pending {
-    @apply bg-pending;
-  }
-
-  .proc-badge.proc-badge-running {
+  .proc-badge-running {
     @apply animate-pulse bg-running;
   }
 
-  .proc-badge.proc-badge-aborting {
+  .proc-badge-aborting {
     @apply animate-pulse bg-aborting;
   }
 
-  .proc-badge.proc-badge-aborted {
+  .proc-badge-aborted {
     @apply bg-aborted;
   }
 
-  .proc-badge.proc-badge-speeded {
+  .proc-badge-speeded {
     @apply bg-speeded;
   }
 
-  .proc-badge.proc-badge-failed {
+  .proc-badge-failed {
     @apply bg-failed;
   }
 
-  .proc-badge.proc-badge-completed {
+  .proc-badge-completed {
     @apply bg-completed;
   }
 
-  .proc-badge.proc-badge-broken {
+  .proc-badge-broken {
     @apply bg-broken text-white;
   }
 
-  .proc-badge.proc-badge-network {
+  .proc-badge-network {
     @apply bg-network;
   }
 
-  .proc-badge.proc-badge-display {
+  .proc-badge-display {
     @apply bg-display;
   }
 
-  .proc-badge.proc-badge-miscellaneous {
+  .proc-badge-miscellaneous {
     @apply bg-miscellaneous;
   }
 
-  .proc-badge.proc-badge-builtin {
+  .proc-badge-builtin {
     @apply bg-builtin;
   }
 }

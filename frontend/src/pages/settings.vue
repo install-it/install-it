@@ -92,11 +92,11 @@ function handleSubmit() {
             </p>
 
             <label class="flex w-full cursor-pointer items-center select-none">
-              <input
+              <UCheckbox
                 v-model="settings.auto_check_update"
-                type="checkbox"
                 name="auto_check_update"
-                class="checkbox me-1.5 checkbox-primary"
+                color="primary"
+                class="me-1.5"
               />
               {{ $t('common.enable') }}
             </label>
@@ -107,13 +107,14 @@ function handleSubmit() {
               {{ $t('setting.successActionDelay') }}
             </label>
 
-            <input
+            <UInput
               v-model="settings.success_action_delay"
               type="number"
               name="success_action_delay"
               min="0"
               step="0"
-              class="input w-20 shadow-xs input-accent"
+              color="primary"
+              class="w-20"
               required
             />
             &nbsp; {{ $t('setting.second') }}
@@ -128,11 +129,12 @@ function handleSubmit() {
           <div>
             <label class="mb-2 block text-gray-900">{{ $t('setting.importUrl') }}</label>
 
-            <input
+            <UInput
               v-model="settings.driver_download_url"
               type="url"
               name="driver_download_url"
-              class="input w-full shadow-xs input-accent"
+              color="primary"
+              class="w-full"
             />
           </div>
         </div>
@@ -148,11 +150,11 @@ function handleSubmit() {
         <div class="flex flex-col gap-y-3">
           <div class="flex">
             <label class="flex w-full cursor-pointer items-center select-none">
-              <input
+              <UCheckbox
                 v-model="settings.create_partition"
-                type="checkbox"
                 name="create_partition"
-                class="checkbox me-1.5 checkbox-primary"
+                color="primary"
+                class="me-1.5"
               />
               {{ $t('installSetting.createPartition') }}
             </label>
@@ -161,22 +163,22 @@ function handleSubmit() {
           <div class="flex gap-3">
             <div class="flex">
               <label class="flex w-full cursor-pointer items-center select-none">
-                <input
+                <UCheckbox
                   v-model="settings.set_password"
-                  type="checkbox"
                   name="set_password"
-                  class="checkbox me-1.5 checkbox-primary"
+                  color="primary"
+                  class="me-1.5"
                 />
                 {{ $t('installSetting.setPassword') }}
               </label>
             </div>
 
             <div class="flex shrink">
-              <input
+              <UInput
                 v-model="settings.password"
                 type="password"
                 name="password"
-                class="input input-accent"
+                color="primary"
                 :disabled="!settings.set_password"
               />
             </div>
@@ -192,11 +194,11 @@ function handleSubmit() {
         <div class="flex flex-col gap-y-3">
           <div class="flex">
             <label class="flex w-full cursor-pointer items-center select-none">
-              <input
+              <UCheckbox
                 v-model="settings.parallel_install"
-                type="checkbox"
                 name="parallel_install"
-                class="checkbox me-1.5 checkbox-primary"
+                color="primary"
+                class="me-1.5"
               />
               {{ $t('installSetting.parallelInstall') }}
             </label>
@@ -207,15 +209,13 @@ function handleSubmit() {
               {{ $t('installSetting.successAction') }}
             </label>
 
-            <select
+            <USelect
               v-model="settings.success_action"
               name="success_action"
-              class="select select-accent"
-            >
-              <option v-for="action in storage.SuccessAction" :key="action" :value="action">
-                {{ $t(`successAction.${action}`) }}
-              </option>
-            </select>
+              color="primary"
+              :options="storage.SuccessAction.map(action => ({ value: action, label: $t(`successAction.${action}`) }))"
+              value-attribute="value"
+            />
           </div>
         </div>
       </section>
@@ -228,11 +228,16 @@ function handleSubmit() {
         </p>
 
         <div>
-          <select v-model="settings.language" name="language" class="select select-accent">
-            <option value="en">English</option>
-
-            <option value="zh_Hant_HK">繁體中文</option>
-          </select>
+          <USelect
+            v-model="settings.language"
+            name="language"
+            color="primary"
+            :options="[
+              { value: 'en', label: 'English' },
+              { value: 'zh_Hant_HK', label: '繁體中文' }
+            ]"
+            value-attribute="value"
+          />
         </div>
       </section>
 
@@ -244,11 +249,11 @@ function handleSubmit() {
         <div class="flex flex-col gap-y-3">
           <div class="flex">
             <label class="flex w-full cursor-pointer items-center select-none">
-              <input
+              <UCheckbox
                 v-model="settings.filter_miniport_nic"
-                type="checkbox"
                 name="filter_miniport_nic"
-                class="checkbox me-1.5 checkbox-primary"
+                color="primary"
+                class="me-1.5"
               />
               {{ $t('setting.filterMiniportNic') }}
             </label>
@@ -258,11 +263,11 @@ function handleSubmit() {
         <div class="flex flex-col gap-y-3">
           <div class="flex">
             <label class="flex w-full cursor-pointer items-center select-none">
-              <input
+              <UCheckbox
                 v-model="settings.filter_microsoft_nic"
-                type="checkbox"
                 name="filter_microsoft_nic"
-                class="checkbox me-1.5 checkbox-primary"
+                color="primary"
+                class="me-1.5"
               />
               {{ $t('setting.filterMicorsoftNic') }}
             </label>
@@ -276,11 +281,11 @@ function handleSubmit() {
         <div class="flex flex-col gap-y-3">
           <div class="flex">
             <label class="flex w-full cursor-pointer items-center select-none">
-              <input
+              <UCheckbox
                 v-model="settings.hide_not_found"
-                type="checkbox"
                 name="hide_not_found"
-                class="checkbox me-1.5 checkbox-primary"
+                color="primary"
+                class="me-1.5"
               />
               {{ $t('setting.hideNotFound') }}
             </label>
@@ -290,9 +295,9 @@ function handleSubmit() {
     </div>
 
     <div class="mt-6">
-      <button type="submit" class="btn btn-secondary">
+      <UButton type="submit" color="secondary">
         {{ $t('common.save') }}
-      </button>
+      </UButton>
     </div>
   </form>
 

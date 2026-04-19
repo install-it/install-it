@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ModalFrame from '@/components/modals/ModalFrame.vue'
 import TaggedInput from '@/components/TaggedInput.vue'
 import { storage } from '@/wailsjs/go/models'
 import { ref, useTemplateRef } from 'vue'
@@ -10,6 +9,8 @@ defineEmits<{ submit: [rules: { _id: number | undefined } & storage.Rule] }>()
 const { t } = useI18n()
 
 const toast = useToast()
+
+const isOpen = ref(false)
 
 defineExpose({
   show: (rule?: { _id: number | undefined } & storage.Rule) => {
@@ -22,12 +23,12 @@ defineExpose({
       values: []
     }
 
-    frame.value?.show()
+    isOpen.value = true
   },
-  hide: () => frame.value?.hide()
+  hide: () => { isOpen.value = false }
 })
 
-const [frame, modalBody] = [useTemplateRef('frame'), useTemplateRef('modalBody')]
+const modalBody = useTemplateRef('modalBody')
 
 const input = ref<{ _id: number | undefined } & storage.Rule>({
   _id: undefined,
@@ -40,49 +41,33 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
 </script>
 
 <template>
-  <ModalFrame ref="frame" :on-demand="true" :immediate="false">
-    <div class="w-4/5">
-      <div class="rounded-lg bg-white shadow-sm">
-        <div class="flex h-12 items-center justify-between rounded-t border-b px-4">
-          <h3 class="font-semibold">
-            {{ $t('matchRule.matchRule') }}
-          </h3>
-
-          <button
-            type="button"
-            class="rounded-lg bg-transparent p-3 text-sm text-gray-400 hover:text-gray-900"
-            @click="frame?.hide()"
-          >
-            <Icon icon="mdi:close" />
-          </button>
-        </div>
-
-        <form
-          class=""
-          autocomplete="off"
-          @submit.prevent="
-            () => {
-              if (input.values.length == 0) {
-                toast.add({ title: t('toast.addAtLeastOnePattern'), color: 'warning' })
-              } else {
-                $emit('submit', input)
-                frame?.hide()
-              }
+  <UModal v-model:open="isOpen" :title="$t('matchRule.matchRule')">
+    <template #body>
+      <form
+        autocomplete="off"
+        @submit.prevent="
+          () => {
+            if (input.values.length == 0) {
+              toast.add({ title: t('toast.addAtLeastOnePattern'), color: 'warning' })
+            } else {
+              $emit('submit', input)
+              isOpen = false
             }
-          "
-        >
-          <div ref="modalBody" class="flex max-h-[75vh] flex-col gap-y-2 overflow-auto p-4">
+          }
+        "
+      >
+        <div ref="modalBody" class="flex max-h-[75vh] flex-col gap-y-2 overflow-auto">
             <div class="flex gap-1">
               <fieldset class="fieldset flex-1">
                 <legend class="fieldset-legend text-sm">
                   {{ $t('matchRule.source') }}
                 </legend>
 
-                <select v-model="input.source" class="select select-accent" required>
+                <USelect v-model="input.source" color="primary" required>
                   <option v-for="s in storage.RuleSource" :key="s" :value="s">
                     {{ $t(`common.${s}`) }}
                   </option>
-                </select>
+                </USelect>
               </fieldset>
 
               <fieldset class="fieldset flex-1">
@@ -90,11 +75,11 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
                   {{ $t('matchRule.operator') }}
                 </legend>
 
-                <select v-model="input.operator" class="select select-accent" required>
+                <USelect v-model="input.operator" color="primary" required>
                   <option v-for="o in storage.RuleOperator" :key="o" :value="o">
                     {{ $t(`matchRule.${o}`) }}
                   </option>
-                </select>
+                </USelect>
               </fieldset>
             </div>
 
@@ -105,13 +90,13 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
                 </legend>
 
                 <label class="flex cursor-pointer items-center select-none">
-                  <input
+                  <UCheckbox
                     v-model="input.is_case_sensitive"
-                    type="checkbox"
-                    class="checkbox me-1.5 checkbox-sm checkbox-primary"
+                    color="primary"
+                    size="sm"
                     :disabled="input.operator === 'regex'"
                   />
-                  {{ $t('common.enable') }}
+                  <span class="ms-1.5">{{ $t('common.enable') }}</span>
                 </label>
               </fieldset>
 
@@ -121,12 +106,12 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
                 </legend>
 
                 <label class="flex cursor-pointer items-center select-none">
-                  <input
+                  <UCheckbox
                     v-model="input.should_hit_all"
-                    type="checkbox"
-                    class="checkbox me-1.5 checkbox-sm checkbox-primary"
+                    color="primary"
+                    size="sm"
                   />
-                  {{ $t('matchRule.hitAllPatterns') }}
+                  <span class="ms-1.5">{{ $t('matchRule.hitAllPatterns') }}</span>
                 </label>
 
                 <p class="text-hint">{{ $t('matchRule.multiPatternMatchingHelp') }}</p>
@@ -142,15 +127,14 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
             </fieldset>
           </div>
 
-          <div class="flex gap-x-2 border-t px-4 py-2">
-            <button type="submit" class="btn w-full btn-sm btn-secondary">
+          <div class="flex gap-x-2 border-t pt-2">
+            <UButton type="submit" color="secondary" size="sm" block>
               {{ $t('common.save') }}
-            </button>
+            </UButton>
           </div>
         </form>
-      </div>
-    </div>
-  </ModalFrame>
+      </template>
+  </UModal>
 </template>
 
 <style scoped>
