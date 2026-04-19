@@ -4,9 +4,8 @@ import { useDriverGroupStore, useMatchRuleStore } from '@/store'
 // import { storage } from '@/wailsjs/go/models'
 import * as matchRuleStorage from '@/wailsjs/go/storage/MatchRuleStorage'
 import { useRouter } from 'vue-router'
-import { useToast } from 'vue-toast-notification'
 
-const $toast = useToast()
+const toast = useToast()
 
 const router = useRouter()
 
@@ -70,7 +69,7 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
                     .All()
                     .then(rs => (ruleStore.ruleSets = rs))
                     .catch(() => {
-                      $toast.error($t('toast.readDriverFailed'))
+                      toast.add({ title: $t('toast.readDriverFailed'), color: 'error' })
                     })
                 )
               "
@@ -87,7 +86,7 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
                     .All()
                     .then(rs => (ruleStore.ruleSets = rs))
                     .catch(() => {
-                      $toast.error($t('toast.readDriverFailed'))
+                      toast.add({ title: $t('toast.readDriverFailed'), color: 'error' })
                     })
                 )
               "

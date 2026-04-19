@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { onBeforeMount, ref, useTemplateRef } from 'vue'
-import { useToast } from 'vue-toast-notification'
 
 import ProgressModal from '@/components/ProgressModal.vue'
 import { Cwd, SelectFile, SelectFolder } from '@/wailsjs/go/main/App'
 import * as appStorage from '@/wailsjs/go/storage/AppSettingStorage'
 
-const $toast = useToast({ position: 'bottom-right' })
+const toast = useToast()
 
 const progressModal = useTemplateRef('progressModal')
 
@@ -54,7 +53,7 @@ onBeforeMount(() => {
             v-model="exportDirectory"
             type="url"
             name="export_directory"
-            class="input grow input-accent"
+            class="input input-accent grow"
           />
 
           <button
@@ -78,11 +77,11 @@ onBeforeMount(() => {
       <div class="flex justify-end">
         <button
           type="button"
-          class="btn mt-3 w-28 btn-secondary"
+          class="btn btn-secondary mt-3 w-28"
           @click="
             () => {
               if (!exportDirectory) {
-                $toast.warning($t('toast.enterExportPath'), { position: 'bottom-right' })
+                toast.add({ title: $t('toast.enterExportPath'), color: 'warning' })
               } else {
                 progressModal?.export(exportDirectory)
               }
@@ -143,7 +142,7 @@ onBeforeMount(() => {
               type="text"
               name="driver_download_url"
               placeholder="install-it.zip"
-              class="pointer-events-none input grow input-accent"
+              class="input input-accent pointer-events-none grow"
               :required="importInput.from == 'file'"
             />
 
@@ -176,14 +175,14 @@ onBeforeMount(() => {
               v-model="importInput.url"
               type="url"
               placeholder="https://..."
-              class="input grow input-accent"
+              class="input input-accent grow"
               :required="importInput.from == 'url'"
             />
           </div>
         </div>
 
         <div class="flex justify-end">
-          <button type="submit" class="btn mt-3 w-28 btn-secondary">
+          <button type="submit" class="btn btn-secondary mt-3 w-28">
             {{ $t('porter.import') }}
           </button>
         </div>

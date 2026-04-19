@@ -7,11 +7,10 @@ import * as executor from '@/wailsjs/go/execute/CommandExecutor'
 import { storage } from '@/wailsjs/go/models'
 import { computed, onBeforeMount, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useToast } from 'vue-toast-notification'
 
 const { t } = useI18n()
 
-const $toast = useToast({ position: 'top-right' })
+const toast = useToast()
 
 const [statusModal, form] = [useTemplateRef('statusModal'), useTemplateRef('form')]
 
@@ -43,7 +42,7 @@ onBeforeMount(() => {
 
 function selectMatchedOptions() {
   if (hwinfos.value === null) {
-    $toast.error(t('toast.noHardwareInfo'))
+    toast.add({ title: t('toast.noHardwareInfo'), color: 'error' })
     return
   }
 
@@ -72,7 +71,7 @@ function selectMatchedOptions() {
 
 async function handleSubmit() {
   if (!form.value) {
-    $toast.error(t('toast.readInputFailed'))
+    toast.add({ title: t('toast.readInputFailed'), color: 'error' })
     return
   }
 
@@ -145,7 +144,7 @@ async function handleSubmit() {
     })
 
   if (commands.length == 0) {
-    $toast.warning(t('toast.noInputWarning'))
+    toast.add({ title: t('toast.noInputWarning'), color: 'warning' })
     return
   }
 
@@ -178,11 +177,11 @@ async function handleSubmit() {
       <template v-else>
         <div v-for="i in 6" :key="i">
           <h2
-            class="mb-1 h-5 skeleton"
+            class="skeleton mb-1 h-5"
             :style="{ width: `${Math.random() * (25 - 15) + 15}%` }"
           ></h2>
 
-          <p class="h-5 skeleton" :style="{ width: `${Math.random() * (85 - 30) + 30}%` }"></p>
+          <p class="skeleton h-5" :style="{ width: `${Math.random() * (85 - 30) + 30}%` }"></p>
         </div>
       </template>
     </div>
@@ -236,7 +235,7 @@ async function handleSubmit() {
                 <input
                   type="checkbox"
                   name="miscellaneous"
-                  class="checkbox me-1.5 checkbox-sm checkbox-primary"
+                  class="checkbox checkbox-sm checkbox-primary me-1.5"
                   :value="g.id"
                 />
                 {{ g.name }}
@@ -291,7 +290,7 @@ async function handleSubmit() {
               v-model="settingStore.settings.password"
               type="password"
               name="password"
-              class="input input-sm max-w-28 input-accent"
+              class="input input-sm input-accent max-w-28"
               :disabled="!settingStore.settings.set_password"
             />
           </div>
@@ -307,7 +306,7 @@ async function handleSubmit() {
           <select
             v-model="settingStore.settings.success_action"
             name="success_action"
-            class="select w-full select-accent"
+            class="select select-accent w-full"
           >
             <option v-for="action in storage.SuccessAction" :key="action" :value="action">
               {{ $t(`successAction.${action}`) }}
@@ -318,7 +317,7 @@ async function handleSubmit() {
         <div class="mt-2 flex h-8 flex-row items-center justify-end gap-x-3">
           <button
             type="button"
-            class="btn border-2 btn-outline btn-neutral"
+            class="btn btn-outline btn-neutral border-2"
             @click="selectMatchedOptions"
           >
             {{ $t('matchRule.match') }}
@@ -326,7 +325,7 @@ async function handleSubmit() {
 
           <button
             type="button"
-            class="btn border-2 btn-outline btn-secondary"
+            class="btn btn-outline btn-secondary border-2"
             @click="
               () => {
                 form?.reset()

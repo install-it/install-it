@@ -9,6 +9,8 @@ defineEmits<{ submit: [rules: { _id: number | undefined } & storage.Rule] }>()
 
 const { t } = useI18n()
 
+const toast = useToast()
+
 defineExpose({
   show: (rule?: { _id: number | undefined } & storage.Rule) => {
     input.value = rule || {
@@ -61,7 +63,7 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
           @submit.prevent="
             () => {
               if (input.values.length == 0) {
-                $toast.warning(t('toast.addAtLeastOnePattern'))
+                toast.add({ title: t('toast.addAtLeastOnePattern'), color: 'warning' })
               } else {
                 $emit('submit', input)
                 frame?.hide()
