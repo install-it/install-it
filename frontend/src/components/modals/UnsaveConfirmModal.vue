@@ -1,80 +1,55 @@
 <script setup lang="ts">
-import { useTemplateRef } from 'vue'
-import ModalFrame from './ModalFrame.vue'
+import { ref } from 'vue'
 
-const frame = useTemplateRef('frame')
+const isOpen = ref(false)
+let callback: (answer: 'yes' | 'no') => void
 
 defineExpose({
   show: (cb: typeof callback) => {
     callback = cb
-    frame.value?.show()
+    isOpen.value = true
   },
-  hide: frame.value?.hide || (() => {})
+  hide: () => {
+    isOpen.value = false
+  }
 })
-
-let callback: (answer: 'yes' | 'no') => void
 </script>
 
 <template>
-  <ModalFrame ref="frame" :on-demand="false" :immediate="false">
-    <div class="max-w-[60vw]">
-      <!-- Modal content -->
-      <div class="rounded-lg bg-white shadow-sm">
-        <!-- Modal header -->
-        <div class="flex h-12 items-center justify-between rounded-t border-b px-4">
-          <h3 class="font-semibold">
-            {{ $t('common.unsaveConfirmTitle') }}
-          </h3>
+  <UModal v-model:open="isOpen" title="$t('common.unsaveConfirmTitle')">
+    <template #body>
+      <p>{{ $t('common.unsaveConfirmMessage') }}</p>
+    </template>
 
-          <button
-            type="button"
-            class="rounded-lg bg-transparent p-3 text-sm text-gray-400 hover:text-gray-900"
-            @click="
-              () => {
-                frame?.hide()
-                callback('no')
-              }
-            "
-          >
-            <Icon icon="mdi:close" />
-          </button>
-        </div>
+    <template #footer>
+      <div class="flex gap-x-2">
+        <UButton
+          color="primary"
+          class="flex-1"
+          @click="
+            () => {
+              isOpen = false
+              callback('yes')
+            }
+          "
+        >
+          {{ $t('common.confirm') }}
+        </UButton>
 
-        <!-- Modal body -->
-        <div class="px-3 py-5">
-          <p>
-            {{ $t('common.unsaveConfirmMessage') }}
-          </p>
-        </div>
-
-        <div class="flex gap-x-2 border-t px-4 py-2">
-          <button
-            type="button"
-            class="btn flex-1 text-gray-700 btn-accent"
-            @click="
-              () => {
-                frame?.hide()
-                callback('yes')
-              }
-            "
-          >
-            {{ $t('common.confirm') }}
-          </button>
-
-          <button
-            type="button"
-            class="btn flex-1"
-            @click="
-              () => {
-                frame?.hide()
-                callback('no')
-              }
-            "
-          >
-            {{ $t('common.cancel') }}
-          </button>
-        </div>
+        <UButton
+          variant="outline"
+          color="neutral"
+          class="flex-1"
+          @click="
+            () => {
+              isOpen = false
+              callback('no')
+            }
+          "
+        >
+          {{ $t('common.cancel') }}
+        </UButton>
       </div>
-    </div>
-  </ModalFrame>
+    </template>
+  </UModal>
 </template>
