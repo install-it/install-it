@@ -6,7 +6,6 @@ import * as programPorter from '@/wailsjs/go/porter/Porter'
 import * as runtime from '@/wailsjs/runtime'
 import { nextTick, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useToast } from 'vue-toast-notification'
 
 defineExpose({
   export: (destination: string) => {
@@ -61,7 +60,7 @@ const messageBox = useTemplateRef('message-box')
 
 const { t } = useI18n()
 
-const $toast = useToast({ position: 'top-right' })
+const toast = useToast()
 
 let interval = -1
 
@@ -96,15 +95,15 @@ function toastErrMsg(err: string) {
   if (err.includes('context canceled')) {
     return
   } else if (err.includes('The system cannot find the path specified.')) {
-    $toast.error(t('toast.pathNotFind'))
+    toast.add({ title: t('toast.pathNotFind'), color: 'error' })
   } else if (err.includes('unsupported protocol scheme')) {
-    $toast.error(t('toast.unsupportUrlProtocal'))
+    toast.add({ title: t('toast.unsupportUrlProtocal'), color: 'error' })
   } else if (err.includes('no such host')) {
-    $toast.error(t('toast.noSuchHost'))
+    toast.add({ title: t('toast.noSuchHost'), color: 'error' })
   } else if (err == 'zip: not a valid zip file') {
-    $toast.error(t('toast.invalidZipFile'))
+    toast.add({ title: t('toast.invalidZipFile'), color: 'error' })
   } else {
-    $toast.error(err)
+    toast.add({ title: err, color: 'error' })
   }
 }
 </script>
@@ -185,7 +184,7 @@ function toastErrMsg(err: string) {
                 class="btn btn-error"
                 @click="
                   () => {
-                    programPorter.Abort().catch(err => $toast.error(err))
+                    programPorter.Abort().catch(err => toast.add({ title: err, color: 'error' }))
                   }
                 "
               >

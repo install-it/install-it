@@ -6,11 +6,10 @@ import * as appSettingStorage from '@/wailsjs/go/storage/AppSettingStorage'
 import { ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onBeforeRouteLeave } from 'vue-router'
-import { useToast } from 'vue-toast-notification'
 
 const { t, locale } = useI18n()
 
-const $toast = useToast()
+const toast = useToast()
 
 const questionModal = useTemplateRef('questionModal')
 
@@ -47,10 +46,10 @@ function handleSubmit() {
       settingEditor.reset()
 
       locale.value = settings.value.language
-      $toast.success(t('toast.saved'), { duration: 1500, position: 'top-right' })
+      toast.add({ title: t('toast.saved'), color: 'success', timeout: 1500 })
     })
     .catch(() => {
-      $toast.error(t('toast.failedToSave'), { duration: 1500, position: 'top-right' })
+      toast.add({ title: t('toast.failedToSave'), color: 'error', timeout: 1500 })
     })
 }
 </script>

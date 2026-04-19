@@ -6,7 +6,6 @@ import * as matchRuleStorage from '@/wailsjs/go/storage/MatchRuleStorage'
 import { useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { useToast } from 'vue-toast-notification'
 
 const props = defineProps<{
   id?: string
@@ -18,7 +17,7 @@ const { t } = useI18n()
 
 const $router = useRouter()
 
-const $toast = useToast({ position: 'top-right' })
+const toast = useToast()
 
 const [ruleStore, groupStore] = [useMatchRuleStore(), useDriverGroupStore()]
 
@@ -28,12 +27,12 @@ const ruleSet = ruleEditor.ruleSet // alias
 
 function handleSubmit() {
   if (ruleSet.value.rules.length == 0) {
-    $toast.warning(t('toast.addAtLeastOneRule'))
+    toast.add({ title: t('toast.addAtLeastOneRule'), color: 'warning' })
     return
   }
 
   const handleSuccess = () => {
-    $toast.success(t('toast.updated'))
+    toast.add({ title: t('toast.updated'), color: 'success' })
 
     matchRuleStorage.All().then(newMatchRule => {
       ruleStore.ruleSets = newMatchRule
@@ -47,12 +46,12 @@ function handleSubmit() {
       .Add(ruleSet.value)
       .then(rid => (ruleSet.value.id = rid))
       .then(handleSuccess)
-      .catch(reason => $toast.error(reason.toString()))
+      .catch(reason => toast.add({ title: reason.toString(), color: 'error' }))
   } else {
     matchRuleStorage
       .Update(ruleSet.value)
       .then(handleSuccess)
-      .catch(reason => $toast.error(reason.toString()))
+      .catch(reason => toast.add({ title: reason.toString(), color: 'error' }))
   }
 }
 </script>

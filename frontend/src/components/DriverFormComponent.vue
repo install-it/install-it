@@ -7,7 +7,6 @@ import * as groupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
 import { toRaw, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
-import { useToast } from 'vue-toast-notification'
 
 const props = defineProps<{ id?: string }>()
 
@@ -15,7 +14,7 @@ const { t } = useI18n()
 
 const $route = useRoute()
 const $router = useRouter()
-const $toast = useToast({ position: 'top-right' })
+const toast = useToast()
 
 const questionModal = useTemplateRef('questionModal')
 const inputModal = useTemplateRef('inputModal')
@@ -43,12 +42,12 @@ onBeforeRouteLeave((to, from, next) => {
 
 function handleSubmit(event: SubmitEvent) {
   if (group.value.drivers.length == 0) {
-    $toast.warning(t('toast.addAtLeastOneDriver'))
+    toast.add({ title: t('toast.addAtLeastOneDriver'), color: 'warning' })
     return
   }
 
   const handleSuccess = () => {
-    $toast.success(t('toast.updated'))
+    toast.add({ title: t('toast.updated'), color: 'success' })
     groupStorage.All().then(newDriverGroups => {
       groupStore.groups = newDriverGroups
       groupEditor.reset()
@@ -66,7 +65,7 @@ function handleSubmit(event: SubmitEvent) {
       .Add(group.value)
       .then(gid => (group.value.id = gid))
       .then(handleSuccess)
-      .catch(reason => $toast.error(reason.toString()))
+      .catch(reason => toast.add({ title: reason.toString(), color: 'error' }))
   } else {
     groupStorage
       .Update({
@@ -79,7 +78,7 @@ function handleSubmit(event: SubmitEvent) {
         })
       })
       .then(handleSuccess)
-      .catch(reason => $toast.error(reason.toString()))
+      .catch(reason => toast.add({ title: reason.toString(), color: 'error' }))
   }
 }
 </script>

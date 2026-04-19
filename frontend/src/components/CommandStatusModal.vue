@@ -8,7 +8,6 @@ import * as runtime from '@/wailsjs/runtime/runtime'
 import AsyncLock from 'async-lock'
 import { ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useToast } from 'vue-toast-notification'
 
 const emit = defineEmits<{ completed: [] }>()
 
@@ -28,7 +27,7 @@ defineExpose({
 
 const { t } = useI18n()
 
-const $toast = useToast({ position: 'top-left', duration: 7000 })
+const toast = useToast()
 
 const lock = new AsyncLock()
 
@@ -53,9 +52,9 @@ runtime.EventsOn('execute:exited', async (id: string, result: NonNullable<Proces
   dispatchCommand().then(() => {
     if (processes.value.every(c => c.status === 'completed')) {
       emit('completed')
-      $toast.success(t('toast.finished'), { position: 'bottom-right' })
+      toast.add({ title: t('toast.finished'), color: 'success' })
     } else if (processes.value.every(c => !c.status.includes('ing'))) {
-      $toast.info(t('toast.finished'), { position: 'bottom-right' })
+      toast.add({ title: t('toast.finished'), color: 'info' })
     }
   })
 })
@@ -120,11 +119,12 @@ async function handleAbort(process: Process) {
       // `aborted` status will be updated at `execute:exited` event handler
       executor.Abort(process.procId!).catch(error => {
         if (error.includes('process does not exist')) {
-          $toast.warning(
-            t('toast.cancelCompletedFailed', {
+          toast.add({
+            title: t('toast.cancelCompletedFailed', {
               name: getProcessName(process)
-            })
-          )
+            }),
+            color: 'warning'
+          })
           return
         }
 
@@ -133,13 +133,14 @@ async function handleAbort(process: Process) {
           .split('\n')
           .forEach((err: string) => {
             if (err.includes('abort failed')) {
-              $toast.warning(
-                t('toast.cancelFailed', {
+              toast.add({
+                title: t('toast.cancelFailed', {
                   name: getProcessName(process)
-                })
-              )
+                }),
+                color: 'warning'
+              })
             } else {
-              $toast.error(`[${getProcessName(process)}] ${err}`)
+              toast.add({ title: `[${getProcessName(process)}] ${err}`, color: 'error' })
             }
           })
 
@@ -199,7 +200,7 @@ async function handleAbort(process: Process) {
             @click="
               event => {
                 $emit('completed')
-                $toast.success(t('toast.finished'), { position: 'bottom-right' })
+                toast.add({ title: t('toast.finished'), color: 'success' })
 
                 // @ts-ignore
                 event.currentTarget?.remove()

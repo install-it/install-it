@@ -13,11 +13,10 @@ import { BrowserOpenURL, Environment } from '@/wailsjs/runtime/runtime'
 import { onBeforeMount, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useLoading } from 'vue-loading-overlay'
-import { useToast } from 'vue-toast-notification'
 
 const { t } = useI18n()
 
-const $toast = useToast({ position: 'top-right' })
+const toast = useToast()
 
 const $loading = useLoading({ lockScroll: true })
 
@@ -75,7 +74,7 @@ onBeforeMount(() => {
 
 function checkUpdate() {
   if (Object.values(info.value.app).some(v => v == 'na')) {
-    $toast.error(t('toast.checkUpdateFailed'))
+    toast.add({ title: t('toast.checkUpdateFailed'), color: 'error' })
     return
   }
 
@@ -86,11 +85,11 @@ function checkUpdate() {
       if (release.hasUpdate) {
         modal.value?.show(release, !['', 'na'].includes(info.value.webview.location))
       } else {
-        $toast.info(t('toast.noUpdate'))
+        toast.add({ title: t('toast.noUpdate'), color: 'info' })
       }
     })
     .catch(reason => {
-      $toast.error(reason)
+      toast.add({ title: reason, color: 'error' })
     })
     .finally(() => {
       loader.hide()
