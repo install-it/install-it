@@ -7,12 +7,11 @@ import * as matchRuleStorage from '@/wailsjs/go/storage/MatchRuleStorage'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { RouteLocationRaw } from 'vue-router'
-import { useToast } from 'vue-toast-notification'
 import { latestRelease } from './utils'
 
 const { t, locale } = useI18n()
 
-const $toast = useToast({ position: 'top-right' })
+const toast = useToast()
 
 const [settingsStore, groupStore, matchStore] = [
   useAppSettingStore(),
@@ -29,7 +28,7 @@ Promise.all([
     .All()
     .then(gs => (groupStore.groups = gs))
     .catch(() => {
-      $toast.error(t('toast.readDriverFailed'))
+      toast.add({ title: t('toast.readDriverFailed'), color: 'error' })
     }),
   appSettingStorage
     .All()
@@ -38,7 +37,7 @@ Promise.all([
       locale.value = s.language
     })
     .catch(() => {
-      $toast.error(t('toast.readAppSettingFailed'))
+      toast.add({ title: t('toast.readAppSettingFailed'), color: 'error' })
     }),
   matchRuleStorage
     .All()
@@ -46,7 +45,7 @@ Promise.all([
       matchStore.ruleSets = rs
     })
     .catch(() => {
-      $toast.error(t('toast.readAppSettingFailed'))
+      toast.add({ title: t('toast.readAppSettingFailed'), color: 'error' })
     })
 ])
   .then(() => {
@@ -56,7 +55,7 @@ Promise.all([
           latestRelease(version).then(release => {
             hasUpdate.value = release.hasUpdate
             if (release.hasUpdate) {
-              $toast.info(t('toast.updateAvailable'))
+              toast.add({ title: t('toast.updateAvailable'), color: 'info' })
             }
           })
         )
@@ -76,46 +75,48 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
 </script>
 
 <template>
-  <Transition name="fade" mode="out-in">
-    <template v-if="!initilisating">
-      <div class="flex h-screen w-screen">
-        <aside class="w-12">
-          <div class="flex h-full justify-center bg-gray-50">
-            <ul class="mt-6 space-y-3 font-medium">
-              <li v-for="(link, i) in routes" :key="i">
-                <RouterLink
-                  :to="link.to"
-                  class="flex rounded-lg p-2 hover:bg-gray-200"
-                  active-class="text-apple-green-900 bg-powder-blue-400"
-                  draggable="false"
-                >
-                  <div class="indicator">
-                    <span
-                      v-if="link.to == '/app-info' && hasUpdate"
-                      class="indicator-item status status-neutral"
-                      style="background-image: unset"
-                    ></span>
+  <UApp>
+    <Transition name="fade" mode="out-in">
+      <template v-if="!initilisating">
+        <div class="flex h-screen w-screen">
+          <aside class="w-12">
+            <div class="flex h-full justify-center bg-gray-50">
+              <ul class="mt-6 space-y-3 font-medium">
+                <li v-for="(link, i) in routes" :key="i">
+                  <RouterLink
+                    :to="link.to"
+                    class="flex rounded-lg p-2 hover:bg-gray-200"
+                    active-class="text-apple-green-900 bg-powder-blue-400"
+                    draggable="false"
+                  >
+                    <div class="indicator">
+                      <span
+                        v-if="link.to == '/app-info' && hasUpdate"
+                        class="indicator-item status status-neutral"
+                        style="background-image: unset"
+                      ></span>
 
-                    <Icon :icon="link.icon" />
-                  </div>
-                </RouterLink>
-              </li>
-            </ul>
-          </div>
-        </aside>
+                      <Icon :icon="link.icon" />
+                    </div>
+                  </RouterLink>
+                </li>
+              </ul>
+            </div>
+          </aside>
 
-        <main class="flex-1 overflow-hidden p-3">
-          <RouterView></RouterView>
-        </main>
-      </div>
-    </template>
+          <main class="flex-1 overflow-hidden p-3">
+            <RouterView></RouterView>
+          </main>
+        </div>
+      </template>
 
-    <template v-else>
-      <div class="flex h-screen w-screen justify-center">
-        <span class="loading loading-xl loading-dots"></span>
-      </div>
-    </template>
-  </Transition>
+      <template v-else>
+        <div class="flex h-screen w-screen justify-center">
+          <span class="loading loading-xl loading-dots"></span>
+        </div>
+      </template>
+    </Transition>
+  </UApp>
 </template>
 
 <style scoped>

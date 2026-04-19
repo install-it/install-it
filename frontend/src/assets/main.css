@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@plugin 'daisyui';
+@import '@nuxt/ui';
 @import './theme.css';
 @import './components.css';
 
@@ -68,16 +68,4 @@
   input[type='checkbox'] {
     accent-color: var(--color-powder-blue-700);
   }
-}
-
-.v-toast {
-  padding: 8px;
-}
-
-.v-toast__item .v-toast__text {
-  padding: 0.5rem 1rem;
-}
-
-.v-toast__item {
-  min-height: 3rem;
 }
