@@ -13,7 +13,7 @@ const router = useRouter()
 const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
 
 const { scrollContainer } = useScrollPosition('matchRule', () =>
-  ['/match-rules/edit', '/match-rules/create'].some(
+  ['/match-rules/create', '/match-rules/:id/edit'].some(
     v =>
       (router.options.history.state.forward ?? router.options.history.state.back)
         ?.toString()
@@ -54,7 +54,7 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
 
           <div class="flex gap-x-1.5 py-1">
             <RouterLink
-              :to="`/match-rules/edit/${rs.id}`"
+              :to="`/match-rules/${rs.id}/edit`"
               class="btn size-6 btn-xs"
               :title="$t('common.edit')"
             >
@@ -157,7 +157,7 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
           <div class="line-clamp-2 flex-1">
             <span
               v-for="(group, i) in driverStore.groups.filter(g =>
-                rs.driver_group_ids.includes(g.id)
+                rs.driver_group_ids?.includes(g.id)
               )"
               :key="i"
               class="me-0.5 badge badge-xs px-1 md:badge-sm md:px-1.5"
