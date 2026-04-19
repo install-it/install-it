@@ -48,7 +48,7 @@ const webviewVersion = ref(false)
               }
             "
           >
-            <font-awesome-icon icon="fa-solid fa-xmark" />
+            <Icon icon="mdi:close" />
           </button>
         </div>
 

@@ -138,14 +138,14 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
           <div class="flex gap-x-1.5 py-1">
             <RouterLink
               :to="`/drivers/${g.id}/edit`"
-              class="btn size-6 btn-xs"
+              class="btn h-6 btn-xs"
               :title="$t('common.edit')"
             >
-              <font-awesome-icon icon="fa-solid fa-pen-to-square" class="text-gray-500" />
+              <Icon icon="mdi:pencil" class="text-gray-500" />
             </RouterLink>
 
             <button
-              class="btn size-6 btn-xs"
+              class="btn h-6 btn-xs"
               :title="$t('common.clone')"
               @click="
                 groupStorage.Add(g).then(() =>
@@ -158,11 +158,11 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
                 )
               "
             >
-              <font-awesome-icon icon="fa-solid fa-clone" class="text-gray-500" />
+              <Icon icon="mdi:content-duplicate" class="text-gray-500" />
             </button>
 
             <button
-              class="btn size-6 btn-xs"
+              class="btn h-6 btn-xs"
               :title="$t('common.delete')"
               @click="
                 groupStorage.Remove(g.id).then(() =>
@@ -175,7 +175,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
                 )
               "
             >
-              <font-awesome-icon icon="fa-solid fa-trash" class="text-gray-500" />
+              <Icon icon="mdi:trash-can" class="text-gray-500" />
             </button>
           </div>
         </div>
@@ -214,7 +214,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
               class="inline-block max-h-5 rounded-xs bg-yellow-300 p-0.5"
               :title="$t('driverForm.incompatibleWith')"
             >
-              <font-awesome-icon icon="fa-solid fa-code-merge" />
+              <Icon icon="mdi:source-merge" />
             </span>
 
             <span
@@ -222,7 +222,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
               class="inline-block max-h-5 rounded-xs bg-blue-300 p-0.5"
               :title="$t('driverForm.allowedExitCode')"
             >
-              <font-awesome-icon icon="fa-solid fa-0" />
+              <Icon icon="mdi:numeric-0-box-outline" />
             </span>
           </div>
         </div>

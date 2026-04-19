@@ -150,7 +150,7 @@ function handleSubmit() {
                       :title="$t('common.edit')"
                       @click="inputModal?.show(JSON.parse(JSON.stringify({ ...r, _id: i })))"
                     >
-                      <font-awesome-icon icon="fa-solid fa-pen-to-square" />
+                      <Icon icon="mdi:pencil" class="size-4" />
                     </button>
 
                     <button
@@ -158,7 +158,7 @@ function handleSubmit() {
                       :title="$t('common.delete')"
                       @click="ruleSet.rules.splice(i, 1)"
                     >
-                      <font-awesome-icon icon="fa-solid fa-trash" />
+                      <Icon icon="mdi:trash-can" class="size-4" />
                     </button>
                   </div>
                 </div>
@@ -170,7 +170,7 @@ function handleSubmit() {
 
           <div class="flex justify-end gap-x-3">
             <button type="button" class="btn px-2 btn-primary" @click="inputModal?.show()">
-              <font-awesome-icon icon="fa-regular fa-square-plus" />
+              <Icon icon="mdi:plus-box" />
             </button>
           </div>
         </div>

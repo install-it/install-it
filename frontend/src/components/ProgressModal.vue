@@ -134,7 +134,7 @@ function toastErrMsg(err: string) {
               }
             "
           >
-            <font-awesome-icon icon="fa-solid fa-xmark" />
+            <Icon icon="mdi:close" />
           </button>
         </div>
 
@@ -152,23 +152,17 @@ function toastErrMsg(err: string) {
             <ol class="flex w-full items-center">
               <ProgressNode v-for="(task, i) in progress?.tasks ?? []" :key="i" :task>
                 <i class="text-xs lg:text-base">
-                  <font-awesome-icon
-                    v-if="task.status == 'pending'"
-                    icon="fa-solid fa-hourglass-start"
-                  />
+                  <Icon v-if="task.status == 'pending'" icon="mdi:hourglass-start" />
 
-                  <font-awesome-icon
+                  <Icon
                     v-else-if="task.status.includes('ing')"
-                    icon="fa-solid fa-spinner"
-                    spin
+                    icon="mdi:loading"
+                    class="animate-spin"
                   />
 
-                  <font-awesome-icon
-                    v-else-if="task.status == 'completed'"
-                    icon="fa-solid fa-check"
-                  />
+                  <Icon v-else-if="task.status == 'completed'" icon="mdi:check" />
 
-                  <font-awesome-icon v-else icon="fa-solid fa-exclamation" />
+                  <Icon v-else icon="mdi:alert" />
                 </i>
               </ProgressNode>
 
