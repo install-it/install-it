@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import ModalFrame from '@/components/modals/ModalFrame.vue'
+import ProgressNode from '@/components/ProgressNode.vue'
 import { porter } from '@/wailsjs/go/models'
 import * as programPorter from '@/wailsjs/go/porter/Porter'
 import * as runtime from '@/wailsjs/runtime'
 import { nextTick, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
-import ProgressNode from './ProgressNode.vue'
 
 defineExpose({
   export: (destination: string) => {

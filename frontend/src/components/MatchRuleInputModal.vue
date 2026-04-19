@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import ModalFrame from '@/components/modals/ModalFrame.vue'
+import TaggedInput from '@/components/TaggedInput.vue'
 import { storage } from '@/wailsjs/go/models'
 import { ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import TaggedInput from './TaggedInput.vue'
 
 defineEmits<{ submit: [rules: { _id: number | undefined } & storage.Rule] }>()
 

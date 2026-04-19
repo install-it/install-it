@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import UpdateModal from '@/components/UpdateModal.vue'
 import { latestRelease } from '@/utils'
 import { RunAndOutput } from '@/wailsjs/go/execute/CommandExecutor'
 import {
@@ -13,7 +14,6 @@ import { onBeforeMount, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useLoading } from 'vue-loading-overlay'
 import { useToast } from 'vue-toast-notification'
-import UpdateModal from './components/UpdateModal.vue'
 
 const { t } = useI18n()
 

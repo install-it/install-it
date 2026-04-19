@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { onBeforeMount, ref, useTemplateRef } from 'vue'
+import { useToast } from 'vue-toast-notification'
 
+import ProgressModal from '@/components/ProgressModal.vue'
 import { Cwd, SelectFile, SelectFolder } from '@/wailsjs/go/main/App'
 import * as appStorage from '@/wailsjs/go/storage/AppSettingStorage'
-import DownloadProgressModal from './components/ProgressModal.vue'
+
+const $toast = useToast({ position: 'bottom-right' })
 
 const progressModal = useTemplateRef('progressModal')
 
@@ -188,5 +191,5 @@ onBeforeMount(() => {
     </div>
   </div>
 
-  <DownloadProgressModal ref="progressModal"></DownloadProgressModal>
+  <ProgressModal ref="progressModal"></ProgressModal>
 </template>

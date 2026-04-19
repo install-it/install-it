@@ -1,24 +1,24 @@
 <script setup lang="ts">
 import DriverSelector from '@/components/DriverSelector.vue'
+import MatchRuleInputModal from '@/components/MatchRuleInputModal.vue'
 import { useDriverGroupStore, useMatchRuleStore } from '@/store'
 import * as matchRuleStorage from '@/wailsjs/go/storage/MatchRuleStorage'
 import { useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toast-notification'
-import MatchRuleInputModal from './components/MatchRuleInputModal.vue'
 
 const inputModal = useTemplateRef('inputModal')
 
 const { t } = useI18n()
 
-const [$route, $router] = [useRoute(), useRouter()]
+const $router = useRouter()
 
 const $toast = useToast({ position: 'top-right' })
 
 const [ruleStore, groupStore] = [useMatchRuleStore(), useDriverGroupStore()]
 
-const ruleEditor = ruleStore.editor($route.params.id as string | undefined)
+const ruleEditor = ruleStore.editor(undefined)
 
 const ruleSet = ruleEditor.ruleSet // alias
 
