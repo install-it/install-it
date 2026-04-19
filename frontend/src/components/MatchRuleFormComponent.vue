@@ -5,27 +5,28 @@ import { useDriverGroupStore, useMatchRuleStore } from '@/store'
 import * as matchRuleStorage from '@/wailsjs/go/storage/MatchRuleStorage'
 import { useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toast-notification'
+
+const props = defineProps<{
+  id?: string
+}>()
 
 const inputModal = useTemplateRef('inputModal')
 
 const { t } = useI18n()
 
-const [$route, $router] = [useRoute(), useRouter()]
+const $router = useRouter()
 
 const $toast = useToast({ position: 'top-right' })
 
 const [ruleStore, groupStore] = [useMatchRuleStore(), useDriverGroupStore()]
 
-const params = $route.params as { id: string }
-const id = Array.isArray(params.id) ? params.id[0] : params.id
-
-const ruleEditor = ruleStore.editor(id)
+const ruleEditor = ruleStore.editor(props.id)
 
 const ruleSet = ruleEditor.ruleSet // alias
 
-function handleSubmit(event: SubmitEvent) {
+function handleSubmit() {
   if (ruleSet.value.rules.length == 0) {
     $toast.warning(t('toast.addAtLeastOneRule'))
     return
@@ -37,12 +38,7 @@ function handleSubmit(event: SubmitEvent) {
     matchRuleStorage.All().then(newMatchRule => {
       ruleStore.ruleSets = newMatchRule
       ruleEditor.reset()
-
-      if (event.submitter?.id !== 'driver-submit-btn') {
-        $router.back()
-      } else {
-        $router.replace({ path: `/` })
-      }
+      $router.replace({ path: `/match-rules/${ruleSet.value.id}/edit` })
     })
   }
 
@@ -62,11 +58,7 @@ function handleSubmit(event: SubmitEvent) {
 </script>
 
 <template>
-  <form
-    class="size-full overflow-y-auto"
-    autocomplete="off"
-    @submit.prevent="event => handleSubmit(event as SubmitEvent)"
-  >
+  <form class="size-full overflow-y-auto" autocomplete="off" @submit.prevent="handleSubmit">
     <div class="mx-auto h-full max-w-full content-center space-y-3 lg:max-w-2xl xl:max-w-4xl">
       <h1 class="mb-2 text-xl font-bold">
         {{ $t('matchRule.createRule') }}

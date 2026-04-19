@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { storage } from '@/wailsjs/go/models'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps<{
   driverGroups: Array<storage.DriverGroup>
@@ -9,9 +9,20 @@ const props = defineProps<{
   groupBy: 'group' | 'driver'
 }>()
 
-const model = defineModel<Array<string>>({ default: [] })
+const model = defineModel<Array<string> | undefined | null>({ default: [] })
 
 const searchPhrase = ref('')
+
+// ensure model is always an array
+watch(
+  () => model.value,
+  val => {
+    if (val === null || val === undefined) {
+      model.value = []
+    }
+  },
+  { immediate: true }
+)
 
 const filteredGroups = computed(() => {
   return searchPhrase.value === ''
@@ -28,7 +39,7 @@ const filteredGroups = computed(() => {
   <div>
     <div class="mb-1 line-clamp-1 text-xs">
       <span class="inline">
-        {{ $t('driverForm.selectedWithCount', { count: model.length }) }}
+        {{ $t('driverForm.selectedWithCount', { count: model?.length ?? 0 }) }}
       </span>
     </div>
 

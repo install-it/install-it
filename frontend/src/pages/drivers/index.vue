@@ -17,7 +17,7 @@ const groupStore = useDriverGroupStore()
 const reordering = ref(false)
 
 const { scrollContainer } = useScrollPosition('driverGroup', () =>
-  ['/drivers/edit', '/drivers/create'].some(
+  ['/drivers/create', '/drivers/:id/edit'].some(
     v =>
       (router.options.history.state.forward ?? router.options.history.state.back)
         ?.toString()
@@ -137,7 +137,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
 
           <div class="flex gap-x-1.5 py-1">
             <RouterLink
-              :to="`/drivers/edit/${g.id}`"
+              :to="`/drivers/${g.id}/edit`"
               class="btn size-6 btn-xs"
               :title="$t('common.edit')"
             >
