@@ -66,12 +66,12 @@ Promise.all([
   .finally(() => (initilisating.value = false))
 
 const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
-  { to: '/', icon: 'fa-regular fa-house' },
-  { to: '/drivers', icon: 'fa-regular fa-file-code' },
-  { to: '/match-rules', icon: 'fa-solid fa-location-crosshairs' },
-  { to: '/settings', icon: 'fa-solid fa-gear' },
-  { to: '/porter', icon: 'fa-solid fa-people-arrows' },
-  { to: '/app-info', icon: 'fa-solid fa-info' }
+  { to: '/', icon: 'mdi:home' },
+  { to: '/drivers', icon: 'mdi:file-code' },
+  { to: '/match-rules', icon: 'mdi:crosshairs-gps' },
+  { to: '/settings', icon: 'mdi:cog' },
+  { to: '/porter', icon: 'mdi:arrow-left-right' },
+  { to: '/app-info', icon: 'mdi:information' }
 ]
 </script>
 
@@ -96,7 +96,7 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
                       style="background-image: unset"
                     ></span>
 
-                    <font-awesome-icon :icon="link.icon" />
+                    <Icon :icon="link.icon" />
                   </div>
                 </RouterLink>
               </li>

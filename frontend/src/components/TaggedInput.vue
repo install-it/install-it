@@ -29,9 +29,9 @@ function removeTag(index: number) {
       @click="removeTag(i)"
     >
       {{ tag }}
-      <font-awesome-icon v-if="i < tags.length - 1" icon="fa-solid fa-xmark" class="h-6 w-6" />
+      <Icon v-if="i < tags.length - 1" icon="mdi:close" class="h-6 w-6" />
 
-      <font-awesome-icon v-else icon="fa-solid fa-delete-left" class="h-6 w-6" />
+      <Icon v-else icon="mdi:backspace" class="h-6 w-6" />
     </button>
 
     <input

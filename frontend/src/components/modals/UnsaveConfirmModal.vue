@@ -36,7 +36,7 @@ let callback: (answer: 'yes' | 'no') => void
               }
             "
           >
-            <font-awesome-icon icon="fa-solid fa-xmark" />
+            <Icon icon="mdi:close" />
           </button>
         </div>
 

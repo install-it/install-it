@@ -69,7 +69,7 @@ const driver = ref<
             class="rounded-lg bg-transparent p-3 text-sm text-gray-400 hover:bg-gray-100 hover:text-gray-900"
             @click="frame?.hide()"
           >
-            <font-awesome-icon icon="fa-solid fa-xmark" />
+            <Icon icon="mdi:close" />
           </button>
         </div>
 

@@ -55,14 +55,14 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
           <div class="flex gap-x-1.5 py-1">
             <RouterLink
               :to="`/match-rules/${rs.id}/edit`"
-              class="btn size-6 btn-xs"
+              class="btn h-6 btn-xs"
               :title="$t('common.edit')"
             >
-              <font-awesome-icon icon="fa-solid fa-pen-to-square" class="text-gray-500" />
+              <Icon icon="mdi:pencil" class="text-gray-500" />
             </RouterLink>
 
             <button
-              class="btn size-6 btn-xs"
+              class="btn h-6 btn-xs"
               :title="$t('common.clone')"
               @click="
                 matchRuleStorage.Add(rs).then(() =>
@@ -75,11 +75,11 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
                 )
               "
             >
-              <font-awesome-icon icon="fa-solid fa-clone" class="text-gray-500" />
+              <Icon icon="mdi:content-duplicate" class="text-gray-500" />
             </button>
 
             <button
-              class="btn size-6 btn-xs"
+              class="btn h-6 btn-xs"
               :title="$t('common.delete')"
               @click="
                 matchRuleStorage.Remove(rs.id).then(() =>
@@ -92,7 +92,7 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
                 )
               "
             >
-              <font-awesome-icon icon="fa-solid fa-trash" class="text-gray-500" />
+              <Icon icon="mdi:trash-can" class="text-gray-500" />
             </button>
           </div>
         </div>

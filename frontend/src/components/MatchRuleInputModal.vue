@@ -51,7 +51,7 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
             class="rounded-lg bg-transparent p-3 text-sm text-gray-400 hover:text-gray-900"
             @click="frame?.hide()"
           >
-            <font-awesome-icon icon="fa-solid fa-xmark" />
+            <Icon icon="mdi:close" />
           </button>
         </div>
 
