@@ -61,7 +61,7 @@ const { t } = useI18n()
 
 const toast = useToast()
 
-let interval = -1
+let interval: ReturnType<typeof setInterval> | number = -1
 
 const messages = ref<Array<string>>([])
 

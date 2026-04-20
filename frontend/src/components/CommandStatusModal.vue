@@ -181,7 +181,7 @@ async function handleAbort(process: Process) {
           color="secondary"
           size="sm"
           @click="
-            event => {
+            (event: MouseEvent) => {
               $emit('completed')
               toast.add({ title: t('toast.finished'), color: 'success' })
 

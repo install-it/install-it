@@ -98,7 +98,7 @@ function handleSubmit(event: SubmitEvent) {
             v-model="group.type"
             name="type"
             class="w-full"
-            :options="
+            :items="
               Object.values(storage.DriverType).map(type => ({
                 label: $t(`driverCatetory.${type}`),
                 value: type

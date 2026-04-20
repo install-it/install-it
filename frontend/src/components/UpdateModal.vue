@@ -93,7 +93,7 @@ const webviewVersion = ref(false)
                 return
               }
 
-              toast.add({ title: $t('toast.downloadingUpdater'), color: 'info', timeout: 60 * 1000 })
+              toast.add({ title: $t('toast.downloadingUpdater'), color: 'info', duration: 60 * 1000 })
               const loader = $loading.show()
 
               Update($props.app.version, releaseInfo.version, webviewVersion)

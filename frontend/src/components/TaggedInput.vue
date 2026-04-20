@@ -41,7 +41,7 @@ function removeTag(index: number) {
         }
       "
       @keydown.enter="
-        event => {
+        (event: KeyboardEvent) => {
           if (input != '') {
             event.preventDefault()
           }

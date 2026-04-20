@@ -5,7 +5,7 @@ import { SelectFile } from '@/wailsjs/go/main/App'
 import { storage } from '@/wailsjs/go/models'
 import { nextTick, ref, toRaw, useTemplateRef } from 'vue'
 
-defineEmits<{ submit: [dri: storage.Driver] }>()
+const emit = defineEmits<{ submit: [dri: storage.Driver] }>()
 
 const isOpen = ref(false)
 
@@ -28,7 +28,9 @@ defineExpose({
       modalBody.value?.scrollTo({ top: 0, behavior: 'smooth' })
     })
   },
-  hide: () => { isOpen.value = false }
+  hide: () => {
+    isOpen.value = false
+  }
 })
 
 const FLAGS = {
@@ -53,155 +55,148 @@ const driver = ref<
 
 const flagItems = Object.entries(FLAGS).map(([name, flags]) => ({
   label: name,
-  click: () => { driver.value.flags = flags.join() }
+  onSelect: () => {
+    driver.value.flags = flags.join(',')
+  }
 }))
+
+function handleSubmit() {
+  emit(
+    'submit',
+    new storage.Driver({
+      ...driver.value,
+      flags: driver.value.flags ? driver.value.flags.split(',') : [],
+      allowRtCodes: driver.value.allowRtCodes
+        ? driver.value.allowRtCodes
+            ?.split(',')
+            .map((c: string) => parseInt(c))
+            .filter((c: number) => !Number.isNaN(c))
+        : [],
+      incompatibles: toRaw(driver.value.incompatibles) ?? []
+    })
+  )
+
+  isOpen.value = false
+}
 </script>
 
 <template>
   <UModal
     v-model:open="isOpen"
-    :title="driver ? $t('driverForm.editDriver') : $t('driverForm.createDriver')"
+    :title="driver.name ? $t('driverForm.editDriver') : $t('driverForm.createDriver')"
   >
     <template #body>
       <div ref="modalBody" class="max-h-[70vh] overflow-auto">
-          <form
-            class="flex flex-col gap-y-2"
-            autocomplete="off"
-            @submit.prevent="
-              _ => {
-                $emit(
-                  'submit',
-                  new storage.Driver({
-                    ...driver,
-                    flags: driver.flags ? driver.flags.split(',') : [],
-                    allowRtCodes: driver.allowRtCodes
-                      ? driver.allowRtCodes
-                          ?.split(',')
-                          .map(c => parseInt(c))
-                          .filter(c => !Number.isNaN(c))
-                      : [],
-                    incompatibles: toRaw(driver.incompatibles) ?? []
-                  })
-                )
+        <form class="flex flex-col gap-y-2" autocomplete="off" @submit.prevent="handleSubmit">
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend text-sm">{{ $t('driverForm.name') }}</legend>
 
-                isOpen.value = false
-              }
-            "
-          >
-            <fieldset class="fieldset">
-              <legend class="fieldset-legend text-sm">{{ $t('driverForm.name') }}</legend>
+            <UInput v-model="driver.name" type="text" name="name" color="primary" />
+          </fieldset>
+
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend text-sm">{{ $t('driverForm.path') }}</legend>
+
+            <div class="flex gap-2">
+              <UButton
+                type="button"
+                color="neutral"
+                variant="outline"
+                @click="
+                  SelectFile(true).then(path => {
+                    driver.path = path
+                  })
+                "
+              >
+                {{ $t('driverForm.selectFile') }}
+              </UButton>
 
               <UInput
-                v-model="driver.name"
+                ref="pathInput"
+                v-model="driver.path"
                 type="text"
-                name="name"
+                name="path"
                 color="primary"
+                class="flex-1"
+                required
               />
-            </fieldset>
+            </div>
+          </fieldset>
 
-            <fieldset class="fieldset">
-              <legend class="fieldset-legend text-sm">{{ $t('driverForm.path') }}</legend>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend text-sm">{{ $t('driverForm.argument') }}</legend>
 
-              <div class="flex gap-2">
-                <UButton
-                  type="button"
-                  color="neutral"
-                  variant="outline"
-                  @click="
-                    SelectFile(true).then(path => {
-                      driver.path = path
-                    })
-                  "
-                >
-                  {{ $t('driverForm.selectFile') }}
+            <div class="flex items-center gap-2">
+              <UDropdownMenu :items="[flagItems]">
+                <UButton color="neutral" variant="outline">
+                  {{ $t('common.select') }}
                 </UButton>
+              </UDropdownMenu>
 
-                <UInput
-                  ref="pathInput"
-                  v-model="driver.path"
-                  type="text"
-                  name="path"
-                  color="primary"
-                  class="flex-1"
-                  required
-                />
-              </div>
-            </fieldset>
+              <UInput
+                v-model="driver.flags"
+                type="text"
+                name="flags"
+                color="primary"
+                class="flex-1"
+              />
+            </div>
 
-            <fieldset class="fieldset">
-              <legend class="fieldset-legend text-sm">{{ $t('driverForm.argument') }}</legend>
+            <p class="label text-apple-green-800">
+              {{ $t('driverForm.commaSeparated') }}
+            </p>
+          </fieldset>
 
-              <div class="flex gap-2 items-center">
-                <UDropdown :items="[flagItems]">
-                  <UButton color="neutral" variant="outline">
-                    {{ $t('common.select') }}
-                  </UButton>
-                </UDropdown>
+          <div class="flex gap-x-3">
+            <fieldset class="fieldset flex-1">
+              <legend class="fieldset-legend text-sm">
+                {{ $t('driverForm.minExecuteTime') }}
+              </legend>
 
-                <UInput
-                  v-model="driver.flags"
-                  type="text"
-                  name="flags"
-                  color="primary"
-                  class="flex-1"
-                />
-              </div>
+              <UInput
+                v-model="driver.minExeTime"
+                type="number"
+                name="minExeTime"
+                step="0.1"
+                color="primary"
+                required
+              />
 
-              <p class="label text-apple-green-800">
-                {{ $t('driverForm.commaSeparated') }}
+              <p class="label text-wrap text-apple-green-800">
+                {{ $t('driverForm.minExecuteTimeHelp') }}
               </p>
             </fieldset>
 
-            <div class="flex gap-x-3">
-              <fieldset class="fieldset flex-1">
-                <legend class="fieldset-legend text-sm">
-                  {{ $t('driverForm.minExecuteTime') }}
-                </legend>
+            <fieldset class="fieldset flex-1">
+              <legend class="fieldset-legend text-sm">
+                {{ $t('driverForm.allowedExitCode') }}
+              </legend>
 
-                <UInput
-                  v-model="driver.minExeTime"
-                  type="number"
-                  name="minExeTime"
-                  step="0.1"
-                  color="primary"
-                  required
-                />
+              <UInput
+                v-model="driver.allowRtCodes"
+                type="text"
+                name="allowRtCodes"
+                color="primary"
+              />
 
-                <p class="label text-wrap text-apple-green-800">
-                  {{ $t('driverForm.minExecuteTimeHelp') }}
-                </p>
-              </fieldset>
+              <p class="label text-wrap text-apple-green-800">
+                {{ $t('driverForm.commaSeparated') }}
+              </p>
+            </fieldset>
+          </div>
 
-              <fieldset class="fieldset flex-1">
-                <legend class="fieldset-legend text-sm">
-                  {{ $t('driverForm.allowedExitCode') }}
-                </legend>
+          <DriverSelector
+            v-model="driver.incompatibles"
+            group-by="driver"
+            :driver-groups="groupStore.groups"
+          ></DriverSelector>
 
-                <UInput
-                  v-model="driver.allowRtCodes"
-                  type="text"
-                  name="allowRtCodes"
-                  color="primary"
-                />
-
-                <p class="label text-wrap text-apple-green-800">
-                  {{ $t('driverForm.commaSeparated') }}
-                </p>
-              </fieldset>
-            </div>
-
-            <DriverSelector
-              v-model="driver.incompatibles"
-              group-by="driver"
-              :driver-groups="groupStore.groups"
-            ></DriverSelector>
-
-            <UButton type="submit" color="secondary" block>
-              {{ $t('common.save') }}
-            </UButton>
-          </form>
-        </div>
-      </template>
+          <UButton type="submit" color="secondary" block>
+            {{ $t('common.save') }}
+          </UButton>
+        </form>
+      </div>
+    </template>
   </UModal>
 </template>
 
