@@ -46,10 +46,10 @@ function handleSubmit() {
       settingEditor.reset()
 
       locale.value = settings.value.language
-      toast.add({ title: t('toast.saved'), color: 'success', timeout: 1500 })
+      toast.add({ title: t('toast.saved'), color: 'success', duration: 1500 })
     })
     .catch(() => {
-      toast.add({ title: t('toast.failedToSave'), color: 'error', timeout: 1500 })
+      toast.add({ title: t('toast.failedToSave'), color: 'error', duration: 1500 })
     })
 }
 </script>
@@ -213,8 +213,12 @@ function handleSubmit() {
               v-model="settings.success_action"
               name="success_action"
               color="primary"
-              :options="storage.SuccessAction.map(action => ({ value: action, label: $t(`successAction.${action}`) }))"
-              value-attribute="value"
+              :items="
+                Object.values(storage.SuccessAction).map((action: string) => ({
+                  label: $t(`successAction.${action}`),
+                  value: action
+                }))
+              "
             />
           </div>
         </div>
@@ -232,11 +236,10 @@ function handleSubmit() {
             v-model="settings.language"
             name="language"
             color="primary"
-            :options="[
-              { value: 'en', label: 'English' },
-              { value: 'zh_Hant_HK', label: '繁體中文' }
+            :items="[
+              { label: 'English', value: 'en' },
+              { label: '繁體中文', value: 'zh_Hant_HK' }
             ]"
-            value-attribute="value"
           />
         </div>
       </section>
