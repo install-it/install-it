@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TaggedInput from '@/components/TaggedInput.vue'
 import { storage } from '@/wailsjs/go/models'
-import { ref, useTemplateRef } from 'vue'
+import { computed, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 defineEmits<{ submit: [rules: { _id: number | undefined } & storage.Rule] }>()
@@ -25,7 +25,9 @@ defineExpose({
 
     isOpen.value = true
   },
-  hide: () => { isOpen.value = false }
+  hide: () => {
+    isOpen.value = false
+  }
 })
 
 const modalBody = useTemplateRef('modalBody')
@@ -38,6 +40,14 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
   should_hit_all: false,
   values: []
 })
+
+const sourceItems = computed(() =>
+  storage.RuleSource.map((s: string) => ({ label: t(`common.${s}`), value: s }))
+)
+
+const operatorItems = computed(() =>
+  storage.RuleOperator.map((o: string) => ({ label: t(`matchRule.${o}`), value: o }))
+)
 </script>
 
 <template>
@@ -57,83 +67,85 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
         "
       >
         <div ref="modalBody" class="flex max-h-[75vh] flex-col gap-y-2 overflow-auto">
-            <div class="flex gap-1">
-              <fieldset class="fieldset flex-1">
-                <legend class="fieldset-legend text-sm">
-                  {{ $t('matchRule.source') }}
-                </legend>
-
-                <USelect v-model="input.source" color="primary" required>
-                  <option v-for="s in storage.RuleSource" :key="s" :value="s">
-                    {{ $t(`common.${s}`) }}
-                  </option>
-                </USelect>
-              </fieldset>
-
-              <fieldset class="fieldset flex-1">
-                <legend class="fieldset-legend text-sm">
-                  {{ $t('matchRule.operator') }}
-                </legend>
-
-                <USelect v-model="input.operator" color="primary" required>
-                  <option v-for="o in storage.RuleOperator" :key="o" :value="o">
-                    {{ $t(`matchRule.${o}`) }}
-                  </option>
-                </USelect>
-              </fieldset>
-            </div>
-
-            <div class="flex">
-              <fieldset class="fieldset flex-1">
-                <legend class="fieldset-legend text-sm">
-                  {{ $t('matchRule.caseSensitive') }}
-                </legend>
-
-                <label class="flex cursor-pointer items-center select-none">
-                  <UCheckbox
-                    v-model="input.is_case_sensitive"
-                    color="primary"
-                    size="sm"
-                    :disabled="input.operator === 'regex'"
-                  />
-                  <span class="ms-1.5">{{ $t('common.enable') }}</span>
-                </label>
-              </fieldset>
-
-              <fieldset class="fieldset flex-1">
-                <legend class="fieldset-legend text-sm">
-                  {{ $t('matchRule.multiPatternMatching') }}
-                </legend>
-
-                <label class="flex cursor-pointer items-center select-none">
-                  <UCheckbox
-                    v-model="input.should_hit_all"
-                    color="primary"
-                    size="sm"
-                  />
-                  <span class="ms-1.5">{{ $t('matchRule.hitAllPatterns') }}</span>
-                </label>
-
-                <p class="text-hint">{{ $t('matchRule.multiPatternMatchingHelp') }}</p>
-              </fieldset>
-            </div>
-
-            <fieldset class="input-bordered w-full rounded border py-1">
-              <legend class="text-required fieldset-legend text-sm">
-                {{ $t('matchRule.pattern') }}
+          <div class="flex gap-1">
+            <fieldset class="fieldset flex-1">
+              <legend class="fieldset-legend text-sm">
+                {{ $t('matchRule.source') }}
               </legend>
 
-              <TaggedInput v-model="input.values"></TaggedInput>
+              <USelect
+                v-model="input.source"
+                color="primary"
+                class="w-full"
+                :items="sourceItems"
+                required
+              />
+            </fieldset>
+
+            <fieldset class="fieldset flex-1">
+              <legend class="fieldset-legend text-sm">
+                {{ $t('matchRule.operator') }}
+              </legend>
+
+              <USelect
+                v-model="input.operator"
+                color="primary"
+                class="w-full"
+                :items="operatorItems"
+                required
+              />
             </fieldset>
           </div>
 
-          <div class="flex gap-x-2 border-t pt-2">
-            <UButton type="submit" color="secondary" size="sm" block>
-              {{ $t('common.save') }}
-            </UButton>
+          <div class="flex">
+            <fieldset class="fieldset flex-1">
+              <legend class="fieldset-legend text-sm">
+                {{ $t('matchRule.caseSensitive') }}
+              </legend>
+
+              <label class="flex cursor-pointer items-center select-none">
+                <UCheckbox
+                  v-model="input.is_case_sensitive"
+                  color="primary"
+                  size="sm"
+                  :disabled="input.operator === 'regex'"
+                />
+
+                <span class="ms-1.5">{{ $t('common.enable') }}</span>
+              </label>
+            </fieldset>
+
+            <fieldset class="fieldset flex-1">
+              <legend class="fieldset-legend text-sm">
+                {{ $t('matchRule.multiPatternMatching') }}
+              </legend>
+
+              <label class="flex cursor-pointer items-center select-none">
+                <UCheckbox v-model="input.should_hit_all" color="primary" size="sm" />
+
+                <span class="ms-1.5">{{ $t('matchRule.hitAllPatterns') }}</span>
+              </label>
+
+              <p class="text-hint">{{ $t('matchRule.multiPatternMatchingHelp') }}</p>
+            </fieldset>
           </div>
-        </form>
-      </template>
+
+          <fieldset class="input-bordered w-full rounded border py-1">
+            <legend class="text-required fieldset-legend text-sm">
+              {{ $t('matchRule.pattern') }}
+            </legend>
+
+            <TaggedInput v-model="input.values"></TaggedInput>
+          </fieldset>
+        </div>
+
+        <div class="flex gap-x-2 border-t pt-2">
+          <UButton type="submit" color="secondary" size="sm" block>
+            {{ $t('common.save') }}
+          </UButton>
+        </div>
+      </form>
+    </template>
   </UModal>
 </template>
 

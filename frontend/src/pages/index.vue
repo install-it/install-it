@@ -36,6 +36,10 @@ const hwinfos = ref<{
   storage: Array<string>
 } | null>(null)
 
+const selectedNetwork = ref('')
+const selectedDisplay = ref('')
+const selectedMiscellaneous = ref<string[]>([])
+
 onBeforeMount(() => {
   utils.getHardware().then(v => (hwinfos.value = v))
 })
@@ -56,26 +60,32 @@ function selectMatchedOptions() {
       ? rs.rules.map(nameTest).every(Boolean)
       : rs.rules.map(nameTest).some(Boolean)
 
-    if (form.value && matched) {
+    if (matched) {
       rs.driver_group_ids.forEach(gid => {
-        const el = form.value!.querySelector(`input[value="${gid}"], option[value="${gid}"]`)
-        if (el instanceof HTMLInputElement) {
-          el.checked = true
-        } else if (el instanceof HTMLOptionElement) {
-          el.selected = true
+        const group = groupStore.groups.find(g => g.id === gid)
+        if (group) {
+          if (group.type === 'network') {
+            selectedNetwork.value = gid
+          } else if (group.type === 'display') {
+            selectedDisplay.value = gid
+          } else if (group.type === 'miscellaneous') {
+            if (!selectedMiscellaneous.value.includes(gid)) {
+              selectedMiscellaneous.value.push(gid)
+            }
+          }
         }
       })
     }
   })
 }
 
-async function handleSubmit() {
-  if (!form.value) {
-    toast.add({ title: t('toast.readInputFailed'), color: 'error' })
-    return
-  }
+function resetSelection() {
+  selectedNetwork.value = ''
+  selectedDisplay.value = ''
+  selectedMiscellaneous.value = []
+}
 
-  const inputs = new FormData(form.value)
+async function handleSubmit() {
   const commands: Array<Command> = []
 
   if (settingStore.settings.set_password) {
@@ -122,7 +132,7 @@ async function handleSubmit() {
 
   groupStore.groups
     .filter(group =>
-      [inputs.get('network'), inputs.get('display'), ...inputs.getAll('miscellaneous')].includes(
+      [selectedNetwork.value, selectedDisplay.value, ...selectedMiscellaneous.value].includes(
         group.id
       )
     )
@@ -195,16 +205,16 @@ async function handleSubmit() {
             {{ $t('driverCatetory.network') }}
           </label>
 
-          <USelect
-            name="network"
-            color="primary"
-            class="w-full pt-5 pb-1"
-            :options="[
-              { value: '', label: $t('common.pleaseSelect') },
-              ...groups.filter(g => g.type == 'network').map(g => ({ value: g.id, label: g.name }))
-            ]"
-            value-attribute="value"
-          />
+          <select
+            v-model="selectedNetwork"
+            class="w-full rounded-lg border border-gray-300 bg-white px-3 pt-5 pb-1 text-sm focus:border-apple-green-600 focus:ring-1 focus:ring-apple-green-600 focus:outline-none"
+          >
+            <option value="">{{ $t('common.pleaseSelect') }}</option>
+
+            <option v-for="g in groups.filter(g => g.type == 'network')" :key="g.id" :value="g.id">
+              {{ g.name }}
+            </option>
+          </select>
         </div>
 
         <div class="relative w-full">
@@ -214,16 +224,16 @@ async function handleSubmit() {
             {{ $t('driverCatetory.display') }}
           </label>
 
-          <USelect
-            name="display"
-            color="primary"
-            class="w-full pt-5 pb-1"
-            :options="[
-              { value: '', label: $t('common.pleaseSelect') },
-              ...groups.filter(g => g.type == 'display').map(g => ({ value: g.id, label: g.name }))
-            ]"
-            value-attribute="value"
-          />
+          <select
+            v-model="selectedDisplay"
+            class="w-full rounded-lg border border-gray-300 bg-white px-3 pt-5 pb-1 text-sm focus:border-apple-green-600 focus:ring-1 focus:ring-apple-green-600 focus:outline-none"
+          >
+            <option value="">{{ $t('common.pleaseSelect') }}</option>
+
+            <option v-for="g in groups.filter(g => g.type == 'display')" :key="g.id" :value="g.id">
+              {{ g.name }}
+            </option>
+          </select>
         </div>
       </div>
 
@@ -239,7 +249,7 @@ async function handleSubmit() {
             <template v-for="g in groups.filter(g => g.type == 'miscellaneous')" :key="g.id">
               <label class="flex w-full cursor-pointer items-center select-none">
                 <UCheckbox
-                  name="miscellaneous"
+                  v-model="selectedMiscellaneous"
                   color="primary"
                   class="me-1.5"
                   :value="g.id"
@@ -311,34 +321,23 @@ async function handleSubmit() {
           <USelect
             v-model="settingStore.settings.success_action"
             name="success_action"
-            color="primary"
             class="w-full"
-            :options="storage.SuccessAction.map(action => ({ value: action, label: $t(`successAction.${action}`) }))"
-            value-attribute="value"
+            color="primary"
+            :items="[
+              { label: $t('successAction.nothing'), value: 'nothing' },
+              { label: $t('successAction.shutdown'), value: 'shutdown' },
+              { label: $t('successAction.reboot'), value: 'reboot' },
+              { label: $t('successAction.firmware'), value: 'firmware' }
+            ]"
           />
         </div>
 
         <div class="mt-2 flex h-8 flex-row items-center justify-end gap-x-3">
-          <UButton
-            type="button"
-            color="neutral"
-            variant="outline"
-            @click="selectMatchedOptions"
-          >
+          <UButton type="button" color="neutral" variant="outline" @click="selectMatchedOptions">
             {{ $t('matchRule.match') }}
           </UButton>
 
-          <UButton
-            type="button"
-            color="secondary"
-            variant="outline"
-            @click="
-              () => {
-                form?.reset()
-                // settingStore.restore()
-              }
-            "
-          >
+          <UButton type="button" color="secondary" variant="outline" @click="resetSelection">
             {{ $t('installSetting.reset') }}
           </UButton>
 
