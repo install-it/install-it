@@ -118,7 +118,7 @@ function handleSubmit() {
                   <div>
                     <span
                       v-if="r.should_hit_all"
-                      class="me-0.5 badge badge-sm px-1 text-white md:me-1"
+                      class="badge badge-sm me-0.5 px-1 text-white md:me-1"
                       style="--badge-color: var(--color-rose-400)"
                     >
                       {{ $t('matchRule.hitAll') }}
@@ -126,7 +126,7 @@ function handleSubmit() {
 
                     <span
                       v-if="r.is_case_sensitive"
-                      class="me-0.5 badge badge-sm px-1 md:me-1"
+                      class="badge badge-sm me-0.5 px-1 md:me-1"
                       style="--badge-color: var(--color-orange-300)"
                     >
                       Aa
@@ -135,7 +135,7 @@ function handleSubmit() {
                     <span
                       v-for="(v, vi) in r.values"
                       :key="vi"
-                      class="me-0.5 badge badge-sm px-1 badge-neutral md:me-1"
+                      class="badge badge-sm badge-neutral me-0.5 px-1 md:me-1"
                     >
                       {{ v }}
                     </span>
@@ -179,10 +179,7 @@ function handleSubmit() {
         <legend class="fieldset-legend text-sm">{{ $t('matchRule.multiRuleMatching') }}</legend>
 
         <label class="flex w-full cursor-pointer items-center select-none">
-          <UCheckbox
-            v-model="ruleSet.should_hit_all"
-            class="me-1.5"
-          />
+          <UCheckbox v-model="ruleSet.should_hit_all" class="me-1.5" />
           {{ $t('matchRule.hitAllRule') }}
         </label>
 
@@ -207,7 +204,7 @@ function handleSubmit() {
       <div class="flex h-8 gap-x-5">
         <UButton
           type="button"
-          class="grow"
+          class="grow justify-center"
           color="neutral"
           variant="outline"
           style="--btn-color: var(--color-gray-100)"
@@ -216,7 +213,7 @@ function handleSubmit() {
           {{ $t('common.back') }}
         </UButton>
 
-        <UButton type="submit" class="grow" color="secondary">
+        <UButton type="submit" class="grow justify-center" color="secondary">
           {{ $t('common.save') }}
         </UButton>
       </div>

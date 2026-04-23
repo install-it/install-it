@@ -79,7 +79,7 @@ onBeforeMount(() => {
         <UButton
           type="button"
           color="secondary"
-          class="mt-3 w-28"
+          class="mt-3 w-28 justify-center"
           @click="
             () => {
               if (!exportDirectory) {
@@ -186,7 +186,7 @@ onBeforeMount(() => {
         </div>
 
         <div class="flex justify-end">
-          <UButton type="submit" color="secondary" class="mt-3 w-28">
+          <UButton type="submit" color="secondary" class="mt-3 w-28 justify-center">
             {{ $t('porter.import') }}
           </UButton>
         </div>

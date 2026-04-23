@@ -226,7 +226,7 @@ function handleSubmit(event: SubmitEvent) {
     <div class="flex h-8 gap-x-5">
       <UButton
         type="button"
-        class="grow"
+        class="grow justify-center"
         color="neutral"
         variant="outline"
         style="--btn-color: var(--color-gray-100)"
@@ -235,7 +235,7 @@ function handleSubmit(event: SubmitEvent) {
         {{ $t('common.back') }}
       </UButton>
 
-      <UButton type="submit" class="grow" color="secondary">
+      <UButton type="submit" class="grow justify-center" color="secondary">
         {{ $t('common.save') }}
       </UButton>
     </div>

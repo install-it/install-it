@@ -85,6 +85,7 @@ const webviewVersion = ref(false)
         <UButton
           color="secondary"
           block
+          class="justify-center"
           @click="
             () => {
               if (!releaseInfo) {

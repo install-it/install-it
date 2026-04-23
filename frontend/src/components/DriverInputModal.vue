@@ -198,7 +198,7 @@ function handleSubmit() {
             :driver-groups="groupStore.groups"
           ></DriverSelector>
 
-          <UButton type="submit" color="secondary" block>
+          <UButton type="submit" color="secondary" block class="justify-center">
             {{ $t('common.save') }}
           </UButton>
         </form>

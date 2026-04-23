@@ -25,7 +25,7 @@ defineExpose({
       <div class="flex gap-x-2">
         <UButton
           color="primary"
-          class="flex-1"
+          class="flex-1 justify-center"
           @click="
             () => {
               isOpen = false
@@ -39,7 +39,7 @@ defineExpose({
         <UButton
           variant="outline"
           color="neutral"
-          class="flex-1"
+          class="flex-1 justify-center"
           @click="
             () => {
               isOpen = false
