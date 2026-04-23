@@ -210,15 +210,16 @@ function handleSubmit(event: SubmitEvent) {
         </div>
 
         <div class="flex justify-end gap-x-3">
-          <UButton
-            v-show="groupEditor.modifiedDrivers.value"
-            id="driver-submit-btn"
-            type="submit"
-            class="px-2"
-            color="secondary"
-          >
-            <Icon icon="mdi:content-save" />
-          </UButton>
+          <div v-show="groupEditor.modifiedDrivers.value">
+            <UButton
+              id="driver-submit-btn"
+              type="submit"
+              class="px-2"
+              color="secondary"
+            >
+              <Icon icon="mdi:content-save" />
+            </UButton>
+          </div>
 
           <UButton type="button" class="px-2" color="primary" @click="inputModal?.show()">
             <Icon icon="mdi:plus-box" />
