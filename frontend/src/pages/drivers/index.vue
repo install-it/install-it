@@ -236,20 +236,21 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
     </div>
 
     <div class="flex justify-end gap-x-3">
-      <UButton
-        v-show="groupStore.groups?.filter(d => d.type == $route.query.type).length > 1"
-        type="button"
-        size="sm"
-        class="text-white"
-        :style="
-          reordering
-            ? '--btn-color: var(--color-apple-green-800); animation: var(--animate-blink-75);'
-            : '--btn-color: #D9BD68'
-        "
-        @click="reordering = !reordering"
-      >
-        {{ reordering ? $t('driverForm.view') : $t('driverForm.order') }}
-      </UButton>
+      <div v-show="groupStore.groups?.filter(d => d.type == $route.query.type).length > 1">
+        <UButton
+          type="button"
+          size="sm"
+          class="text-white"
+          :style="
+            reordering
+              ? '--btn-color: var(--color-apple-green-800); animation: var(--animate-blink-75);'
+              : '--btn-color: #D9BD68'
+          "
+          @click="reordering = !reordering"
+        >
+          {{ reordering ? $t('driverForm.view') : $t('driverForm.order') }}
+        </UButton>
+      </div>
 
       <RouterLink :to="{ path: '/drivers/create', query: { type: $route.query.type } }">
         <UButton color="primary" size="sm">
