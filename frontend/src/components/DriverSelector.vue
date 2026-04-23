@@ -38,17 +38,17 @@ const filteredGroups = computed(() => {
 })
 
 const builtinItems = computed(() => [
-  { label: $t('installSetting.setPassword'), value: 'set_password' },
-  { label: $t('installSetting.createPartition'), value: 'create_partition' }
+  { label: $t('installSetting.setPassword'), value: 'set_password', type: 'builtin' },
+  { label: $t('installSetting.createPartition'), value: 'create_partition', type: 'builtin' }
 ])
 
 const groupItems = computed(() =>
   props.groupBy === 'group'
-    ? filteredGroups.value.map(g => ({ label: g.name, value: g.id }))
+    ? filteredGroups.value.map(g => ({ label: g.name, value: g.id, type: g.type }))
     : filteredGroups.value.flatMap(g =>
         g.drivers
           .filter(d => !props.excludes?.includes(d.id))
-          .map(d => ({ label: `[${g.name}] ${d.name}`, value: d.id }))
+          .map(d => ({ label: `[${g.name}] ${d.name}`, value: d.id, groupType: g.type }))
       )
 )
 </script>
@@ -101,13 +101,70 @@ const groupItems = computed(() =>
       </UButton>
     </div>
 
-    <UCheckboxGroup
-      v-model="model"
-      :items="!excludeBuiltin ? [...builtinItems, ...groupItems] : groupItems"
-      orientation="vertical"
-      size="sm"
-      class="overflow-auto rounded-lg border p-1.5"
-      :ui="{ root: 'max-h-44 space-y-1.5' }"
-    />
+    <div class="overflow-auto rounded-lg border p-1.5">
+      <div class="max-h-44 space-y-1.5">
+        <!-- Builtin items -->
+        <template v-if="!excludeBuiltin">
+          <label
+            v-for="item in builtinItems"
+            :key="item.value"
+            class="flex cursor-pointer items-center select-none"
+          >
+            <UCheckbox
+              size="sm"
+              :model-value="model?.includes(item.value) ?? false"
+              @update:model-value="
+                checked => {
+                  if (checked) {
+                    model = [...(model || []), item.value]
+                  } else {
+                    model = model?.filter(v => v !== item.value) ?? []
+                  }
+                }
+              "
+            />
+
+            <span
+              v-if="item.type"
+              class="badge badge-sm ms-1.5 px-1"
+              :style="`--badge-color: var(--color-${item.type})`"
+            >
+              &nbsp;
+            </span>
+
+            <span class="ms-1.5">{{ item.label }}</span>
+          </label>
+        </template>
+
+        <!-- Group/Driver items with color blocks -->
+        <template v-for="item in groupItems" :key="item.value">
+          <label class="flex cursor-pointer items-center select-none">
+            <UCheckbox
+              size="sm"
+              :model-value="model?.includes(item.value) ?? false"
+              @update:model-value="
+                checked => {
+                  if (checked) {
+                    model = [...(model || []), item.value]
+                  } else {
+                    model = model?.filter(v => v !== item.value) ?? []
+                  }
+                }
+              "
+            />
+
+            <span
+              v-if="'type' in item ? item.type : 'groupType' in item ? item.groupType : undefined"
+              class="badge badge-sm ms-1.5 px-1"
+              :style="`--badge-color: var(--color-${'type' in item ? item.type : item.groupType})`"
+            >
+              &nbsp;
+            </span>
+
+            <span class="ms-1.5">{{ item.label }}</span>
+          </label>
+        </template>
+      </div>
+    </div>
   </div>
 </template>
