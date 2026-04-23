@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import DriverInputModal from '@/components/DriverInputModal.vue'
-import UnsaveConfirmModal from '@/components/modals/UnsaveConfirmModal.vue'
+import UnsaveConfirmModal from '@/components/UnsaveConfirmModal.vue'
 import { useDriverGroupStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
 import * as groupStorage from '@/wailsjs/go/storage/DriverGroupStorage'

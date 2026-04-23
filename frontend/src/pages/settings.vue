@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import UnsaveConfirmModal from '@/components/modals/UnsaveConfirmModal.vue'
+import UnsaveConfirmModal from '@/components/UnsaveConfirmModal.vue'
 import { useAppSettingStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
 import * as appSettingStorage from '@/wailsjs/go/storage/AppSettingStorage'
