@@ -121,59 +121,57 @@ function toastErrMsg(err: string) {
     "
   >
     <template #body>
-      <div class="h-[70vh] w-[70vw] overflow-auto">
-        <div class="flex h-full flex-col gap-y-2">
-          <div class="flex items-center gap-x-3">
-            <h2 class="text-lg font-bold">{{ title }}</h2>
+      <div class="flex flex-col gap-y-2">
+        <div class="flex items-center gap-x-3">
+          <h2 class="text-lg font-bold">{{ title }}</h2>
 
-            <p class="proc-badge h-6" :class="[`proc-badge-${progress?.status}`]">
-              <span class="truncate capitalize">{{ $t(`status.${progress?.status}`) }}</span>
-            </p>
-          </div>
+          <p class="proc-badge h-6" :class="[`proc-badge-${progress?.status}`]">
+            <span class="truncate capitalize">{{ $t(`status.${progress?.status}`) }}</span>
+          </p>
+        </div>
 
-          <ol class="flex w-full items-center">
-            <ProgressNode v-for="(task, i) in progress?.tasks ?? []" :key="i" :task>
-              <i class="text-xs lg:text-base">
-                <Icon v-if="task.status == 'pending'" icon="mdi:hourglass-start" />
+        <ol class="flex w-full items-center">
+          <ProgressNode v-for="(task, i) in progress?.tasks ?? []" :key="i" :task>
+            <i class="text-xs lg:text-base">
+              <Icon v-if="task.status == 'pending'" icon="mdi:hourglass-start" />
 
-                <Icon
-                  v-else-if="task.status.includes('ing')"
-                  icon="mdi:loading"
-                  class="animate-spin"
-                />
+              <Icon
+                v-else-if="task.status.includes('ing')"
+                icon="mdi:loading"
+                class="animate-spin"
+              />
 
-                <Icon v-else-if="task.status == 'completed'" icon="mdi:check" />
+              <Icon v-else-if="task.status == 'completed'" icon="mdi:check" />
 
-                <Icon v-else icon="mdi:alert" />
-              </i>
-            </ProgressNode>
+              <Icon v-else icon="mdi:alert" />
+            </i>
+          </ProgressNode>
 
-            <ProgressNode></ProgressNode>
-          </ol>
+          <ProgressNode></ProgressNode>
+        </ol>
 
-          <div
-            ref="message-box"
-            class="flex min-h-48 flex-1 flex-col gap-y-2 overflow-y-auto rounded-sm border p-1"
-          >
-            <p v-for="(m, i) in messages" :key="i" class="text-xs break-all text-gray-400">
-              {{ m }}
-            </p>
-          </div>
+        <div
+          ref="message-box"
+          class="flex min-h-48 flex-1 flex-col gap-y-2 overflow-y-auto rounded-sm border p-1"
+        >
+          <p v-for="(m, i) in messages" :key="i" class="text-xs break-all text-gray-400">
+            {{ m }}
+          </p>
+        </div>
 
-          <div class="flex justify-end">
-            <div v-show="progress?.status == 'pending' || progress?.status == 'running'">
-              <UButton
-                type="button"
-                color="error"
-                @click="
-                  () => {
-                    programPorter.Abort().catch(err => toast.add({ title: err, color: 'error' }))
-                  }
-                "
-              >
-                {{ $t('common.cancel') }}
-              </UButton>
-            </div>
+        <div class="flex justify-end">
+          <div v-show="progress?.status == 'pending' || progress?.status == 'running'">
+            <UButton
+              type="button"
+              color="error"
+              @click="
+                () => {
+                  programPorter.Abort().catch(err => toast.add({ title: err, color: 'error' }))
+                }
+              "
+            >
+              {{ $t('common.cancel') }}
+            </UButton>
           </div>
         </div>
       </div>

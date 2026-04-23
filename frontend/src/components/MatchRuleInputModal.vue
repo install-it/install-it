@@ -69,7 +69,7 @@ const operatorItems = computed(() =>
           }
         "
       >
-        <div ref="modalBody" class="flex max-h-[75vh] flex-col gap-y-2 overflow-auto">
+        <div ref="modalBody" class="flex flex-col gap-y-2">
           <div class="flex gap-1">
             <fieldset class="fieldset flex-1">
               <legend class="fieldset-legend text-sm">
