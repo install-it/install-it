@@ -143,7 +143,7 @@ const operatorItems = computed(() =>
         </div>
 
         <div class="flex gap-x-2 border-t pt-2">
-          <UButton type="submit" color="secondary" size="sm" block>
+          <UButton type="submit" color="secondary" size="sm" block class="justify-center">
             {{ $t('common.save') }}
           </UButton>
         </div>
