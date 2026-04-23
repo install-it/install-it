@@ -161,18 +161,19 @@ function toastErrMsg(err: string) {
           </div>
 
           <div class="flex justify-end">
-            <UButton
-              v-show="progress?.status == 'pending' || progress?.status == 'running'"
-              type="button"
-              color="error"
-              @click="
-                () => {
-                  programPorter.Abort().catch(err => toast.add({ title: err, color: 'error' }))
-                }
-              "
-            >
-              {{ $t('common.cancel') }}
-            </UButton>
+            <div v-show="progress?.status == 'pending' || progress?.status == 'running'">
+              <UButton
+                type="button"
+                color="error"
+                @click="
+                  () => {
+                    programPorter.Abort().catch(err => toast.add({ title: err, color: 'error' }))
+                  }
+                "
+              >
+                {{ $t('common.cancel') }}
+              </UButton>
+            </div>
           </div>
         </div>
       </div>
