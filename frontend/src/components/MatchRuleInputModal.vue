@@ -42,11 +42,14 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
 })
 
 const sourceItems = computed(() =>
-  storage.RuleSource.map((s: string) => ({ label: t(`common.${s}`), value: s }))
+  Object.entries(storage.RuleSource).map(([, value]) => ({ label: t(`common.${value}`), value }))
 )
 
 const operatorItems = computed(() =>
-  storage.RuleOperator.map((o: string) => ({ label: t(`matchRule.${o}`), value: o }))
+  Object.entries(storage.RuleOperator).map(([, value]) => ({
+    label: t(`matchRule.${value}`),
+    value
+  }))
 )
 </script>
 
