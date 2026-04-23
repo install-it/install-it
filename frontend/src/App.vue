@@ -75,7 +75,12 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
 </script>
 
 <template>
-  <UApp>
+  <UApp
+    :toaster="{
+      position: 'top-right',
+      duration: 3000
+    }"
+  >
     <Transition name="fade" mode="out-in">
       <template v-if="!initilisating">
         <div class="flex h-screen w-screen">
@@ -94,7 +99,7 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
                         v-if="link.to == '/app-info' && hasUpdate"
                         size="xs"
                         color="primary"
-                        class="absolute -right-1 -top-1 h-2 w-2 p-0"
+                        class="absolute -top-1 -right-1 h-2 w-2 p-0"
                       />
 
                       <Icon :icon="link.icon" />
@@ -115,6 +120,7 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
         <div class="flex h-screen w-screen items-center justify-center">
           <div class="flex items-center gap-2">
             <Icon icon="i-lucide-loader-circle" class="animate-spin text-4xl" />
+
             <span class="text-lg">Loading...</span>
           </div>
         </div>
