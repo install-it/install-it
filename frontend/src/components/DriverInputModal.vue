@@ -17,7 +17,8 @@ defineExpose({
       driver.value = {
         ...data,
         flags: data.flags?.join(','),
-        allowRtCodes: data.allowRtCodes?.join(',')
+        allowRtCodes: data.allowRtCodes?.join(','),
+        incompatibles: Array.isArray(data.incompatibles) ? data.incompatibles : []
       }
     } else {
       driver.value = { minExeTime: 5, incompatibles: [] }
@@ -50,8 +51,14 @@ const groupStore = useDriverGroupStore()
 const modalBody = useTemplateRef<HTMLDivElement>('modalBody')
 
 const driver = ref<
-  Partial<Omit<storage.Driver, 'allowRtCodes' | 'flags'> & { allowRtCodes: string; flags: string }>
->({})
+  Partial<
+    Omit<storage.Driver, 'allowRtCodes' | 'flags' | 'incompatibles'> & {
+      allowRtCodes: string
+      flags: string
+      incompatibles: string[]
+    }
+  >
+>({ incompatibles: [] })
 
 const flagItems = Object.entries(FLAGS).map(([name, flags]) => ({
   label: name,

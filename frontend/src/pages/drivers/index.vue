@@ -135,10 +135,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
           </div>
 
           <div class="flex gap-x-1.5 py-1">
-            <RouterLink
-              :to="`/drivers/${g.id}/edit`"
-              :title="$t('common.edit')"
-            >
+            <RouterLink :to="`/drivers/${g.id}/edit`" :title="$t('common.edit')">
               <UButton color="neutral" variant="outline" size="xs" class="h-6">
                 <Icon icon="mdi:pencil" class="text-gray-500" />
               </UButton>
