@@ -98,7 +98,7 @@ function handleSubmit() {
           <fieldset class="fieldset">
             <legend class="fieldset-legend text-sm">{{ $t('driverForm.name') }}</legend>
 
-            <UInput v-model="driver.name" type="text" name="name" color="primary" />
+            <UInput v-model="driver.name" type="text" name="name" color="primary" class="w-full" />
           </fieldset>
 
           <fieldset class="fieldset">
@@ -149,7 +149,7 @@ function handleSubmit() {
               />
             </div>
 
-            <p class="label text-apple-green-800">
+            <p class="text-hint">
               {{ $t('driverForm.commaSeparated') }}
             </p>
           </fieldset>
@@ -169,7 +169,7 @@ function handleSubmit() {
                 required
               />
 
-              <p class="label text-wrap text-apple-green-800">
+              <p class="text-hint">
                 {{ $t('driverForm.minExecuteTimeHelp') }}
               </p>
             </fieldset>
@@ -186,7 +186,7 @@ function handleSubmit() {
                 color="primary"
               />
 
-              <p class="label text-wrap text-apple-green-800">
+              <p class="text-hint">
                 {{ $t('driverForm.commaSeparated') }}
               </p>
             </fieldset>
