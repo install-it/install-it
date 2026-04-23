@@ -86,7 +86,7 @@ function handleSubmit() {
     :title="driver.name ? $t('driverForm.editDriver') : $t('driverForm.createDriver')"
   >
     <template #body>
-      <div ref="modalBody" class="max-h-[70vh] overflow-auto">
+      <div ref="modalBody">
         <form class="flex flex-col gap-y-2" autocomplete="off" @submit.prevent="handleSubmit">
           <fieldset class="fieldset">
             <legend class="fieldset-legend text-sm">{{ $t('driverForm.name') }}</legend>

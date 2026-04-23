@@ -211,12 +211,7 @@ function handleSubmit(event: SubmitEvent) {
 
         <div class="flex justify-end gap-x-3">
           <div v-show="groupEditor.modifiedDrivers.value">
-            <UButton
-              id="driver-submit-btn"
-              type="submit"
-              class="px-2"
-              color="secondary"
-            >
+            <UButton id="driver-submit-btn" type="submit" class="px-2" color="secondary">
               <Icon icon="mdi:content-save" />
             </UButton>
           </div>

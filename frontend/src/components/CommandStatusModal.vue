@@ -21,7 +21,9 @@ defineExpose({
     processes.value = cmds.map(vals => ({ command: { ...vals }, status: status.Status.PENDING }))
     dispatchCommand()
   },
-  hide: () => { isOpen.value = false }
+  hide: () => {
+    isOpen.value = false
+  }
 })
 
 const { t } = useI18n()
@@ -164,11 +166,9 @@ async function handleAbort(process: Process) {
     :close="!processes.some(cmd => ['pending', 'running', 'aborting'].includes(cmd.status))"
   >
     <template #body>
-      <div class="max-h-[70vh] overflow-y-auto">
-        <template v-for="(process, i) in processes" :key="i">
-          <TaskStatus :process="process" @abort="handleAbort(process)"></TaskStatus>
-        </template>
-      </div>
+      <template v-for="(process, i) in processes" :key="i">
+        <TaskStatus :process="process" @abort="handleAbort(process)"></TaskStatus>
+      </template>
 
       <div
         v-show="
