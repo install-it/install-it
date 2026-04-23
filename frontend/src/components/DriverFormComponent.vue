@@ -25,7 +25,7 @@ const groupEditor = groupStore.editor(
   props.id,
   storage.DriverType[
     ($route.query.type as string | undefined)?.toUpperCase() as keyof typeof storage.DriverType
-  ]
+  ] ?? storage.DriverType.NETWORK
 )
 
 const group = groupEditor.group // alias
