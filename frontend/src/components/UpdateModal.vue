@@ -15,7 +15,9 @@ defineExpose({
     webviewVersion.value = isWebview
     isOpen.value = true
   },
-  hide: () => { isOpen.value = false }
+  hide: () => {
+    isOpen.value = false
+  }
 })
 
 const toast = useToast()
@@ -32,7 +34,7 @@ const webviewVersion = ref(false)
 
   <UModal v-model:open="isOpen" :title="$t('info.updateInfoTitle')">
     <template #body>
-      <div class="flex max-h-96 min-h-40 flex-col gap-y-3 overflow-y-auto">
+      <div class="flex flex-col gap-y-3">
         <div class="flex grow flex-col gap-y-2">
           <div class="flex">
             <h1 class="min-w-34 font-medium">
@@ -74,11 +76,7 @@ const webviewVersion = ref(false)
             </h1>
 
             <label class="flex w-full cursor-pointer items-center select-none">
-              <UCheckbox
-                v-model="webviewVersion"
-                name="create_partition"
-                color="primary"
-              />
+              <UCheckbox v-model="webviewVersion" name="create_partition" color="primary" />
               <span class="ms-1.5">{{ $t('info.downloadBuiltInWebView2Version') }}</span>
             </label>
           </div>
@@ -93,7 +91,11 @@ const webviewVersion = ref(false)
                 return
               }
 
-              toast.add({ title: $t('toast.downloadingUpdater'), color: 'info', duration: 60 * 1000 })
+              toast.add({
+                title: $t('toast.downloadingUpdater'),
+                color: 'info',
+                duration: 60 * 1000
+              })
               const loader = $loading.show()
 
               Update($props.app.version, releaseInfo.version, webviewVersion)
