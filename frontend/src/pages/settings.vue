@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import UnsaveConfirmModal from '@/components/UnsaveConfirmModal.vue'
+import { useEditor } from '@/composables/useEditor'
 import { useAppSettingStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
 import * as appSettingStorage from '@/wailsjs/go/storage/AppSettingStorage'
@@ -15,9 +16,8 @@ const questionModal = useTemplateRef('questionModal')
 
 const tabs = ref({ softwareSetting: true, defaultInstallSetting: false, displaySetting: false })
 
-const settingEditor = useAppSettingStore().editor()
-
-const settings = settingEditor.settings // alias
+const settingStore = useAppSettingStore()
+const { data: settings, modified, reset } = useEditor({ source: settingStore.settings })
 
 onBeforeRouteLeave(async (to, from, next) => {
   next(await handleMoveAway())
@@ -25,10 +25,10 @@ onBeforeRouteLeave(async (to, from, next) => {
 
 async function handleMoveAway() {
   return new Promise<boolean>(resolve => {
-    if (settingEditor.modified.value) {
+    if (modified.value) {
       questionModal.value?.show(answer => {
         if (answer == 'yes') {
-          settingEditor.reset()
+          reset()
         }
         resolve(answer == 'yes')
       })
@@ -43,8 +43,9 @@ function handleSubmit() {
     .Update(settings.value)
     .then(newAppSettings => {
       useAppSettingStore().settings = newAppSettings
-      settingEditor.reset()
-
+      return reset()
+    })
+    .then(() => {
       locale.value = settings.value.language
       toast.add({ title: t('toast.saved'), color: 'success', duration: 1500 })
     })

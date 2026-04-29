@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import DriverSelector from '@/components/DriverSelector.vue'
 import MatchRuleInputModal from '@/components/MatchRuleInputModal.vue'
+import { useEditor } from '@/composables/useEditor'
 import { useDriverGroupStore, useMatchRuleStore } from '@/store'
+import { storage } from '@/wailsjs/go/models'
 import * as matchRuleStorage from '@/wailsjs/go/storage/MatchRuleStorage'
-import { useTemplateRef } from 'vue'
+import { computed, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
@@ -21,9 +23,13 @@ const toast = useToast()
 
 const [ruleStore, groupStore] = [useMatchRuleStore(), useDriverGroupStore()]
 
-const ruleEditor = ruleStore.editor(props.id)
+const sourceRuleSet = computed(
+  () =>
+    ruleStore.ruleSets.find(r => r.id === props.id) ??
+    new storage.RuleSet({ rules: [], driver_group_ids: [] })
+)
 
-const ruleSet = ruleEditor.ruleSet // alias
+const { data: ruleSet, reset } = useEditor({ source: sourceRuleSet.value })
 
 function handleSubmit() {
   if (ruleSet.value.rules.length == 0) {
@@ -34,11 +40,15 @@ function handleSubmit() {
   const handleSuccess = () => {
     toast.add({ title: t('toast.updated'), color: 'success' })
 
-    matchRuleStorage.All().then(newMatchRule => {
-      ruleStore.ruleSets = newMatchRule
-      ruleEditor.reset()
-      $router.replace({ path: `/match-rules/${ruleSet.value.id}/edit` })
-    })
+    matchRuleStorage
+      .All()
+      .then(newMatchRule => {
+        ruleStore.ruleSets = newMatchRule
+        return reset()
+      })
+      .then(() => {
+        $router.replace({ path: `/match-rules/${ruleSet.value.id}/edit` })
+      })
   }
 
   if (ruleSet.value.id == undefined) {
