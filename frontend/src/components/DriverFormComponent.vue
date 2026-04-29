@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import DriverInputModal from '@/components/DriverInputModal.vue'
 import UnsaveConfirmModal from '@/components/UnsaveConfirmModal.vue'
+import { useEditor } from '@/composables/useEditor'
 import { useDriverGroupStore } from '@/store'
+import { ExecutableExists } from '@/wailsjs/go/main/App'
 import { storage } from '@/wailsjs/go/models'
 import * as groupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
-import { toRaw, useTemplateRef } from 'vue'
+import { computed, ref, toRaw, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 
@@ -21,17 +23,51 @@ const inputModal = useTemplateRef('inputModal')
 
 const groupStore = useDriverGroupStore()
 
-const groupEditor = groupStore.editor(
-  props.id,
-  storage.DriverType[
-    ($route.query.type as string | undefined)?.toUpperCase() as keyof typeof storage.DriverType
-  ] ?? storage.DriverType.NETWORK
+// Create computed source for dynamic group lookup
+const sourceGroup = computed(
+  () =>
+    groupStore.groups.find(g => g.id === props.id) ??
+    new storage.DriverGroup({
+      type:
+        storage.DriverType[
+          (
+            $route.query.type as string | undefined
+          )?.toUpperCase() as keyof typeof storage.DriverType
+        ] ?? storage.DriverType.NETWORK,
+      name: '',
+      drivers: []
+    })
 )
 
-const group = groupEditor.group // alias
+// Create editor
+const { data: group, modified, reset } = useEditor({ source: sourceGroup.value })
+
+// Track drivers that don't exist on system
+const notFoundDrivers = ref<string[]>([])
+
+const findNotExists = (drivers: Array<storage.Driver>) =>
+  Promise.all(
+    drivers.map(d => ExecutableExists(d.path).then(exist => ({ id: d.id, exist: exist })))
+  ).then(results => {
+    return results
+      .map(result => (result.exist ? undefined : result.id))
+      .filter(v => v !== undefined)
+  })
+
+watch(
+  () => group.value.drivers,
+  newDrivers => findNotExists(newDrivers).then(ids => (notFoundDrivers.value = ids)),
+  { immediate: true }
+)
+
+// Track if only drivers changed (not other fields)
+const modifiedDrivers = computed(() => {
+  const currentGroup = sourceGroup.value
+  return JSON.stringify(group.value.drivers) !== JSON.stringify(currentGroup.drivers)
+})
 
 onBeforeRouteLeave((to, from, next) => {
-  if (groupEditor.modified.value) {
+  if (modified.value) {
     questionModal.value?.show(answer => {
       next(answer == 'yes')
     })
@@ -48,16 +84,19 @@ function handleSubmit(event: SubmitEvent) {
 
   const handleSuccess = () => {
     toast.add({ title: t('toast.updated'), color: 'success' })
-    groupStorage.All().then(newDriverGroups => {
-      groupStore.groups = newDriverGroups
-      groupEditor.reset()
-
-      if (event.submitter?.id !== 'driver-submit-btn') {
-        $router.back()
-      } else {
-        $router.replace({ path: `/drivers/${group.value.id}/edit` })
-      }
-    })
+    groupStorage
+      .All()
+      .then(newDriverGroups => {
+        groupStore.groups = newDriverGroups
+        return reset()
+      })
+      .then(() => {
+        if (event.submitter?.id !== 'driver-submit-btn') {
+          $router.back()
+        } else {
+          $router.replace({ path: `/drivers/${group.value.id}/edit` })
+        }
+      })
   }
 
   if (group.value.id == undefined) {
@@ -67,16 +106,15 @@ function handleSubmit(event: SubmitEvent) {
       .then(handleSuccess)
       .catch(reason => toast.add({ title: reason.toString(), color: 'error' }))
   } else {
+    const updateGroup = toRaw(group.value)
+    updateGroup.drivers = updateGroup.drivers.map(d => {
+      if (d.id.includes('new:')) {
+        d.id = ''
+      }
+      return d
+    })
     groupStorage
-      .Update({
-        ...group.value,
-        drivers: group.value.drivers.map(d => {
-          if (d.id.includes('new:')) {
-            d.id = ''
-          }
-          return d
-        })
-      })
+      .Update(updateGroup)
       .then(handleSuccess)
       .catch(reason => toast.add({ title: reason.toString(), color: 'error' }))
   }
@@ -152,7 +190,7 @@ function handleSubmit(event: SubmitEvent) {
               <div class="col-span-3">
                 <p
                   class="line-clamp-2 font-mono break-all"
-                  :class="{ 'text-red-600': groupEditor.notFoundDrivers.value.includes(d.id) }"
+                  :class="{ 'text-red-600': notFoundDrivers.includes(d.id) }"
                 >
                   {{ d.path }}
                 </p>
@@ -204,13 +242,13 @@ function handleSubmit(event: SubmitEvent) {
             {{ $t('driverForm.driverGroupHelp') }}
           </p>
 
-          <p v-show="groupEditor.modifiedDrivers.value" class="text-hint">
+          <p v-show="modifiedDrivers" class="text-hint">
             {{ $t('driverForm.incompatibleForNewHelp') }}
           </p>
         </div>
 
         <div class="flex justify-end gap-x-3">
-          <div v-show="groupEditor.modifiedDrivers.value">
+          <div v-show="modifiedDrivers">
             <UButton id="driver-submit-btn" type="submit" class="px-2" color="secondary">
               <Icon icon="mdi:content-save" />
             </UButton>
