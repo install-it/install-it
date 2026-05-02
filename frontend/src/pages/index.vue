@@ -182,7 +182,7 @@ async function handleSubmit() {
 
 <template>
   <div class="flex h-full flex-col">
-    <div id="sysinfo" class="flex flex-1 flex-col gap-y-1 overflow-y-auto rounded-sm border p-1">
+    <div class="flex flex-1 flex-col gap-y-1 overflow-y-auto rounded-sm border p-1">
       <template v-if="hwinfos !== null">
         <div v-for="[part, names] in Object.entries(hwinfos)" :key="part">
           <h2 class="text-sm font-bold">{{ $t(`common.${part}`) }}</h2>
