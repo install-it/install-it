@@ -1,10 +1,11 @@
-import { computed, ref, toRaw, type Ref } from 'vue'
+import { computed, ref, toRaw, toValue, type MaybeRefOrGetter, type Ref } from 'vue'
 
 /**
  * Creates an editable copy of data with change tracking
  *
  * @param options - Configuration options
- * @param options.source - Original data source. The editor will clone this value for editing
+ * @param options.source - Original data source. Can be a plain value, Ref, ComputedRef, or getter function.
+ *                         The editor will always track against the CURRENT source value.
  * @param options.equals - Custom equality check function (defaults to JSON.stringify comparison)
  * @param options.onBeforeReset - Callback invoked before reset. Useful for cleanup or confirmation logic
  * @param options.onAfterReset - Callback invoked after reset
@@ -13,18 +14,30 @@ import { computed, ref, toRaw, type Ref } from 'vue'
  *
  * @example
  * ```ts
- * const editor = useEditor({ source: { theme: 'dark', fontSize: 14 } })
+ * // Static value (backward compatible)
+ * const editor1 = useEditor({ source: { theme: 'dark', fontSize: 14 } })
  *
- * editor.data.value.theme = 'light'
- * console.log(editor.modified.value) // true
+ * // Reactive ref
+ * const settingsRef = ref({ theme: 'dark' })
+ * const editor2 = useEditor({ source: settingsRef })
  *
- * editor.reset()
- * console.log(editor.data.value.theme) // 'dark'
+ * // Computed ref
+ * const computedSettings = computed(() => store.settings)
+ * const editor3 = useEditor({ source: computedSettings })
+ *
+ * // Getter function (always fresh)
+ * const editor4 = useEditor({ source: () => store.settings })
+ *
+ * editor1.data.value.theme = 'light'
+ * console.log(editor1.modified.value) // true
+ *
+ * editor1.reset()
+ * console.log(editor1.data.value.theme) // 'dark'
  * ```
  */
 export function useEditor<T>(options: {
-  /** Original data source */
-  source: T
+  /** Original data source - can be a value, Ref, ComputedRef, or getter function */
+  source: MaybeRefOrGetter<T>
   /** Custom equality check function */
   equals?: (a: T, b: T) => boolean
   /** Callback invoked before reset */
@@ -34,8 +47,8 @@ export function useEditor<T>(options: {
 }) {
   const { source, equals, onBeforeReset, onAfterReset } = options
 
-  // Create a deep clone of the source
-  const data = ref<T>(structuredClone(toRaw(source))) as Ref<T>
+  // Create a deep clone of the initial source value
+  const data = ref<T>(structuredClone(toRaw(toValue(source)))) as Ref<T>
 
   const equalityCheck =
     equals ??
@@ -48,33 +61,27 @@ export function useEditor<T>(options: {
       }
     })
 
-  // Compute modified state
+  // Compute modified state - always compare against CURRENT source value
   const modified = computed(() => {
-    return !equalityCheck(data.value, source)
+    return !equalityCheck(data.value, toValue(source))
   })
-
-  // Reset function
-  const reset = async () => {
-    if (onBeforeReset) {
-      await onBeforeReset()
-    }
-
-    data.value = structuredClone(toRaw(source))
-
-    if (onAfterReset) {
-      onAfterReset()
-    }
-  }
-
-  // Allow updating the source (useful when ID changes)
-  const updateSource = (newSource: T) => {
-    data.value = structuredClone(toRaw(newSource))
-  }
 
   return {
     data,
     modified,
-    reset,
-    updateSource
+    reset: async () => {
+      if (onBeforeReset) {
+        await onBeforeReset()
+      }
+
+      data.value = structuredClone(toRaw(toValue(source)))
+
+      if (onAfterReset) {
+        onAfterReset()
+      }
+    },
+    updateSource: (newSource: MaybeRefOrGetter<T>) => {
+      data.value = structuredClone(toRaw(toValue(newSource)))
+    }
   }
 }

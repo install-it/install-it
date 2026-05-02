@@ -40,7 +40,7 @@ const sourceGroup = computed(
 )
 
 // Create editor
-const { data: group, modified, reset } = useEditor({ source: sourceGroup.value })
+const { data: group, modified, reset } = useEditor({ source: sourceGroup })
 
 // Track drivers that don't exist on system
 const notFoundDrivers = ref<string[]>([])
