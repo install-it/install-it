@@ -8,10 +8,11 @@ import (
 )
 
 type DriverGroup struct {
-	Id      string     `json:"id"`
-	Name    string     `json:"name"`
-	Type    DriverType `json:"type"`
-	Drivers []*Driver  `json:"drivers"`
+	Id                 string     `json:"id"`
+	Name               string     `json:"name"`
+	Type               DriverType `json:"type"`
+	MutuallyExclusive  bool       `json:"mutuallyExclusive"`
+	Drivers            []*Driver  `json:"drivers"`
 }
 
 func (g DriverGroup) GetId() string { return g.Id }

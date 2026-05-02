@@ -112,7 +112,13 @@ function checkUpdate() {
             {{ info.app.version }}
           </p>
 
-          <UButton color="neutral" variant="outline" size="xs" :disabled="onCheck" @click="checkUpdate()">
+          <UButton
+            color="neutral"
+            variant="outline"
+            size="xs"
+            :disabled="onCheck"
+            @click="checkUpdate()"
+          >
             {{ $t('info.checkUpdate') }}
           </UButton>
         </div>

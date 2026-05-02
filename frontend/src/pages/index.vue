@@ -153,6 +153,24 @@ async function handleSubmit() {
       })
     })
 
+  // Expand incompatibilities for mutually-exclusive driver groups
+  commands.forEach(cmd => {
+    // Find which group this driver belongs to
+    const driverGroup = groupStore.groups.find(g => g.drivers.some(d => d.id === cmd.id))
+
+    // If the group is marked as mutually exclusive, add all other drivers in that group as incompatible
+    if (driverGroup?.mutuallyExclusive) {
+      const otherDriverIds = driverGroup.drivers.filter(d => d.id !== cmd.id).map(d => d.id)
+
+      // Add other drivers to incompatibles, avoiding duplicates
+      otherDriverIds.forEach(id => {
+        if (!cmd.config.incompatibles.includes(id)) {
+          cmd.config.incompatibles.push(id)
+        }
+      })
+    }
+  })
+
   if (commands.length == 0) {
     toast.add({ title: t('toast.noInputWarning'), color: 'warning' })
     return
@@ -200,7 +218,7 @@ async function handleSubmit() {
       <div class="flex flex-1 flex-col justify-between">
         <div class="relative w-full">
           <label
-            class="pointer-events-none absolute start-4 top-0 h-full translate-y-1 text-xs text-gray-500"
+            class="pointer-events-none absolute inset-s-4 top-0 h-full translate-y-1 text-xs text-gray-500"
           >
             {{ $t('driverCatetory.network') }}
           </label>
@@ -219,7 +237,7 @@ async function handleSubmit() {
 
         <div class="relative w-full">
           <label
-            class="pointer-events-none absolute start-4 top-0 h-full translate-y-1 text-xs text-gray-500"
+            class="pointer-events-none absolute inset-s-4 top-0 h-full translate-y-1 text-xs text-gray-500"
           >
             {{ $t('driverCatetory.display') }}
           </label>
