@@ -17,7 +17,7 @@ const questionModal = useTemplateRef('questionModal')
 const tabs = ref({ softwareSetting: true, defaultInstallSetting: false, displaySetting: false })
 
 const settingStore = useAppSettingStore()
-const { data: settings, modified, reset } = useEditor({ source: settingStore.settings })
+const { data: settings, modified, reset } = useEditor({ source: () => settingStore.settings })
 
 onBeforeRouteLeave(async (to, from, next) => {
   next(await handleMoveAway())
