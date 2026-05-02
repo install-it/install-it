@@ -29,7 +29,7 @@ const sourceRuleSet = computed(
     new storage.RuleSet({ rules: [], driver_group_ids: [] })
 )
 
-const { data: ruleSet } = useEditor({ source: sourceRuleSet.value })
+const { data: ruleSet } = useEditor({ source: sourceRuleSet })
 
 function handleSubmit() {
   if (ruleSet.value.rules.length == 0) {
