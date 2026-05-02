@@ -77,6 +77,7 @@ const webviewVersion = ref(false)
 
             <label class="flex w-full cursor-pointer items-center select-none">
               <UCheckbox v-model="webviewVersion" name="create_partition" color="primary" />
+
               <span class="ms-1.5">{{ $t('info.downloadBuiltInWebView2Version') }}</span>
             </label>
           </div>

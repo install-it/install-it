@@ -89,7 +89,7 @@
   --color-network: var(--color-blue-100);
   --color-miscellaneous: var(--color-gray-200);
   --color-builtin: var(--color-orange-200);
-  
+
   /* NUXT UI compatible colors */
   --color-primary-50: var(--color-powder-blue-50);
   --color-primary-100: var(--color-powder-blue-100);

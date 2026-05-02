@@ -211,7 +211,15 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
             {{ d.flags }}
           </div>
 
-          <div class="col-span-2 flex gap-x-1 lg:col-span-1">
+          <div class="col-span-2 flex gap-x-1 text-sm lg:col-span-1">
+            <span
+              v-show="g.mutuallyExclusive"
+              class="inline-block max-h-5 rounded-xs bg-orange-300 p-0.5"
+              :title="$t('driverForm.mutuallyExclusive')"
+            >
+              <Icon icon="mdi:chart-timeline" />
+            </span>
+
             <span
               v-show="d.incompatibles.length > 0"
               class="inline-block max-h-5 rounded-xs bg-yellow-300 p-0.5"
@@ -225,7 +233,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
               class="inline-block max-h-5 rounded-xs bg-blue-300 p-0.5"
               :title="$t('driverForm.allowedExitCode')"
             >
-              <Icon icon="mdi:numeric-0-box-outline" />
+              <Icon icon="mdi:numeric-1-box-outline" />
             </span>
           </div>
         </div>

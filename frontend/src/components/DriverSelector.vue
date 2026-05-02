@@ -114,8 +114,8 @@ const groupItems = computed(() =>
               size="sm"
               :model-value="model?.includes(item.value) ?? false"
               @update:model-value="
-                checked => {
-                  if (checked) {
+                (checked: boolean | 'indeterminate') => {
+                  if (checked === true) {
                     model = [...(model || []), item.value]
                   } else {
                     model = model?.filter(v => v !== item.value) ?? []
@@ -143,8 +143,8 @@ const groupItems = computed(() =>
               size="sm"
               :model-value="model?.includes(item.value) ?? false"
               @update:model-value="
-                checked => {
-                  if (checked) {
+                (checked: boolean | 'indeterminate') => {
+                  if (checked === true) {
                     model = [...(model || []), item.value]
                   } else {
                     model = model?.filter(v => v !== item.value) ?? []

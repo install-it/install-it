@@ -655,6 +655,128 @@ func TestDriverGroupStorage_Update_RemoveReferencedDrivers(t *testing.T) {
 }
 
 
+func TestDriverGroupStorage_Add_WithMutuallyExclusive(t *testing.T) {
+	store := &MemoryStore{}
+	eventBus := NewEventBus()
+	dgs := NewDriverGroupStorage(store, eventBus)
+
+	group := DriverGroup{
+		Name:               "Network Drivers",
+		Type:               Network,
+		MutuallyExclusive:  true,
+		Drivers: []*Driver{
+			{Name: "Driver 1", Type: Network},
+			{Name: "Driver 2", Type: Network},
+		},
+	}
+
+	id, err := dgs.Add(group)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	retrieved, err := dgs.Get(id)
+	if err != nil {
+		t.Fatalf("failed to get group: %v", err)
+	}
+
+	if !retrieved.MutuallyExclusive {
+		t.Error("expected MutuallyExclusive to be true")
+	}
+}
+
+func TestDriverGroupStorage_Update_WithMutuallyExclusive(t *testing.T) {
+	existingData := []*DriverGroup{
+		{
+			Id:                "group1",
+			Name:              "Network Drivers",
+			Type:              Network,
+			MutuallyExclusive: false,
+			Drivers: []*Driver{
+				{Id: "driver1", Name: "Driver 1", Type: Network},
+				{Id: "driver2", Name: "Driver 2", Type: Network},
+			},
+		},
+	}
+
+	store := &MemoryStore{}
+	store.Write(existingData)
+	eventBus := NewEventBus()
+	dgs := NewDriverGroupStorage(store, eventBus)
+	dgs.data = existingData
+
+	updatedGroup := DriverGroup{
+		Id:                "group1",
+		Name:              "Network Drivers",
+		Type:              Network,
+		MutuallyExclusive: true,
+		Drivers: []*Driver{
+			{Id: "driver1", Name: "Driver 1", Type: Network},
+			{Id: "driver2", Name: "Driver 2", Type: Network},
+		},
+	}
+
+	result, err := dgs.Update(updatedGroup)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !result.MutuallyExclusive {
+		t.Error("expected MutuallyExclusive to be true in result")
+	}
+
+	if !dgs.data[0].MutuallyExclusive {
+		t.Error("expected MutuallyExclusive to be true in storage")
+	}
+}
+
+func TestDriverGroupStorage_Remove_WithMutuallyExclusive(t *testing.T) {
+	existingData := []*DriverGroup{
+		{
+			Id:                "group1",
+			Name:              "Group 1",
+			Type:              Network,
+			MutuallyExclusive: true,
+			Drivers: []*Driver{
+				{Id: "driver1", Name: "Driver 1", Type: Network},
+			},
+		},
+		{
+			Id:                "group2",
+			Name:              "Group 2",
+			Type:              Display,
+			MutuallyExclusive: false,
+			Drivers: []*Driver{
+				{Id: "driver2", Name: "Driver 2", Type: Display, Incompatibles: []string{"driver1"}},
+			},
+		},
+	}
+
+	store := &MemoryStore{}
+	store.Write(existingData)
+	eventBus := NewEventBus()
+	dgs := NewDriverGroupStorage(store, eventBus)
+	dgs.data = existingData
+
+	err := dgs.Remove("group1")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(dgs.data) != 1 {
+		t.Errorf("expected 1 group, got %d", len(dgs.data))
+	}
+
+	if dgs.data[0].MutuallyExclusive != false {
+		t.Error("expected MutuallyExclusive flag to be preserved")
+	}
+
+	// Check if driver1 was removed from incompatibles (cascade cleanup still works)
+	if len(dgs.data[0].Drivers[0].Incompatibles) != 0 {
+		t.Errorf("expected incompatibles to be empty, got %v", dgs.data[0].Drivers[0].Incompatibles)
+	}
+}
+
 func TestDriverGroupStorage_CompleteWorkflow(t *testing.T) {
 	store := &MemoryStore{}
 	eventBus := NewEventBus()

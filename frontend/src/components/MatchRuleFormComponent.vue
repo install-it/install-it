@@ -29,7 +29,7 @@ const sourceRuleSet = computed(
     new storage.RuleSet({ rules: [], driver_group_ids: [] })
 )
 
-const { data: ruleSet, reset } = useEditor({ source: sourceRuleSet.value })
+const { data: ruleSet } = useEditor({ source: sourceRuleSet.value })
 
 function handleSubmit() {
   if (ruleSet.value.rules.length == 0) {
@@ -40,15 +40,10 @@ function handleSubmit() {
   const handleSuccess = () => {
     toast.add({ title: t('toast.updated'), color: 'success' })
 
-    matchRuleStorage
-      .All()
-      .then(newMatchRule => {
-        ruleStore.ruleSets = newMatchRule
-        return reset()
-      })
-      .then(() => {
-        $router.replace({ path: `/match-rules/${ruleSet.value.id}/edit` })
-      })
+    matchRuleStorage.All().then(newMatchRule => {
+      ruleStore.ruleSets = newMatchRule
+      $router.push({ path: '/match-rules/' })
+    })
   }
 
   if (ruleSet.value.id == undefined) {

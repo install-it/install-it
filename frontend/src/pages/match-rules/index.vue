@@ -52,10 +52,7 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
           </div>
 
           <div class="flex gap-x-1.5 py-1">
-            <RouterLink
-              :to="`/match-rules/${rs.id}/edit`"
-              :title="$t('common.edit')"
-            >
+            <RouterLink :to="`/match-rules/${rs.id}/edit`" :title="$t('common.edit')">
               <UButton color="neutral" variant="outline" size="xs" class="h-6">
                 <Icon icon="mdi:pencil" class="text-gray-500" />
               </UButton>
@@ -130,7 +127,7 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
             <div class="line-clamp-2">
               <span
                 v-if="r.should_hit_all"
-                class="me-0.5 badge badge-sm px-1 text-white md:me-1"
+                class="badge badge-sm me-0.5 px-1 text-white md:me-1"
                 style="--badge-color: var(--color-rose-400)"
               >
                 {{ $t('matchRule.hitAll') }}
@@ -138,7 +135,7 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
 
               <span
                 v-if="r.is_case_sensitive"
-                class="me-0.5 badge badge-sm px-1 md:me-1"
+                class="badge badge-sm me-0.5 px-1 md:me-1"
                 style="--badge-color: var(--color-orange-300)"
               >
                 Aa
@@ -147,7 +144,7 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
               <span
                 v-for="(v, i) in r.values"
                 :key="i"
-                class="me-0.5 badge badge-sm px-1 badge-neutral md:me-1"
+                class="badge badge-sm badge-neutral me-0.5 px-1 md:me-1"
               >
                 {{ v }}
               </span>
@@ -166,7 +163,7 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
                 rs.driver_group_ids?.includes(g.id)
               )"
               :key="i"
-              class="me-0.5 badge badge-xs px-1 md:badge-sm md:px-1.5"
+              class="badge badge-xs md:badge-sm me-0.5 px-1 md:px-1.5"
               :style="`--badge-color: var(--color-${group.type})`"
             >
               {{ group.name }}

@@ -44,6 +44,8 @@
     "manualInput": "手動輸入",
     "minExecuteTime": "執行時間（秒）",
     "minExecuteTimeHelp": "執行之時若不足所定，則以視作失敗。",
+    "mutuallyExclusive": "互斥軀動程式",
+    "mutuallyExclusiveHelp": "此組內的軀動程式不能同時執行",
     "name": "名稱",
     "none": "沒有",
     "order": "排序",
