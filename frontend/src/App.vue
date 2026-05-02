@@ -78,7 +78,7 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
   <UApp
     :toaster="{
       position: 'top-right',
-      duration: 3000
+      duration: 1500
     }"
   >
     <Transition name="fade" mode="out-in">
