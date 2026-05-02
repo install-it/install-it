@@ -47,10 +47,10 @@ function handleSubmit() {
     })
     .then(() => {
       locale.value = settings.value.language
-      toast.add({ title: t('toast.saved'), color: 'success', duration: 1500 })
+      toast.add({ title: t('toast.saved'), color: 'success' })
     })
     .catch(() => {
-      toast.add({ title: t('toast.failedToSave'), color: 'error', duration: 1500 })
+      toast.add({ title: t('toast.failedToSave'), color: 'error' })
     })
 }
 </script>
