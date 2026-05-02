@@ -60,12 +60,6 @@ watch(
   { immediate: true }
 )
 
-// Track if only drivers changed (not other fields)
-const modifiedDrivers = computed(() => {
-  const currentGroup = sourceGroup.value
-  return JSON.stringify(group.value.drivers) !== JSON.stringify(currentGroup.drivers)
-})
-
 onBeforeRouteLeave((to, from, next) => {
   if (modified.value) {
     questionModal.value?.show(answer => {
@@ -76,7 +70,7 @@ onBeforeRouteLeave((to, from, next) => {
   }
 })
 
-function handleSubmit(event: SubmitEvent) {
+function handleSubmit() {
   if (group.value.drivers.length == 0) {
     toast.add({ title: t('toast.addAtLeastOneDriver'), color: 'warning' })
     return
@@ -91,11 +85,7 @@ function handleSubmit(event: SubmitEvent) {
         return reset()
       })
       .then(() => {
-        if (event.submitter?.id !== 'driver-submit-btn') {
-          $router.back()
-        } else {
-          $router.replace({ path: `/drivers/${group.value.id}/edit` })
-        }
+        $router.back()
       })
   }
 
@@ -154,6 +144,15 @@ function handleSubmit(event: SubmitEvent) {
           <UInput v-model="group.name" type="text" class="w-full" required />
         </fieldset>
       </div>
+    </div>
+
+    <div>
+      <label class="flex w-full cursor-pointer items-center select-none">
+        <UCheckbox v-model="group.mutuallyExclusive" class="me-1.5" />
+        {{ $t('driverForm.mutuallyExclusive') }}
+      </label>
+
+      <p class="text-hint text-xs">{{ $t('driverForm.mutuallyExclusiveHelp') }}</p>
     </div>
 
     <fieldset class="fieldset">
@@ -241,19 +240,9 @@ function handleSubmit(event: SubmitEvent) {
           <p class="text-hint">
             {{ $t('driverForm.driverGroupHelp') }}
           </p>
-
-          <p v-show="modifiedDrivers" class="text-hint">
-            {{ $t('driverForm.incompatibleForNewHelp') }}
-          </p>
         </div>
 
         <div class="flex justify-end gap-x-3">
-          <div v-show="modifiedDrivers">
-            <UButton id="driver-submit-btn" type="submit" class="px-2" color="secondary">
-              <Icon icon="mdi:content-save" />
-            </UButton>
-          </div>
-
           <UButton type="button" class="px-2" color="primary" @click="inputModal?.show()">
             <Icon icon="mdi:plus-box" />
           </UButton>

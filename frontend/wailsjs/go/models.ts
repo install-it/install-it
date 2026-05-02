@@ -123,17 +123,6 @@ export namespace status {
 
 export namespace storage {
 	
-	export enum DriverType {
-	    NETWORK = "network",
-	    DISPLAY = "display",
-	    MISCELLANEOUS = "miscellaneous",
-	}
-	export enum SuccessAction {
-	    NOTHING = "nothing",
-	    REBOOT = "reboot",
-	    SHUTDOWN = "shutdown",
-	    FIRMWARE = "firmware",
-	}
 	export enum RuleSource {
 	    CPU = "cpu",
 	    MOTHERBOARD = "motherboard",
@@ -148,6 +137,17 @@ export namespace storage {
 	    EQUAL = "equal",
 	    NOT_EQUAL = "not_equal",
 	    REGEX = "regex",
+	}
+	export enum DriverType {
+	    NETWORK = "network",
+	    DISPLAY = "display",
+	    MISCELLANEOUS = "miscellaneous",
+	}
+	export enum SuccessAction {
+	    NOTHING = "nothing",
+	    REBOOT = "reboot",
+	    SHUTDOWN = "shutdown",
+	    FIRMWARE = "firmware",
 	}
 	export class AppSetting {
 	    create_partition: boolean;
@@ -213,6 +213,7 @@ export namespace storage {
 	    id: string;
 	    name: string;
 	    type: DriverType;
+	    mutuallyExclusive: boolean;
 	    drivers: Driver[];
 	
 	    static createFrom(source: any = {}) {
@@ -224,6 +225,7 @@ export namespace storage {
 	        this.id = source["id"];
 	        this.name = source["name"];
 	        this.type = source["type"];
+	        this.mutuallyExclusive = source["mutuallyExclusive"];
 	        this.drivers = this.convertValues(source["drivers"], Driver);
 	    }
 	
