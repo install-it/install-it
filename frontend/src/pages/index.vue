@@ -204,12 +204,13 @@ async function handleSubmit() {
 
       <template v-else>
         <div v-for="i in 6" :key="i">
-          <h2
-            class="skeleton mb-1 h-5"
-            :style="{ width: `${Math.random() * (25 - 15) + 15}%` }"
-          ></h2>
+          <h2 class="mb-1 h-5">
+            <USkeleton class="h-4" :style="{ width: `${Math.random() * (25 - 15) + 15}%` }" />
+          </h2>
 
-          <p class="skeleton h-5" :style="{ width: `${Math.random() * (85 - 30) + 30}%` }"></p>
+          <p class="h-5">
+            <USkeleton class="h-4" :style="{ width: `${Math.random() * (85 - 30) + 30}%` }" />
+          </p>
         </div>
       </template>
     </div>
