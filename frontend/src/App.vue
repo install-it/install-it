@@ -91,7 +91,7 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
                   <RouterLink
                     :to="link.to"
                     class="flex rounded-lg p-2 hover:bg-gray-200"
-                    active-class="text-apple-green-900 bg-powder-blue-400"
+                    active-class="text-apple-green-800 bg-powder-blue-100"
                     draggable="false"
                   >
                     <div class="relative">

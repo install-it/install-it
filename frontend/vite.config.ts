@@ -8,7 +8,33 @@ import VueRouter from 'vue-router/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [tailwindcss(), VueRouter(), vue(), ui()],
+  plugins: [
+    tailwindcss(),
+    VueRouter(),
+    vue(),
+    ui({
+      theme: {
+        colors: [
+          'primary',
+          'secondary',
+          'tertiary',
+          'accent',
+          'info',
+          'success',
+          'warning',
+          'error'
+        ]
+      },
+      ui: {
+        colors: {
+          primary: 'powder-blue',
+          secondary: 'half-baked',
+          tertiary: 'kashmir-blue',
+          accent: 'apple-green'
+        }
+      }
+    })
+  ],
   resolve: {
     alias: {
       '@/wailsjs': fileURLToPath(new URL('./wailsjs', import.meta.url)),
