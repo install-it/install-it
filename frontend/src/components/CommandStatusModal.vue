@@ -162,6 +162,7 @@ async function handleAbort(process: Process) {
 <template>
   <UModal
     v-model:open="isOpen"
+    :dismissible="false"
     :title="$t('execute.title')"
     :close="!processes.some(cmd => ['pending', 'running', 'aborting'].includes(cmd.status))"
   >
@@ -175,7 +176,7 @@ async function handleAbort(process: Process) {
           processes.every(p => p.status.includes('ed')) &&
           processes.some(p => p.status != 'completed')
         "
-        class="flex justify-end pt-2"
+        class="flex justify-end border-t pt-2"
       >
         <UButton
           color="secondary"
