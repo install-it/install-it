@@ -4,7 +4,7 @@
     margin-top: 0.25rem;
     font-size: 0.75rem;
     line-height: 1rem;
-    color: var(--color-apple-green-800);
+    color: var(--color-apple-green-600);
   }
 
   .text-required:after {

@@ -226,7 +226,7 @@ async function handleSubmit() {
 
           <select
             v-model="selectedNetwork"
-            class="w-full rounded-lg border border-gray-300 bg-white px-3 pt-5 pb-1 text-sm focus:border-apple-green-600 focus:ring-1 focus:ring-apple-green-600 focus:outline-none"
+            class="w-full rounded-lg border border-apple-green-300 bg-white px-3 pt-5 pb-1 text-sm focus:border-apple-green-600 focus:ring-1 focus:ring-apple-green-600 focus:outline-none"
           >
             <option value="">{{ $t('common.pleaseSelect') }}</option>
 
@@ -245,7 +245,7 @@ async function handleSubmit() {
 
           <select
             v-model="selectedDisplay"
-            class="w-full rounded-lg border border-gray-300 bg-white px-3 pt-5 pb-1 text-sm focus:border-apple-green-600 focus:ring-1 focus:ring-apple-green-600 focus:outline-none"
+            class="w-full rounded-lg border border-apple-green-300 bg-white px-3 pt-5 pb-1 text-sm focus:border-apple-green-600 focus:ring-1 focus:ring-apple-green-600 focus:outline-none"
           >
             <option value="">{{ $t('common.pleaseSelect') }}</option>
 
@@ -264,7 +264,7 @@ async function handleSubmit() {
             {{ $t('driverCatetory.miscellaneous') }}
           </label>
 
-          <div class="h-full overflow-y-scroll rounded-lg border border-apple-green-600 px-2 pt-3">
+          <div class="h-full overflow-y-scroll rounded-lg border border-apple-green-300 px-2 pt-3">
             <template v-for="g in groups.filter(g => g.type == 'miscellaneous')" :key="g.id">
               <label class="flex w-full cursor-pointer items-center select-none">
                 <UCheckbox
