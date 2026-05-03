@@ -268,10 +268,18 @@ async function handleSubmit() {
             <template v-for="g in groups.filter(g => g.type == 'miscellaneous')" :key="g.id">
               <label class="flex w-full cursor-pointer items-center select-none">
                 <UCheckbox
-                  v-model="selectedMiscellaneous"
+                  :model-value="selectedMiscellaneous.includes(g.id)"
                   color="primary"
                   class="me-1.5"
-                  :value="g.id"
+                  @update:model-value="
+                    checked => {
+                      if (checked) {
+                        selectedMiscellaneous.push(g.id)
+                      } else {
+                        selectedMiscellaneous = selectedMiscellaneous.filter(id => id !== g.id)
+                      }
+                    }
+                  "
                 />
                 {{ g.name }}
               </label>
