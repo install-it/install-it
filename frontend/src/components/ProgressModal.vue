@@ -131,9 +131,9 @@ function toastErrMsg(err: string) {
         </div>
 
         <ol class="flex w-full items-center">
-          <ProgressNode v-for="(task, i) in progress?.tasks ?? []" :key="i" :task>
+          <ProgressNode v-for="(task, i) in progress?.tasks ?? []" :key="i" :progress="task">
             <i class="text-xs lg:text-base">
-              <Icon v-if="task.status == 'pending'" icon="mdi:hourglass-start" />
+              <Icon v-if="task.status == 'pending'" icon="mdi:hourglass" />
 
               <Icon
                 v-else-if="task.status.includes('ing')"
@@ -147,7 +147,11 @@ function toastErrMsg(err: string) {
             </i>
           </ProgressNode>
 
-          <ProgressNode></ProgressNode>
+          <ProgressNode>
+            <i class="text-xs lg:text-base">
+              <Icon icon="mdi:goal" />
+            </i>
+          </ProgressNode>
         </ol>
 
         <div
