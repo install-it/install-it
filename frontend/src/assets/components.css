@@ -13,22 +13,6 @@
   }
 }
 
-/* color badge */
-@layer components {
-  .badge {
-    @apply inline-flex items-center justify-center rounded-sm px-1 select-none;
-    background-color: var(--badge-color, var(--color-gray-100));
-  }
-
-  .badge-sm {
-    @apply h-5;
-  }
-
-  .badge-xs {
-    @apply h-4 text-xs;
-  }
-}
-
 /* status badge */
 @layer components {
   .proc-badge {

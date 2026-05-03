@@ -124,13 +124,14 @@ const groupItems = computed(() =>
               "
             />
 
-            <span
+            <UBadge
               v-if="item.type"
-              class="badge badge-sm ms-1.5 px-1"
-              :style="`--badge-color: var(--color-${item.type})`"
+              size="sm"
+              class="ms-1.5"
+              :style="`background-color: var(--color-${item.type})`"
             >
               &nbsp;
-            </span>
+            </UBadge>
 
             <span class="ms-1.5">{{ item.label }}</span>
           </label>
@@ -153,13 +154,14 @@ const groupItems = computed(() =>
               "
             />
 
-            <span
+            <UBadge
               v-if="'type' in item ? item.type : 'groupType' in item ? item.groupType : undefined"
-              class="badge badge-sm ms-1.5 px-1"
-              :style="`--badge-color: var(--color-${'type' in item ? item.type : item.groupType})`"
+              size="sm"
+              class="ms-1.5"
+              :style="`background-color: var(--color-${'type' in item ? item.type : item.groupType})`"
             >
               &nbsp;
-            </span>
+            </UBadge>
 
             <span class="ms-1.5">{{ item.label }}</span>
           </label>
