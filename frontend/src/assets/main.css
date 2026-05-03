@@ -3,19 +3,6 @@
 @import './theme.css';
 @import './components.css';
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
 @layer base {
   @font-face {
     font-family: 'Noto Sans TC';
