@@ -73,13 +73,13 @@
 @theme static {
   /* Status badge colors */
   --color-pending: var(--color-gray-300);
-  --color-running: var(--color-half-baked-500);
+  --color-running: var(--color-half-baked-400);
   --color-aborting: var(--color-yellow-400);
   --color-aborted: var(--color-yellow-400);
   --color-skiped: var(--color-gray-300);
   --color-speeded: var(--color-red-300);
   --color-failed: var(--color-red-300);
-  --color-completed: var(--color-apple-green-600);
+  --color-completed: var(--color-apple-green-500);
   --color-broken: var(--color-red-700);
   --color-display: var(--color-green-100);
   --color-network: var(--color-blue-100);

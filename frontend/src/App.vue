@@ -119,7 +119,7 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
       <template v-else>
         <div class="flex h-screen w-screen items-center justify-center">
           <div class="flex items-center gap-2">
-            <Icon icon="mdi:loading" class="animate-spin text-5xl text-powder-blue-800" />
+            <Icon icon="mdi:loading" class="animate-spin text-5xl text-powder-blue-300" />
           </div>
         </div>
       </template>
