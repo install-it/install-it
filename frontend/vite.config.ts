@@ -31,6 +31,13 @@ export default defineConfig({
           secondary: 'half-baked',
           tertiary: 'kashmir-blue',
           accent: 'apple-green'
+        },
+        modal: {
+          slots: {
+            header: 'flex items-center gap-1.5 px-4 py-2 sm:px-6 min-h-12',
+            close: 'absolute top-2 inset-e-4',
+            content: 'lg:max-w-3xl'
+          }
         }
       }
     })
