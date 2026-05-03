@@ -48,7 +48,7 @@ const inProgress = computed(
         v-if="inProgress"
         class="absolute -bottom-4 w-full truncate px-1 text-xs text-gray-400 lg:-bottom-5"
       >
-        {{ `${Math.floor((progress.current / progress.total) * 100)}%` }}
+        {{ `${Math.floor((progress.current / progress.total) * 100) || '--'}%` }}
       </span>
     </div>
   </li>
