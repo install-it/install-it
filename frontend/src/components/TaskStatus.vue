@@ -7,7 +7,7 @@ defineEmits<{ abort: [] }>()
 </script>
 
 <template>
-  <div class="flex min-h-9 border-t border-kashmir-blue-100 last:border-b">
+  <div class="flex min-h-9 border-t">
     <div class="w-2/6 content-center truncate pe-1 text-xs">
       <p class="truncate font-medium">{{ props.process.command.groupName }}</p>
 
@@ -19,7 +19,12 @@ defineEmits<{ abort: [] }>()
     <div class="flex w-4/6 items-center py-1 ps-1">
       <!-- status badge -->
       <div class="w-[4.1rem] shrink-0">
-        <UBadge :class="[`proc-badge-${props.process.status}`]" class="h-6 max-w-[96%]" size="md">
+        <UBadge
+          :class="[`proc-badge-${props.process.status}`]"
+          class="h-6 max-w-[96%]"
+          size="md"
+          color="netural"
+        >
           <span class="truncate text-sm">
             {{ $t(`status.@${props.process.status}`).toUpperCase() }}
           </span>
