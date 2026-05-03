@@ -81,6 +81,13 @@ function updateProgress() {
 
     progress.value = p
     messages.value.push(...p.messages.filter(m => m !== ''))
+    messages.value.push(...p.messages.filter(m => m !== ''))
+    messages.value.push(...p.messages.filter(m => m !== ''))
+    messages.value.push(...p.messages.filter(m => m !== ''))
+    messages.value.push(...p.messages.filter(m => m !== ''))
+    messages.value.push(...p.messages.filter(m => m !== ''))
+    messages.value.push(...p.messages.filter(m => m !== ''))
+    messages.value.push(...p.messages.filter(m => m !== ''))
 
     if (scroll) {
       nextTick(() => {
@@ -112,6 +119,9 @@ function toastErrMsg(err: string) {
     v-model:open="isOpen"
     :title="t('porter.progress')"
     :close="progress?.status.includes('ed')"
+    :ui="{
+      body: 'flex h-[70vh]'
+    }"
     @close="
       () => {
         if (progress?.status == 'completed') {
