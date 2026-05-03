@@ -39,8 +39,8 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
           :to="{ path: '/drivers' }"
           class="flex-1/3 truncate rounded-sm text-center font-bold uppercase shadow-xs"
           :class="{
-            'bg-white text-half-baked-600': $route.query.type != undefined,
-            'bg-half-baked-600 text-white': $route.query.type == undefined
+            'bg-white text-half-baked-500': $route.query.type != undefined,
+            'bg-half-baked-500 text-white': $route.query.type == undefined
           }"
           draggable="false"
         >
@@ -53,8 +53,8 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
           :to="{ path: '/drivers', query: { type: type } }"
           class="flex-1/3 truncate rounded-sm text-center font-bold uppercase shadow-xs"
           :class="{
-            'bg-white text-half-baked-600': $route.query.type !== type,
-            'bg-half-baked-600 text-white': $route.query.type === type
+            'bg-white text-half-baked-500': $route.query.type !== type,
+            'bg-half-baked-500 text-white': $route.query.type === type
           }"
           draggable="false"
         >
