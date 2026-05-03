@@ -121,29 +121,31 @@ function handleSubmit() {
 
                 <div class="col-span-3">
                   <div>
-                    <span
+                    <UBadge
                       v-if="r.should_hit_all"
-                      class="badge badge-sm me-0.5 px-1 text-white md:me-1"
-                      style="--badge-color: var(--color-rose-400)"
+                      size="sm"
+                      class="me-0.5 bg-rose-400 text-white md:me-1"
                     >
                       {{ $t('matchRule.hitAll') }}
-                    </span>
+                    </UBadge>
 
-                    <span
+                    <UBadge
                       v-if="r.is_case_sensitive"
-                      class="badge badge-sm me-0.5 px-1 md:me-1"
-                      style="--badge-color: var(--color-orange-300)"
+                      size="sm"
+                      class="me-0.5 bg-orange-300 md:me-1"
                     >
                       Aa
-                    </span>
+                    </UBadge>
 
-                    <span
+                    <UBadge
                       v-for="(v, vi) in r.values"
                       :key="vi"
-                      class="badge badge-sm badge-neutral me-0.5 px-1 md:me-1"
+                      size="sm"
+                      color="tertiary"
+                      class="me-0.5 md:me-1"
                     >
                       {{ v }}
-                    </span>
+                    </UBadge>
                   </div>
                 </div>
 
