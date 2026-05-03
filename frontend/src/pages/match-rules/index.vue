@@ -40,13 +40,9 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
       >
         <div class="flex justify-between">
           <div class="flex min-w-0 items-center gap-1">
-            <span
-              v-if="rs.should_hit_all"
-              class="badge badge-sm px-1 text-nowrap text-white"
-              style="--badge-color: var(--color-rose-400)"
-            >
+            <UBadge v-if="rs.should_hit_all" size="sm" class="bg-rose-400 text-nowrap text-white">
               {{ $t('matchRule.hitAll') }}
-            </span>
+            </UBadge>
 
             <h2 class="truncate">{{ rs.name }}</h2>
           </div>
@@ -125,29 +121,31 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
 
           <div class="col-span-6">
             <div class="line-clamp-2">
-              <span
+              <UBadge
                 v-if="r.should_hit_all"
-                class="badge badge-sm me-0.5 px-1 text-white md:me-1"
-                style="--badge-color: var(--color-rose-400)"
+                size="sm"
+                class="me-0.5 bg-rose-400 text-white md:me-1"
               >
                 {{ $t('matchRule.hitAll') }}
-              </span>
+              </UBadge>
 
-              <span
+              <UBadge
                 v-if="r.is_case_sensitive"
-                class="badge badge-sm me-0.5 px-1 md:me-1"
-                style="--badge-color: var(--color-orange-300)"
+                size="sm"
+                class="me-0.5 bg-orange-300 text-white md:me-1"
               >
                 Aa
-              </span>
+              </UBadge>
 
-              <span
+              <UBadge
                 v-for="(v, i) in r.values"
                 :key="i"
-                class="badge badge-sm badge-neutral me-0.5 px-1 md:me-1"
+                size="sm"
+                color="tertiary"
+                class="me-0.5 md:me-1"
               >
                 {{ v }}
-              </span>
+              </UBadge>
             </div>
           </div>
         </div>
@@ -158,16 +156,17 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
           <p class="content-center font-semibold">{{ $t('matchRule.matchTo') }}</p>
 
           <div class="line-clamp-2 flex-1">
-            <span
+            <UBadge
               v-for="(group, i) in driverStore.groups.filter(g =>
                 rs.driver_group_ids?.includes(g.id)
               )"
               :key="i"
-              class="badge badge-xs md:badge-sm me-0.5 px-1 md:px-1.5"
-              :style="`--badge-color: var(--color-${group.type})`"
+              size="sm"
+              class="me-0.5 text-zinc-600"
+              :style="`background-color: var(--color-${group.type})`"
             >
               {{ group.name }}
-            </span>
+            </UBadge>
           </div>
         </div>
       </div>

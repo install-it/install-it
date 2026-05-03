@@ -125,9 +125,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
       >
         <div class="flex justify-between">
           <div class="flex min-w-0 items-center gap-1">
-            <span class="badge badge-sm px-1" :style="`--badge-color: var(--color-${g.type})`">
-              &nbsp;
-            </span>
+            <UBadge size="sm" :style="`background-color: var(--color-${g.type})`"> &nbsp; </UBadge>
 
             <h2 class="truncate">
               {{ g.name }}
