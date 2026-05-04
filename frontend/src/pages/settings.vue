@@ -1,40 +1,33 @@
 <script setup lang="ts">
-import UnsaveConfirmModal from '@/components/UnsaveConfirmModal.vue'
 import { useEditor } from '@/composables/useEditor'
-import { useAppSettingStore } from '@/store'
+import { useAppSettingStore, useUnsavedFormStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
 import * as appSettingStorage from '@/wailsjs/go/storage/AppSettingStorage'
-import { ref, useTemplateRef } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { onBeforeRouteLeave } from 'vue-router'
 
 const { t, locale } = useI18n()
 
 const toast = useToast()
 
-const questionModal = useTemplateRef('questionModal')
-
 const tabs = ref({ softwareSetting: true, defaultInstallSetting: false, displaySetting: false })
 
 const settingStore = useAppSettingStore()
-const { data: settings, modified, reset } = useEditor({ source: () => settingStore.settings })
+const {
+  data: settings,
+  modified,
+  reset
+} = useEditor({ source: () => settingStore.settings, warnOnUnsavedLeave: true })
 
-onBeforeRouteLeave(async (to, from, next) => {
-  next(await handleMoveAway())
-})
+function askLeave() {
+  const formStore = useUnsavedFormStore()
+  if (!modified.value) {
+    return Promise.resolve(true)
+  }
 
-async function handleMoveAway() {
+  formStore.show = true
   return new Promise<boolean>(resolve => {
-    if (modified.value) {
-      questionModal.value?.show(answer => {
-        if (answer == 'yes') {
-          reset()
-        }
-        resolve(answer == 'yes')
-      })
-    } else {
-      resolve(true)
-    }
+    formStore.setAnswerHandler(resolve)
   })
 }
 
@@ -69,8 +62,9 @@ function handleSubmit() {
             : ''
         "
         @click="
-          handleMoveAway().then(leave => {
+          askLeave().then(leave => {
             if (leave) {
+              reset()
               Object.keys(tabs).forEach(k => (tabs[k as keyof typeof tabs] = k == key))
             }
           })
@@ -304,6 +298,4 @@ function handleSubmit() {
       </UButton>
     </div>
   </form>
-
-  <UnsaveConfirmModal ref="questionModal"></UnsaveConfirmModal>
 </template>

@@ -9,9 +9,7 @@ import { computed, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
-const props = defineProps<{
-  id?: string
-}>()
+const props = defineProps<{ id?: string }>()
 
 const inputModal = useTemplateRef('inputModal')
 
@@ -29,7 +27,10 @@ const sourceRuleSet = computed(
     new storage.RuleSet({ rules: [], driver_group_ids: [] })
 )
 
-const { data: ruleSet } = useEditor({ source: sourceRuleSet })
+const { data: ruleSet } = useEditor({
+  source: sourceRuleSet,
+  warnOnUnsavedLeave: true
+})
 
 function handleSubmit() {
   if (ruleSet.value.rules.length == 0) {

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import DriverInputModal from '@/components/DriverInputModal.vue'
-import UnsaveConfirmModal from '@/components/UnsaveConfirmModal.vue'
 import { useEditor } from '@/composables/useEditor'
 import { useDriverGroupStore } from '@/store'
 import { ExecutableExists } from '@/wailsjs/go/main/App'
@@ -8,7 +7,7 @@ import { storage } from '@/wailsjs/go/models'
 import * as groupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
 import { computed, ref, toRaw, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps<{ id?: string }>()
 
@@ -18,7 +17,6 @@ const $route = useRoute()
 const $router = useRouter()
 const toast = useToast()
 
-const questionModal = useTemplateRef('questionModal')
 const inputModal = useTemplateRef('inputModal')
 
 const groupStore = useDriverGroupStore()
@@ -39,8 +37,10 @@ const sourceGroup = computed(
     })
 )
 
-// Create editor
-const { data: group, modified, reset } = useEditor({ source: sourceGroup })
+const { data: group, reset } = useEditor({
+  source: sourceGroup,
+  warnOnUnsavedLeave: true
+})
 
 // Track drivers that don't exist on system
 const notFoundDrivers = ref<string[]>([])
@@ -59,16 +59,6 @@ watch(
   newDrivers => findNotExists(newDrivers).then(ids => (notFoundDrivers.value = ids)),
   { immediate: true }
 )
-
-onBeforeRouteLeave((to, from, next) => {
-  if (modified.value) {
-    questionModal.value?.show(answer => {
-      next(answer == 'yes')
-    })
-  } else {
-    next(true)
-  }
-})
 
 function handleSubmit() {
   if (group.value.drivers.length == 0) {
@@ -287,8 +277,6 @@ function handleSubmit() {
       }
     "
   ></DriverInputModal>
-
-  <UnsaveConfirmModal ref="questionModal"></UnsaveConfirmModal>
 </template>
 
 <style scoped>
