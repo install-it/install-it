@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { storage } from '@/wailsjs/go/models'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
   driverGroups: Array<storage.DriverGroup>
@@ -9,9 +10,22 @@ const props = defineProps<{
   groupBy: 'group' | 'driver'
 }>()
 
-const model = defineModel<Array<string>>({ default: [] })
+const model = defineModel<Array<string> | undefined>({ default: [] })
+
+const { t: $t } = useI18n()
 
 const searchPhrase = ref('')
+
+// ensure model is always an array
+watch(
+  () => model.value,
+  val => {
+    if (val === null || val === undefined) {
+      model.value = []
+    }
+  },
+  { immediate: true }
+)
 
 const filteredGroups = computed(() => {
   return searchPhrase.value === ''
@@ -22,162 +36,137 @@ const filteredGroups = computed(() => {
           g.drivers.some(d => d.name.includes(searchPhrase.value))
       )
 })
+
+const builtinItems = computed(() => [
+  { label: $t('installSetting.setPassword'), value: 'set_password', type: 'builtin' },
+  { label: $t('installSetting.createPartition'), value: 'create_partition', type: 'builtin' }
+])
+
+const groupItems = computed(() =>
+  props.groupBy === 'group'
+    ? filteredGroups.value.map(g => ({ label: g.name, value: g.id, type: g.type }))
+    : filteredGroups.value.flatMap(g =>
+        g.drivers
+          .filter(d => !props.excludes?.includes(d.id))
+          .map(d => ({ label: `[${g.name}] ${d.name}`, value: d.id, groupType: g.type }))
+      )
+)
 </script>
 
 <template>
   <div>
     <div class="mb-1 line-clamp-1 text-xs">
       <span class="inline">
-        {{ $t('driverForm.selectedWithCount', { count: model.length }) }}
+        {{ $t('driverForm.selectedWithCount', { count: model?.length ?? 0 }) }}
       </span>
     </div>
 
     <div class="mb-2 flex gap-x-2">
-      <input
+      <UInput
         v-model="searchPhrase"
         :placeholder="$t('driverForm.search')"
-        class="input ms-1 grow border-none bg-gray-100 focus:outline-gray-200"
+        class="ms-1 grow"
+        variant="none"
+        :ui="{ base: 'border-none bg-gray-100 focus:outline-gray-200' }"
       />
 
-      <button
+      <UButton
         type="button"
-        class="btn px-2 text-white"
+        class="px-2 text-white"
         style="--btn-color: var(--color-powder-blue-800)"
         :title="$t('driverForm.selectAll')"
         @click="
           () => {
             model = [
               ...($props.groupBy === 'group'
-                ? driverGroups.map(g => g.id)
-                : driverGroups.flatMap(g => g.drivers.flatMap(d => d.id))),
+                ? props.driverGroups.map(g => g.id)
+                : props.driverGroups.flatMap(g => g.drivers.flatMap(d => d.id))),
               'set_password',
               'create_partition'
             ]
           }
         "
       >
-        <font-awesome-icon icon="fa-regular fa-square-check" />
-      </button>
+        <Icon icon="mdi:checkbox-marked" />
+      </UButton>
 
-      <button
+      <UButton
         type="button"
-        class="btn px-2 text-white"
+        class="px-2 text-white"
         style="--btn-color: var(--color-rose-400)"
         :title="$t('driverForm.selectNone')"
         @click="model = []"
       >
-        <font-awesome-icon icon="fa-regular fa-square" />
-      </button>
+        <Icon icon="mdi:checkbox-blank-outline" />
+      </UButton>
     </div>
 
-    <ul class="h-44 overflow-auto rounded-lg border p-1.5">
-      <li
-        v-if="!excludeBuiltin"
-        v-show="
-          searchPhrase === '' ||
-          'set password'.includes(searchPhrase) ||
-          $t('installSetting.setPassword').includes(searchPhrase)
-        "
-        class="px-4 py-2 text-sm"
-      >
-        <label class="flex w-full cursor-pointer items-center select-none">
-          <input
-            v-model="model"
-            type="checkbox"
-            value="set_password"
-            class="checkbox me-1.5 checkbox-sm checkbox-primary"
-          />
+    <div class="overflow-auto rounded-lg border p-1.5">
+      <div class="max-h-44 space-y-1.5">
+        <!-- Builtin items -->
+        <template v-if="!excludeBuiltin">
+          <label
+            v-for="item in builtinItems"
+            :key="item.value"
+            class="flex cursor-pointer items-center select-none"
+          >
+            <UCheckbox
+              size="sm"
+              :model-value="model?.includes(item.value) ?? false"
+              @update:model-value="
+                (checked: boolean | 'indeterminate') => {
+                  if (checked === true) {
+                    model = [...(model || []), item.value]
+                  } else {
+                    model = model?.filter(v => v !== item.value) ?? []
+                  }
+                }
+              "
+            />
 
-          <span class="me-1 badge px-1" :style="`--badge-color: var(--color-builtin)`">
-            &nbsp;
-          </span>
+            <UBadge
+              v-if="item.type"
+              size="sm"
+              class="ms-1.5"
+              :style="`background-color: var(--color-${item.type})`"
+            >
+              &nbsp;
+            </UBadge>
 
-          <span class="line-clamp-2">
-            {{ $t('installSetting.setPassword') }}
-          </span>
-        </label>
-      </li>
-
-      <li
-        v-if="!excludeBuiltin"
-        v-show="
-          searchPhrase === '' ||
-          'create partition'.includes(searchPhrase) ||
-          $t('installSetting.createPartition').includes(searchPhrase)
-        "
-        class="px-4 py-2 text-sm"
-      >
-        <label class="flex w-full cursor-pointer items-center select-none">
-          <input
-            v-model="model"
-            type="checkbox"
-            value="create_partition"
-            class="checkbox me-1.5 checkbox-sm checkbox-primary"
-          />
-
-          <span class="me-1 badge px-1" :style="`--badge-color: var(--color-builtin)`">
-            &nbsp;
-          </span>
-
-          <span class="line-clamp-2">
-            {{ $t('installSetting.createPartition') }}
-          </span>
-        </label>
-      </li>
-
-      <template v-for="g in filteredGroups" :key="g.id">
-        <template v-if="$props.groupBy === 'group'">
-          <li class="px-4 py-2 text-sm">
-            <label class="flex w-full cursor-pointer items-center select-none">
-              <input
-                v-model="model"
-                type="checkbox"
-                :value="g.id"
-                class="checkbox me-1.5 checkbox-sm checkbox-primary"
-              />
-
-              <span
-                class="me-1 badge px-1"
-                :class="[`badge-${g.type}`]"
-                :style="`--badge-color: var(--color-${g.type})`"
-              >
-                &nbsp;
-              </span>
-
-              <span class="line-clamp-2">
-                {{ g.name }}
-              </span>
-            </label>
-          </li>
+            <span class="ms-1.5">{{ item.label }}</span>
+          </label>
         </template>
 
-        <template v-else>
-          <template v-for="d in g.drivers.filter(d => !excludes?.includes(d.id))" :key="d.id">
-            <li class="px-4 py-2 text-sm">
-              <label class="flex w-full cursor-pointer items-center select-none">
-                <input
-                  v-model="model"
-                  type="checkbox"
-                  :value="d.id"
-                  class="checkbox me-1.5 checkbox-sm checkbox-primary"
-                />
+        <!-- Group/Driver items with color blocks -->
+        <template v-for="item in groupItems" :key="item.value">
+          <label class="flex cursor-pointer items-center select-none">
+            <UCheckbox
+              size="sm"
+              :model-value="model?.includes(item.value) ?? false"
+              @update:model-value="
+                (checked: boolean | 'indeterminate') => {
+                  if (checked === true) {
+                    model = [...(model || []), item.value]
+                  } else {
+                    model = model?.filter(v => v !== item.value) ?? []
+                  }
+                }
+              "
+            />
 
-                <span
-                  class="me-1 badge px-1"
-                  :class="[`badge-${g.type}`]"
-                  :style="`--badge-color: var(--color-${g.type})`"
-                >
-                  &nbsp;
-                </span>
+            <UBadge
+              v-if="'type' in item ? item.type : 'groupType' in item ? item.groupType : undefined"
+              size="sm"
+              class="ms-1.5"
+              :style="`background-color: var(--color-${'type' in item ? item.type : item.groupType})`"
+            >
+              &nbsp;
+            </UBadge>
 
-                <span class="line-clamp-2">
-                  {{ `[${g.name}] ${d.name}` }}
-                </span>
-              </label>
-            </li>
-          </template>
+            <span class="ms-1.5">{{ item.label }}</span>
+          </label>
         </template>
-      </template>
-    </ul>
+      </div>
+    </div>
   </div>
 </template>

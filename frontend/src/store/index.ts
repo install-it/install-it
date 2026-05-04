@@ -2,23 +2,13 @@ import { ExecutableExists } from '@/wailsjs/go/main/App'
 import { storage } from '@/wailsjs/go/models'
 
 import { defineStore } from 'pinia'
-import { computed, ref, toRaw, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 export const useAppSettingStore = defineStore('appSetting', () => {
   const settings = ref<storage.AppSetting>(new storage.AppSetting())
 
   return {
-    settings,
-    editor: () => {
-      const settingsClone = ref(structuredClone(toRaw(settings.value)))
-      return {
-        settings: settingsClone,
-        modified: computed(
-          () => JSON.stringify(settingsClone.value) != JSON.stringify(settings.value)
-        ),
-        reset: () => (settingsClone.value = structuredClone(toRaw(settings.value)))
-      }
-    }
+    settings
   }
 })
 
@@ -46,50 +36,7 @@ export const useDriverGroupStore = defineStore('driverGroup', () => {
     groups,
     notFoundDrivers,
     isAllDriversExist: (g: storage.DriverGroup) =>
-      g.drivers.flatMap(d => d.id).every(id => !notFoundDrivers.value.includes(id)),
-    editor: (id: string | null | undefined, defaultType?: storage.DriverType) => {
-      const groupClone = ref<storage.DriverGroup>(
-        structuredClone(
-          toRaw(
-            groups.value.find(g => g.id == id) ??
-              new storage.DriverGroup({ type: defaultType, name: '', drivers: [] })
-          )
-        )
-      )
-      const notFoundDrivers = ref<Array<string>>([])
-
-      watch(
-        groupClone.value.drivers,
-        newDrivers => findNotExists(newDrivers).then(ids => (notFoundDrivers.value = ids)),
-        { immediate: true }
-      )
-
-      return {
-        group: groupClone,
-        notFoundDrivers,
-        modified: computed(
-          () =>
-            JSON.stringify(groupClone.value) !=
-            JSON.stringify(
-              groups.value.find(g => g.id == groupClone.value.id) ||
-                new storage.DriverGroup({ type: defaultType, name: '', drivers: [] })
-            )
-        ),
-        modifiedDrivers: computed(
-          () =>
-            JSON.stringify(groupClone.value.drivers) !=
-            JSON.stringify(groups.value.find(g => g.id == groupClone.value.id)?.drivers || [])
-        ),
-        reset: () => {
-          groupClone.value = structuredClone(
-            toRaw(
-              groups.value.find(g => g.id == groupClone.value.id) ||
-                new storage.DriverGroup({ type: defaultType, name: '', drivers: [] })
-            )
-          )
-        }
-      }
-    }
+      g.drivers.flatMap(d => d.id).every(id => !notFoundDrivers.value.includes(id))
   }
 })
 
@@ -97,41 +44,26 @@ export const useMatchRuleStore = defineStore('matchRuleGroup', () => {
   const ruleSets = ref<storage.RuleSet[]>([])
 
   return {
-    ruleSets,
-    editor: (id: string | null | undefined) => {
-      const ruleSetClone = ref<storage.RuleSet>(
-        structuredClone(
-          toRaw(
-            ruleSets.value.find(r => r.id == id) ??
-              new storage.RuleSet({ rules: [], driver_ids: [] })
-          )
-        )
-      )
+    ruleSets
+  }
+})
 
-      return {
-        ruleSet: ruleSetClone,
-        modified: computed(
-          () =>
-            JSON.stringify(ruleSetClone.value) !=
-            JSON.stringify(
-              ruleSets.value.find(g => g.id == ruleSetClone.value.id) ||
-                new storage.RuleSet({ rules: [], driver_ids: [] })
-            )
-        ),
-        // modifiedDrivers: computed(
-        //   () =>
-        //     JSON.stringify(ruleSetClone.value.) !=
-        //     JSON.stringify(ruleSets.value.find(g => g.id == ruleSetClone.value.id)?.drivers || [])
-        // ),
-        reset: () => {
-          ruleSetClone.value = structuredClone(
-            toRaw(
-              ruleSets.value.find(g => g.id == ruleSetClone.value.id) ||
-                new storage.RuleSet({ rules: [], driver_ids: [] })
-            )
-          )
-        }
+export const useUnsavedFormStore = defineStore('unsavedForm', () => {
+  const show = ref(false)
+
+  let answerHandler: ((allow: boolean) => void) | null = null
+
+  return {
+    show,
+    confirmLeave: (answer: boolean) => {
+      show.value = false
+      if (answerHandler) {
+        answerHandler(answer)
+        answerHandler = null
       }
+    },
+    setAnswerHandler: (handler: (allow: boolean) => void) => {
+      answerHandler = handler
     }
   }
 })

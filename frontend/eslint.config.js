@@ -11,6 +11,7 @@ export default defineConfigWithVueTs(
   vueTsConfigs.recommended,
   {
     rules: {
+      'vue/multi-word-component-names': ['off'],
       'vue/block-lang': ['error', { script: { lang: 'ts' } }],
       'vue/block-order': ['error', { order: ['script', 'template', 'style'] }],
       'vue/component-api-style': ['error', ['script-setup']],
