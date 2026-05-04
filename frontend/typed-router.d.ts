@@ -97,6 +97,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/system-utilities': RouteRecordInfo<
+      '/system-utilities',
+      '/system-utilities',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
   }
 
   /**
@@ -167,6 +174,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/settings.vue': {
       routes:
         | '/settings'
+      views:
+        | never
+    }
+    'src/pages/system-utilities.vue': {
+      routes:
+        | '/system-utilities'
       views:
         | never
     }

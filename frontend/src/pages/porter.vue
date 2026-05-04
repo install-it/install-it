@@ -31,9 +31,9 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="flex h-full flex-col gap-y-6">
+  <div class="flex h-full flex-col gap-y-6 p-2">
     <div>
-      <h1 class="text-xl font-bold">{{ $t('porter.title') }}</h1>
+      <h1 class="text-lg font-bold">{{ $t('porter.title') }}</h1>
 
       <p class="text-gray-400">{{ $t('porter.titleHint') }}</p>
 
@@ -41,7 +41,7 @@ onBeforeMount(() => {
     </div>
 
     <div class="flex flex-col gap-y-3">
-      <h2 class="mb-1 text-lg font-medium">{{ $t('porter.exportToFile') }}</h2>
+      <h2 class="mb-1 font-medium">{{ $t('porter.exportToFile') }}</h2>
 
       <div class="flex gap-x-6">
         <label class="w-24 content-center text-gray-900">
@@ -97,7 +97,7 @@ onBeforeMount(() => {
 
     <div class="flex flex-col gap-y-3">
       <div class="flex gap-x-4">
-        <h2 class="mb-1 text-lg font-medium">
+        <h2 class="mb-1 font-medium">
           {{ $t('porter.import') }}
         </h2>
 
