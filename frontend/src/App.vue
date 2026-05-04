@@ -68,8 +68,9 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
   { to: '/', icon: 'mdi:home' },
   { to: '/drivers', icon: 'mdi:file-code' },
   { to: '/match-rules', icon: 'mdi:crosshairs-gps' },
+  { to: '/system-utilities', icon: 'mdi:interaction-tap' },
+  { to: '/porter', icon: 'mdi:import-export-bold' },
   { to: '/settings', icon: 'mdi:cog' },
-  { to: '/porter', icon: 'mdi:arrow-left-right' },
   { to: '/app-info', icon: 'mdi:information' }
 ]
 </script>
