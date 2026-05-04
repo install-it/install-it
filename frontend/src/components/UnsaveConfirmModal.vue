@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+const props = defineProps<{ callback?: (confirm: boolean) => void }>()
+
 const isOpen = ref(false)
-let callback: (answer: 'yes' | 'no') => void
+
+let callback_: typeof props.callback = props.callback
 
 defineExpose({
-  show: (cb: typeof callback) => {
-    callback = cb
+  show: (cb: typeof callback_) => {
+    callback_ = cb
     isOpen.value = true
   },
   hide: () => {
@@ -29,7 +32,9 @@ defineExpose({
           @click="
             () => {
               isOpen = false
-              callback('yes')
+              if (callback_) {
+                callback_(true)
+              }
             }
           "
         >
@@ -43,7 +48,9 @@ defineExpose({
           @click="
             () => {
               isOpen = false
-              callback('no')
+              if (callback_) {
+                callback_(false)
+              }
             }
           "
         >

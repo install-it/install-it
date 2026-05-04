@@ -1,4 +1,6 @@
+import { useUnsavedFormStore } from '@/store'
 import { computed, ref, toRaw, toValue, type MaybeRefOrGetter, type Ref } from 'vue'
+import { onBeforeRouteLeave } from 'vue-router'
 
 /**
  * Creates an editable copy of data with change tracking
@@ -44,10 +46,10 @@ export function useEditor<T>(options: {
   onBeforeReset?: () => void | Promise<void>
   /** Callback invoked after reset */
   onAfterReset?: () => void
+  /** Enable unsaved changes warning on route leave */
+  warnOnUnsavedLeave?: boolean
 }) {
-  const { source, equals, onBeforeReset, onAfterReset } = options
-
-  // Create a deep clone of the initial source value
+  const { source, equals, onBeforeReset, onAfterReset, warnOnUnsavedLeave } = options
   const data = ref<T>(structuredClone(toRaw(toValue(source)))) as Ref<T>
 
   const equalityCheck =
@@ -61,10 +63,23 @@ export function useEditor<T>(options: {
       }
     })
 
-  // Compute modified state - always compare against CURRENT source value
   const modified = computed(() => {
     return !equalityCheck(data.value, toValue(source))
   })
+
+  if (warnOnUnsavedLeave) {
+    const formStore = useUnsavedFormStore()
+
+    onBeforeRouteLeave(() => {
+      if (modified.value) {
+        formStore.show = true
+        return new Promise<boolean>(resolve => {
+          formStore.setAnswerHandler(resolve)
+        })
+      }
+      return true
+    })
+  }
 
   return {
     data,
