@@ -181,11 +181,31 @@
     "running": "running",
     "speeded": "speeded"
   },
+
   "successAction": {
     "firmware": "Reboot to BIOS/UEFI",
     "nothing": "Nothing",
     "reboot": "Reboot",
     "shutdown": "Shutdown"
+  },
+  "systemUtility": {
+    "title": "Setup Tools",
+    "subtitle": "Quick access to setup-related Windows settings, management consoles, and power options.",
+
+    "computerManagement": "Computer Management",
+    "settings": "Setting",
+    "windowsSettings": "Windows Settings",
+    "deviceManager": "Device Manager",
+
+    "windowsUpdate": "Windows Update",
+    "activation": "Windows Activation",
+    "wifi": "Wi-Fi",
+    "bluetooth": "Bluetooth",
+    "diskManager": "Disk Manager",
+    "installedApps": "Installed Apps",
+    "shutdownOptions": "Shutdown Options",
+    "powerActionsConfirm": "Save your work before proceeding. This action cannot be undone.",
+    "openFailed": "Failed to open the requested tool"
   },
   "task": {
     "createPartitions": "Create and Mount Partitions",
