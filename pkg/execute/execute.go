@@ -78,23 +78,27 @@ func (ce *CommandExecutor) Abort(id string) error {
 }
 
 func (ce *CommandExecutor) dispatch(id string) {
-	if command, ok := ce.commands.Load(id); !ok {
-		panic("execute: id not found")
-	} else {
-		var errMsg string
-		if err := command.Run(); err != nil {
-			errMsg = err.Error()
-		}
-
+	command, ok := ce.commands.Load(id)
+	if !ok {
 		runtime.EventsEmit(ce.ctx, "execute:exited", id, CommandResult{
-			command.Lapse(),
-			command.cmd.ProcessState.ExitCode(),
-			command.DecodeStdout(),
-			command.DecodeStderr(),
-			errMsg,
-			command.stopped,
+			Error: "execute: id not found",
 		})
+		return
 	}
+
+	var errMsg string
+	if err := command.Run(); err != nil {
+		errMsg = err.Error()
+	}
+
+	runtime.EventsEmit(ce.ctx, "execute:exited", id, CommandResult{
+		command.Lapse(),
+		command.cmd.ProcessState.ExitCode(),
+		command.DecodeStdout(),
+		command.DecodeStderr(),
+		errMsg,
+		command.stopped,
+	})
 }
 
 func (ce CommandExecutor) generateId() string {

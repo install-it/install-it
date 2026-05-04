@@ -43,6 +43,8 @@
     "manualInput": "Manual",
     "minExecuteTime": "Execution Time (sec)",
     "minExecuteTimeHelp": "If the execution time is less than the specificied, the execution will be treated as failed.",
+    "mutuallyExclusive": "Mutually Exclusive Drivers",
+    "mutuallyExclusiveHelp": "Drivers in this group cannot run in parallel",
     "name": "Name",
     "none": "None",
     "order": "Order",
@@ -179,11 +181,31 @@
     "running": "running",
     "speeded": "speeded"
   },
+
   "successAction": {
     "firmware": "Reboot to BIOS/UEFI",
     "nothing": "Nothing",
     "reboot": "Reboot",
     "shutdown": "Shutdown"
+  },
+  "systemUtility": {
+    "title": "Setup Tools",
+    "subtitle": "Quick access to setup-related Windows settings, management consoles, and power options.",
+
+    "computerManagement": "Computer Management",
+    "settings": "Setting",
+    "windowsSettings": "Windows Settings",
+    "deviceManager": "Device Manager",
+
+    "windowsUpdate": "Windows Update",
+    "activation": "Windows Activation",
+    "wifi": "Wi-Fi",
+    "bluetooth": "Bluetooth",
+    "diskManager": "Disk Manager",
+    "installedApps": "Installed Apps",
+    "shutdownOptions": "Shutdown Options",
+    "powerActionsConfirm": "Save your work before proceeding. This action cannot be undone.",
+    "openFailed": "Failed to open the requested tool"
   },
   "task": {
     "createPartitions": "Create and Mount Partitions",
@@ -199,6 +221,7 @@
     "downloadingUpdater": "Downloading the updater. Upon finished, the software will be closed and updated.",
     "failedToSave": "Failed to save.",
     "finished": "Finished",
+    "noHardwareInfo": "No hardware information available.",
     "noInputWarning": "Please select a driver or task first.",
     "noUpdate": "No Update.",
     "readAppSettingFailed": "Failed to read app settings, reconfigure might solve the error.",
