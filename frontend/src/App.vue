@@ -61,7 +61,7 @@ Promise.all([
           latestRelease(version).then(release => {
             hasUpdate.value = release.hasUpdate
             if (release.hasUpdate) {
-              toast.add({ title: t('toast.updateAvailable'), color: 'info' })
+              toast.add({ title: t('toast.updateAvailable'), color: 'info', duration: 1000 })
             }
           })
         )
