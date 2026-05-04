@@ -136,8 +136,10 @@ jobs:
           path: dist/
           merge-multiple: true
 
-      - name: Create GitHub release
+      - name: Create release with artifacts
         uses: ncipollo/release-action@v1
         with:
+          tag: ${{ github.ref_name }}
           artifacts: dist/*
           draft: true
+          generateReleaseNotes: true
