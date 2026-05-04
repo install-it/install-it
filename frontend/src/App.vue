@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { useAppSettingStore, useDriverGroupStore, useMatchRuleStore } from '@/store'
+import {
+  useAppSettingStore,
+  useDriverGroupStore,
+  useMatchRuleStore,
+  useUnsavedFormStore
+} from '@/store'
 import { AppVersion } from '@/wailsjs/go/main/App'
 import * as appSettingStorage from '@/wailsjs/go/storage/AppSettingStorage'
 import * as driverGroupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
@@ -13,10 +18,11 @@ const { t, locale } = useI18n()
 
 const toast = useToast()
 
-const [settingsStore, groupStore, matchStore] = [
+const [settingsStore, groupStore, matchStore, unsavedFormStore] = [
   useAppSettingStore(),
   useDriverGroupStore(),
-  useMatchRuleStore()
+  useMatchRuleStore(),
+  useUnsavedFormStore()
 ]
 
 const initilisating = ref(true)
@@ -126,6 +132,11 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
       </template>
     </Transition>
   </UApp>
+
+  <UnsaveConfirmModal
+    v-model:open="unsavedFormStore.show"
+    :callback="unsavedFormStore.confirmLeave"
+  />
 </template>
 
 <style scoped>
