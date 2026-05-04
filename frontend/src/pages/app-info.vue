@@ -10,6 +10,7 @@ import {
   WebView2Version
 } from '@/wailsjs/go/main/App'
 import { BrowserOpenURL, Environment } from '@/wailsjs/runtime/runtime'
+import { Icon } from '@iconify/vue'
 import { onBeforeMount, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useLoading } from 'vue-loading-overlay'
@@ -139,9 +140,8 @@ function checkUpdate() {
           <UButton
             type="button"
             color="neutral"
-            variant="outline"
-            size="xs"
-            class="ms-1.5"
+            variant="link"
+            size="md"
             @click="RunAndOutput('cmd', ['/c', `explorer.exe ${info.app.pathDriver}`], true)"
           >
             <Icon icon="mdi:open-in-new" />
@@ -206,13 +206,15 @@ function checkUpdate() {
           <div class="flex">
             <p class="inline font-mono">GNU General Public License v2.0</p>
 
-            <button
+            <UButton
               type="button"
-              class="ml-2"
+              color="neutral"
+              variant="link"
+              size="md"
               @click="BrowserOpenURL('https://github.com/install-it/install-it/blob/main/LICENSE')"
             >
-              <BoxArrowUpRight></BoxArrowUpRight>
-            </button>
+              <Icon icon="mdi:open-in-new" />
+            </UButton>
           </div>
         </div>
       </div>
