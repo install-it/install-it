@@ -50,7 +50,7 @@ function confirmPowerAction() {
                 toast.add({
                   title: t('systemUtility.openFailed'),
                   description: String(error),
-                  color: 'red',
+                  color: 'error',
                   icon: 'mdi:cross-circle-outline'
                 })
               )
@@ -69,7 +69,7 @@ function confirmPowerAction() {
                 toast.add({
                   title: t('systemUtility.openFailed'),
                   description: String(error),
-                  color: 'red',
+                  color: 'error',
                   icon: 'mdi:cross-circle-outline'
                 })
               )
@@ -88,7 +88,7 @@ function confirmPowerAction() {
                 toast.add({
                   title: t('systemUtility.openFailed'),
                   description: String(error),
-                  color: 'red',
+                  color: 'error',
                   icon: 'mdi:cross-circle-outline'
                 })
               )
@@ -113,7 +113,7 @@ function confirmPowerAction() {
                 toast.add({
                   title: t('systemUtility.openFailed'),
                   description: String(error),
-                  color: 'red',
+                  color: 'error',
                   icon: 'mdi:cross-circle-outline'
                 })
               )
@@ -134,7 +134,7 @@ function confirmPowerAction() {
                   toast.add({
                     title: t('systemUtility.openFailed'),
                     description: String(error),
-                    color: 'red',
+                    color: 'error',
                     icon: 'mdi:cross-circle-outline'
                   })
                 )
@@ -155,7 +155,7 @@ function confirmPowerAction() {
                   toast.add({
                     title: t('systemUtility.openFailed'),
                     description: String(error),
-                    color: 'red',
+                    color: 'error',
                     icon: 'mdi:cross-circle-outline'
                   })
                 )
@@ -176,7 +176,7 @@ function confirmPowerAction() {
                   toast.add({
                     title: t('systemUtility.openFailed'),
                     description: String(error),
-                    color: 'red',
+                    color: 'error',
                     icon: 'mdi:cross-circle-outline'
                   })
                 )
@@ -197,7 +197,7 @@ function confirmPowerAction() {
                   toast.add({
                     title: t('systemUtility.openFailed'),
                     description: String(error),
-                    color: 'red',
+                    color: 'error',
                     icon: 'mdi:cross-circle-outline'
                   })
                 )
@@ -218,7 +218,7 @@ function confirmPowerAction() {
                   toast.add({
                     title: t('systemUtility.openFailed'),
                     description: String(error),
-                    color: 'red',
+                    color: 'error',
                     icon: 'mdi:cross-circle-outline'
                   })
                 )
