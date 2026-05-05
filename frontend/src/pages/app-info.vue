@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import UpdateModal from '@/components/UpdateModal.vue'
+import { useLoading } from '@/composables/useLoading'
 import { latestRelease } from '@/utils'
 import { RunAndOutput } from '@/wailsjs/go/execute/CommandExecutor'
 import {
@@ -13,13 +14,12 @@ import { BrowserOpenURL, Environment } from '@/wailsjs/runtime/runtime'
 import { Icon } from '@iconify/vue'
 import { onBeforeMount, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useLoading } from 'vue-loading-overlay'
 
 const { t } = useI18n()
 
 const toast = useToast()
 
-const $loading = useLoading({ lockScroll: true })
+const $loading = useLoading()
 
 const modal = useTemplateRef('modal')
 
@@ -79,7 +79,7 @@ function checkUpdate() {
     return
   }
 
-  const loader = $loading.show()
+  $loading.show()
 
   latestRelease(info.value.app.version)
     .then(release => {
@@ -93,7 +93,7 @@ function checkUpdate() {
       toast.add({ title: reason, color: 'error' })
     })
     .finally(() => {
-      loader.hide()
+      $loading.hide()
     })
 }
 </script>

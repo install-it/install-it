@@ -137,6 +137,8 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
     v-model:open="unsavedFormStore.show"
     :callback="unsavedFormStore.confirmLeave"
   />
+
+  <LoadingOverlay />
 </template>
 
 <style scoped>
