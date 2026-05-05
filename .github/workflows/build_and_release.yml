@@ -42,9 +42,12 @@ jobs:
           go install github.com/wailsapp/wails/v2/cmd/wails@$WAILS_VERSION
 
       - name: Set up Node.js environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: lts/*
+          node-version-file: "frontend/package.json"
+          package-manager: npm
+          cache-dependency-path: frontend/package-lock.json
+
 
       - name: Install NPM dependencies
         run: |
