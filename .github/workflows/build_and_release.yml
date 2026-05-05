@@ -29,10 +29,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Go environment
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: "go.mod"
 
@@ -42,17 +42,20 @@ jobs:
           go install github.com/wailsapp/wails/v2/cmd/wails@$WAILS_VERSION
 
       - name: Set up Node.js environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: lts/*
+          node-version-file: 'frontend/package.json'
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
+
 
       - name: Install NPM dependencies
         run: |
           cd frontend
-          npm install
+          npm ci
 
       - name: Install UPX
-        uses: crazy-max/ghaction-upx@v3
+        uses: crazy-max/ghaction-upx@v4
         with:
           install-only: true
 
@@ -72,8 +75,8 @@ jobs:
       - name: Bundle binary and WebView2 files into ZIP
         run: |
           cd build\bin
-          7z a install-it.${{ matrix.build-name }}.zip install-it.exe -mx9
-          7z a install-it.${{ matrix.build-name }}-wv2.zip install-it.exe bin -mx9
+          7z a install-it.${{ matrix.build-name }}.zip install-it.exe -mx8
+          7z a install-it.${{ matrix.build-name }}-wv2.zip install-it.exe bin -mx8
 
       - name: Collect artifacts
         uses: actions/upload-artifact@v4
@@ -95,12 +98,12 @@ jobs:
 
     steps:
       - name: Checkout updater repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.repository_owner }}/install-it-updater
 
       - name: Setup Python environment
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           architecture: ${{ matrix.architecture }}
@@ -113,7 +116,7 @@ jobs:
           pip install -r ./requirements.txt
 
       - name: Install UPX
-        uses: crazy-max/ghaction-upx@v3
+        uses: crazy-max/ghaction-upx@v4
         with:
           install-only: true
 
@@ -122,7 +125,7 @@ jobs:
           pyinstaller .\src\main.py -cDF -n updater.${{ matrix.build-name }} -i .\icon.ico
 
       - name: Upload updater artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: updater-${{ matrix.architecture }}
           path: dist/updater.${{ matrix.build-name }}.exe
@@ -133,7 +136,7 @@ jobs:
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: dist/
           merge-multiple: true
