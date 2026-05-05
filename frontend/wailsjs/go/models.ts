@@ -108,15 +108,15 @@ export namespace porter {
 export namespace status {
 	
 	export enum Status {
+	    ABORTED = "aborted",
+	    ABORTING = "aborting",
+	    COMPLETED = "completed",
+	    ERRORED = "errored",
+	    FAILED = "failed",
 	    PENDING = "pending",
 	    RUNNING = "running",
-	    COMPLETED = "completed",
-	    FAILED = "failed",
-	    ABORTING = "aborting",
-	    ABORTED = "aborted",
 	    SKIPED = "skiped",
 	    SPEEDED = "speeded",
-	    ERRORED = "errored",
 	}
 
 }
@@ -124,30 +124,30 @@ export namespace status {
 export namespace storage {
 	
 	export enum DriverType {
-	    NETWORK = "network",
 	    DISPLAY = "display",
 	    MISCELLANEOUS = "miscellaneous",
-	}
-	export enum SuccessAction {
-	    NOTHING = "nothing",
-	    REBOOT = "reboot",
-	    SHUTDOWN = "shutdown",
-	    FIRMWARE = "firmware",
-	}
-	export enum RuleSource {
-	    CPU = "cpu",
-	    MOTHERBOARD = "motherboard",
-	    GPU = "gpu",
-	    MEMORY = "memory",
-	    NIC = "nic",
-	    DISK = "storage",
+	    NETWORK = "network",
 	}
 	export enum RuleOperator {
 	    CONTAIN = "contain",
-	    NOT_CONTAIN = "not_contain",
 	    EQUAL = "equal",
+	    NOT_CONTAIN = "not_contain",
 	    NOT_EQUAL = "not_equal",
 	    REGEX = "regex",
+	}
+	export enum RuleSource {
+	    CPU = "cpu",
+	    DISK = "storage",
+	    GPU = "gpu",
+	    MEMORY = "memory",
+	    MOTHERBOARD = "motherboard",
+	    NIC = "nic",
+	}
+	export enum SuccessAction {
+	    FIRMWARE = "firmware",
+	    NOTHING = "nothing",
+	    REBOOT = "reboot",
+	    SHUTDOWN = "shutdown",
 	}
 	export class AppSetting {
 	    create_partition: boolean;
