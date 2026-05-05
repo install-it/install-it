@@ -23,7 +23,7 @@ defineEmits<{ abort: [] }>()
           :class="[`proc-badge-${props.process.status}`]"
           class="h-6 max-w-[96%]"
           size="md"
-          color="netural"
+          color="neutral"
         >
           <span class="truncate text-sm">
             {{ $t(`status.@${props.process.status}`).toUpperCase() }}
