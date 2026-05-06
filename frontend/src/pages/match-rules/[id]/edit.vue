@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import MatchRuleFormComponent from '@/components/MatchRuleFormComponent.vue'
 import { useRoute } from 'vue-router'
 
 const $route = useRoute()

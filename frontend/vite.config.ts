@@ -14,6 +14,9 @@ export default defineConfig({
       autoImport: {
         dirs: ['@/composables/**']
       },
+      components: {
+        directoryAsNamespace: true
+      },
       theme: {
         colors: [
           'primary',

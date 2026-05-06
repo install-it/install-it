@@ -1,6 +1,4 @@
-<script setup lang="ts">
-import DriverFormComponent from '@/components/DriverFormComponent.vue'
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <DriverFormComponent />
