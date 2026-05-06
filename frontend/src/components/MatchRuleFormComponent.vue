@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import DriverSelector from '@/components/DriverSelector.vue'
 import MatchRuleInputModal from '@/components/MatchRuleInputModal.vue'
-import { useEditor } from '@/composables/useEditor'
 import { useDriverGroupStore, useMatchRuleStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
 import * as matchRuleStorage from '@/wailsjs/go/storage/MatchRuleStorage'

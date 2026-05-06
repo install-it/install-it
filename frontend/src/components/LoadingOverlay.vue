@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useLoading } from '@/composables/useLoading'
-
 const loading = useLoading()
 </script>
 

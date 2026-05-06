@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useLoading } from '@/composables/useLoading'
 import { latestRelease } from '@/utils'
 import { Update } from '@/wailsjs/go/main/App'
 import { Quit } from '@/wailsjs/runtime/runtime'

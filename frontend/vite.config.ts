@@ -11,6 +11,9 @@ export default defineConfig({
     VueRouter(),
     vue(),
     ui({
+      autoImport: {
+        dirs: ['@/composables/**']
+      },
       theme: {
         colors: [
           'primary',
