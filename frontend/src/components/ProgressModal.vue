@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ProgressNode from '@/components/ProgressNode.vue'
 import { porter } from '@/wailsjs/go/models'
 import * as programPorter from '@/wailsjs/go/porter/Porter'
 import * as runtime from '@/wailsjs/runtime'

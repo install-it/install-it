@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import UpdateModal from '@/components/UpdateModal.vue'
 import { latestRelease } from '@/utils'
 import { RunAndOutput } from '@/wailsjs/go/execute/CommandExecutor'
 import {
