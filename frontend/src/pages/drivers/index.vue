@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useScrollPosition } from '@/composables/useScrollPosition'
 import { useDriverGroupStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
 import * as driverGroupStorage from '@/wailsjs/go/storage/DriverGroupStorage'

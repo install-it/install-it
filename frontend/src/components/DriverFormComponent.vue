@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import DriverInputModal from '@/components/DriverInputModal.vue'
-import { useEditor } from '@/composables/useEditor'
 import { useDriverGroupStore } from '@/store'
 import { ExecutableExists } from '@/wailsjs/go/main/App'
 import { storage } from '@/wailsjs/go/models'
