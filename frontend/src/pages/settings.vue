@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useAppSettingStore, useUnsavedFormStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
 import * as appSettingStorage from '@/wailsjs/go/storage/AppSettingStorage'
 import { ref } from 'vue'

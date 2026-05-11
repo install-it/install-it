@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useDriverGroupStore } from '@/store'
 import { storage } from '@/wailsjs/go/models'
 import * as driverGroupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
 import * as groupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
