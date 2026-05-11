@@ -22,20 +22,14 @@ async function scanAutoImports(...dirs: string[]): Promise<
       )}/**/*.{ts,js,mjs,cjs,mts,cts}`
   )
 
-  const files = await glob(patterns, {
-    absolute: true,
-    ignore: ['**/*.d.ts']
-  })
+  const files = await glob(patterns, { absolute: true, ignore: ['**/*.d.ts'] })
 
   const scanResults = await Promise.all(
     files.sort().map(async file => {
       const abs = normalize(file)
       // the 'from' specifier for the import (no extension, forward slashes)
       fileToSpecifier.set(abs, abs.replace(/\.[^.]+$/, ''))
-      return {
-        abs,
-        exports: await scanExports(abs, false)
-      }
+      return { abs, exports: await scanExports(abs, false) }
     })
   )
 
@@ -44,15 +38,21 @@ async function scanAutoImports(...dirs: string[]): Promise<
 
   for (const { abs, exports } of scanResults) {
     const from = fileToSpecifier.get(abs)
-    if (!from) continue
+    if (!from) {
+      continue
+    }
 
     for (const entry of exports) {
-      if (entry.type) continue
+      if (entry.type) {
+        continue
+      }
 
       const alias = entry.as ?? entry.name
       const dedupeKey = `${from}:${entry.name}:${alias}`
 
-      if (seenImports.has(dedupeKey)) continue
+      if (seenImports.has(dedupeKey)) {
+        continue
+      }
       seenImports.add(dedupeKey)
 
       const fileImports = groupedImports.get(from) ?? []
