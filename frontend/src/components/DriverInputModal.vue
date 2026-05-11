@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import DriverSelector from '@/components/DriverSelector.vue'
-import { useDriverGroupStore } from '@/store'
 import { SelectFile } from '@/wailsjs/go/main/App'
 import { storage } from '@/wailsjs/go/models'
 import { nextTick, ref, toRaw, useTemplateRef } from 'vue'

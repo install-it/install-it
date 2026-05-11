@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { onBeforeMount, ref, useTemplateRef } from 'vue'
-
-import ProgressModal from '@/components/ProgressModal.vue'
 import { Cwd, SelectFile, SelectFolder } from '@/wailsjs/go/main/App'
 import * as appStorage from '@/wailsjs/go/storage/AppSettingStorage'
+import { onBeforeMount, ref, useTemplateRef } from 'vue'
 
 const toast = useToast()
 
