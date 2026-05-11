@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import CommandStatueModal from '@/components/CommandStatusModal.vue'
-import { useAppSettingStore, useDriverGroupStore, useMatchRuleStore } from '@/store'
 import { type Command } from '@/types/execute'
 import * as utils from '@/utils'
 import * as executor from '@/wailsjs/go/execute/CommandExecutor'

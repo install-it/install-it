@@ -74,7 +74,7 @@ export default defineConfig(async () => {
       vue(),
       ui({
         autoImport: {
-          imports: await scanAutoImports('./src/composables', './src/stores')
+          imports: ['vue', ...(await scanAutoImports('./src/composables', './src/stores'))]
         },
         components: {
           directoryAsNamespace: true
