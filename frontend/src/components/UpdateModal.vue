@@ -3,7 +3,6 @@ import { latestRelease } from '@/utils'
 import { Update } from '@/wailsjs/go/main/App'
 import { Quit } from '@/wailsjs/runtime/runtime'
 import { ref } from 'vue'
-import { useLoading } from 'vue-loading-overlay'
 
 defineProps<{ app: { version: string; binaryType: string } }>()
 
@@ -22,7 +21,7 @@ defineExpose({
 
 const toast = useToast()
 
-const $loading = useLoading({ lockScroll: true })
+const $loading = useLoading()
 
 const releaseInfo = ref<Awaited<ReturnType<typeof latestRelease>>>()
 

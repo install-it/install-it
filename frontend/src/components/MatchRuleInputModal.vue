@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import TaggedInput from '@/components/TaggedInput.vue'
 import { storage } from '@/wailsjs/go/models'
 import { computed, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
