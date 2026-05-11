@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import TaskStatus from '@/components/TaskStatus.vue'
 import type { Command, Process } from '@/types/execute'
 import * as executor from '@/wailsjs/go/execute/CommandExecutor'
 import { status } from '@/wailsjs/go/models'

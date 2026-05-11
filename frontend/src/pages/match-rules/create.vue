@@ -1,6 +1,4 @@
-<script setup lang="ts">
-import MatchRuleFormComponent from '@/components/MatchRuleFormComponent.vue'
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <MatchRuleFormComponent />

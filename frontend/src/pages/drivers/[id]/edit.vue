@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import DriverFormComponent from '@/components/DriverFormComponent.vue'
 import { useRoute } from 'vue-router'
 
 const $route = useRoute()

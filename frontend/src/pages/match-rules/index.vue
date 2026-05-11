@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useScrollPosition } from '@/composables/useScrollPosition'
-import { useDriverGroupStore, useMatchRuleStore } from '@/store'
 // import { storage } from '@/wailsjs/go/models'
 import * as matchRuleStorage from '@/wailsjs/go/storage/MatchRuleStorage'
 import { useRouter } from 'vue-router'
