@@ -1,10 +1,4 @@
 <script setup lang="ts">
-import {
-  useAppSettingStore,
-  useDriverGroupStore,
-  useMatchRuleStore,
-  useUnsavedFormStore
-} from '@/store'
 import { AppVersion } from '@/wailsjs/go/main/App'
 import * as appSettingStorage from '@/wailsjs/go/storage/AppSettingStorage'
 import * as driverGroupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
@@ -137,6 +131,8 @@ const routes: Array<{ to: RouteLocationRaw; icon: string }> = [
     v-model:open="unsavedFormStore.show"
     :callback="unsavedFormStore.confirmLeave"
   />
+
+  <LoadingOverlay />
 </template>
 
 <style scoped>
