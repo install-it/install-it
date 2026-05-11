@@ -133,7 +133,7 @@ function handleSubmit() {
             <legend class="fieldset-legend text-sm">{{ $t('driverForm.argument') }}</legend>
 
             <div class="flex items-center gap-2">
-              <UDropdownMenu :items="[flagItems]">
+              <UDropdownMenu :items="[flagItems]" :ui="{ content: 'max-h-58 overflow-y-auto' }">
                 <UButton color="neutral" variant="outline">
                   {{ $t('common.select') }}
                 </UButton>
