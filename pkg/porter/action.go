@@ -190,11 +190,17 @@ func download(tracker *Progress, url string) (path string, err error) {
 	}
 	defer tmpFile.Close()
 
-	tracker.Total = resp.ContentLength
+	if resp.ContentLength > 0 {
+		tracker.Total = resp.ContentLength
+	}
 	tracker.message <- "Downloading..."
 
 	if _, err = io.Copy(tmpFile, io.TeeReader(resp.Body, tracker)); err != nil {
 		return "", err
+	}
+
+	if tracker.Total <= 0 {
+		tracker.Total = tracker.Current
 	}
 
 	return filepath.Abs(tmpFile.Name())
