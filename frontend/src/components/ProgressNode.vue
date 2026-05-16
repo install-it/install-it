@@ -7,6 +7,23 @@ const props = defineProps<{ progress?: porter.Progress }>()
 const inProgress = computed(
   () => props.progress?.status != 'pending' && props.progress?.status.includes('ing')
 )
+
+function formatBytes(bytes: number) {
+  if (bytes < 1024) {
+    return `${bytes} B`
+  }
+
+  const units = ['KB', 'MB', 'GB', 'TB']
+  let value = bytes / 1024
+  let unitIndex = 0
+
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024
+    unitIndex++
+  }
+
+  return `${value.toFixed(value >= 10 ? 0 : 1)} ${units[unitIndex]}`
+}
 </script>
 
 <template>
@@ -38,7 +55,7 @@ const inProgress = computed(
           class="h-full transition-all"
           :class="[{ 'animate-pulse': inProgress }]"
           :style="{
-            width: `${progress.total === 0 ? 0 : Math.floor((progress.current / progress.total) * 100)}%`,
+            width: `${progress.total <= 0 ? 0 : Math.floor((progress.current / progress.total) * 100)}%`,
             'background-color': `var(--color-${progress.status})`
           }"
         ></div>
@@ -48,7 +65,11 @@ const inProgress = computed(
         v-if="inProgress"
         class="absolute -bottom-4 w-full truncate px-1 text-xs text-gray-400 lg:-bottom-5"
       >
-        {{ `${Math.floor((progress.current / progress.total) * 100) || '--'}%` }}
+        {{
+          progress.total <= 0
+            ? formatBytes(progress.current)
+            : `${Math.floor((progress.current / progress.total) * 100)}%`
+        }}
       </span>
     </div>
   </li>
