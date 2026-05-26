@@ -1,9 +1,9 @@
 package storage
 
 import (
-	"install-it/pkg/utils"
-	"reflect"
-	"slices"
+	"errors"
+
+	"gorm.io/gorm"
 )
 
 type RuleSource string
@@ -36,81 +36,73 @@ type Rule struct {
 }
 
 type RuleSet struct {
-	Id             string   `json:"id"`
+	Id             string   `json:"id" gorm:"primaryKey"`
 	Name           string   `json:"name"`
-	Rules          []Rule   `json:"rules"`
+	Rules          []Rule   `json:"rules" gorm:"serializer:json"`
 	ShouldHitAll   bool     `json:"should_hit_all"`
-	DriverGroupIds []string `json:"driver_group_ids"`
+	DriverGroupIds []string `json:"driver_group_ids" gorm:"serializer:json"`
 }
 
-func (r RuleSet) GetId() string { return r.Id }
-
-func (r *RuleSet) SetId(id string) { r.Id = id }
+func (r *RuleSet) BeforeCreate(tx *gorm.DB) error {
+	if r.Id == "" {
+		r.Id = generateHexId()
+	}
+	return nil
+}
 
 type MatchRuleStorage struct {
-	Store    Store
-	EventBus *DeleteEventBus
-	data     []*RuleSet
+	DB *gorm.DB
 }
 
-func NewMatchRuleStorage(store Store, eventBus *DeleteEventBus) *MatchRuleStorage {
-	m := &MatchRuleStorage{Store: store, EventBus: eventBus}
-	m.RegisterEventHandlers()
-	return m
-}
-
-func (s *MatchRuleStorage) RegisterEventHandlers() {
-	s.EventBus.Subscribe(reflect.TypeFor[DriverGroup]().Name(),
-		func(deletedIds []string) error {
-			for _, ruleSet := range s.data {
-				ruleSet.DriverGroupIds = slices.DeleteFunc(ruleSet.DriverGroupIds, func(id string) bool {
-					return slices.Contains(deletedIds, id)
-				})
-			}
-			return s.Store.Write(s.data)
-		})
+func NewMatchRuleStorage(db *gorm.DB) *MatchRuleStorage {
+	return &MatchRuleStorage{DB: db}
 }
 
 func (s *MatchRuleStorage) All() ([]RuleSet, error) {
-	if !s.Store.Exist() {
-		s.data = []*RuleSet{}
-		s.Store.Write(s.data)
-	} else {
-		s.Store.Read(&s.data)
+	var ruleSets []*RuleSet
+	if err := s.DB.Find(&ruleSets).Error; err != nil {
+		return nil, err
 	}
-	return s.copyOfAll(), nil
+	result := make([]RuleSet, len(ruleSets))
+	for i, rs := range ruleSets {
+		result[i] = *rs
+	}
+	return result, nil
 }
 
-func (s MatchRuleStorage) Get(id string) (RuleSet, error) {
-	if ruleSet, err := Get(id, s.data); err != nil {
-		return RuleSet{}, err
-	} else {
-		return *ruleSet, nil
+func (s *MatchRuleStorage) Get(id string) (RuleSet, error) {
+	var rs RuleSet
+	result := s.DB.First(&rs, "id = ?", id)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return RuleSet{}, errors.New("store: no item with the same ID was found")
+		}
+		return RuleSet{}, result.Error
 	}
+	return rs, nil
 }
 
 func (s *MatchRuleStorage) Add(ruleSet RuleSet) (string, error) {
-	if id, err := Create(&ruleSet, &s.data); err != nil {
+	if err := s.DB.Create(&ruleSet).Error; err != nil {
 		return "", err
-	} else {
-		return id, s.Store.Write(s.data)
 	}
+	return ruleSet.Id, nil
 }
 
 func (s *MatchRuleStorage) Update(ruleSet RuleSet) (RuleSet, error) {
-	if err := Update(&ruleSet, &s.data); err != nil {
+	if err := s.DB.Save(&ruleSet).Error; err != nil {
 		return RuleSet{}, err
 	}
-	return ruleSet, s.Store.Write(s.data)
+	return ruleSet, nil
 }
 
 func (s *MatchRuleStorage) Remove(id string) error {
-	if err := Delete(id, &s.data); err != nil {
-		return err
+	result := s.DB.Delete(&RuleSet{}, "id = ?", id)
+	if result.Error != nil {
+		return result.Error
 	}
-	return s.Store.Write(s.data)
-}
-
-func (s MatchRuleStorage) copyOfAll() []RuleSet {
-	return utils.Map(s.data, func(g *RuleSet) RuleSet { return *g })
+	if result.RowsAffected == 0 {
+		return errors.New("store: no item with the same ID was found")
+	}
+	return nil
 }

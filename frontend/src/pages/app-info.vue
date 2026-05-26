@@ -79,7 +79,7 @@ function checkUpdate() {
 
   $loading.show()
 
-  latestRelease(info.value.app.version)
+  latestRelease(info.value.app.version, info.value.app.binaryType)
     .then(release => {
       if (release.hasUpdate) {
         modal.value?.show(release, !['', 'na'].includes(info.value.webview.location))

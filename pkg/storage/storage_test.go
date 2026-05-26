@@ -8,17 +8,34 @@ import (
 	"path/filepath"
 	"testing"
 
+	"gorm.io/gorm"
+
 	"install-it/pkg/storage"
 )
 
-// testItem implements storage.HasId for use with generic CRUD helpers in external tests.
-type testItem struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+// openExternalTestDB creates an isolated SQLite database in the test's temp directory.
+// Used by all external (package storage_test) tests that need a DB.
+func openExternalTestDB(t *testing.T) *gorm.DB {
+	t.Helper()
+	db, err := storage.OpenDB(filepath.Join(t.TempDir(), "test.db"))
+	if err != nil {
+		t.Fatalf("openExternalTestDB: %v", err)
+	}
+	if err := storage.RunMigrations(db); err != nil {
+		t.Fatalf("openExternalTestDB RunMigrations: %v", err)
+	}
+	t.Cleanup(func() {
+		sqlDB, err := db.DB()
+		if err != nil {
+			t.Logf("failed to get underlying SQL DB: %v", err)
+			return
+		}
+		if err := sqlDB.Close(); err != nil {
+			t.Logf("failed to close database: %v", err)
+		}
+	})
+	return db
 }
-
-func (ti *testItem) GetId() string   { return ti.ID }
-func (ti *testItem) SetId(id string) { ti.ID = id }
 
 // containsStr reports whether slice contains s.
 func containsStr(slice []string, s string) bool {
@@ -94,7 +111,6 @@ func TestFileStore_WriteCreatesFileInExistingDirectory(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()
-	// Create a nested sub-directory manually to ensure it exists
 	subDir := filepath.Join(dir, "subdir")
 	if err := os.MkdirAll(subDir, 0755); err != nil {
 		t.Fatal(err)
@@ -194,7 +210,6 @@ func TestAppSettingStorage_UpdateReturnsSaved(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Update: %v", err)
 	}
-	// Returned value must match what was passed in
 	if returned.Language != input.Language {
 		t.Errorf("returned Language: got %q, want %q", returned.Language, input.Language)
 	}
@@ -205,7 +220,6 @@ func TestAppSettingStorage_UpdateReturnsSaved(t *testing.T) {
 		t.Errorf("returned HideNotFound: got %v, want %v", returned.HideNotFound, input.HideNotFound)
 	}
 
-	// Persisted value must also match
 	persisted, err := s.All()
 	if err != nil {
 		t.Fatalf("All: %v", err)
@@ -247,172 +261,5 @@ func TestAppSetting_JSONRoundtrip(t *testing.T) {
 
 	if decoded != original {
 		t.Errorf("roundtrip mismatch:\n  got  %+v\n  want %+v", decoded, original)
-	}
-}
-
-// ==================== GenerateId (external API) ====================
-
-func TestGenerateId_ProducesEightCharHex(t *testing.T) {
-	t.Parallel()
-
-	items := []*testItem{}
-	id := storage.GenerateId(items)
-	if len(id) != 8 {
-		t.Errorf("generated ID %q has length %d, want 8", id, len(id))
-	}
-	// Verify it's valid hex
-	for _, c := range id {
-		if !('0' <= c && c <= '9') && !('a' <= c && c <= 'f') {
-			t.Errorf("ID %q contains non-hex character %q", id, c)
-		}
-	}
-}
-
-func TestGenerateId_Uniqueness(t *testing.T) {
-	t.Parallel()
-
-	const n = 100
-	items := make([]*testItem, 0, n)
-	seen := make(map[string]bool, n)
-
-	for i := 0; i < n; i++ {
-		id := storage.GenerateId(items)
-		if seen[id] {
-			t.Errorf("duplicate ID generated after %d iterations: %s", i, id)
-		}
-		seen[id] = true
-		items = append(items, &testItem{ID: id})
-	}
-
-	if len(seen) != n {
-		t.Errorf("expected %d unique IDs, got %d", n, len(seen))
-	}
-}
-
-// ==================== Generic CRUD helpers ====================
-
-func TestCreate_GeneratesUniqueId(t *testing.T) {
-	t.Parallel()
-
-	data := []*testItem{}
-	item := &testItem{Name: "new"}
-	id, err := storage.Create(item, &data)
-	if err != nil {
-		t.Fatalf("Create: %v", err)
-	}
-	if len(id) != 8 {
-		t.Errorf("generated ID %q should be 8 chars", id)
-	}
-	if id != item.GetId() {
-		t.Errorf("returned ID %q does not match item.GetId() %q", id, item.GetId())
-	}
-}
-
-func TestCreate_AlwaysAssignsNewId(t *testing.T) {
-	t.Parallel()
-
-	// Note: Create always calls GenerateId, overwriting any pre-set ID.
-	data := []*testItem{}
-	item := &testItem{ID: "preset-id", Name: "test"}
-	id, err := storage.Create(item, &data)
-	if err != nil {
-		t.Fatalf("Create: %v", err)
-	}
-	if id == "" {
-		t.Error("returned ID should not be empty")
-	}
-	// The item is in the slice with its new ID
-	if len(data) != 1 {
-		t.Errorf("expected 1 item in slice, got %d", len(data))
-	}
-}
-
-func TestUpdate_ExistingItem(t *testing.T) {
-	t.Parallel()
-
-	data := []*testItem{
-		{ID: "aabbccdd", Name: "original"},
-	}
-	updated := &testItem{ID: "aabbccdd", Name: "modified"}
-	if err := storage.Update(updated, &data); err != nil {
-		t.Fatalf("Update: %v", err)
-	}
-	if data[0].Name != "modified" {
-		t.Errorf("expected Name='modified', got %q", data[0].Name)
-	}
-}
-
-func TestUpdate_NonExistentItem(t *testing.T) {
-	t.Parallel()
-
-	data := []*testItem{
-		{ID: "aabbccdd", Name: "existing"},
-	}
-	missing := &testItem{ID: "00000000", Name: "ghost"}
-	if err := storage.Update(missing, &data); err == nil {
-		t.Error("expected error for non-existent ID, got nil")
-	}
-}
-
-func TestDelete_ExistingItem(t *testing.T) {
-	t.Parallel()
-
-	data := []*testItem{
-		{ID: "id000001", Name: "keep"},
-		{ID: "id000002", Name: "remove"},
-		{ID: "id000003", Name: "keep2"},
-	}
-	if err := storage.Delete("id000002", &data); err != nil {
-		t.Fatalf("Delete: %v", err)
-	}
-	if len(data) != 2 {
-		t.Errorf("expected 2 items after delete, got %d", len(data))
-	}
-	for _, item := range data {
-		if item.ID == "id000002" {
-			t.Error("deleted item still present in slice")
-		}
-	}
-}
-
-func TestDelete_NonExistentItem(t *testing.T) {
-	t.Parallel()
-
-	data := []*testItem{
-		{ID: "id000001", Name: "only"},
-	}
-	if err := storage.Delete("nothere", &data); err == nil {
-		t.Error("expected error for non-existent ID, got nil")
-	}
-	if len(data) != 1 {
-		t.Errorf("slice length changed unexpectedly: got %d", len(data))
-	}
-}
-
-func TestGet_ExistingItem(t *testing.T) {
-	t.Parallel()
-
-	data := []*testItem{
-		{ID: "id000001", Name: "alpha"},
-		{ID: "id000002", Name: "beta"},
-	}
-	got, err := storage.Get("id000002", data)
-	if err != nil {
-		t.Fatalf("Get: %v", err)
-	}
-	if got.Name != "beta" {
-		t.Errorf("expected Name='beta', got %q", got.Name)
-	}
-}
-
-func TestGet_NonExistent(t *testing.T) {
-	t.Parallel()
-
-	data := []*testItem{
-		{ID: "id000001", Name: "only"},
-	}
-	_, err := storage.Get("missing", data)
-	if err == nil {
-		t.Error("expected error for non-existent ID, got nil")
 	}
 }

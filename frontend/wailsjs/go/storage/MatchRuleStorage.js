@@ -14,10 +14,6 @@ export function Get(arg1) {
   return window['go']['storage']['MatchRuleStorage']['Get'](arg1);
 }
 
-export function RegisterEventHandlers() {
-  return window['go']['storage']['MatchRuleStorage']['RegisterEventHandlers']();
-}
-
 export function Remove(arg1) {
   return window['go']['storage']['MatchRuleStorage']['Remove'](arg1);
 }

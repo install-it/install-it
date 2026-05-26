@@ -8,11 +8,10 @@ import (
 )
 
 // TestMatchRuleStorage_AllEmpty verifies that an empty store returns a non-nil
-// empty slice, not nil.
+// empty slice.
 func TestMatchRuleStorage_AllEmpty(t *testing.T) {
-	t.Parallel()
-
-	mrs := storage.NewMatchRuleStorage(&storage.MemoryStore{}, storage.NewEventBus())
+	db := openExternalTestDB(t)
+	mrs := storage.NewMatchRuleStorage(db)
 
 	results, err := mrs.All()
 	if err != nil {
@@ -28,11 +27,9 @@ func TestMatchRuleStorage_AllEmpty(t *testing.T) {
 
 // TestMatchRuleStorage_AddGetUpdate performs a full CRUD round-trip.
 func TestMatchRuleStorage_AddGetUpdate(t *testing.T) {
-	t.Parallel()
+	db := openExternalTestDB(t)
+	mrs := storage.NewMatchRuleStorage(db)
 
-	mrs := storage.NewMatchRuleStorage(&storage.MemoryStore{}, storage.NewEventBus())
-
-	// Add
 	id, err := mrs.Add(storage.RuleSet{
 		Name:           "CRUD Test",
 		ShouldHitAll:   true,
@@ -45,7 +42,6 @@ func TestMatchRuleStorage_AddGetUpdate(t *testing.T) {
 		t.Errorf("expected 8-char ID, got %q", id)
 	}
 
-	// Get
 	got, err := mrs.Get(id)
 	if err != nil {
 		t.Fatalf("Get: %v", err)
@@ -57,7 +53,6 @@ func TestMatchRuleStorage_AddGetUpdate(t *testing.T) {
 		t.Error("ShouldHitAll: got false, want true")
 	}
 
-	// Update
 	got.Name = "Updated CRUD Test"
 	got.ShouldHitAll = false
 	updated, err := mrs.Update(got)
@@ -68,7 +63,6 @@ func TestMatchRuleStorage_AddGetUpdate(t *testing.T) {
 		t.Errorf("updated Name: got %q, want 'Updated CRUD Test'", updated.Name)
 	}
 
-	// Verify persistence
 	final, err := mrs.Get(id)
 	if err != nil {
 		t.Fatalf("Get after update: %v", err)
@@ -84,9 +78,8 @@ func TestMatchRuleStorage_AddGetUpdate(t *testing.T) {
 // TestMatchRuleStorage_AddPreservesRuleFields verifies all Rule fields survive
 // the Add → Get cycle.
 func TestMatchRuleStorage_AddPreservesRuleFields(t *testing.T) {
-	t.Parallel()
-
-	mrs := storage.NewMatchRuleStorage(&storage.MemoryStore{}, storage.NewEventBus())
+	db := openExternalTestDB(t)
+	mrs := storage.NewMatchRuleStorage(db)
 
 	rules := []storage.Rule{
 		{
@@ -123,7 +116,6 @@ func TestMatchRuleStorage_AddPreservesRuleFields(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Get: %v", err)
 	}
-
 	if len(got.Rules) != len(rules) {
 		t.Fatalf("rule count: got %d, want %d", len(got.Rules), len(rules))
 	}
@@ -154,50 +146,42 @@ func TestMatchRuleStorage_AddPreservesRuleFields(t *testing.T) {
 	}
 }
 
-// TestMatchRuleStorage_RemovePurgesOrphanedGroupIds verifies that the EventBus
-// subscriber correctly removes IDs from DriverGroupIds when the "DriverGroup"
-// event fires.
-//
-// Implementation note: DriverGroupStorage.Remove publishes the IDs of the
-// *drivers* within the deleted group (not the group's own ID) under the
-// "DriverGroup" EventBus key. The subscriber here removes whatever IDs it
-// receives from DriverGroupIds. This test publishes to the bus directly to
-// verify the subscriber wiring without depending on DriverGroupStorage.
+// TestMatchRuleStorage_RemovePurgesOrphanedGroupIds verifies that
+// DriverGroupStorage.Remove also cleans up driver IDs from DriverGroupIds
+// in all RuleSets.
 func TestMatchRuleStorage_RemovePurgesOrphanedGroupIds(t *testing.T) {
-	t.Parallel()
+	db := openExternalTestDB(t)
+	dgs := storage.NewDriverGroupStorage(db)
+	mrs := storage.NewMatchRuleStorage(db)
 
-	eventBus := storage.NewEventBus()
-	mrs := storage.NewMatchRuleStorage(&storage.MemoryStore{}, eventBus)
-
-	// Prime the storage so s.data is initialised before the event fires.
-	if _, err := mrs.All(); err != nil {
-		t.Fatalf("mrs.All: %v", err)
+	groupID, err := dgs.Add(storage.DriverGroup{
+		Name:    "Temp Group",
+		Type:    storage.Network,
+		Drivers: []*storage.Driver{{Name: "D1"}},
+	})
+	if err != nil {
+		t.Fatalf("dgs.Add: %v", err)
 	}
 
-	// Create a ruleset with two entries in DriverGroupIds.
-	idToRemove := "aabb1122"
 	idToKeep := "ccdd3344"
-
 	rsID, err := mrs.Add(storage.RuleSet{
 		Name:           "Purge Test",
-		DriverGroupIds: []string{idToRemove, idToKeep},
+		DriverGroupIds: []string{groupID, idToKeep},
 	})
 	if err != nil {
 		t.Fatalf("mrs.Add: %v", err)
 	}
 
-	// Fire the "DriverGroup" event directly — simulates what DriverGroupStorage.Remove does.
-	if err := eventBus.Publish("DriverGroup", []string{idToRemove}); err != nil {
-		t.Fatalf("EventBus.Publish: %v", err)
+	if err := dgs.Remove(groupID); err != nil {
+		t.Fatalf("dgs.Remove: %v", err)
 	}
 
 	rs, err := mrs.Get(rsID)
 	if err != nil {
 		t.Fatalf("mrs.Get: %v", err)
 	}
-
-	if containsStr(rs.DriverGroupIds, idToRemove) {
-		t.Errorf("idToRemove %q should have been purged, still in %v", idToRemove, rs.DriverGroupIds)
+	if containsStr(rs.DriverGroupIds, groupID) {
+		t.Errorf("groupID %q should have been purged, still in %v", groupID, rs.DriverGroupIds)
 	}
 	if !containsStr(rs.DriverGroupIds, idToKeep) {
 		t.Errorf("idToKeep %q should still be present, not in %v", idToKeep, rs.DriverGroupIds)
@@ -206,9 +190,8 @@ func TestMatchRuleStorage_RemovePurgesOrphanedGroupIds(t *testing.T) {
 
 // TestMatchRuleStorage_UpdateRuleSet verifies Update persists rule changes.
 func TestMatchRuleStorage_UpdateRuleSet(t *testing.T) {
-	t.Parallel()
-
-	mrs := storage.NewMatchRuleStorage(&storage.MemoryStore{}, storage.NewEventBus())
+	db := openExternalTestDB(t)
+	mrs := storage.NewMatchRuleStorage(db)
 
 	id, err := mrs.Add(storage.RuleSet{
 		Name:  "Before Update",
@@ -240,7 +223,6 @@ func TestMatchRuleStorage_UpdateRuleSet(t *testing.T) {
 		t.Errorf("updated.Rules len: got %d, want 2", len(updated.Rules))
 	}
 
-	// Confirm persistence via Get
 	persisted, err := mrs.Get(id)
 	if err != nil {
 		t.Fatalf("Get after update: %v", err)
@@ -256,12 +238,8 @@ func TestMatchRuleStorage_UpdateRuleSet(t *testing.T) {
 // TestMatchRuleStorage_RemoveNonExistent verifies that removing a non-existent
 // ID returns an error.
 func TestMatchRuleStorage_RemoveNonExistent(t *testing.T) {
-	t.Parallel()
-
-	mrs := storage.NewMatchRuleStorage(&storage.MemoryStore{}, storage.NewEventBus())
-	if _, err := mrs.All(); err != nil { // initialise empty slice
-		t.Fatal(err)
-	}
+	db := openExternalTestDB(t)
+	mrs := storage.NewMatchRuleStorage(db)
 
 	if err := mrs.Remove("notexist"); err == nil {
 		t.Error("expected error when removing non-existent id, got nil")
@@ -270,9 +248,8 @@ func TestMatchRuleStorage_RemoveNonExistent(t *testing.T) {
 
 // TestMatchRuleStorage_AllReturnsAllAdded verifies All() returns every added ruleset.
 func TestMatchRuleStorage_AllReturnsAllAdded(t *testing.T) {
-	t.Parallel()
-
-	mrs := storage.NewMatchRuleStorage(&storage.MemoryStore{}, storage.NewEventBus())
+	db := openExternalTestDB(t)
+	mrs := storage.NewMatchRuleStorage(db)
 
 	names := []string{"Alpha", "Beta", "Gamma"}
 	for _, name := range names {

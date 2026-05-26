@@ -78,9 +78,16 @@ func init() {
 func main() {
 	app := &App{}
 	mgt := &execute.CommandExecutor{}
-	eventBus := storage.NewEventBus()
 
-	err := wails.Run(&options.App{
+	db, err := storage.OpenDB(filepath.Join(dirConf, "data.db"))
+	if err != nil {
+		panic(err)
+	}
+	if err := storage.RunMigrations(db); err != nil {
+		panic(err)
+	}
+
+	err = wails.Run(&options.App{
 		Title:     "install-it",
 		Width:     768,
 		Height:    576,
@@ -91,7 +98,13 @@ func main() {
 		},
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
 		OnStartup: func(ctx context.Context) {
-			// working directory correction
+			// Boot cleanup: remove leftover .old binary from a previous update
+			oldBin := filepath.Join(dirRoot, "install-it.exe.old")
+			if _, err := os.Stat(oldBin); err == nil {
+				os.Remove(oldBin)
+			}
+
+			// Working directory correction
 			if cwd, err := os.Getwd(); err == nil {
 				if pathExe, err := os.Executable(); err == nil && cwd != filepath.Dir(pathExe) {
 					os.Chdir(filepath.Dir(pathExe))
@@ -105,8 +118,8 @@ func main() {
 			app,
 			mgt,
 			&storage.AppSettingStorage{Store: &storage.FileStore{Path: filepath.Join(dirConf, "setting.json")}},
-			storage.NewDriverGroupStorage(&storage.FileStore{Path: filepath.Join(dirConf, "groups.json")}, eventBus),
-			storage.NewMatchRuleStorage(&storage.FileStore{Path: filepath.Join(dirConf, "rules.json")}, eventBus),
+			storage.NewDriverGroupStorage(db),
+			storage.NewMatchRuleStorage(db),
 			&porter.Porter{DirRoot: dirRoot, Message: make(chan string, 512), Targets: []string{dirConf, dirDir}},
 			&sysinfo.SysInfo{},
 		},

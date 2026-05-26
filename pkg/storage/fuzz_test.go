@@ -14,7 +14,6 @@ import (
 // FuzzFileStore_Read verifies that FileStore.Read never panics regardless of
 // the bytes written into the backing file.
 func FuzzFileStore_Read(f *testing.F) {
-	// Seed corpus: valid JSON, invalid JSON, empty, null, arrays.
 	f.Add([]byte(`{}`))
 	f.Add([]byte(`{"name":"test","value":42}`))
 	f.Add([]byte(`[1,2,3]`))
@@ -33,7 +32,6 @@ func FuzzFileStore_Read(f *testing.F) {
 
 		store := &storage.FileStore{Path: path}
 		var v any
-		// Must not panic; error is acceptable.
 		_ = store.Read(&v)
 	})
 }
@@ -49,7 +47,6 @@ func FuzzAppSetting_JSONRoundtrip(f *testing.F) {
 	f.Fuzz(func(t *testing.T, s string) {
 		var setting storage.AppSetting
 		if err := json.Unmarshal([]byte(s), &setting); err != nil {
-			// Not a valid AppSetting JSON — not a bug.
 			return
 		}
 
@@ -65,7 +62,6 @@ func FuzzAppSetting_JSONRoundtrip(f *testing.F) {
 			return
 		}
 
-		// Re-marshal should be idempotent.
 		if setting != setting2 {
 			t.Errorf("roundtrip mismatch:\n  pass1: %+v\n  pass2: %+v", setting, setting2)
 		}
@@ -97,50 +93,4 @@ func FuzzRuleSet_JSONRoundtrip(f *testing.F) {
 			t.Errorf("Unmarshal of re-marshaled RuleSet failed: %v", err)
 		}
 	})
-}
-
-// FuzzGenerateId_Stability verifies that GenerateId always returns an 8-character
-// hex string and never hangs for collections of up to 10,000 pre-existing IDs.
-func FuzzGenerateId_Stability(f *testing.F) {
-	f.Add(0)
-	f.Add(1)
-	f.Add(10)
-	f.Add(100)
-
-	f.Fuzz(func(t *testing.T, n int) {
-		// Cap to avoid extremely long test times; GenerateId is O(1) in practice
-		// but could theoretically loop on a very full 32-bit ID space.
-		if n < 0 || n > 10_000 {
-			t.Skip()
-		}
-
-		// Build a slice of n items with manufactured IDs (format: 8 hex chars).
-		items := make([]*testItem, n)
-		for i := range items {
-			items[i] = &testItem{ID: formatID(i)}
-		}
-
-		id := storage.GenerateId(items)
-
-		if len(id) != 8 {
-			t.Errorf("GenerateId returned %q (len=%d), want 8-char hex string", id, len(id))
-		}
-		for _, c := range id {
-			if !('0' <= c && c <= '9') && !('a' <= c && c <= 'f') {
-				t.Errorf("GenerateId returned non-hex character %q in %q", c, id)
-				break
-			}
-		}
-	})
-}
-
-// formatID produces a deterministic 8-char hex ID from an integer.
-func formatID(n int) string {
-	const hex = "0123456789abcdef"
-	b := [8]byte{}
-	for i := 7; i >= 0; i-- {
-		b[i] = hex[n&0xf]
-		n >>= 4
-	}
-	return string(b[:])
 }

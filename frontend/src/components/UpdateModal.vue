@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { latestRelease } from '@/utils'
-import { Update } from '@/wailsjs/go/main/App'
+import { TriggerNativeUpdate } from '@/wailsjs/go/main/App'
 import { Quit } from '@/wailsjs/runtime/runtime'
 import { ref } from 'vue'
 
@@ -69,7 +69,7 @@ const webviewVersion = ref(false)
 
           <hr />
 
-          <div class="flex flex-col">
+          <div v-if="releaseInfo?.webviewAssetUrl" class="flex flex-col">
             <h1 class="font-medium">
               {{ $t('info.updateOption') }}
             </h1>
@@ -88,7 +88,8 @@ const webviewVersion = ref(false)
           class="justify-center"
           @click="
             () => {
-              if (!releaseInfo) {
+              if (!releaseInfo?.assetUrl) {
+                toast.add({ title: $t('toast.noAssetUrl'), color: 'error' })
                 return
               }
 
@@ -98,8 +99,12 @@ const webviewVersion = ref(false)
                 duration: 60 * 1000
               })
               const loader = $loading.show()
+              const url =
+                webviewVersion && releaseInfo.webviewAssetUrl
+                  ? releaseInfo.webviewAssetUrl
+                  : releaseInfo.assetUrl
 
-              Update($props.app.version, releaseInfo.version, webviewVersion)
+              TriggerNativeUpdate(url)
                 .then(() => Quit())
                 .catch(reason => toast.add({ title: reason, color: 'error' }))
                 .finally(() => loader.hide())
