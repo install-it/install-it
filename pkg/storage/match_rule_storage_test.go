@@ -1,0 +1,291 @@
+// Package storage_test provides external black-box tests for MatchRuleStorage.
+package storage_test
+
+import (
+	"testing"
+
+	"install-it/pkg/storage"
+)
+
+// TestMatchRuleStorage_AllEmpty verifies that an empty store returns a non-nil
+// empty slice, not nil.
+func TestMatchRuleStorage_AllEmpty(t *testing.T) {
+	t.Parallel()
+
+	mrs := storage.NewMatchRuleStorage(&storage.MemoryStore{}, storage.NewEventBus())
+
+	results, err := mrs.All()
+	if err != nil {
+		t.Fatalf("All: %v", err)
+	}
+	if results == nil {
+		t.Error("expected empty (non-nil) slice, got nil")
+	}
+	if len(results) != 0 {
+		t.Errorf("expected 0 items, got %d", len(results))
+	}
+}
+
+// TestMatchRuleStorage_AddGetUpdate performs a full CRUD round-trip.
+func TestMatchRuleStorage_AddGetUpdate(t *testing.T) {
+	t.Parallel()
+
+	mrs := storage.NewMatchRuleStorage(&storage.MemoryStore{}, storage.NewEventBus())
+
+	// Add
+	id, err := mrs.Add(storage.RuleSet{
+		Name:           "CRUD Test",
+		ShouldHitAll:   true,
+		DriverGroupIds: []string{"group-aabbccdd"},
+	})
+	if err != nil {
+		t.Fatalf("Add: %v", err)
+	}
+	if len(id) != 8 {
+		t.Errorf("expected 8-char ID, got %q", id)
+	}
+
+	// Get
+	got, err := mrs.Get(id)
+	if err != nil {
+		t.Fatalf("Get: %v", err)
+	}
+	if got.Name != "CRUD Test" {
+		t.Errorf("Name: got %q, want 'CRUD Test'", got.Name)
+	}
+	if !got.ShouldHitAll {
+		t.Error("ShouldHitAll: got false, want true")
+	}
+
+	// Update
+	got.Name = "Updated CRUD Test"
+	got.ShouldHitAll = false
+	updated, err := mrs.Update(got)
+	if err != nil {
+		t.Fatalf("Update: %v", err)
+	}
+	if updated.Name != "Updated CRUD Test" {
+		t.Errorf("updated Name: got %q, want 'Updated CRUD Test'", updated.Name)
+	}
+
+	// Verify persistence
+	final, err := mrs.Get(id)
+	if err != nil {
+		t.Fatalf("Get after update: %v", err)
+	}
+	if final.Name != "Updated CRUD Test" {
+		t.Errorf("persisted Name: got %q", final.Name)
+	}
+	if final.ShouldHitAll {
+		t.Error("persisted ShouldHitAll should be false")
+	}
+}
+
+// TestMatchRuleStorage_AddPreservesRuleFields verifies all Rule fields survive
+// the Add → Get cycle.
+func TestMatchRuleStorage_AddPreservesRuleFields(t *testing.T) {
+	t.Parallel()
+
+	mrs := storage.NewMatchRuleStorage(&storage.MemoryStore{}, storage.NewEventBus())
+
+	rules := []storage.Rule{
+		{
+			Source:          storage.Cpu,
+			Operator:        storage.Contain,
+			IsCaseSensitive: true,
+			ShouldHitAll:    false,
+			Values:          []string{"Intel", "AMD"},
+		},
+		{
+			Source:          storage.Nic,
+			Operator:        storage.Regex,
+			IsCaseSensitive: false,
+			ShouldHitAll:    true,
+			Values:          []string{`^Realtek.*`},
+		},
+		{
+			Source:   storage.Gpu,
+			Operator: storage.NotEqual,
+			Values:   []string{"Basic Display Adapter"},
+		},
+	}
+
+	id, err := mrs.Add(storage.RuleSet{
+		Name:         "Fields Test",
+		Rules:        rules,
+		ShouldHitAll: true,
+	})
+	if err != nil {
+		t.Fatalf("Add: %v", err)
+	}
+
+	got, err := mrs.Get(id)
+	if err != nil {
+		t.Fatalf("Get: %v", err)
+	}
+
+	if len(got.Rules) != len(rules) {
+		t.Fatalf("rule count: got %d, want %d", len(got.Rules), len(rules))
+	}
+
+	for i, want := range rules {
+		r := got.Rules[i]
+		if r.Source != want.Source {
+			t.Errorf("rule[%d].Source: got %v, want %v", i, r.Source, want.Source)
+		}
+		if r.Operator != want.Operator {
+			t.Errorf("rule[%d].Operator: got %v, want %v", i, r.Operator, want.Operator)
+		}
+		if r.IsCaseSensitive != want.IsCaseSensitive {
+			t.Errorf("rule[%d].IsCaseSensitive: got %v, want %v", i, r.IsCaseSensitive, want.IsCaseSensitive)
+		}
+		if r.ShouldHitAll != want.ShouldHitAll {
+			t.Errorf("rule[%d].ShouldHitAll: got %v, want %v", i, r.ShouldHitAll, want.ShouldHitAll)
+		}
+		if len(r.Values) != len(want.Values) {
+			t.Errorf("rule[%d] Values len: got %d, want %d", i, len(r.Values), len(want.Values))
+			continue
+		}
+		for j, v := range want.Values {
+			if r.Values[j] != v {
+				t.Errorf("rule[%d].Values[%d]: got %q, want %q", i, j, r.Values[j], v)
+			}
+		}
+	}
+}
+
+// TestMatchRuleStorage_RemovePurgesOrphanedGroupIds verifies that the EventBus
+// subscriber correctly removes IDs from DriverGroupIds when the "DriverGroup"
+// event fires.
+//
+// Implementation note: DriverGroupStorage.Remove publishes the IDs of the
+// *drivers* within the deleted group (not the group's own ID) under the
+// "DriverGroup" EventBus key. The subscriber here removes whatever IDs it
+// receives from DriverGroupIds. This test publishes to the bus directly to
+// verify the subscriber wiring without depending on DriverGroupStorage.
+func TestMatchRuleStorage_RemovePurgesOrphanedGroupIds(t *testing.T) {
+	t.Parallel()
+
+	eventBus := storage.NewEventBus()
+	mrs := storage.NewMatchRuleStorage(&storage.MemoryStore{}, eventBus)
+
+	// Prime the storage so s.data is initialised before the event fires.
+	if _, err := mrs.All(); err != nil {
+		t.Fatalf("mrs.All: %v", err)
+	}
+
+	// Create a ruleset with two entries in DriverGroupIds.
+	idToRemove := "aabb1122"
+	idToKeep := "ccdd3344"
+
+	rsID, err := mrs.Add(storage.RuleSet{
+		Name:           "Purge Test",
+		DriverGroupIds: []string{idToRemove, idToKeep},
+	})
+	if err != nil {
+		t.Fatalf("mrs.Add: %v", err)
+	}
+
+	// Fire the "DriverGroup" event directly — simulates what DriverGroupStorage.Remove does.
+	if err := eventBus.Publish("DriverGroup", []string{idToRemove}); err != nil {
+		t.Fatalf("EventBus.Publish: %v", err)
+	}
+
+	rs, err := mrs.Get(rsID)
+	if err != nil {
+		t.Fatalf("mrs.Get: %v", err)
+	}
+
+	if containsStr(rs.DriverGroupIds, idToRemove) {
+		t.Errorf("idToRemove %q should have been purged, still in %v", idToRemove, rs.DriverGroupIds)
+	}
+	if !containsStr(rs.DriverGroupIds, idToKeep) {
+		t.Errorf("idToKeep %q should still be present, not in %v", idToKeep, rs.DriverGroupIds)
+	}
+}
+
+// TestMatchRuleStorage_UpdateRuleSet verifies Update persists rule changes.
+func TestMatchRuleStorage_UpdateRuleSet(t *testing.T) {
+	t.Parallel()
+
+	mrs := storage.NewMatchRuleStorage(&storage.MemoryStore{}, storage.NewEventBus())
+
+	id, err := mrs.Add(storage.RuleSet{
+		Name:  "Before Update",
+		Rules: []storage.Rule{{Source: storage.Memory, Operator: storage.Equal, Values: []string{"8GB"}}},
+	})
+	if err != nil {
+		t.Fatalf("Add: %v", err)
+	}
+
+	original, err := mrs.Get(id)
+	if err != nil {
+		t.Fatalf("Get: %v", err)
+	}
+
+	original.Name = "After Update"
+	original.Rules = []storage.Rule{
+		{Source: storage.Storage, Operator: storage.NotContain, Values: []string{"USB"}},
+		{Source: storage.Motherboard, Operator: storage.Regex, Values: []string{`^ASUS.*`}},
+	}
+
+	updated, err := mrs.Update(original)
+	if err != nil {
+		t.Fatalf("Update: %v", err)
+	}
+	if updated.Name != "After Update" {
+		t.Errorf("updated.Name: got %q", updated.Name)
+	}
+	if len(updated.Rules) != 2 {
+		t.Errorf("updated.Rules len: got %d, want 2", len(updated.Rules))
+	}
+
+	// Confirm persistence via Get
+	persisted, err := mrs.Get(id)
+	if err != nil {
+		t.Fatalf("Get after update: %v", err)
+	}
+	if persisted.Name != "After Update" {
+		t.Errorf("persisted.Name: got %q", persisted.Name)
+	}
+	if len(persisted.Rules) != 2 {
+		t.Errorf("persisted.Rules len: got %d", len(persisted.Rules))
+	}
+}
+
+// TestMatchRuleStorage_RemoveNonExistent verifies that removing a non-existent
+// ID returns an error.
+func TestMatchRuleStorage_RemoveNonExistent(t *testing.T) {
+	t.Parallel()
+
+	mrs := storage.NewMatchRuleStorage(&storage.MemoryStore{}, storage.NewEventBus())
+	if _, err := mrs.All(); err != nil { // initialise empty slice
+		t.Fatal(err)
+	}
+
+	if err := mrs.Remove("notexist"); err == nil {
+		t.Error("expected error when removing non-existent id, got nil")
+	}
+}
+
+// TestMatchRuleStorage_AllReturnsAllAdded verifies All() returns every added ruleset.
+func TestMatchRuleStorage_AllReturnsAllAdded(t *testing.T) {
+	t.Parallel()
+
+	mrs := storage.NewMatchRuleStorage(&storage.MemoryStore{}, storage.NewEventBus())
+
+	names := []string{"Alpha", "Beta", "Gamma"}
+	for _, name := range names {
+		if _, err := mrs.Add(storage.RuleSet{Name: name}); err != nil {
+			t.Fatalf("Add %s: %v", name, err)
+		}
+	}
+
+	all, err := mrs.All()
+	if err != nil {
+		t.Fatalf("All: %v", err)
+	}
+	if len(all) != len(names) {
+		t.Errorf("All() count: got %d, want %d", len(all), len(names))
+	}
+}
