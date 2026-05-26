@@ -80,13 +80,6 @@ function updateProgress() {
 
     progress.value = p
     messages.value.push(...p.messages.filter(m => m !== ''))
-    messages.value.push(...p.messages.filter(m => m !== ''))
-    messages.value.push(...p.messages.filter(m => m !== ''))
-    messages.value.push(...p.messages.filter(m => m !== ''))
-    messages.value.push(...p.messages.filter(m => m !== ''))
-    messages.value.push(...p.messages.filter(m => m !== ''))
-    messages.value.push(...p.messages.filter(m => m !== ''))
-    messages.value.push(...p.messages.filter(m => m !== ''))
 
     if (scroll) {
       nextTick(() => {
@@ -119,7 +112,8 @@ function toastErrMsg(err: string) {
     :title="t('porter.progress')"
     :close="progress?.status.includes('ed')"
     :ui="{
-      body: 'flex h-[70vh]'
+      content: 'h-[80vh] max-h-150',
+      body: 'flex flex-col overflow-hidden'
     }"
     @close="
       () => {
@@ -130,7 +124,7 @@ function toastErrMsg(err: string) {
     "
   >
     <template #body>
-      <div class="flex flex-col gap-y-2">
+      <div class="flex min-h-0 flex-1 flex-col gap-y-2">
         <div class="flex items-center gap-x-3">
           <h2 class="text-lg font-bold">{{ title }}</h2>
 
@@ -165,7 +159,7 @@ function toastErrMsg(err: string) {
 
         <div
           ref="message-box"
-          class="flex min-h-48 flex-1 flex-col gap-y-2 overflow-y-auto rounded-sm border p-1"
+          class="flex flex-1 flex-col gap-y-2 overflow-y-auto rounded-sm border p-1"
         >
           <p v-for="(m, i) in messages" :key="i" class="text-xs break-all text-gray-400">
             {{ m }}
