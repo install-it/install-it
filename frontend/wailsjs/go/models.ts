@@ -184,14 +184,14 @@ export namespace storage {
 	    }
 	}
 	export class Driver {
-	    id: string;
+	    id: number;
 	    name: string;
 	    type: DriverType;
 	    path: string;
 	    flags: string[];
 	    minExeTime: number;
 	    allowRtCodes: number[];
-	    incompatibles: string[];
+	    incompatibles: number[];
 	
 	    static createFrom(source: any = {}) {
 	        return new Driver(source);
@@ -210,7 +210,7 @@ export namespace storage {
 	    }
 	}
 	export class DriverGroup {
-	    id: string;
+	    id: number;
 	    name: string;
 	    type: DriverType;
 	    mutuallyExclusive: boolean;
@@ -268,11 +268,11 @@ export namespace storage {
 	    }
 	}
 	export class RuleSet {
-	    id: string;
+	    id: number;
 	    name: string;
 	    rules: Rule[];
 	    should_hit_all: boolean;
-	    driver_group_ids: string[];
+	    driver_group_ids: number[];
 	
 	    static createFrom(source: any = {}) {
 	        return new RuleSet(source);

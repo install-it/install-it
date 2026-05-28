@@ -79,8 +79,9 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
               return event.preventDefault()
             }
 
-            event.dataTransfer!.setData('id', g.id)
-            event.dataTransfer!.setData('position', i.toString())
+            event.dataTransfer!.setData('id', g.id.toString())
+            const fullIdx = groupStore.groups.findIndex(g2 => g2.id === g.id)
+            event.dataTransfer!.setData('index', fullIdx.toString())
           }
         "
         @dragover.prevent="
@@ -104,20 +105,17 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
               .closest('.driver-card')!
               .classList.remove('border-b-2', 'border-b-half-baked-700')
 
-            // async functuion will cause event.dataTransfer lost data
-            const sourceId = event.dataTransfer!.getData('id')
-            const sourcePosition = event.dataTransfer!.getData('position')
-
-            groupStorage.IndexOf(g.id).then(targetIndex => {
-              if (parseInt(sourcePosition) <= i) {
-                // aligning MoveBehind's logic and UI draging's logic
-                targetIndex -= 1
-              }
-
-              groupStorage.MoveBehind(sourceId, targetIndex).then(result => {
-                groupStore.groups = result
-              })
-            })
+            // async function will cause event.dataTransfer to lose data
+            const sourceId = parseInt(event.dataTransfer!.getData('id'))
+            const sourceIdx = parseInt(event.dataTransfer!.getData('index'))
+            const targetIdx = groupStore.groups.findIndex(g2 => g2.id === g.id)
+            let moveBehindIdx = targetIdx
+            if (sourceIdx <= targetIdx) {
+              moveBehindIdx -= 1
+            }
+            groupStorage
+              .MoveBehind(sourceId, moveBehindIdx)
+              .then(() => groupStorage.All().then(gs => (groupStore.groups = gs)))
           }
         "
       >
@@ -144,7 +142,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
               class="h-6"
               :title="$t('common.clone')"
               @click="
-                groupStorage.Add(g).then(() =>
+                groupStorage.Clone(g.id).then(() =>
                   driverGroupStorage
                     .All()
                     .then(gs => (groupStore.groups = gs))

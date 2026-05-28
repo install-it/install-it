@@ -71,8 +71,8 @@ func FuzzAppSetting_JSONRoundtrip(f *testing.F) {
 // FuzzRuleSet_JSONRoundtrip verifies that RuleSet JSON round-trips correctly,
 // paying special attention to enum string fields (operator, source).
 func FuzzRuleSet_JSONRoundtrip(f *testing.F) {
-	f.Add(`{"id":"aabbccdd","name":"test","rules":[],"should_hit_all":false,"driver_group_ids":[]}`)
-	f.Add(`{"id":"aabbccdd","name":"test","rules":[{"source":"cpu","operator":"contain","is_case_sensitive":true,"should_hit_all":false,"values":["Intel"]}],"should_hit_all":true,"driver_group_ids":["11223344"]}`)
+	f.Add(`{"id":1,"name":"test","rules":[],"should_hit_all":false,"driver_group_ids":[]}`)
+	f.Add(`{"id":1,"name":"test","rules":[{"source":"cpu","operator":"contain","is_case_sensitive":true,"should_hit_all":false,"values":["Intel"]}],"should_hit_all":true,"driver_group_ids":[1]}`)
 	f.Add(`{}`)
 	f.Add(`{"rules":[{"source":"unknown_source","operator":"unknown_op","values":[]}]}`)
 

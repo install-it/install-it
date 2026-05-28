@@ -37,14 +37,27 @@ func openExternalTestDB(t *testing.T) *gorm.DB {
 	return db
 }
 
-// containsStr reports whether slice contains s.
-func containsStr(slice []string, s string) bool {
-	for _, v := range slice {
-		if v == s {
+// containsUint reports whether slice contains v.
+func containsUint(slice []uint, v uint) bool {
+	for _, u := range slice {
+		if u == v {
 			return true
 		}
 	}
 	return false
+}
+
+// addTestGroup adds a group and returns its autoincrement ID via All().
+func addTestGroup(t *testing.T, dgs *storage.DriverGroupStorage, group storage.DriverGroup) uint {
+	t.Helper()
+	if err := dgs.Add(group); err != nil {
+		t.Fatalf("addTestGroup Add: %v", err)
+	}
+	all, err := dgs.All()
+	if err != nil {
+		t.Fatalf("addTestGroup All: %v", err)
+	}
+	return all[len(all)-1].Id
 }
 
 // ==================== FileStore (external API) ====================

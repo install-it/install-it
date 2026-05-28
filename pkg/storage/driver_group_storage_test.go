@@ -9,57 +9,56 @@ import (
 	"install-it/pkg/storage"
 )
 
-// TestDriverGroupStorage_CascadeDeleteFromMatchRule verifies that
-// DriverGroupStorage.Remove cleans up DriverGroupIds in all RuleSets.
-//
-// The driver IDs belonging to the removed group are stripped from every
-// RuleSet.DriverGroupIds as part of the same transaction.
+// TestDriverGroupStorage_CascadeDeleteFromMatchRule verifies that removing a
+// DriverGroup also removes it from all RuleSet associations via FK CASCADE.
 func TestDriverGroupStorage_CascadeDeleteFromMatchRule(t *testing.T) {
 	db := openExternalTestDB(t)
 	dgs := storage.NewDriverGroupStorage(db)
 	mrs := storage.NewMatchRuleStorage(db)
 
-	groupID, err := dgs.Add(storage.DriverGroup{
+	groupID := addTestGroup(t, dgs, storage.DriverGroup{
 		Name: "Cascade Group",
 		Type: storage.Network,
 		Drivers: []*storage.Driver{
 			{Name: "Net Driver", Type: storage.Network},
 		},
 	})
-	if err != nil {
-		t.Fatalf("dgs.Add: %v", err)
-	}
-
-	ruleSetID, err := mrs.Add(storage.RuleSet{
-		Name:           "Cascade RuleSet",
-		DriverGroupIds: []string{groupID, "unrelated-id"},
+	otherID := addTestGroup(t, dgs, storage.DriverGroup{
+		Name: "Other Group",
+		Type: storage.Display,
 	})
-	if err != nil {
+
+	if err := mrs.Add(storage.RuleSet{
+		Name:           "Cascade RuleSet",
+		DriverGroupIds: []uint{groupID, otherID},
+	}); err != nil {
 		t.Fatalf("mrs.Add: %v", err)
 	}
 
-	rs, err := mrs.Get(ruleSetID)
+	all, err := mrs.All()
 	if err != nil {
-		t.Fatalf("mrs.Get before remove: %v", err)
+		t.Fatalf("mrs.All: %v", err)
 	}
-	if !containsStr(rs.DriverGroupIds, groupID) {
-		t.Fatalf("pre-condition: groupID %s not in DriverGroupIds", groupID)
+	rs := all[0]
+	if !containsUint(rs.DriverGroupIds, groupID) {
+		t.Fatalf("pre-condition: groupID %d not in DriverGroupIds %v", groupID, rs.DriverGroupIds)
 	}
 
 	if err := dgs.Remove(groupID); err != nil {
 		t.Fatalf("dgs.Remove: %v", err)
 	}
 
-	rs, err = mrs.Get(ruleSetID)
+	all, err = mrs.All()
 	if err != nil {
-		t.Fatalf("mrs.Get after cascade: %v", err)
+		t.Fatalf("mrs.All after cascade: %v", err)
 	}
-	if containsStr(rs.DriverGroupIds, groupID) {
-		t.Errorf("cascade delete failed: groupID %s still present in DriverGroupIds %v",
+	rs = all[0]
+	if containsUint(rs.DriverGroupIds, groupID) {
+		t.Errorf("cascade delete failed: groupID %d still present in DriverGroupIds %v",
 			groupID, rs.DriverGroupIds)
 	}
-	if !containsStr(rs.DriverGroupIds, "unrelated-id") {
-		t.Errorf("cascade delete incorrectly removed 'unrelated-id' from DriverGroupIds")
+	if !containsUint(rs.DriverGroupIds, otherID) {
+		t.Errorf("cascade delete incorrectly removed otherID %d from DriverGroupIds", otherID)
 	}
 }
 
@@ -69,10 +68,7 @@ func TestDriverGroupStorage_RemoveGroup_NotInAllAfterRemove(t *testing.T) {
 	db := openExternalTestDB(t)
 	dgs := storage.NewDriverGroupStorage(db)
 
-	id, err := dgs.Add(storage.DriverGroup{Name: "Temporary", Type: storage.Display})
-	if err != nil {
-		t.Fatalf("Add: %v", err)
-	}
+	id := addTestGroup(t, dgs, storage.DriverGroup{Name: "Temporary", Type: storage.Display})
 
 	if err := dgs.Remove(id); err != nil {
 		t.Fatalf("Remove: %v", err)
@@ -84,18 +80,18 @@ func TestDriverGroupStorage_RemoveGroup_NotInAllAfterRemove(t *testing.T) {
 	}
 	for _, g := range groups {
 		if g.Id == id {
-			t.Errorf("removed group %s is still returned by All()", id)
+			t.Errorf("removed group %d is still returned by All()", id)
 		}
 	}
 }
 
 // TestDriverGroupStorage_AddAssignsIdsToDrivers checks that drivers without
-// pre-set IDs receive generated 8-char hex IDs after Add.
+// pre-set IDs receive non-zero autoincrement IDs after Add.
 func TestDriverGroupStorage_AddAssignsIdsToDrivers(t *testing.T) {
 	db := openExternalTestDB(t)
 	dgs := storage.NewDriverGroupStorage(db)
 
-	id, err := dgs.Add(storage.DriverGroup{
+	id := addTestGroup(t, dgs, storage.DriverGroup{
 		Name: "ID Test Group",
 		Type: storage.Miscellaneous,
 		Drivers: []*storage.Driver{
@@ -103,9 +99,6 @@ func TestDriverGroupStorage_AddAssignsIdsToDrivers(t *testing.T) {
 			{Name: "Driver B"},
 		},
 	})
-	if err != nil {
-		t.Fatalf("Add: %v", err)
-	}
 
 	group, err := dgs.Get(id)
 	if err != nil {
@@ -116,13 +109,13 @@ func TestDriverGroupStorage_AddAssignsIdsToDrivers(t *testing.T) {
 		t.Fatalf("expected 2 drivers, got %d", len(group.Drivers))
 	}
 
-	seen := make(map[string]bool)
+	seen := make(map[uint]bool)
 	for _, d := range group.Drivers {
-		if len(d.Id) != 8 {
-			t.Errorf("driver %q has ID %q (len=%d), want 8-char hex", d.Name, d.Id, len(d.Id))
+		if d.Id == 0 {
+			t.Errorf("driver %q has zero ID, want non-zero uint", d.Name)
 		}
 		if seen[d.Id] {
-			t.Errorf("duplicate driver ID %s", d.Id)
+			t.Errorf("duplicate driver ID %d", d.Id)
 		}
 		seen[d.Id] = true
 	}
@@ -134,28 +127,28 @@ func TestDriverGroupStorage_MoveBehind_OrderChanges(t *testing.T) {
 	db := openExternalTestDB(t)
 	dgs := storage.NewDriverGroupStorage(db)
 
-	var ids [4]string
+	var ids [4]uint
 	for i, name := range []string{"A", "B", "C", "D"} {
-		id, err := dgs.Add(storage.DriverGroup{Name: name, Type: storage.Network})
-		if err != nil {
-			t.Fatalf("Add %s: %v", name, err)
-		}
-		ids[i] = id
+		ids[i] = addTestGroup(t, dgs, storage.DriverGroup{Name: name, Type: storage.Network})
 	}
 
-	// MoveBehind A (index 0) behind index 2 → bubbles: [A,B,C,D] → [B,C,D,A]
-	result, err := dgs.MoveBehind(ids[0], 2)
-	if err != nil {
+	// Move A (position 0) to behind index 2 → [B, C, D, A]
+	if err := dgs.MoveBehind(ids[0], 2); err != nil {
 		t.Fatalf("MoveBehind: %v", err)
+	}
+
+	result, err := dgs.All()
+	if err != nil {
+		t.Fatalf("All after MoveBehind: %v", err)
 	}
 	if len(result) != 4 {
 		t.Fatalf("expected 4 groups, got %d", len(result))
 	}
 	if result[3].Id != ids[0] {
-		t.Errorf("after MoveBehind(A, 2): index 3 has %s, want %s (A)", result[3].Id, ids[0])
+		t.Errorf("after MoveBehind(A, 2): index 3 has %d, want %d (A)", result[3].Id, ids[0])
 	}
 	if result[0].Id != ids[1] {
-		t.Errorf("after MoveBehind(A, 2): index 0 has %s, want %s (B)", result[0].Id, ids[1])
+		t.Errorf("after MoveBehind(A, 2): index 0 has %d, want %d (B)", result[0].Id, ids[1])
 	}
 }
 
@@ -165,7 +158,7 @@ func TestDriverGroupStorage_UpdateDriverIncompatibles(t *testing.T) {
 	db := openExternalTestDB(t)
 	dgs := storage.NewDriverGroupStorage(db)
 
-	groupID, err := dgs.Add(storage.DriverGroup{
+	groupID := addTestGroup(t, dgs, storage.DriverGroup{
 		Name: "Incompat Group",
 		Type: storage.Network,
 		Drivers: []*storage.Driver{
@@ -173,9 +166,6 @@ func TestDriverGroupStorage_UpdateDriverIncompatibles(t *testing.T) {
 			{Name: "D2"},
 		},
 	})
-	if err != nil {
-		t.Fatalf("Add: %v", err)
-	}
 
 	group, err := dgs.Get(groupID)
 	if err != nil {
@@ -184,14 +174,23 @@ func TestDriverGroupStorage_UpdateDriverIncompatibles(t *testing.T) {
 	d1ID := group.Drivers[0].Id
 	d2ID := group.Drivers[1].Id
 
-	group.Drivers[0].Incompatibles = []string{d2ID}
-	group.Drivers[1].Incompatibles = []string{d1ID}
-	if _, err := dgs.Update(group); err != nil {
+	group.Drivers[0].IncompatibleIds = []uint{d2ID}
+	group.Drivers[1].IncompatibleIds = []uint{d1ID}
+	if err := dgs.Update(group); err != nil {
 		t.Fatalf("Update with incompatibles: %v", err)
 	}
 
-	group.Drivers = group.Drivers[:1]
-	if _, err := dgs.Update(group); err != nil {
+	// Simulate UI removing D2: also clear D2 from D1's incompatibles
+	var d1 *storage.Driver
+	for _, d := range group.Drivers {
+		if d.Id == d1ID {
+			d.IncompatibleIds = nil
+			d1 = d
+			break
+		}
+	}
+	group.Drivers = []*storage.Driver{d1}
+	if err := dgs.Update(group); err != nil {
 		t.Fatalf("Update removing D2: %v", err)
 	}
 
@@ -202,8 +201,8 @@ func TestDriverGroupStorage_UpdateDriverIncompatibles(t *testing.T) {
 	if len(updated.Drivers) != 1 {
 		t.Fatalf("expected 1 driver, got %d", len(updated.Drivers))
 	}
-	if len(updated.Drivers[0].Incompatibles) != 0 {
+	if len(updated.Drivers[0].IncompatibleIds) != 0 {
 		t.Errorf("expected empty incompatibles after removing D2, got %v",
-			updated.Drivers[0].Incompatibles)
+			updated.Drivers[0].IncompatibleIds)
 	}
 }

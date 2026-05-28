@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 
 export default defineStore('driverGroup', () => {
   const groups = ref<storage.DriverGroup[]>([])
-  const notFoundDrivers = ref<Array<string>>([])
+  const notFoundDrivers = ref<Array<number>>([])
 
   const findNotExists = (drivers: Array<storage.Driver>) =>
     Promise.all(

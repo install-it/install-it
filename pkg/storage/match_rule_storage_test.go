@@ -30,16 +30,23 @@ func TestMatchRuleStorage_AddGetUpdate(t *testing.T) {
 	db := openExternalTestDB(t)
 	mrs := storage.NewMatchRuleStorage(db)
 
-	id, err := mrs.Add(storage.RuleSet{
-		Name:           "CRUD Test",
-		ShouldHitAll:   true,
-		DriverGroupIds: []string{"group-aabbccdd"},
-	})
-	if err != nil {
+	if err := mrs.Add(storage.RuleSet{
+		Name:         "CRUD Test",
+		ShouldHitAll: true,
+	}); err != nil {
 		t.Fatalf("Add: %v", err)
 	}
-	if len(id) != 8 {
-		t.Errorf("expected 8-char ID, got %q", id)
+
+	all, err := mrs.All()
+	if err != nil {
+		t.Fatalf("All after Add: %v", err)
+	}
+	if len(all) != 1 {
+		t.Fatalf("expected 1 ruleset, got %d", len(all))
+	}
+	id := all[0].Id
+	if id == 0 {
+		t.Fatal("expected non-zero autoincrement ID")
 	}
 
 	got, err := mrs.Get(id)
@@ -55,12 +62,8 @@ func TestMatchRuleStorage_AddGetUpdate(t *testing.T) {
 
 	got.Name = "Updated CRUD Test"
 	got.ShouldHitAll = false
-	updated, err := mrs.Update(got)
-	if err != nil {
+	if err := mrs.Update(got); err != nil {
 		t.Fatalf("Update: %v", err)
-	}
-	if updated.Name != "Updated CRUD Test" {
-		t.Errorf("updated Name: got %q, want 'Updated CRUD Test'", updated.Name)
 	}
 
 	final, err := mrs.Get(id)
@@ -103,16 +106,16 @@ func TestMatchRuleStorage_AddPreservesRuleFields(t *testing.T) {
 		},
 	}
 
-	id, err := mrs.Add(storage.RuleSet{
+	if err := mrs.Add(storage.RuleSet{
 		Name:         "Fields Test",
 		Rules:        rules,
 		ShouldHitAll: true,
-	})
-	if err != nil {
+	}); err != nil {
 		t.Fatalf("Add: %v", err)
 	}
 
-	got, err := mrs.Get(id)
+	all, _ := mrs.All()
+	got, err := mrs.Get(all[0].Id)
 	if err != nil {
 		t.Fatalf("Get: %v", err)
 	}
@@ -146,29 +149,27 @@ func TestMatchRuleStorage_AddPreservesRuleFields(t *testing.T) {
 	}
 }
 
-// TestMatchRuleStorage_RemovePurgesOrphanedGroupIds verifies that
-// DriverGroupStorage.Remove also cleans up driver IDs from DriverGroupIds
-// in all RuleSets.
+// TestMatchRuleStorage_RemovePurgesOrphanedGroupIds verifies that removing a
+// DriverGroup also removes it from RuleSet associations via FK CASCADE.
 func TestMatchRuleStorage_RemovePurgesOrphanedGroupIds(t *testing.T) {
 	db := openExternalTestDB(t)
 	dgs := storage.NewDriverGroupStorage(db)
 	mrs := storage.NewMatchRuleStorage(db)
 
-	groupID, err := dgs.Add(storage.DriverGroup{
+	groupID := addTestGroup(t, dgs, storage.DriverGroup{
 		Name:    "Temp Group",
 		Type:    storage.Network,
 		Drivers: []*storage.Driver{{Name: "D1"}},
 	})
-	if err != nil {
-		t.Fatalf("dgs.Add: %v", err)
-	}
-
-	idToKeep := "ccdd3344"
-	rsID, err := mrs.Add(storage.RuleSet{
-		Name:           "Purge Test",
-		DriverGroupIds: []string{groupID, idToKeep},
+	keepID := addTestGroup(t, dgs, storage.DriverGroup{
+		Name: "Keep Group",
+		Type: storage.Display,
 	})
-	if err != nil {
+
+	if err := mrs.Add(storage.RuleSet{
+		Name:           "Purge Test",
+		DriverGroupIds: []uint{groupID, keepID},
+	}); err != nil {
 		t.Fatalf("mrs.Add: %v", err)
 	}
 
@@ -176,15 +177,16 @@ func TestMatchRuleStorage_RemovePurgesOrphanedGroupIds(t *testing.T) {
 		t.Fatalf("dgs.Remove: %v", err)
 	}
 
-	rs, err := mrs.Get(rsID)
+	all, err := mrs.All()
 	if err != nil {
-		t.Fatalf("mrs.Get: %v", err)
+		t.Fatalf("mrs.All: %v", err)
 	}
-	if containsStr(rs.DriverGroupIds, groupID) {
-		t.Errorf("groupID %q should have been purged, still in %v", groupID, rs.DriverGroupIds)
+	rs := all[0]
+	if containsUint(rs.DriverGroupIds, groupID) {
+		t.Errorf("groupID %d should have been purged, still in %v", groupID, rs.DriverGroupIds)
 	}
-	if !containsStr(rs.DriverGroupIds, idToKeep) {
-		t.Errorf("idToKeep %q should still be present, not in %v", idToKeep, rs.DriverGroupIds)
+	if !containsUint(rs.DriverGroupIds, keepID) {
+		t.Errorf("keepID %d should still be present, not in %v", keepID, rs.DriverGroupIds)
 	}
 }
 
@@ -193,15 +195,15 @@ func TestMatchRuleStorage_UpdateRuleSet(t *testing.T) {
 	db := openExternalTestDB(t)
 	mrs := storage.NewMatchRuleStorage(db)
 
-	id, err := mrs.Add(storage.RuleSet{
+	if err := mrs.Add(storage.RuleSet{
 		Name:  "Before Update",
 		Rules: []storage.Rule{{Source: storage.Memory, Operator: storage.Equal, Values: []string{"8GB"}}},
-	})
-	if err != nil {
+	}); err != nil {
 		t.Fatalf("Add: %v", err)
 	}
 
-	original, err := mrs.Get(id)
+	all, _ := mrs.All()
+	original, err := mrs.Get(all[0].Id)
 	if err != nil {
 		t.Fatalf("Get: %v", err)
 	}
@@ -212,18 +214,11 @@ func TestMatchRuleStorage_UpdateRuleSet(t *testing.T) {
 		{Source: storage.Motherboard, Operator: storage.Regex, Values: []string{`^ASUS.*`}},
 	}
 
-	updated, err := mrs.Update(original)
-	if err != nil {
+	if err := mrs.Update(original); err != nil {
 		t.Fatalf("Update: %v", err)
 	}
-	if updated.Name != "After Update" {
-		t.Errorf("updated.Name: got %q", updated.Name)
-	}
-	if len(updated.Rules) != 2 {
-		t.Errorf("updated.Rules len: got %d, want 2", len(updated.Rules))
-	}
 
-	persisted, err := mrs.Get(id)
+	persisted, err := mrs.Get(all[0].Id)
 	if err != nil {
 		t.Fatalf("Get after update: %v", err)
 	}
@@ -241,7 +236,7 @@ func TestMatchRuleStorage_RemoveNonExistent(t *testing.T) {
 	db := openExternalTestDB(t)
 	mrs := storage.NewMatchRuleStorage(db)
 
-	if err := mrs.Remove("notexist"); err == nil {
+	if err := mrs.Remove(9999); err == nil {
 		t.Error("expected error when removing non-existent id, got nil")
 	}
 }
@@ -253,7 +248,7 @@ func TestMatchRuleStorage_AllReturnsAllAdded(t *testing.T) {
 
 	names := []string{"Alpha", "Beta", "Gamma"}
 	for _, name := range names {
-		if _, err := mrs.Add(storage.RuleSet{Name: name}); err != nil {
+		if err := mrs.Add(storage.RuleSet{Name: name}); err != nil {
 			t.Fatalf("Add %s: %v", name, err)
 		}
 	}
@@ -264,5 +259,29 @@ func TestMatchRuleStorage_AllReturnsAllAdded(t *testing.T) {
 	}
 	if len(all) != len(names) {
 		t.Errorf("All() count: got %d, want %d", len(all), len(names))
+	}
+}
+
+// TestMatchRuleStorage_DriverGroupIds_RoundTrip verifies that DriverGroupIds
+// are persisted and returned correctly via the M2M join table.
+func TestMatchRuleStorage_DriverGroupIds_RoundTrip(t *testing.T) {
+	db := openExternalTestDB(t)
+	dgs := storage.NewDriverGroupStorage(db)
+	mrs := storage.NewMatchRuleStorage(db)
+
+	g1 := addTestGroup(t, dgs, storage.DriverGroup{Name: "Net", Type: storage.Network})
+	g2 := addTestGroup(t, dgs, storage.DriverGroup{Name: "Disp", Type: storage.Display})
+
+	if err := mrs.Add(storage.RuleSet{
+		Name:           "IDs Test",
+		DriverGroupIds: []uint{g1, g2},
+	}); err != nil {
+		t.Fatalf("Add: %v", err)
+	}
+
+	all, _ := mrs.All()
+	rs := all[0]
+	if !containsUint(rs.DriverGroupIds, g1) || !containsUint(rs.DriverGroupIds, g2) {
+		t.Errorf("DriverGroupIds %v missing g1=%d or g2=%d", rs.DriverGroupIds, g1, g2)
 	}
 }

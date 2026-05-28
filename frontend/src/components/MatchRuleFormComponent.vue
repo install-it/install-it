@@ -7,7 +7,7 @@ import { computed, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
-const props = defineProps<{ id?: string }>()
+const props = defineProps<{ id?: number }>()
 
 const inputModal = useTemplateRef('inputModal')
 
@@ -45,10 +45,9 @@ function handleSubmit() {
     })
   }
 
-  if (ruleSet.value.id == undefined) {
+  if (!ruleSet.value.id) {
     matchRuleStorage
       .Add(ruleSet.value)
-      .then(rid => (ruleSet.value.id = rid))
       .then(handleSuccess)
       .catch(reason => toast.add({ title: reason.toString(), color: 'error' }))
   } else {
@@ -203,7 +202,6 @@ function handleSubmit() {
           v-model="ruleSet.driver_group_ids"
           group-by="group"
           :driver-groups="groupStore.groups"
-          :exclude-builtin="true"
         ></DriverSelector>
       </fieldset>
 
