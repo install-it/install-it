@@ -44,6 +44,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/drivers/': RouteRecordInfo<
+      '/drivers/',
+      '/drivers',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/drivers/[id]/driver.edit': RouteRecordInfo<
       '/drivers/[id]/driver.edit',
       '/drivers/:id/driver/edit',
@@ -51,16 +58,16 @@ declare module 'vue-router/auto-routes' {
       { id: ParamValue<false> },
       | never
     >,
-    '/drivers/driver.create': RouteRecordInfo<
-      '/drivers/driver.create',
-      '/drivers/driver/create',
+    '/drivers/create': RouteRecordInfo<
+      '/drivers/create',
+      '/drivers/create',
       Record<never, never>,
       Record<never, never>,
       | never
     >,
-    '/drivers/driver.index': RouteRecordInfo<
-      '/drivers/driver.index',
-      '/drivers/driver/index',
+    '/match-rules/': RouteRecordInfo<
+      '/match-rules/',
+      '/match-rules',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -72,16 +79,9 @@ declare module 'vue-router/auto-routes' {
       { id: ParamValue<false> },
       | never
     >,
-    '/match-rules/match.create': RouteRecordInfo<
-      '/match-rules/match.create',
-      '/match-rules/match/create',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    '/match-rules/match.index': RouteRecordInfo<
-      '/match-rules/match.index',
-      '/match-rules/match/index',
+    '/match-rules/create': RouteRecordInfo<
+      '/match-rules/create',
+      '/match-rules/create',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -132,21 +132,27 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
+    'src/pages/drivers/index.vue': {
+      routes:
+        | '/drivers/'
+      views:
+        | never
+    }
     'src/pages/drivers/[id]/driver.edit.vue': {
       routes:
         | '/drivers/[id]/driver.edit'
       views:
         | never
     }
-    'src/pages/drivers/driver.create.vue': {
+    'src/pages/drivers/create.vue': {
       routes:
-        | '/drivers/driver.create'
+        | '/drivers/create'
       views:
         | never
     }
-    'src/pages/drivers/driver.index.vue': {
+    'src/pages/match-rules/index.vue': {
       routes:
-        | '/drivers/driver.index'
+        | '/match-rules/'
       views:
         | never
     }
@@ -156,15 +162,9 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/match-rules/match.create.vue': {
+    'src/pages/match-rules/create.vue': {
       routes:
-        | '/match-rules/match.create'
-      views:
-        | never
-    }
-    'src/pages/match-rules/match.index.vue': {
-      routes:
-        | '/match-rules/match.index'
+        | '/match-rules/create'
       views:
         | never
     }
