@@ -8,6 +8,7 @@ import (
 	"install-it/pkg/status"
 	"install-it/pkg/storage"
 	"install-it/pkg/sysinfo"
+	"install-it/pkg/update"
 	"os"
 	"path/filepath"
 
@@ -28,50 +29,41 @@ var (
 	// Path to the driver directory
 	dirDir string
 	// Path to the WebView2 executable
-	pathWV2 string
-	// Type of the build version number
+	pathWV2      string
 	buildVersion string
 	// Version struct, parsed from [buildVersion]
 	version *semver.Version
+	updater *update.Updater
 )
 
 func init() {
-	if buildVersion == "" {
-		version, _ = semver.NewVersion("0.0.0")
-	} else if v, err := semver.NewVersion(buildVersion); err != nil {
-		panic(err)
-	} else {
+	if v, err := semver.NewVersion(buildVersion); err == nil {
 		version = v
+	} else {
+		version, _ = semver.NewVersion("0.0.0")
 	}
 
-	if pathExe, err := os.Executable(); err != nil {
+	pathExe, err := os.Executable()
+	if err != nil {
 		panic(err)
-	} else {
-		dirRoot = filepath.Dir(pathExe)
+	}
+	dirRoot = filepath.Dir(pathExe)
 
-		dirConf = filepath.Join(dirRoot, "conf")
-		if _, err := os.Stat(dirConf); err != nil {
-			if err := os.MkdirAll(dirConf, os.ModePerm); err != nil {
-				panic(err)
-			}
-		}
+	// process Updates
+	updater = &update.Updater{DirRoot: dirRoot, Version: version}
+	updater.CheckAndApplyUpdates()
 
-		dirDir = filepath.Join(dirRoot, "drivers")
-		if _, err := os.Stat(dirDir); err != nil {
-			if err := os.MkdirAll(dirDir, os.ModePerm); err != nil {
-				panic(err)
-			}
-		}
+	dirConf = filepath.Join(dirRoot, "conf")
+	os.MkdirAll(dirConf, os.ModePerm)
 
-		for _, name := range [3]string{"network", "display", "miscellaneous"} {
-			os.MkdirAll(filepath.Join(dirDir, name), os.ModePerm)
-		}
+	dirDir = filepath.Join(dirRoot, "drivers")
+	for _, sub := range []string{"network", "display", "miscellaneous"} {
+		os.MkdirAll(filepath.Join(dirDir, sub), os.ModePerm)
+	}
 
-		// WebView2 binary lookup
-		pathWV2 = filepath.Join(dirRoot, "bin", "WebView2")
-		if _, err := os.Stat(pathWV2); err != nil {
-			pathWV2 = ""
-		}
+	pathWV2 = filepath.Join(dirRoot, "internals", "bin", "WebView2")
+	if _, err := os.Stat(pathWV2); err != nil {
+		pathWV2 = ""
 	}
 }
 
@@ -98,7 +90,7 @@ func main() {
 		},
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
 		OnStartup: func(ctx context.Context) {
-			// Boot cleanup: remove leftover .old binary from a previous update
+			// Fail-safe cleanup
 			oldBin := filepath.Join(dirRoot, "install-it.exe.old")
 			if _, err := os.Stat(oldBin); err == nil {
 				os.Remove(oldBin)
@@ -117,6 +109,7 @@ func main() {
 		Bind: []interface{}{
 			app,
 			mgt,
+			updater,
 			&storage.AppSettingStorage{Store: &storage.FileStore{Path: filepath.Join(dirConf, "setting.json")}},
 			storage.NewDriverGroupStorage(db),
 			storage.NewMatchRuleStorage(db),

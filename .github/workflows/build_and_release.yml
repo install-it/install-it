@@ -68,15 +68,15 @@ jobs:
         run: |
           cd build\bin
           curl -o webview2.cab -L https://github.com/westinyang/WebView2RuntimeArchive/releases/download/132.0.2957.140/Microsoft.WebView2.FixedVersionRuntime.132.0.2957.140.${{ matrix.wv2arch }}.cab
-          mkdir bin
-          expand -r webview2.cab -F:* bin
-          move bin\Microsoft.WebView2.FixedVersionRuntime.* bin\WebView2
+          mkdir internals\bin
+          expand -r webview2.cab -F:* internals\bin
+          move internals\bin\Microsoft.WebView2.FixedVersionRuntime.* internals\bin\WebView2
 
       - name: Bundle binary and WebView2 files into ZIP
         run: |
           cd build\bin
           7z a install-it.${{ matrix.build-name }}.zip install-it.exe -mx8
-          7z a install-it.${{ matrix.build-name }}-wv2.zip install-it.exe bin -mx8
+          7z a install-it.${{ matrix.build-name }}-bundled.zip install-it.exe internals -mx8
 
       - name: Collect artifacts
         uses: actions/upload-artifact@v7

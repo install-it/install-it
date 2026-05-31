@@ -44,44 +44,44 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/drivers/': RouteRecordInfo<
-      '/drivers/',
-      '/drivers',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    '/drivers/[id]/edit': RouteRecordInfo<
-      '/drivers/[id]/edit',
-      '/drivers/:id/edit',
+    '/drivers/[id]/driver.edit': RouteRecordInfo<
+      '/drivers/[id]/driver.edit',
+      '/drivers/:id/driver/edit',
       { id: ParamValue<true> },
       { id: ParamValue<false> },
       | never
     >,
-    '/drivers/create': RouteRecordInfo<
-      '/drivers/create',
-      '/drivers/create',
+    '/drivers/driver.create': RouteRecordInfo<
+      '/drivers/driver.create',
+      '/drivers/driver/create',
       Record<never, never>,
       Record<never, never>,
       | never
     >,
-    '/match-rules/': RouteRecordInfo<
-      '/match-rules/',
-      '/match-rules',
+    '/drivers/driver.index': RouteRecordInfo<
+      '/drivers/driver.index',
+      '/drivers/driver/index',
       Record<never, never>,
       Record<never, never>,
       | never
     >,
-    '/match-rules/[id]/edit': RouteRecordInfo<
-      '/match-rules/[id]/edit',
-      '/match-rules/:id/edit',
+    '/match-rules/[id]/match.edit': RouteRecordInfo<
+      '/match-rules/[id]/match.edit',
+      '/match-rules/:id/match/edit',
       { id: ParamValue<true> },
       { id: ParamValue<false> },
       | never
     >,
-    '/match-rules/create': RouteRecordInfo<
-      '/match-rules/create',
-      '/match-rules/create',
+    '/match-rules/match.create': RouteRecordInfo<
+      '/match-rules/match.create',
+      '/match-rules/match/create',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/match-rules/match.index': RouteRecordInfo<
+      '/match-rules/match.index',
+      '/match-rules/match/index',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -132,39 +132,39 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/drivers/index.vue': {
+    'src/pages/drivers/[id]/driver.edit.vue': {
       routes:
-        | '/drivers/'
+        | '/drivers/[id]/driver.edit'
       views:
         | never
     }
-    'src/pages/drivers/[id]/edit.vue': {
+    'src/pages/drivers/driver.create.vue': {
       routes:
-        | '/drivers/[id]/edit'
+        | '/drivers/driver.create'
       views:
         | never
     }
-    'src/pages/drivers/create.vue': {
+    'src/pages/drivers/driver.index.vue': {
       routes:
-        | '/drivers/create'
+        | '/drivers/driver.index'
       views:
         | never
     }
-    'src/pages/match-rules/index.vue': {
+    'src/pages/match-rules/[id]/match.edit.vue': {
       routes:
-        | '/match-rules/'
+        | '/match-rules/[id]/match.edit'
       views:
         | never
     }
-    'src/pages/match-rules/[id]/edit.vue': {
+    'src/pages/match-rules/match.create.vue': {
       routes:
-        | '/match-rules/[id]/edit'
+        | '/match-rules/match.create'
       views:
         | never
     }
-    'src/pages/match-rules/create.vue': {
+    'src/pages/match-rules/match.index.vue': {
       routes:
-        | '/match-rules/create'
+        | '/match-rules/match.index'
       views:
         | never
     }

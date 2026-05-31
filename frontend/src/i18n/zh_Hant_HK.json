@@ -151,6 +151,7 @@
   },
   "setting": {
     "autoCheckUpdate": "自動檢查更新",
+    "preferPreRelease": "接收預覽版本",
     "defaultInstallSetting": "預設安裝選項",
     "displaySetting": "顯示設定",
     "filterMicorsoftNic": "過濾 Microsoft 網卡",

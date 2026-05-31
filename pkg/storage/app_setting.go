@@ -13,6 +13,7 @@ type AppSetting struct {
 	DriverDownloadUrl  string        `json:"driver_download_url"`
 	AutoCheckUpdate    bool          `json:"auto_check_update"`
 	HideNotFound       bool          `json:"hide_not_found"`
+	AllowPreRelease    bool          `json:"allow_pre_release"`
 }
 
 type SuccessAction string
@@ -34,6 +35,7 @@ func (s *AppSettingStorage) All() (AppSetting, error) {
 		s.setting = AppSetting{
 			AutoCheckUpdate: true, FilterMiniportNic: true, FilterMicrosoftNic: true,
 			Language: "en", ParallelInstall: true, SuccessAction: Nothing, SuccessActionDelay: 5,
+			AllowPreRelease: false,
 		}
 		s.Store.Write(s.setting)
 	} else {

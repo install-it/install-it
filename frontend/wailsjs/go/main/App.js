@@ -42,10 +42,6 @@ export function SetContext(arg1) {
   return window['go']['main']['App']['SetContext'](arg1);
 }
 
-export function TriggerNativeUpdate(arg1) {
-  return window['go']['main']['App']['TriggerNativeUpdate'](arg1);
-}
-
 export function WebView2Path() {
   return window['go']['main']['App']['WebView2Path']();
 }
