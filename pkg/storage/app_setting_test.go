@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"encoding/json"
 	"testing"
 )
 
@@ -178,5 +179,49 @@ func TestAppSettingStorage_UpdateCachesResult(t *testing.T) {
 
 	if result.Language != "en" {
 		t.Errorf("expected cached Language to be 'en', got %s", result.Language)
+	}
+}
+
+// rawJSONStore is a test-only Store that serves a fixed raw JSON string.
+type rawJSONStore struct{ raw string }
+
+func (r *rawJSONStore) Read(v any) error  { return json.Unmarshal([]byte(r.raw), v) }
+func (r *rawJSONStore) Write(v any) error { return nil }
+func (r *rawJSONStore) Exist() bool       { return true }
+
+// TestLegacySettingMigration simulates loading a settings file that predates
+// the AllowPreRelease field.  The field must default to false with no error.
+func TestLegacySettingMigration(t *testing.T) {
+	// JSON from an older version — AllowPreRelease / allow_pre_release key absent.
+	legacyJSON := `{
+		"create_partition": true,
+		"set_password": false,
+		"password": "",
+		"parallel_install": true,
+		"success_action": "nothing",
+		"success_action_delay": 5,
+		"filter_miniport_nic": true,
+		"filter_microsoft_nic": true,
+		"language": "en",
+		"driver_download_url": "",
+		"auto_check_update": true,
+		"hide_not_found": false
+	}`
+
+	s := &AppSettingStorage{Store: &rawJSONStore{raw: legacyJSON}}
+
+	result, err := s.All()
+	if err != nil {
+		t.Fatalf("All() returned unexpected error: %v", err)
+	}
+	if result.AllowPreRelease != false {
+		t.Errorf("AllowPreRelease = %v, want false (zero default for missing key)", result.AllowPreRelease)
+	}
+	// Sanity-check that other fields decoded correctly.
+	if result.Language != "en" {
+		t.Errorf("Language = %q, want %q", result.Language, "en")
+	}
+	if result.AutoCheckUpdate != true {
+		t.Errorf("AutoCheckUpdate = %v, want true", result.AutoCheckUpdate)
 	}
 }

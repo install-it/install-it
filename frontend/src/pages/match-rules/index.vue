@@ -59,7 +59,7 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
               class="h-6"
               :title="$t('common.clone')"
               @click="
-                matchRuleStorage.Add(rs).then(() =>
+                matchRuleStorage.Clone(rs.id).then(() =>
                   matchRuleStorage
                     .All()
                     .then(rs => (ruleStore.ruleSets = rs))

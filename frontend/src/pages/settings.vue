@@ -96,6 +96,22 @@ function handleSubmit() {
           </div>
 
           <div>
+            <p class="mb-2 block text-gray-900">
+              {{ $t('setting.preferPreRelease') }}
+            </p>
+
+            <label class="flex w-full cursor-pointer items-center select-none">
+              <UCheckbox
+                v-model="settings.allow_pre_release"
+                name="allow_pre_release"
+                color="primary"
+                class="me-1.5"
+              />
+              {{ $t('common.enable') }}
+            </label>
+          </div>
+
+          <div>
             <label class="mb-2 block text-gray-900">
               {{ $t('setting.successActionDelay') }}
             </label>

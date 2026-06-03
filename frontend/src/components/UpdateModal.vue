@@ -1,17 +1,32 @@
 <script setup lang="ts">
-import { latestRelease } from '@/utils'
-import { Update } from '@/wailsjs/go/main/App'
+import { TriggerNativeUpdate } from '@/wailsjs/go/update/Updater'
 import { Quit } from '@/wailsjs/runtime/runtime'
-import { ref } from 'vue'
+import { marked } from 'marked'
+import DOMPurify from 'dompurify'
+import { computed, ref, watch } from 'vue'
 
-defineProps<{ app: { version: string; binaryType: string } }>()
+defineProps<{ currentVersion: string }>()
+
+interface UpdateCheckResult {
+  hasUpdate: boolean
+  latestVersion: string
+  downloadUrl: string
+  downloadUrlBundled: string
+  releaseNotes: string
+  releaseAt: string
+}
 
 const isOpen = ref(false)
+const updateResult = ref<UpdateCheckResult>()
+const parsedNotes = ref('')
+const webviewVersion = ref(false)
+
+const releaseAt = ref('')
 
 defineExpose({
-  show: (releaseInfo_: typeof releaseInfo.value, isWebview: boolean) => {
-    releaseInfo.value = releaseInfo_
-    webviewVersion.value = isWebview
+  show: (result: UpdateCheckResult) => {
+    updateResult.value = result
+    webviewVersion.value = !!result.downloadUrlBundled
     isOpen.value = true
   },
   hide: () => {
@@ -20,17 +35,38 @@ defineExpose({
 })
 
 const toast = useToast()
-
 const $loading = useLoading()
 
-const releaseInfo = ref<Awaited<ReturnType<typeof latestRelease>>>()
+const selectedUrl = computed(() => {
+  if (!updateResult.value) return ''
+  return webviewVersion.value && updateResult.value.downloadUrlBundled
+    ? updateResult.value.downloadUrlBundled
+    : updateResult.value.downloadUrl
+})
 
-const webviewVersion = ref(false)
+watch(
+  updateResult,
+  async result => {
+    if (!result) {
+      parsedNotes.value = ''
+      releaseAt.value = ''
+      return
+    }
+
+    releaseAt.value = new Date(result.releaseAt).toLocaleDateString()
+
+    if (result.releaseNotes) {
+      const html = await marked.parse(result.releaseNotes)
+      parsedNotes.value = DOMPurify.sanitize(html)
+    } else {
+      parsedNotes.value = ''
+    }
+  },
+  { deep: true }
+)
 </script>
 
 <template>
-  <!-- eslint-disable vue/no-v-html -->
-
   <UModal v-model:open="isOpen" :title="$t('info.updateInfoTitle')">
     <template #body>
       <div class="flex flex-col gap-y-3">
@@ -40,7 +76,7 @@ const webviewVersion = ref(false)
               {{ $t('info.currentVersion') }}
             </h1>
 
-            <p>{{ $props.app.version }}</p>
+            <p>{{ currentVersion }}</p>
           </div>
 
           <div class="flex">
@@ -49,7 +85,7 @@ const webviewVersion = ref(false)
             </h1>
 
             <p>
-              {{ `${releaseInfo?.version} (${releaseInfo?.releaseAt.toLocaleDateString()})` }}
+              {{ `${updateResult?.latestVersion} (${releaseAt})` }}
             </p>
           </div>
 
@@ -63,7 +99,7 @@ const webviewVersion = ref(false)
             <div
               id="release-notes"
               class="rounded-lg border px-1"
-              v-html="releaseInfo?.releaseNotes || `<i>${$t('info.noUpdateInfo')}</i>`"
+              v-html="parsedNotes || `<i>${$t('info.noUpdateInfo')}</i>`"
             ></div>
           </div>
 
@@ -75,7 +111,7 @@ const webviewVersion = ref(false)
             </h1>
 
             <label class="flex w-full cursor-pointer items-center select-none">
-              <UCheckbox v-model="webviewVersion" name="create_partition" color="primary" />
+              <UCheckbox v-model="webviewVersion" name="webview_version" color="primary" />
 
               <span class="ms-1.5">{{ $t('info.downloadBuiltInWebView2Version') }}</span>
             </label>
@@ -88,7 +124,8 @@ const webviewVersion = ref(false)
           class="justify-center"
           @click="
             () => {
-              if (!releaseInfo) {
+              if (!selectedUrl) {
+                toast.add({ title: $t('toast.noAssetUrl'), color: 'error' })
                 return
               }
 
@@ -99,7 +136,7 @@ const webviewVersion = ref(false)
               })
               const loader = $loading.show()
 
-              Update($props.app.version, releaseInfo.version, webviewVersion)
+              TriggerNativeUpdate(selectedUrl)
                 .then(() => Quit())
                 .catch(reason => toast.add({ title: reason, color: 'error' }))
                 .finally(() => loader.hide())
@@ -114,12 +151,6 @@ const webviewVersion = ref(false)
 </template>
 
 <style scoped>
-label:has(+ input:required, + select:required):after,
-label:has(+ div > input:required):after {
-  content: ' *';
-  color: red;
-}
-
 #release-notes * {
   all: revert;
 }

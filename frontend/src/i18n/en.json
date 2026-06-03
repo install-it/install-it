@@ -149,6 +149,7 @@
   },
   "setting": {
     "autoCheckUpdate": "Automatically Check for Updates",
+    "preferPreRelease": "Receive Pre-releases",
     "defaultInstallSetting": "Install Setting Defaults",
     "displaySetting": "Display Setting",
     "filterMicorsoftNic": "Filter Microsoft NICs",

@@ -3,7 +3,7 @@ import CommandStatueModal from '@/components/CommandStatusModal.vue'
 import { type Command } from '@/types/execute'
 import * as utils from '@/utils'
 import * as executor from '@/wailsjs/go/execute/CommandExecutor'
-import { storage } from '@/wailsjs/go/models'
+import * as matchRuleStorage from '@/wailsjs/go/storage/MatchRuleStorage'
 import { computed, onBeforeMount, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -13,11 +13,7 @@ const toast = useToast()
 
 const [statusModal, form] = [useTemplateRef('statusModal'), useTemplateRef('form')]
 
-const [groupStore, settingStore, ruleStore] = [
-  useDriverGroupStore(),
-  useAppSettingStore(),
-  useMatchRuleStore()
-]
+const [groupStore, settingStore] = [useDriverGroupStore(), useAppSettingStore()]
 
 /** Driver groups with conditional exclusion based on app configuration */
 const groups = computed(() =>
@@ -35,52 +31,38 @@ const hwinfos = ref<{
   storage: Array<string>
 } | null>(null)
 
-const selectedNetwork = ref('')
-const selectedDisplay = ref('')
-const selectedMiscellaneous = ref<string[]>([])
+const selectedNetwork = ref<number>(0)
+const selectedDisplay = ref<number>(0)
+const selectedMiscellaneous = ref<number[]>([])
 
 onBeforeMount(() => {
   utils.getHardware().then(v => (hwinfos.value = v))
 })
 
 function selectMatchedOptions() {
-  if (hwinfos.value === null) {
-    toast.add({ title: t('toast.noHardwareInfo'), color: 'error' })
-    return
-  }
-
-  /** Determines if there is any hardware name matches the provided rule */
-  const nameTest = (rule: storage.Rule): boolean => {
-    return hwinfos.value![rule.source].some(src => utils.testMatchRule(rule, src))
-  }
-
-  ruleStore.ruleSets.forEach(rs => {
-    const matched = rs.should_hit_all
-      ? rs.rules.map(nameTest).every(Boolean)
-      : rs.rules.map(nameTest).some(Boolean)
-
-    if (matched) {
-      rs.driver_group_ids.forEach(gid => {
+  matchRuleStorage
+    .MatchedGroupIds()
+    .then(matchedIds => {
+      matchedIds.forEach(gid => {
         const group = groupStore.groups.find(g => g.id === gid)
-        if (group) {
-          if (group.type === 'network') {
-            selectedNetwork.value = gid
-          } else if (group.type === 'display') {
-            selectedDisplay.value = gid
-          } else if (group.type === 'miscellaneous') {
-            if (!selectedMiscellaneous.value.includes(gid)) {
-              selectedMiscellaneous.value.push(gid)
-            }
+        if (!group) return
+        if (group.type === 'network') {
+          selectedNetwork.value = gid
+        } else if (group.type === 'display') {
+          selectedDisplay.value = gid
+        } else if (group.type === 'miscellaneous') {
+          if (!selectedMiscellaneous.value.includes(gid)) {
+            selectedMiscellaneous.value.push(gid)
           }
         }
       })
-    }
-  })
+    })
+    .catch(() => toast.add({ title: t('toast.noHardwareInfo'), color: 'error' }))
 }
 
 function resetSelection() {
-  selectedNetwork.value = ''
-  selectedDisplay.value = ''
+  selectedNetwork.value = 0
+  selectedDisplay.value = 0
   selectedMiscellaneous.value = []
 }
 
@@ -227,7 +209,7 @@ async function handleSubmit() {
             v-model="selectedNetwork"
             class="w-full rounded-lg border border-apple-green-300 bg-white px-3 pt-5 pb-1 text-sm focus:border-apple-green-600 focus:ring-1 focus:ring-apple-green-600 focus:outline-none"
           >
-            <option value="">{{ $t('common.pleaseSelect') }}</option>
+            <option :value="0">{{ $t('common.pleaseSelect') }}</option>
 
             <option v-for="g in groups.filter(g => g.type == 'network')" :key="g.id" :value="g.id">
               {{ g.name }}
@@ -246,7 +228,7 @@ async function handleSubmit() {
             v-model="selectedDisplay"
             class="w-full rounded-lg border border-apple-green-300 bg-white px-3 pt-5 pb-1 text-sm focus:border-apple-green-600 focus:ring-1 focus:ring-apple-green-600 focus:outline-none"
           >
-            <option value="">{{ $t('common.pleaseSelect') }}</option>
+            <option :value="0">{{ $t('common.pleaseSelect') }}</option>
 
             <option v-for="g in groups.filter(g => g.type == 'display')" :key="g.id" :value="g.id">
               {{ g.name }}

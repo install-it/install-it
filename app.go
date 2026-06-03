@@ -3,13 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"strings"
 
 	"github.com/wailsapp/go-webview2/webviewloader"
 	wails_runtime "github.com/wailsapp/wails/v2/pkg/runtime"
@@ -101,58 +98,4 @@ func (a App) AppBinaryType() string {
 		arch = "x86"
 	}
 	return fmt.Sprintf("%s-%s", runtime.GOOS, arch)
-}
-
-func (a App) Update(from string, to string, builtinWebview bool) error {
-	file, err := os.CreateTemp("", "*.exe")
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	cleanup := true
-	defer func() {
-		if cleanup {
-			os.Remove(file.Name())
-		}
-	}()
-
-	url := fmt.Sprintf(
-		"https://github.com/install-it/install-it/releases/download/v%s/updater.%s.exe",
-		strings.TrimLeft(to, "v"),
-		a.AppBinaryType(),
-	)
-
-	response, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer response.Body.Close()
-
-	if response.StatusCode < 200 || response.StatusCode >= 300 {
-		return fmt.Errorf("main: failed to locate the updater for \"%s\" - %s", to, response.Status)
-	}
-
-	if _, err := io.Copy(file, response.Body); err != nil {
-		return err
-	}
-
-	file.Close()
-
-	flags := []string{file.Name(), "-s", from, "-t", to, "-b", a.AppBinaryType()}
-	if builtinWebview {
-		flags = append(flags, "--webview")
-	}
-
-	process, err := os.StartProcess(file.Name(), flags, &os.ProcAttr{
-		Dir:   ".",
-		Env:   os.Environ(),
-		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
-	})
-	if err != nil {
-		return err
-	}
-
-	cleanup = false
-	return process.Release()
 }
