@@ -51,9 +51,9 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/drivers/[id]/driver.edit': RouteRecordInfo<
-      '/drivers/[id]/driver.edit',
-      '/drivers/:id/driver/edit',
+    '/drivers/[id]/edit': RouteRecordInfo<
+      '/drivers/[id]/edit',
+      '/drivers/:id/edit',
       { id: ParamValue<true> },
       { id: ParamValue<false> },
       | never
@@ -72,9 +72,9 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/match-rules/[id]/match.edit': RouteRecordInfo<
-      '/match-rules/[id]/match.edit',
-      '/match-rules/:id/match/edit',
+    '/match-rules/[id]/edit': RouteRecordInfo<
+      '/match-rules/[id]/edit',
+      '/match-rules/:id/edit',
       { id: ParamValue<true> },
       { id: ParamValue<false> },
       | never
@@ -138,9 +138,9 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/drivers/[id]/driver.edit.vue': {
+    'src/pages/drivers/[id]/edit.vue': {
       routes:
-        | '/drivers/[id]/driver.edit'
+        | '/drivers/[id]/edit'
       views:
         | never
     }
@@ -156,9 +156,9 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/match-rules/[id]/match.edit.vue': {
+    'src/pages/match-rules/[id]/edit.vue': {
       routes:
-        | '/match-rules/[id]/match.edit'
+        | '/match-rules/[id]/edit'
       views:
         | never
     }
