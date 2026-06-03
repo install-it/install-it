@@ -1,7 +1,7 @@
 import { status } from '@/wailsjs/go/models'
 
 export type Command = {
-  id: string
+  id: string | number
   name?: string
   groupName: string
   config: {
@@ -9,7 +9,7 @@ export type Command = {
     options: Array<string>
     minExeTime: number
     allowRtCodes: Array<number>
-    incompatibles: Array<string>
+    incompatibles: Array<number>
   }
 }
 

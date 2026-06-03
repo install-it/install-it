@@ -10,12 +10,12 @@ export function All() {
   return window['go']['storage']['DriverGroupStorage']['All']();
 }
 
-export function Get(arg1) {
-  return window['go']['storage']['DriverGroupStorage']['Get'](arg1);
+export function Clone(arg1) {
+  return window['go']['storage']['DriverGroupStorage']['Clone'](arg1);
 }
 
-export function IndexOf(arg1) {
-  return window['go']['storage']['DriverGroupStorage']['IndexOf'](arg1);
+export function Get(arg1) {
+  return window['go']['storage']['DriverGroupStorage']['Get'](arg1);
 }
 
 export function MoveBehind(arg1, arg2) {

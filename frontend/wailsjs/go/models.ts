@@ -162,6 +162,7 @@ export namespace storage {
 	    driver_download_url: string;
 	    auto_check_update: boolean;
 	    hide_not_found: boolean;
+	    allow_pre_release: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new AppSetting(source);
@@ -181,17 +182,18 @@ export namespace storage {
 	        this.driver_download_url = source["driver_download_url"];
 	        this.auto_check_update = source["auto_check_update"];
 	        this.hide_not_found = source["hide_not_found"];
+	        this.allow_pre_release = source["allow_pre_release"];
 	    }
 	}
 	export class Driver {
-	    id: string;
+	    id: number;
 	    name: string;
 	    type: DriverType;
 	    path: string;
 	    flags: string[];
 	    minExeTime: number;
 	    allowRtCodes: number[];
-	    incompatibles: string[];
+	    incompatibles: number[];
 	
 	    static createFrom(source: any = {}) {
 	        return new Driver(source);
@@ -210,7 +212,7 @@ export namespace storage {
 	    }
 	}
 	export class DriverGroup {
-	    id: string;
+	    id: number;
 	    name: string;
 	    type: DriverType;
 	    mutuallyExclusive: boolean;
@@ -268,11 +270,11 @@ export namespace storage {
 	    }
 	}
 	export class RuleSet {
-	    id: string;
+	    id: number;
 	    name: string;
 	    rules: Rule[];
 	    should_hit_all: boolean;
-	    driver_group_ids: string[];
+	    driver_group_ids: number[];
 	
 	    static createFrom(source: any = {}) {
 	        return new RuleSet(source);
@@ -1042,6 +1044,33 @@ export namespace sysinfo {
 	        this.VideoMode = source["VideoMode"];
 	        this.VideoModeDescription = source["VideoModeDescription"];
 	        this.VideoProcessor = source["VideoProcessor"];
+	    }
+	}
+
+}
+
+export namespace update {
+	
+	export class UpdateCheckResult {
+	    hasUpdate: boolean;
+	    latestVersion: string;
+	    downloadUrl: string;
+	    downloadUrlBundled: string;
+	    releaseNotes: string;
+	    releaseAt: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new UpdateCheckResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.hasUpdate = source["hasUpdate"];
+	        this.latestVersion = source["latestVersion"];
+	        this.downloadUrl = source["downloadUrl"];
+	        this.downloadUrlBundled = source["downloadUrlBundled"];
+	        this.releaseNotes = source["releaseNotes"];
+	        this.releaseAt = source["releaseAt"];
 	    }
 	}
 

@@ -2,22 +2,9 @@ package storage
 
 import (
 	"errors"
-	"install-it/pkg/utils"
-	"reflect"
-	"slices"
+
+	"gorm.io/gorm"
 )
-
-type DriverGroup struct {
-	Id                 string     `json:"id"`
-	Name               string     `json:"name"`
-	Type               DriverType `json:"type"`
-	MutuallyExclusive  bool       `json:"mutuallyExclusive"`
-	Drivers            []*Driver  `json:"drivers"`
-}
-
-func (g DriverGroup) GetId() string { return g.Id }
-
-func (g *DriverGroup) SetId(id string) { g.Id = id }
 
 type DriverType string
 
@@ -27,157 +14,241 @@ const (
 	Miscellaneous DriverType = "miscellaneous"
 )
 
-type Driver struct {
-	Id            string     `json:"id"`
-	Name          string     `json:"name"`
-	Type          DriverType `json:"type"`
-	Path          string     `json:"path"`
-	Flags         []string   `json:"flags"`
-	MinExeTime    float32    `json:"minExeTime"`
-	AllowRtCodes  []int32    `json:"allowRtCodes"`
-	Incompatibles []string   `json:"incompatibles"`
+type DriverGroup struct {
+	Id                uint       `json:"id" gorm:"primaryKey;autoIncrement"`
+	Name              string     `json:"name"`
+	Type              DriverType `json:"type"`
+	MutuallyExclusive bool       `json:"mutuallyExclusive"`
+	Position          int        `json:"-" gorm:"index"`
+	Drivers           []*Driver  `json:"drivers" gorm:"foreignKey:GroupId;constraint:OnDelete:CASCADE"`
 }
 
-func (r Driver) GetId() string { return r.Id }
+type Driver struct {
+	Id              uint       `json:"id" gorm:"primaryKey;autoIncrement"`
+	GroupId         uint       `json:"-" gorm:"index"`
+	Name            string     `json:"name"`
+	Type            DriverType `json:"type"`
+	Path            string     `json:"path"`
+	Flags           []string   `json:"flags" gorm:"serializer:json"`
+	MinExeTime      float32    `json:"minExeTime"`
+	AllowRtCodes    []int32    `json:"allowRtCodes" gorm:"serializer:json"`
+	Incompatibles   []*Driver  `json:"-" gorm:"many2many:driver_incompatibles;joinForeignKey:DriverID;joinReferences:IncompatibleDriverID;constraint:OnDelete:CASCADE"`
+	IncompatibleIds []uint     `json:"incompatibles" gorm:"-"`
+}
 
-func (r *Driver) SetId(id string) { r.Id = id }
+func populateIncompatibleIds(d *Driver) {
+	d.IncompatibleIds = make([]uint, len(d.Incompatibles))
+	for i, inc := range d.Incompatibles {
+		d.IncompatibleIds[i] = inc.Id
+	}
+}
 
 type DriverGroupStorage struct {
-	Store    Store
-	EventBus *DeleteEventBus
-	data     []*DriverGroup
+	DB *gorm.DB
 }
 
-func NewDriverGroupStorage(store Store, eventBus *DeleteEventBus) *DriverGroupStorage {
-	m := &DriverGroupStorage{Store: store, EventBus: eventBus}
-	return m
+func NewDriverGroupStorage(db *gorm.DB) *DriverGroupStorage {
+	return &DriverGroupStorage{DB: db}
 }
 
 func (s *DriverGroupStorage) All() ([]DriverGroup, error) {
-	if !s.Store.Exist() {
-		s.data = []*DriverGroup{}
-		s.Store.Write(s.data)
-	} else {
-		s.Store.Read(&s.data)
+	var groups []*DriverGroup
+	if err := s.DB.Preload("Drivers.Incompatibles").Order("position").Find(&groups).Error; err != nil {
+		return nil, err
 	}
-	return s.copyOfAll(), nil
-}
-
-func (s DriverGroupStorage) Get(id string) (DriverGroup, error) {
-	if group, err := Get(id, s.data); err != nil {
-		return DriverGroup{}, err
-	} else {
-		return *group, nil
-	}
-}
-
-func (s *DriverGroupStorage) Add(group DriverGroup) (string, error) {
-	drivers := utils.FlatMap(s.data, func(g *DriverGroup) []*Driver { return g.Drivers })
-
-	for i := range group.Drivers {
-		group.Drivers[i].Id = GenerateId(drivers)
-		drivers = append(drivers, group.Drivers[i])
-	}
-
-	if id, err := Create(&group, &s.data); err != nil {
-		return "", err
-	} else {
-		return id, s.Store.Write(s.data)
-	}
-}
-
-func (s *DriverGroupStorage) Update(group DriverGroup) (DriverGroup, error) {
-	// slice of all the existing drivers
-	drivers := utils.FlatMap(s.data, func(g *DriverGroup) []*Driver { return g.Drivers })
-	// slice of all the existing drivers' ID
-	driverIds := utils.Map(drivers, func(d *Driver) string { return d.Id })
-	// slice of all the drivers' ID that will be delete after the update
-	newDriverIds := utils.Map(group.Drivers, func(d *Driver) string { return d.Id })
-	deletedIds := slices.DeleteFunc(slices.Clone(driverIds), func(id string) bool {
-		return slices.Contains(newDriverIds, id)
-	})
-
-	// generate ID for new drivers
-	for i := range group.Drivers {
-		if !slices.Contains(driverIds, group.Drivers[i].Id) {
-			group.Drivers[i].Id = GenerateId(drivers)
-			drivers = append(drivers, group.Drivers[i])
+	result := make([]DriverGroup, len(groups))
+	for i, g := range groups {
+		for _, d := range g.Drivers {
+			populateIncompatibleIds(d)
 		}
+		result[i] = *g
 	}
+	return result, nil
+}
 
-	// update group
-	if err := Update(&group, &s.data); err != nil {
-		return DriverGroup{}, err
+func (s *DriverGroupStorage) Get(id uint) (DriverGroup, error) {
+	var group DriverGroup
+	result := s.DB.Preload("Drivers.Incompatibles").First(&group, id)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return DriverGroup{}, errors.New("store: no item with the same ID was found")
+		}
+		return DriverGroup{}, result.Error
 	}
+	for _, d := range group.Drivers {
+		populateIncompatibleIds(d)
+	}
+	return group, nil
+}
 
-	// cascaded deletion on Driver.Incompatibles - only if there are actually deleted drivers
-	if len(deletedIds) > 0 {
-		for _, g := range s.data {
-			for _, d := range g.Drivers {
-				d.Incompatibles = slices.DeleteFunc(d.Incompatibles, func(id string) bool {
-					return slices.Contains(deletedIds, id)
-				})
+func (s *DriverGroupStorage) Add(group DriverGroup) error {
+	var maxPos int
+	s.DB.Model(&DriverGroup{}).Select("COALESCE(MAX(position), -1)").Scan(&maxPos)
+	group.Position = maxPos + 1
+	return s.DB.Create(&group).Error
+}
+
+func (s *DriverGroupStorage) Update(group DriverGroup) error {
+	return s.DB.Transaction(func(tx *gorm.DB) error {
+		var existing []*Driver
+		if err := tx.Where("group_id = ?", group.Id).Find(&existing).Error; err != nil {
+			return err
+		}
+
+		newDriverIds := make(map[uint]bool)
+		for _, d := range group.Drivers {
+			if d.Id != 0 {
+				newDriverIds[d.Id] = true
 			}
 		}
-		s.EventBus.Publish(reflect.TypeFor[Driver]().Name(), deletedIds)
-	}
 
-	return group, s.Store.Write(s.data)
-}
-
-func (s *DriverGroupStorage) Remove(id string) error {
-	group, err := s.Get(id)
-	if err != nil {
-		return err
-	}
-	driverIds := utils.Map(group.Drivers, func(d *Driver) string { return d.Id })
-
-	if err := Delete(id, &s.data); err != nil {
-		return err
-	}
-
-	for _, g := range s.data {
-		for _, d := range g.Drivers {
-			d.Incompatibles = slices.DeleteFunc(d.Incompatibles, func(id string) bool {
-				return slices.Contains(driverIds, id)
-			})
-		}
-	}
-
-	s.EventBus.Publish(reflect.TypeFor[DriverGroup]().Name(), driverIds)
-	return s.Store.Write(s.data)
-}
-
-func (s DriverGroupStorage) IndexOf(id string) (int, error) {
-	return IndexOf(id, s.data)
-}
-
-func (s *DriverGroupStorage) MoveBehind(id string, index int) ([]DriverGroup, error) {
-	if srcIndex, err := s.IndexOf(id); err != nil {
-		return s.copyOfAll(), err
-	} else {
-		if index < -1 || index >= len(s.data)-1 {
-			return s.copyOfAll(), errors.New("store: target index out of bound")
+		var deletedIds []uint
+		for _, d := range existing {
+			if !newDriverIds[d.Id] {
+				deletedIds = append(deletedIds, d.Id)
+			}
 		}
 
-		if len(s.data) == 1 || srcIndex-index == 1 {
-			return s.copyOfAll(), nil
+		if len(deletedIds) > 0 {
+			if err := tx.Delete(&Driver{}, "id IN ?", deletedIds).Error; err != nil {
+				return err
+			}
 		}
 
-		if srcIndex <= index {
-			for i := srcIndex; i < index+1; i++ {
-				s.data[i], s.data[i+1] = s.data[i+1], s.data[i]
+		if err := tx.Model(&DriverGroup{}).Where("id = ?", group.Id).Updates(map[string]any{
+			"name":               group.Name,
+			"type":               group.Type,
+			"mutually_exclusive": group.MutuallyExclusive,
+		}).Error; err != nil {
+			return err
+		}
+
+		for _, d := range group.Drivers {
+			d.GroupId = group.Id
+			if d.Id == 0 {
+				if err := tx.Omit("Incompatibles").Create(d).Error; err != nil {
+					return err
+				}
+			} else {
+				if err := tx.Omit("Incompatibles").Save(d).Error; err != nil {
+					return err
+				}
+			}
+			incompats := make([]*Driver, len(d.IncompatibleIds))
+			for i, iid := range d.IncompatibleIds {
+				incompats[i] = &Driver{Id: iid}
+			}
+			if err := tx.Model(d).Association("Incompatibles").Replace(incompats); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+}
+
+func (s *DriverGroupStorage) Remove(id uint) error {
+	return s.DB.Transaction(func(tx *gorm.DB) error {
+		result := tx.Delete(&DriverGroup{}, id)
+		if result.Error != nil {
+			return result.Error
+		}
+		if result.RowsAffected == 0 {
+			return errors.New("store: no item with the same ID was found")
+		}
+		return nil
+	})
+}
+
+func (s *DriverGroupStorage) Clone(id uint) error {
+	return s.DB.Transaction(func(tx *gorm.DB) error {
+		var original DriverGroup
+		if err := tx.Preload("Drivers.Incompatibles").First(&original, id).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return errors.New("store: no item with the same ID was found")
+			}
+			return err
+		}
+
+		var maxPos int
+		tx.Model(&DriverGroup{}).Select("COALESCE(MAX(position), -1)").Scan(&maxPos)
+
+		newGroup := DriverGroup{
+			Name:              original.Name + " (copy)",
+			Type:              original.Type,
+			MutuallyExclusive: original.MutuallyExclusive,
+			Position:          maxPos + 1,
+		}
+		if err := tx.Omit("Drivers").Create(&newGroup).Error; err != nil {
+			return err
+		}
+
+		oldToNew := make(map[uint]*Driver, len(original.Drivers))
+		for _, d := range original.Drivers {
+			newDriver := &Driver{
+				GroupId:      newGroup.Id,
+				Name:         d.Name,
+				Type:         d.Type,
+				Path:         d.Path,
+				Flags:        d.Flags,
+				MinExeTime:   d.MinExeTime,
+				AllowRtCodes: d.AllowRtCodes,
+			}
+			if err := tx.Create(newDriver).Error; err != nil {
+				return err
+			}
+			oldToNew[d.Id] = newDriver
+		}
+
+		for _, d := range original.Drivers {
+			if len(d.Incompatibles) == 0 {
+				continue
+			}
+			newDriver := oldToNew[d.Id]
+			newIncompats := make([]*Driver, 0, len(d.Incompatibles))
+			for _, inc := range d.Incompatibles {
+				if mapped, ok := oldToNew[inc.Id]; ok {
+					newIncompats = append(newIncompats, mapped)
+				}
+			}
+			if len(newIncompats) > 0 {
+				if err := tx.Model(newDriver).Association("Incompatibles").Replace(newIncompats); err != nil {
+					return err
+				}
+			}
+		}
+
+		return nil
+	})
+}
+
+func (s *DriverGroupStorage) MoveBehind(id uint, index int) error {
+	return s.DB.Transaction(func(tx *gorm.DB) error {
+		var srcPos int
+		if err := tx.Model(&DriverGroup{}).Select("position").Where("id = ?", id).Scan(&srcPos).Error; err != nil {
+			return err
+		}
+
+		destPos := index + 1
+
+		if srcPos == destPos {
+			return nil
+		}
+
+		if srcPos < destPos {
+			if err := tx.Model(&DriverGroup{}).
+				Where("position > ? AND position <= ?", srcPos, destPos).
+				UpdateColumn("position", gorm.Expr("position - 1")).Error; err != nil {
+				return err
 			}
 		} else {
-			for i := srcIndex; i > index+1; i-- {
-				s.data[i-1], s.data[i] = s.data[i], s.data[i-1]
+			if err := tx.Model(&DriverGroup{}).
+				Where("position >= ? AND position < ?", destPos, srcPos).
+				UpdateColumn("position", gorm.Expr("position + 1")).Error; err != nil {
+				return err
 			}
 		}
 
-		return s.copyOfAll(), s.Store.Write(s.data)
-	}
-}
-
-func (s DriverGroupStorage) copyOfAll() []DriverGroup {
-	return utils.Map(s.data, func(g *DriverGroup) DriverGroup { return *g })
+		return tx.Model(&DriverGroup{}).Where("id = ?", id).UpdateColumn("position", destPos).Error
+	})
 }

@@ -7,7 +7,7 @@ import { computed, ref, toRaw, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
-const props = defineProps<{ id?: string }>()
+const props = defineProps<{ id?: number }>()
 
 const { t } = useI18n()
 
@@ -41,7 +41,7 @@ const { data: group, reset } = useEditor({
 })
 
 // Track drivers that don't exist on system
-const notFoundDrivers = ref<string[]>([])
+const notFoundDrivers = ref<number[]>([])
 
 const findNotExists = (drivers: Array<storage.Driver>) =>
   Promise.all(
@@ -77,20 +77,13 @@ function handleSubmit() {
       })
   }
 
-  if (group.value.id == undefined) {
+  if (!group.value.id) {
     groupStorage
       .Add(group.value)
-      .then(gid => (group.value.id = gid))
       .then(handleSuccess)
       .catch(reason => toast.add({ title: reason.toString(), color: 'error' }))
   } else {
     const updateGroup = toRaw(group.value)
-    updateGroup.drivers = updateGroup.drivers.map(d => {
-      if (d.id.includes('new:')) {
-        d.id = ''
-      }
-      return d
-    })
     groupStorage
       .Update(updateGroup)
       .then(handleSuccess)
@@ -166,7 +159,7 @@ function handleSubmit() {
               v-else
               :key="d.id"
               class="grid grid-cols-10 items-center gap-2 border-b py-1.5 text-xs"
-              :class="{ 'bg-lime-50': d.id.includes('new:') }"
+              :class="{ 'bg-lime-50': d.id === 0 }"
             >
               <div class="col-span-2">
                 <p class="line-clamp-2 break-all">
@@ -266,7 +259,7 @@ function handleSubmit() {
         } else {
           group.drivers.push({
             ...newDriver,
-            id: `new:${group.drivers.length + 1}` // assign a temporary ID for editing
+            id: 0
           })
 
           console.table(toRaw(group))

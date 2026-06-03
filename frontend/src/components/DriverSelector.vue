@@ -5,12 +5,11 @@ import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
   driverGroups: Array<storage.DriverGroup>
-  excludes?: Array<string>
-  excludeBuiltin?: boolean
+  excludes?: Array<number>
   groupBy: 'group' | 'driver'
 }>()
 
-const model = defineModel<Array<string> | undefined>({ default: [] })
+const model = defineModel<Array<number> | undefined>({ default: [] })
 
 const { t: $t } = useI18n()
 
@@ -36,11 +35,6 @@ const filteredGroups = computed(() => {
           g.drivers.some(d => d.name.includes(searchPhrase.value))
       )
 })
-
-const builtinItems = computed(() => [
-  { label: $t('installSetting.setPassword'), value: 'set_password', type: 'builtin' },
-  { label: $t('installSetting.createPartition'), value: 'create_partition', type: 'builtin' }
-])
 
 const groupItems = computed(() =>
   props.groupBy === 'group'
@@ -77,13 +71,10 @@ const groupItems = computed(() =>
         :title="$t('driverForm.selectAll')"
         @click="
           () => {
-            model = [
-              ...($props.groupBy === 'group'
+            model =
+              $props.groupBy === 'group'
                 ? props.driverGroups.map(g => g.id)
-                : props.driverGroups.flatMap(g => g.drivers.flatMap(d => d.id))),
-              'set_password',
-              'create_partition'
-            ]
+                : props.driverGroups.flatMap(g => g.drivers.flatMap(d => d.id))
           }
         "
       >
@@ -103,40 +94,6 @@ const groupItems = computed(() =>
 
     <div class="overflow-auto rounded-lg border p-1.5">
       <div class="max-h-44 space-y-1.5">
-        <!-- Builtin items -->
-        <template v-if="!excludeBuiltin">
-          <label
-            v-for="item in builtinItems"
-            :key="item.value"
-            class="flex cursor-pointer items-center select-none"
-          >
-            <UCheckbox
-              size="sm"
-              :model-value="model?.includes(item.value) ?? false"
-              @update:model-value="
-                (checked: boolean | 'indeterminate') => {
-                  if (checked === true) {
-                    model = [...(model || []), item.value]
-                  } else {
-                    model = model?.filter(v => v !== item.value) ?? []
-                  }
-                }
-              "
-            />
-
-            <UBadge
-              v-if="item.type"
-              size="sm"
-              class="ms-1.5"
-              :style="`background-color: var(--color-${item.type})`"
-            >
-              &nbsp;
-            </UBadge>
-
-            <span class="ms-1.5">{{ item.label }}</span>
-          </label>
-        </template>
-
         <!-- Group/Driver items with color blocks -->
         <template v-for="item in groupItems" :key="item.value">
           <label class="flex cursor-pointer items-center select-none">

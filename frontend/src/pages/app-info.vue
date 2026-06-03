@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { latestRelease } from '@/utils'
 import { RunAndOutput } from '@/wailsjs/go/execute/CommandExecutor'
 import {
-  AppBinaryType,
   AppDriverPath,
   AppVersion,
+  PathExists,
   WebView2Path,
   WebView2Version
 } from '@/wailsjs/go/main/App'
+import { CheckForUpdates } from '@/wailsjs/go/update/Updater'
 import { BrowserOpenURL, Environment } from '@/wailsjs/runtime/runtime'
 import { Icon } from '@iconify/vue'
 import { onBeforeMount, ref, useTemplateRef } from 'vue'
@@ -25,7 +25,6 @@ const info = ref({
   app: {
     version: 'na',
     buildType: 'na',
-    binaryType: 'na',
     pathDriver: 'na'
   },
   webview: {
@@ -35,54 +34,58 @@ const info = ref({
 })
 
 const onCheck = ref(false)
+const preferBundled = ref(false)
+
+const appSettingStore = useAppSettingStore()
 
 onBeforeMount(() => {
   Promise.allSettled([
     AppVersion(),
-    AppBinaryType(),
     Environment(),
     AppDriverPath(),
     WebView2Version(),
-    WebView2Path()
-  ]).then(([ver, btype, env, pdri, vwv2, pwv2]) => {
-    if (ver.status != 'rejected') {
+    WebView2Path(),
+    PathExists('internals')
+  ]).then(([ver, env, pdri, vwv2, pwv2, hasInternals]) => {
+    if (ver.status !== 'rejected') {
       info.value.app.version = ver.value
     }
 
-    if (btype.status != 'rejected') {
-      info.value.app.binaryType = btype.value
-    }
-
-    if (env.status != 'rejected') {
+    if (env.status !== 'rejected') {
       info.value.app.buildType = env.value.buildType
     }
 
-    if (pdri.status != 'rejected') {
+    if (pdri.status !== 'rejected') {
       info.value.app.pathDriver = pdri.value
     }
 
-    if (vwv2.status != 'rejected') {
+    if (vwv2.status !== 'rejected') {
       info.value.webview.version = vwv2.value
     }
 
-    if (pwv2.status != 'rejected') {
+    if (pwv2.status !== 'rejected') {
       info.value.webview.location = pwv2.value
+    }
+
+    if (hasInternals.status !== 'rejected') {
+      preferBundled.value = hasInternals.value
     }
   })
 })
 
 function checkUpdate() {
-  if (Object.values(info.value.app).some(v => v == 'na')) {
+  if (Object.values(info.value.app).some(v => v === 'na')) {
     toast.add({ title: t('toast.checkUpdateFailed'), color: 'error' })
     return
   }
 
+  onCheck.value = true
   $loading.show()
 
-  latestRelease(info.value.app.version)
-    .then(release => {
-      if (release.hasUpdate) {
-        modal.value?.show(release, !['', 'na'].includes(info.value.webview.location))
+  CheckForUpdates(preferBundled.value, appSettingStore.settings.allow_pre_release)
+    .then(result => {
+      if (result.hasUpdate) {
+        modal.value?.show(result)
       } else {
         toast.add({ title: t('toast.noUpdate'), color: 'info' })
       }
@@ -91,6 +94,7 @@ function checkUpdate() {
       toast.add({ title: reason, color: 'error' })
     })
     .finally(() => {
+      onCheck.value = false
       $loading.hide()
     })
 }
@@ -219,11 +223,5 @@ function checkUpdate() {
     </div>
   </div>
 
-  <UpdateModal
-    ref="modal"
-    :app="{
-      version: info.app.version,
-      binaryType: info.app.binaryType
-    }"
-  ></UpdateModal>
+  <UpdateModal ref="modal" :current-version="info.app.version"></UpdateModal>
 </template>

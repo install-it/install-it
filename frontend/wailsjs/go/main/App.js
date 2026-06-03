@@ -42,10 +42,6 @@ export function SetContext(arg1) {
   return window['go']['main']['App']['SetContext'](arg1);
 }
 
-export function Update(arg1, arg2, arg3) {
-  return window['go']['main']['App']['Update'](arg1, arg2, arg3);
-}
-
 export function WebView2Path() {
   return window['go']['main']['App']['WebView2Path']();
 }

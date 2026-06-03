@@ -10,12 +10,16 @@ export function All() {
   return window['go']['storage']['MatchRuleStorage']['All']();
 }
 
+export function Clone(arg1) {
+  return window['go']['storage']['MatchRuleStorage']['Clone'](arg1);
+}
+
 export function Get(arg1) {
   return window['go']['storage']['MatchRuleStorage']['Get'](arg1);
 }
 
-export function RegisterEventHandlers() {
-  return window['go']['storage']['MatchRuleStorage']['RegisterEventHandlers']();
+export function MatchedGroupIds() {
+  return window['go']['storage']['MatchRuleStorage']['MatchedGroupIds']();
 }
 
 export function Remove(arg1) {

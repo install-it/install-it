@@ -22,8 +22,6 @@ export function SelectFolder(arg1:boolean):Promise<string>;
 
 export function SetContext(arg1:context.Context):Promise<void>;
 
-export function Update(arg1:string,arg2:string,arg3:boolean):Promise<void>;
-
 export function WebView2Path():Promise<string>;
 
 export function WebView2Version():Promise<string>;

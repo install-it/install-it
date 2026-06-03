@@ -4,11 +4,23 @@ import DOMPurify from 'dompurify'
 import { marked } from 'marked'
 import * as semver from 'semver'
 
-export async function latestRelease(currentVersion: string) {
+export async function latestRelease(currentVersion: string, binaryType?: string) {
   return fetch('https://api.github.com/repos/install-it/install-it/releases/latest')
     .then(response => response.json())
     .then(async body => {
       const version = semver.clean(body.tag_name) || '0.0.0'
+
+      let assetUrl = ''
+      let webviewAssetUrl: string | undefined
+      if (binaryType && Array.isArray(body.assets)) {
+        for (const asset of body.assets) {
+          if (asset.name === `install-it.${binaryType}.zip`) {
+            assetUrl = asset.browser_download_url as string
+          } else if (asset.name === `install-it.${binaryType}.webview.zip`) {
+            webviewAssetUrl = asset.browser_download_url as string
+          }
+        }
+      }
 
       return {
         hasUpdate: semver.gt(version, currentVersion),
@@ -17,7 +29,9 @@ export async function latestRelease(currentVersion: string) {
         releaseNotes: DOMPurify.sanitize(await marked.parse(body.body)),
         tag: body.tag_name as string,
         url: body.html_url as string,
-        version: version
+        version: version,
+        assetUrl,
+        webviewAssetUrl,
       }
     })
 }
