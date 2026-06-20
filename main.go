@@ -17,6 +17,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
+	"gorm.io/gorm"
 )
 
 //go:embed all:frontend/dist
@@ -34,6 +35,10 @@ var (
 	// Version struct, parsed from [buildVersion]
 	version *semver.Version
 	updater *update.Updater
+
+	db            *gorm.DB
+	groupStorage  *storage.DriverGroupStorage
+	matchRuleStorage *storage.MatchRuleStorage
 )
 
 func init() {
@@ -71,13 +76,17 @@ func main() {
 	app := &App{}
 	mgt := &execute.CommandExecutor{}
 
-	db, err := storage.OpenDB(filepath.Join(dirConf, "data.db"))
+	var err error
+	db, err = storage.OpenDB(filepath.Join(dirConf, "data.db"))
 	if err != nil {
 		panic(err)
 	}
 	if err := storage.RunMigrations(db); err != nil {
 		panic(err)
 	}
+
+	groupStorage = storage.NewDriverGroupStorage(db)
+	matchRuleStorage = storage.NewMatchRuleStorage(db)
 
 	err = wails.Run(&options.App{
 		Title:     "install-it",
@@ -111,9 +120,33 @@ func main() {
 			mgt,
 			updater,
 			&storage.AppSettingStorage{Store: &storage.FileStore{Path: filepath.Join(dirConf, "setting.json")}},
-			storage.NewDriverGroupStorage(db),
-			storage.NewMatchRuleStorage(db),
-			&porter.Porter{DirRoot: dirRoot, Message: make(chan string, 512), Targets: []string{dirConf, dirDir}},
+			groupStorage,
+			matchRuleStorage,
+			&porter.Porter{
+				DirRoot: dirRoot,
+				Message: make(chan string, 512),
+				Targets: []string{dirConf, dirDir},
+				OnBeforeBackup: func() error {
+					sqlDB, err := db.DB()
+					if err != nil {
+						return err
+					}
+					return sqlDB.Close()
+				},
+				OnAfterImport: func() error {
+					var err error
+					db, err = storage.OpenDB(filepath.Join(dirConf, "data.db"))
+					if err != nil {
+						return err
+					}
+					if err := storage.RunMigrations(db); err != nil {
+						return err
+					}
+					groupStorage.DB = db
+					matchRuleStorage.DB = db
+					return nil
+				},
+			},
 			&sysinfo.SysInfo{},
 		},
 		EnumBind: []interface{}{
