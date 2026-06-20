@@ -20,6 +20,9 @@ type Porter struct {
 
 	ctx        context.Context
 	cancelFunc context.CancelFunc // Function to cancel ongoing operations
+
+	OnBeforeBackup func() error // Called before backup to release resources (e.g. close DB handles)
+	OnAfterImport  func() error // Called after import to reacquire resources (e.g. reopen DB)
 }
 
 // Returns the current status of the porting process.
@@ -140,12 +143,18 @@ func (p *Porter) ImportFromFile(orig string) error {
 	}
 	defer p.exit()
 
+	if p.OnBeforeBackup != nil {
+		if err := p.OnBeforeBackup(); err != nil {
+			return err
+		}
+	}
+
 	if err := backup(p.progresses[0], p.Targets); err != nil {
-		return err
+		return errors.Join(err, p.onAfterImport())
 	}
 
 	err := fromZip(p.progresses[1], orig, p.DirRoot)
-	return errors.Join(err, cleanup(p.progresses[2], p.Targets, err != nil))
+	return errors.Join(err, cleanup(p.progresses[2], p.Targets, err != nil), p.onAfterImport())
 }
 
 // Downloads a ZIP file from a URL and imports its contents.
@@ -160,17 +169,23 @@ func (p *Porter) ImportFromURL(url string) error {
 	}
 	defer p.exit()
 
+	if p.OnBeforeBackup != nil {
+		if err := p.OnBeforeBackup(); err != nil {
+			return err
+		}
+	}
+
 	if err := backup(p.progresses[0], p.Targets); err != nil {
-		return err
+		return errors.Join(err, p.onAfterImport())
 	}
 
 	filename, err := download(p.progresses[1], url)
 	if err != nil {
-		return errors.Join(err, cleanup(p.progresses[3], p.Targets, true))
+		return errors.Join(err, cleanup(p.progresses[3], p.Targets, true), p.onAfterImport())
 	}
 
 	err = fromZip(p.progresses[2], filename, p.DirRoot)
-	return errors.Join(err, cleanup(p.progresses[3], p.Targets, err != nil))
+	return errors.Join(err, cleanup(p.progresses[3], p.Targets, err != nil), p.onAfterImport())
 }
 
 // Marks all pending progress steps as skipped.
@@ -180,4 +195,11 @@ func (p *Porter) exit() {
 			prog.Status = status.Skiped
 		}
 	}
+}
+
+func (p *Porter) onAfterImport() error {
+	if p.OnAfterImport != nil {
+		return p.OnAfterImport()
+	}
+	return nil
 }
