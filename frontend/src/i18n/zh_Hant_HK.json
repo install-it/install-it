@@ -17,6 +17,7 @@
     "motherboard": "底板",
     "nic": "網絡介面卡",
     "pleaseSelect": "請選擇",
+    "refresh": "重新整理",
     "save": "儲存",
     "select": "選擇",
     "storage": "儲存裝置",
@@ -185,7 +186,6 @@
     "running": "執行中",
     "speeded": "失敗"
   },
-
   "successAction": {
     "firmware": "進入 BIOS/UEFI",
     "nothing": "沒有動作",
