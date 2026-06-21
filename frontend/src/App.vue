@@ -2,7 +2,7 @@
 import { AppVersion } from '@/wailsjs/go/main/App'
 import * as appSettingStorage from '@/wailsjs/go/storage/AppSettingStorage'
 import * as driverGroupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
-import * as matchRuleStorage from '@/wailsjs/go/storage/MatchRuleStorage'
+import * as ruleSetStorage from '@/wailsjs/go/storage/RuleSetStorage'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { RouteLocationRaw } from 'vue-router'
@@ -39,7 +39,7 @@ Promise.all([
     .catch(() => {
       toast.add({ title: t('toast.readAppSettingFailed'), color: 'error' })
     }),
-  matchRuleStorage
+  ruleSetStorage
     .All()
     .then(rs => {
       matchStore.ruleSets = rs
