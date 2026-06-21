@@ -3,7 +3,7 @@ import CommandStatueModal from '@/components/CommandStatusModal.vue'
 import { type Command } from '@/types/execute'
 import * as utils from '@/utils'
 import * as executor from '@/wailsjs/go/execute/CommandExecutor'
-import * as matchRuleStorage from '@/wailsjs/go/storage/MatchRuleStorage'
+import * as matcher from '@/wailsjs/go/matching/Matcher'
 import { computed, onBeforeMount, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -40,7 +40,7 @@ onBeforeMount(() => {
 })
 
 function selectMatchedOptions() {
-  matchRuleStorage
+  matcher
     .MatchedGroupIds()
     .then(matchedIds => {
       matchedIds.forEach(gid => {

@@ -14,7 +14,7 @@ import (
 func TestDriverGroupStorage_CascadeDeleteFromMatchRule(t *testing.T) {
 	db := openExternalTestDB(t)
 	dgs := storage.NewDriverGroupStorage(db)
-	mrs := storage.NewMatchRuleStorage(db)
+	mrs := storage.NewRuleSetStorage(db)
 
 	groupID := addTestGroup(t, dgs, storage.DriverGroup{
 		Name: "Cascade Group",

@@ -1,5 +1,11 @@
 package storage
 
+import (
+	"encoding/json"
+	"errors"
+	"os"
+)
+
 type AppSetting struct {
 	CreatePartition    bool          `json:"create_partition"`
 	SetPassword        bool          `json:"set_password"`
@@ -26,25 +32,43 @@ const (
 )
 
 type AppSettingStorage struct {
-	Store   Store
+	Path    string
 	setting AppSetting
 }
 
 func (s *AppSettingStorage) All() (AppSetting, error) {
-	if !s.Store.Exist() {
-		s.setting = AppSetting{
-			AutoCheckUpdate: true, FilterMiniportNic: true, FilterMicrosoftNic: true,
-			Language: "en", ParallelInstall: true, SuccessAction: Nothing, SuccessActionDelay: 5,
-			AllowPreRelease: false,
+	bytes, err := os.ReadFile(s.Path)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			s.setting = AppSetting{
+				AutoCheckUpdate:    true,
+				FilterMiniportNic:  true,
+				FilterMicrosoftNic: true,
+				Language:           "en",
+				ParallelInstall:    true,
+				SuccessAction:      Nothing,
+				SuccessActionDelay: 5,
+			}
+			return s.setting, s.write()
 		}
-		s.Store.Write(s.setting)
-	} else {
-		s.Store.Read(&s.setting)
+		return AppSetting{}, err
+	}
+
+	if err := json.Unmarshal(bytes, &s.setting); err != nil {
+		return AppSetting{}, err
 	}
 	return s.setting, nil
 }
 
 func (s *AppSettingStorage) Update(v AppSetting) (AppSetting, error) {
 	s.setting = v
-	return s.setting, s.Store.Write(v)
+	return s.setting, s.write()
+}
+
+func (s *AppSettingStorage) write() error {
+	bytes, err := json.Marshal(s.setting)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(s.Path, bytes, 0644)
 }

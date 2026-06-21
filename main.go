@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	"install-it/pkg/execute"
+	"install-it/pkg/matching"
 	"install-it/pkg/porter"
 	"install-it/pkg/status"
 	"install-it/pkg/storage"
@@ -34,6 +35,11 @@ var (
 	// Version struct, parsed from [buildVersion]
 	version *semver.Version
 	updater *update.Updater
+
+	db             *storage.Database
+	groupStorage   *storage.DriverGroupStorage
+	ruleSetStorage *storage.RuleSetStorage
+	matcher        *matching.Matcher
 )
 
 func init() {
@@ -71,13 +77,18 @@ func main() {
 	app := &App{}
 	mgt := &execute.CommandExecutor{}
 
-	db, err := storage.OpenDB(filepath.Join(dirConf, "data.db"))
+	var err error
+	db, err = storage.Open(filepath.Join(dirConf, "data.db"))
 	if err != nil {
 		panic(err)
 	}
-	if err := storage.RunMigrations(db); err != nil {
+	if err := db.Migrate(); err != nil {
 		panic(err)
 	}
+
+	groupStorage = storage.NewDriverGroupStorage(db)
+	ruleSetStorage = storage.NewRuleSetStorage(db)
+	matcher = matching.NewMatcher(ruleSetStorage, matching.WMIHardwareQuerier{})
 
 	err = wails.Run(&options.App{
 		Title:     "install-it",
@@ -110,10 +121,24 @@ func main() {
 			app,
 			mgt,
 			updater,
-			&storage.AppSettingStorage{Store: &storage.FileStore{Path: filepath.Join(dirConf, "setting.json")}},
-			storage.NewDriverGroupStorage(db),
-			storage.NewMatchRuleStorage(db),
-			&porter.Porter{DirRoot: dirRoot, Message: make(chan string, 512), Targets: []string{dirConf, dirDir}},
+			&storage.AppSettingStorage{Path: filepath.Join(dirConf, "setting.json")},
+			groupStorage,
+			ruleSetStorage,
+			matcher,
+			&porter.Porter{
+				DirRoot: dirRoot,
+				Message: make(chan string, 512),
+				Targets: []string{dirConf, dirDir},
+				OnBeforeBackup: func() error {
+					return db.Close()
+				},
+				OnAfterImport: func() error {
+					if err := db.Reopen(); err != nil {
+						return err
+					}
+					return db.Migrate()
+				},
+			},
 			&sysinfo.SysInfo{},
 		},
 		EnumBind: []interface{}{

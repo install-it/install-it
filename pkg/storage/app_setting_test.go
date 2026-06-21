@@ -2,13 +2,15 @@ package storage
 
 import (
 	"encoding/json"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
 func TestAppSettingStorage_AllWithoutExistingFile(t *testing.T) {
-	storage := &AppSettingStorage{Store: &MemoryStore{}}
+	s := &AppSettingStorage{Path: filepath.Join(t.TempDir(), "setting.json")}
 
-	result, err := storage.All()
+	result, err := s.All()
 
 	if err != nil {
 		t.Errorf("expected nil error, got %v", err)
@@ -54,11 +56,14 @@ func TestAppSettingStorage_AllWithExistingFile(t *testing.T) {
 		HideNotFound:       true,
 	}
 
-	memStore := &MemoryStore{}
-	memStore.Write(existingSetting)
-	storage := &AppSettingStorage{Store: memStore}
+	dir := t.TempDir()
+	path := filepath.Join(dir, "setting.json")
+	bytes := jsonMarshal(existingSetting)
+	os.WriteFile(path, bytes, 0644)
 
-	result, err := storage.All()
+	s := &AppSettingStorage{Path: path}
+
+	result, err := s.All()
 
 	if err != nil {
 		t.Errorf("expected nil error, got %v", err)
@@ -98,7 +103,7 @@ func TestAppSettingStorage_AllWithExistingFile(t *testing.T) {
 }
 
 func TestAppSettingStorage_Update(t *testing.T) {
-	storage := &AppSettingStorage{Store: &MemoryStore{}}
+	s := &AppSettingStorage{Path: filepath.Join(t.TempDir(), "setting.json")}
 
 	newSetting := AppSetting{
 		CreatePartition:    true,
@@ -115,7 +120,7 @@ func TestAppSettingStorage_Update(t *testing.T) {
 		HideNotFound:       true,
 	}
 
-	result, err := storage.Update(newSetting)
+	result, err := s.Update(newSetting)
 
 	if err != nil {
 		t.Errorf("expected nil error, got %v", err)
@@ -130,25 +135,24 @@ func TestAppSettingStorage_Update(t *testing.T) {
 	if result.SuccessActionDelay != 30 {
 		t.Errorf("expected SuccessActionDelay to be 30, got %d", result.SuccessActionDelay)
 	}
-
 }
 
 func TestAppSettingStorage_UpdateMultipleTimes(t *testing.T) {
-	storage := &AppSettingStorage{Store: &MemoryStore{}}
+	s := &AppSettingStorage{Path: filepath.Join(t.TempDir(), "setting.json")}
 
 	setting1 := AppSetting{
 		Language:        "en",
 		AutoCheckUpdate: true,
 		SuccessAction:   Nothing,
 	}
-	storage.Update(setting1)
+	s.Update(setting1)
 
 	setting2 := AppSetting{
 		Language:        "zh_Hant_HK",
 		AutoCheckUpdate: false,
 		SuccessAction:   Reboot,
 	}
-	result, err := storage.Update(setting2)
+	result, err := s.Update(setting2)
 
 	if err != nil {
 		t.Errorf("expected nil error, got %v", err)
@@ -166,31 +170,24 @@ func TestAppSettingStorage_UpdateMultipleTimes(t *testing.T) {
 }
 
 func TestAppSettingStorage_UpdateCachesResult(t *testing.T) {
-	storage := &AppSettingStorage{Store: &MemoryStore{}}
+	s := &AppSettingStorage{Path: filepath.Join(t.TempDir(), "setting.json")}
 
 	setting := AppSetting{
 		Language:        "en",
 		AutoCheckUpdate: true,
 		SuccessAction:   Nothing,
 	}
-	storage.Update(setting)
+	s.Update(setting)
 
-	result, _ := storage.All()
+	result, _ := s.All()
 
 	if result.Language != "en" {
 		t.Errorf("expected cached Language to be 'en', got %s", result.Language)
 	}
 }
 
-// rawJSONStore is a test-only Store that serves a fixed raw JSON string.
-type rawJSONStore struct{ raw string }
-
-func (r *rawJSONStore) Read(v any) error  { return json.Unmarshal([]byte(r.raw), v) }
-func (r *rawJSONStore) Write(v any) error { return nil }
-func (r *rawJSONStore) Exist() bool       { return true }
-
 // TestLegacySettingMigration simulates loading a settings file that predates
-// the AllowPreRelease field.  The field must default to false with no error.
+// the AllowPreRelease field. The field must default to false with no error.
 func TestLegacySettingMigration(t *testing.T) {
 	// JSON from an older version — AllowPreRelease / allow_pre_release key absent.
 	legacyJSON := `{
@@ -208,7 +205,11 @@ func TestLegacySettingMigration(t *testing.T) {
 		"hide_not_found": false
 	}`
 
-	s := &AppSettingStorage{Store: &rawJSONStore{raw: legacyJSON}}
+	dir := t.TempDir()
+	path := filepath.Join(dir, "setting.json")
+	os.WriteFile(path, []byte(legacyJSON), 0644)
+
+	s := &AppSettingStorage{Path: path}
 
 	result, err := s.All()
 	if err != nil {
@@ -224,4 +225,13 @@ func TestLegacySettingMigration(t *testing.T) {
 	if result.AutoCheckUpdate != true {
 		t.Errorf("AutoCheckUpdate = %v, want true", result.AutoCheckUpdate)
 	}
+}
+
+// jsonMarshal is a test helper that panics on marshal error.
+func jsonMarshal(v any) []byte {
+	b, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	return b
 }

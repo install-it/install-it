@@ -17,6 +17,7 @@
     "motherboard": "Motherboard",
     "nic": "Network Interface Card",
     "pleaseSelect": "Please Select",
+    "refresh": "Refresh",
     "save": "Save",
     "select": "Select",
     "storage": "Storage",
@@ -183,7 +184,6 @@
     "running": "running",
     "speeded": "speeded"
   },
-
   "successAction": {
     "firmware": "Reboot to BIOS/UEFI",
     "nothing": "Nothing",
@@ -193,12 +193,10 @@
   "systemUtility": {
     "title": "Setup Tools",
     "subtitle": "Quick access to setup-related Windows settings, management consoles, and power options.",
-
     "computerManagement": "Computer Management",
     "settings": "Setting",
     "windowsSettings": "Windows Settings",
     "deviceManager": "Device Manager",
-
     "windowsUpdate": "Windows Update",
     "activation": "Windows Activation",
     "wifi": "Wi-Fi",
