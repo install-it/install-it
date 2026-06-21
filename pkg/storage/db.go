@@ -7,19 +7,51 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-func OpenDB(path string) (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open(path), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Silent),
-	})
+// Database wraps a gorm.DB connection with its file path so it can be reopened
+// after the underlying file is replaced (e.g. by Porter import).
+type Database struct {
+	db   *gorm.DB
+	path string
+}
+
+// Open creates a new Database backed by a SQLite file at path.
+func Open(path string) (*Database, error) {
+	db, err := openDB(path)
 	if err != nil {
 		return nil, err
 	}
-	db.Exec("PRAGMA foreign_keys = ON")
-	return db, nil
+	return &Database{db: db, path: path}, nil
 }
 
-func RunMigrations(db *gorm.DB) error {
-	m := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
+// DB returns the underlying gorm.DB handle.
+func (d *Database) DB() *gorm.DB { return d.db }
+
+// Close closes the underlying database connection.
+func (d *Database) Close() error {
+	sqlDB, err := d.db.DB()
+	if err != nil {
+		return err
+	}
+	return sqlDB.Close()
+}
+
+// Reopen closes the current connection and opens a new one to the same path.
+// This is used after Porter replaces the database file on import.
+func (d *Database) Reopen() error {
+	if err := d.Close(); err != nil {
+		return err
+	}
+	db, err := openDB(d.path)
+	if err != nil {
+		return err
+	}
+	d.db = db
+	return nil
+}
+
+// Migrate runs all pending database migrations.
+func (d *Database) Migrate() error {
+	return gormigrate.New(d.db, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		{
 			ID: "2026052601_baseline",
 			Migrate: func(tx *gorm.DB) error {
@@ -48,6 +80,16 @@ func RunMigrations(db *gorm.DB) error {
 					"rule_sets", "drivers", "driver_groups")
 			},
 		},
+	}).Migrate()
+}
+
+func openDB(path string) (*gorm.DB, error) {
+	db, err := gorm.Open(sqlite.Open(path), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
 	})
-	return m.Migrate()
+	if err != nil {
+		return nil, err
+	}
+	db.Exec("PRAGMA foreign_keys = ON")
+	return db, nil
 }

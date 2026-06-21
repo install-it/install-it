@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	"install-it/pkg/execute"
+	"install-it/pkg/matching"
 	"install-it/pkg/porter"
 	"install-it/pkg/status"
 	"install-it/pkg/storage"
@@ -17,7 +18,6 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
-	"gorm.io/gorm"
 )
 
 //go:embed all:frontend/dist
@@ -36,9 +36,10 @@ var (
 	version *semver.Version
 	updater *update.Updater
 
-	db            *gorm.DB
-	groupStorage  *storage.DriverGroupStorage
-	matchRuleStorage *storage.MatchRuleStorage
+	db             *storage.Database
+	groupStorage   *storage.DriverGroupStorage
+	ruleSetStorage *storage.RuleSetStorage
+	matcher        *matching.Matcher
 )
 
 func init() {
@@ -77,16 +78,17 @@ func main() {
 	mgt := &execute.CommandExecutor{}
 
 	var err error
-	db, err = storage.OpenDB(filepath.Join(dirConf, "data.db"))
+	db, err = storage.Open(filepath.Join(dirConf, "data.db"))
 	if err != nil {
 		panic(err)
 	}
-	if err := storage.RunMigrations(db); err != nil {
+	if err := db.Migrate(); err != nil {
 		panic(err)
 	}
 
 	groupStorage = storage.NewDriverGroupStorage(db)
-	matchRuleStorage = storage.NewMatchRuleStorage(db)
+	ruleSetStorage = storage.NewRuleSetStorage(db)
+	matcher = matching.NewMatcher(ruleSetStorage, matching.WMIHardwareQuerier{})
 
 	err = wails.Run(&options.App{
 		Title:     "install-it",
@@ -119,32 +121,22 @@ func main() {
 			app,
 			mgt,
 			updater,
-			&storage.AppSettingStorage{Store: &storage.FileStore{Path: filepath.Join(dirConf, "setting.json")}},
+			&storage.AppSettingStorage{Path: filepath.Join(dirConf, "setting.json")},
 			groupStorage,
-			matchRuleStorage,
+			ruleSetStorage,
+			matcher,
 			&porter.Porter{
 				DirRoot: dirRoot,
 				Message: make(chan string, 512),
 				Targets: []string{dirConf, dirDir},
 				OnBeforeBackup: func() error {
-					sqlDB, err := db.DB()
-					if err != nil {
-						return err
-					}
-					return sqlDB.Close()
+					return db.Close()
 				},
 				OnAfterImport: func() error {
-					var err error
-					db, err = storage.OpenDB(filepath.Join(dirConf, "data.db"))
-					if err != nil {
+					if err := db.Reopen(); err != nil {
 						return err
 					}
-					if err := storage.RunMigrations(db); err != nil {
-						return err
-					}
-					groupStorage.DB = db
-					matchRuleStorage.DB = db
-					return nil
+					return db.Migrate()
 				},
 			},
 			&sysinfo.SysInfo{},
