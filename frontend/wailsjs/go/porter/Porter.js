@@ -6,12 +6,16 @@ export function Abort() {
   return window['go']['porter']['Porter']['Abort']();
 }
 
+export function DownloadAndValidate(arg1) {
+  return window['go']['porter']['Porter']['DownloadAndValidate'](arg1);
+}
+
 export function Export(arg1) {
   return window['go']['porter']['Porter']['Export'](arg1);
 }
 
-export function ImportFromFile(arg1) {
-  return window['go']['porter']['Porter']['ImportFromFile'](arg1);
+export function ImportFromFile(arg1, arg2) {
+  return window['go']['porter']['Porter']['ImportFromFile'](arg1, arg2);
 }
 
 export function ImportFromURL(arg1) {
@@ -22,6 +26,14 @@ export function Progress() {
   return window['go']['porter']['Porter']['Progress']();
 }
 
+export function RecoverOrphanedBackups() {
+  return window['go']['porter']['Porter']['RecoverOrphanedBackups']();
+}
+
 export function Status() {
   return window['go']['porter']['Porter']['Status']();
+}
+
+export function ValidateZip(arg1) {
+  return window['go']['porter']['Porter']['ValidateZip'](arg1);
 }
