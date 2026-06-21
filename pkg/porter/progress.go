@@ -3,61 +3,122 @@ package porter
 import (
 	"context"
 	"install-it/pkg/status"
+	"sync"
 	"time"
 )
 
-// Progress tracks the status and metrics of a single task.
-// It implements io.Writer to allow tracking of byte-based progress (e.g., during downloads).
-type Progress struct {
-	Name    string          `json:"name"`   // Name of the task
-	Status  status.Status   `json:"status"` // Current status: "pending", "running", "completed", "failed", "aborted"
-	Total   int64           `json:"total"`
-	Current int64           `json:"current"`
-	StartAt time.Time       `json:"startAt"` // Timestamp when the task started
-	Error   error           `json:"error"`   // Error encountered during execution, if any
-	message chan string     // Channel for sending progress messages
-	context context.Context // Context for cancellation and timeout control
+// JobSnapshot is a point-in-time view of the current job, polled by the frontend.
+type JobSnapshot struct {
+	Status   status.Status `json:"status"`   // pending|running|completed|failed|aborted
+	Step     string        `json:"step"`      // "download"|"backup"|"extract"|"cleanup"|"" when idle
+	Progress float64       `json:"progress"`  // 0.0 to 1.0
+	Messages []string      `json:"messages"`  // recent messages (tail)
 }
 
-// Implements the io.Writer interface.
-// It updates the Current progress based on the number of bytes written.
-func (p *Progress) Write(b []byte) (int, error) {
-	n := len(b)
-	p.Current += int64(n)
-	return n, nil
+// job tracks the state of a single export/import operation.
+type job struct {
+	mu       sync.Mutex
+	status   status.Status
+	step     string
+	progress float64
+	messages []string // ring buffer, keep last 100
+	startAt  time.Time
+
+	ctx       context.Context
+	cancel    context.CancelFunc
+	messageCh chan string // buffered channel for receiving messages from worker
 }
 
-// Initializes the progress tracking with a total byte count.
-func (p *Progress) Start(total int64) {
-	p.StartAt = time.Now()
-	p.Status = status.Running
-	p.Total = total
-}
-
-// Adds a given number of bytes to the current progress.
-func (p *Progress) Accumulate(current int64) {
-	p.Current += current
-}
-
-// Marks the progress as completed and sets Current to Total.
-func (p *Progress) Complete() {
-	p.Current = p.Total
-	p.Status = status.Completed
-}
-
-// Marks the progress as failed or aborted depending on the error type.
-func (p *Progress) Fail(err error) {
-	p.Error = err
-	if err == context.Canceled {
-		p.Status = status.Aborted
-	} else {
-		p.Status = status.Failed
+func newJob() *job {
+	ctx, cancel := context.WithCancel(context.Background())
+	return &job{
+		status:    status.Pending,
+		ctx:       ctx,
+		cancel:    cancel,
+		messageCh: make(chan string, 512),
+		messages:  make([]string, 0, 100),
 	}
 }
 
-// Type binding to the frontend progress query
-type Progresses struct {
-	Progresses []Progress    `json:"tasks"`    // List of individual task progress
-	Messages   []string      `json:"messages"` // Collected messages from all tasks
-	Status     status.Status `json:"status"`   // Overall status of the porting process
+func (j *job) start() {
+	j.mu.Lock()
+	j.status = status.Running
+	j.startAt = time.Now()
+	j.mu.Unlock()
 }
+
+func (j *job) setStep(name string) {
+	j.mu.Lock()
+	j.step = name
+	j.mu.Unlock()
+}
+
+func (j *job) setProgress(p float64) {
+	j.mu.Lock()
+	if p < 0 {
+		p = 0
+	}
+	if p > 1 {
+		p = 1
+	}
+	j.progress = p
+	j.mu.Unlock()
+}
+
+// msg sends a message to the channel (non-blocking via select with default).
+func (j *job) msg(s string) {
+	select {
+	case j.messageCh <- s:
+	default:
+	}
+}
+
+func (j *job) complete() {
+	j.mu.Lock()
+	j.status = status.Completed
+	j.progress = 1.0
+	j.mu.Unlock()
+}
+
+// fail sets status=Failed (or Aborted if err is context.Canceled).
+func (j *job) fail(err error) {
+	j.mu.Lock()
+	if err == context.Canceled {
+		j.status = status.Aborted
+	} else {
+		j.status = status.Failed
+	}
+	j.mu.Unlock()
+}
+
+// snapshot drains messageCh into messages (keep last 100) and returns a snapshot.
+func (j *job) snapshot() JobSnapshot {
+	for {
+		select {
+		case m := <-j.messageCh:
+			j.messages = append(j.messages, m)
+		default:
+			goto done
+		}
+	}
+done:
+
+	if len(j.messages) > 100 {
+		j.messages = j.messages[len(j.messages)-100:]
+	}
+
+	j.mu.Lock()
+	defer j.mu.Unlock()
+
+	msgs := make([]string, len(j.messages))
+	copy(msgs, j.messages)
+
+	return JobSnapshot{
+		Status:   j.status,
+		Step:     j.step,
+		Progress: j.progress,
+		Messages: msgs,
+	}
+}
+
+

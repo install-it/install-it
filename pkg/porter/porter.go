@@ -1,205 +1,326 @@
 package porter
 
 import (
-	"context"
+	"archive/zip"
 	"errors"
+	"fmt"
 	"install-it/pkg/status"
-	"install-it/pkg/utils"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
+
+// ImportPreview describes what's in a ZIP, returned by ValidateZip and DownloadAndValidate.
+type ImportPreview struct {
+	ExportedAt  time.Time `json:"exportedAt"`
+	HasSettings bool      `json:"hasSettings"`
+	HasData     bool      `json:"hasData"`
+	HasDatabase bool      `json:"hasDatabase"` // for warning UI
+	HasDrivers  bool      `json:"hasDrivers"`  // for warning UI
+	DriverCount int       `json:"driverCount"`
+	DriverSize  int64     `json:"driverSize"`
+}
+
+// ImportOptions is the user's category selection for import.
+type ImportOptions struct {
+	Settings bool `json:"settings"`
+	Data     bool `json:"data"`
+}
 
 // Porter manages the porting process including export, import, and progress tracking.
 type Porter struct {
 	DirRoot string   // Root directory for import/export operations
 	Targets []string // Target directories to be backed up or compressed
 
-	Message    chan string // Channel for progress messages
-	progresses []*Progress // Slice of progress trackers for each step
+	OnBeforeBackup func() error // Called before backup to close DB
+	OnAfterImport  func() error // Called after import to reopen DB
 
-	ctx        context.Context
-	cancelFunc context.CancelFunc // Function to cancel ongoing operations
-
-	OnBeforeBackup func() error // Called before backup to release resources (e.g. close DB handles)
-	OnAfterImport  func() error // Called after import to reacquire resources (e.g. reopen DB)
+	job      *job   // Current job, nil when idle
+	tempPath string // Temp file from DownloadAndValidate, cleaned up after ImportFromURL
 }
 
-// Returns the current status of the porting process.
-func (p Porter) Status() status.Status {
-	if len(p.progresses) == 0 {
+func (p *Porter) Status() status.Status {
+	if p.job == nil {
 		return status.Pending
 	}
-
-	if p.ctx.Err() == context.Canceled {
-		if utils.Some(p.progresses, func(p *Progress) bool {
-			return strings.Contains(string(p.Status), "ing")
-		}) {
-			return status.Aborting
-		}
-		return status.Aborted
-	}
-
-	if utils.All(p.progresses, func(p *Progress) bool { return p.Status == status.Pending }) {
-		return status.Pending
-	}
-	if utils.All(p.progresses, func(p *Progress) bool { return p.Status == status.Completed }) {
-		return status.Completed
-	}
-	if utils.All(p.progresses, func(p *Progress) bool { return p.Status != status.Failed }) {
-		return status.Running
-	}
-	return status.Failed
+	p.job.mu.Lock()
+	defer p.job.mu.Unlock()
+	return p.job.status
 }
 
-// Cancels the ongoing porting process.
-func (p Porter) Abort() error {
-	if len(p.progresses) == 0 || p.cancelFunc == nil {
-		return errors.New("porter: no started porting job")
-	}
-
-	switch p.Status() {
-	case status.Aborting:
-		return nil
-	case status.Aborted:
-		return errors.New("porter: already aborted")
-	case status.Running:
-		p.Message <- "Cancelling..."
-		p.cancelFunc()
-		return nil
-	default:
+func (p *Porter) Abort() error {
+	if p.job == nil {
 		return errors.New("porter: no running porting job")
 	}
+	p.job.mu.Lock()
+	defer p.job.mu.Unlock()
+	if p.job.status != status.Running {
+		return errors.New("porter: no running porting job")
+	}
+	p.job.cancel()
+	return nil
 }
 
-// Returns the current progress and messages of the porting process.
-func (p Porter) Progress() (Progresses, error) {
-	if len(p.progresses) == 0 {
-		return Progresses{}, errors.New("porter: no started porting job")
+func (p *Porter) Progress() (JobSnapshot, error) {
+	if p.job == nil {
+		return JobSnapshot{}, errors.New("porter: no started job")
 	}
-
-	messageses := make([]string, 0, len(p.Message))
-	for range len(p.Message) {
-		messageses = append(messageses, <-p.Message)
-	}
-
-	progresses := make([]Progress, len(p.progresses))
-	for i, prog := range p.progresses {
-		progresses[i] = *prog
-	}
-
-	return Progresses{
-		Progresses: progresses,
-		Messages:   messageses,
-		Status:     p.Status(),
-	}, nil
+	return p.job.snapshot(), nil
 }
 
-// Compresses the target directories into a ZIP file at the destination.
 func (p *Porter) Export(dest string) (err error) {
-	p.ctx, p.cancelFunc = context.WithCancel(context.Background())
-
-	p.progresses = []*Progress{
-		{context: p.ctx, message: p.Message, Name: "initialisation", Status: status.Pending},
-		{context: p.ctx, message: p.Message, Name: "compression", Status: status.Pending},
-	}
-	defer p.exit()
-
-	paths, err := func(tracker *Progress) (paths []string, err error) {
-		tracker.Start(int64(len(p.Targets)))
-		defer updateProgress(tracker, err)
-
-		if cwd, err := os.Getwd(); err != nil {
-			return nil, err
+	p.job = newJob()
+	p.job.start()
+	defer func() {
+		if err != nil {
+			p.job.fail(err)
 		} else {
-			relpaths := []string{}
-			for _, dir := range p.Targets {
-				if rel, err := filepath.Rel(cwd, dir); err != nil {
-					return relpaths, err
-				} else {
-					tracker.Accumulate(1)
-					relpaths = append(relpaths, rel)
-				}
-			}
-			return relpaths, nil
-
+			p.job.complete()
 		}
-	}(p.progresses[0])
+	}()
 
+	return toZip(p.job, dest, p.DirRoot, p.Targets)
+}
+
+// validateZipContents reads the manifest and scans ZIP entries for recognized data.
+func validateZipContents(path string) (ImportPreview, error) {
+	zr, err := zip.OpenReader(path)
 	if err != nil {
+		return ImportPreview{}, fmt.Errorf("porter: cannot open zip: %w", err)
+	}
+	defer zr.Close()
+
+	m, err := readManifest(zr)
+	if err != nil {
+		return ImportPreview{}, err
+	}
+
+	if m.FormatVersion > currentFormatVersion {
+		return ImportPreview{}, fmt.Errorf("porter: archive format version %d is too new (max: %d)", m.FormatVersion, currentFormatVersion)
+	}
+
+	preview := ImportPreview{
+		ExportedAt: m.ExportedAt,
+	}
+
+	for _, f := range zr.File {
+		name := filepath.ToSlash(f.Name)
+
+		switch {
+		case name == "conf/setting.json":
+			preview.HasSettings = true
+		case name == "conf/data.db":
+			preview.HasDatabase = true
+		case strings.HasPrefix(name, "drivers/"):
+			if !preview.HasDrivers {
+				preview.HasDrivers = true
+			}
+			if !f.FileInfo().IsDir() {
+				preview.DriverCount++
+				preview.DriverSize += int64(f.FileInfo().Size())
+			}
+		}
+	}
+
+	preview.HasData = preview.HasDatabase || preview.HasDrivers
+
+	if !preview.HasSettings && !preview.HasData {
+		return ImportPreview{}, fmt.Errorf("porter: no install-it data found in archive")
+	}
+
+	return preview, nil
+}
+
+// ValidateZip reads a ZIP and returns an ImportPreview. No job needed (instant).
+func (p *Porter) ValidateZip(path string) (ImportPreview, error) {
+	return validateZipContents(path)
+}
+
+// DownloadAndValidate downloads a ZIP from a URL, validates it, and stores the temp path for ImportFromURL.
+func (p *Porter) DownloadAndValidate(url string) (preview ImportPreview, err error) {
+	p.job = newJob()
+	p.job.start()
+	defer func() {
+		if err != nil {
+			if p.tempPath != "" {
+				os.Remove(p.tempPath)
+				p.tempPath = ""
+			}
+			p.job.fail(err)
+		} else {
+			p.job.complete()
+		}
+	}()
+
+	path, err := download(p.job, url)
+	if err != nil {
+		return ImportPreview{}, err
+	}
+
+	p.tempPath = path
+
+	preview, err = validateZipContents(path)
+	if err != nil {
+		os.Remove(path)
+		p.tempPath = ""
+		return ImportPreview{}, err
+	}
+
+	return preview, nil
+}
+
+// ImportFromFile backs up existing files, extracts selected categories, and cleans up or rolls back on failure.
+func (p *Porter) ImportFromFile(path string, opts ImportOptions) error {
+	p.job = newJob()
+	p.job.start()
+
+	var (
+		dbClosed  bool
+		timestamp string
+	)
+
+	defer func() {
+		// If db was closed and we haven't re-opened yet, do it now
+		if dbClosed {
+			if p.OnAfterImport != nil {
+				p.OnAfterImport()
+			}
+		}
+	}()
+
+	// GATE 1: Validate the ZIP and determine what to import
+	preview, err := validateZipContents(path)
+	if err != nil {
+		p.job.fail(err)
 		return err
 	}
-	return toZip(p.progresses[1], dest, paths...)
-}
 
-// Restores data from a ZIP file and cleans up or restores backups.
-func (p *Porter) ImportFromFile(orig string) error {
-	p.ctx, p.cancelFunc = context.WithCancel(context.Background())
+	// Compute backup set: files and dirs that are in ZIP ∩ selected by opts ∩ exist on disk
+	var backupFiles, backupDirs []string
 
-	p.progresses = []*Progress{
-		{context: p.ctx, message: p.Message, Name: "backup", Status: status.Pending},
-		{context: p.ctx, message: p.Message, Name: "decompression", Status: status.Pending},
-		{context: p.ctx, message: p.Message, Name: "cleanup", Status: status.Pending},
+	if opts.Settings {
+		if preview.HasSettings {
+			if _, statErr := os.Stat(filepath.Join(p.DirRoot, "conf", "setting.json")); statErr == nil {
+				backupFiles = append(backupFiles, filepath.Join("conf", "setting.json"))
+			}
+		} else {
+			opts.Settings = false
+		}
 	}
-	defer p.exit()
 
-	if p.OnBeforeBackup != nil {
-		if err := p.OnBeforeBackup(); err != nil {
+	if opts.Data {
+		if !preview.HasData {
+			err := fmt.Errorf("porter: selected categories not found in archive")
+			p.job.fail(err)
+			return err
+		}
+		if preview.HasDatabase {
+			if _, statErr := os.Stat(filepath.Join(p.DirRoot, "conf", "data.db")); statErr == nil {
+				backupFiles = append(backupFiles, filepath.Join("conf", "data.db"))
+			}
+		}
+		if preview.HasDrivers {
+			if _, statErr := os.Stat(filepath.Join(p.DirRoot, "drivers")); statErr == nil {
+				backupDirs = append(backupDirs, "drivers")
+			}
+		}
+	} else {
+		if !opts.Settings {
+			err := fmt.Errorf("porter: nothing to import — no categories selected")
+			p.job.fail(err)
 			return err
 		}
 	}
 
-	if err := backup(p.progresses[0], p.Targets); err != nil {
-		return errors.Join(err, p.onAfterImport())
+	if len(backupFiles) == 0 && len(backupDirs) == 0 {
+		err := fmt.Errorf("porter: nothing to backup or import — selected items do not exist on disk or in archive")
+		p.job.fail(err)
+		return err
 	}
 
-	err := fromZip(p.progresses[1], orig, p.DirRoot)
-	return errors.Join(err, cleanup(p.progresses[2], p.Targets, err != nil), p.onAfterImport())
-}
-
-// Downloads a ZIP file from a URL and imports its contents.
-func (p *Porter) ImportFromURL(url string) error {
-	p.ctx, p.cancelFunc = context.WithCancel(context.Background())
-
-	p.progresses = []*Progress{
-		{context: p.ctx, message: p.Message, Name: "backup", Status: status.Pending},
-		{context: p.ctx, message: p.Message, Name: "download", Status: status.Pending},
-		{context: p.ctx, message: p.Message, Name: "decompression", Status: status.Pending},
-		{context: p.ctx, message: p.Message, Name: "cleanup", Status: status.Pending},
-	}
-	defer p.exit()
-
-	if p.OnBeforeBackup != nil {
-		if err := p.OnBeforeBackup(); err != nil {
-			return err
+	// Check if data.db is in the backup set — if so, close DB
+	for _, f := range backupFiles {
+		if strings.HasSuffix(f, "conf/data.db") || strings.HasSuffix(f, "conf\\data.db") {
+			dbClosed = true
+			break
 		}
 	}
 
-	if err := backup(p.progresses[0], p.Targets); err != nil {
-		return errors.Join(err, p.onAfterImport())
+	if dbClosed && p.OnBeforeBackup != nil {
+		p.job.msg("Closing database for backup...")
+		if err := p.OnBeforeBackup(); err != nil {
+			p.job.fail(err)
+			return fmt.Errorf("porter: error closing database: %w", err)
+		}
 	}
 
-	filename, err := download(p.progresses[1], url)
+	// GATE 2: Backup
+	p.job.msg("Backing up existing files...")
+	timestamp, err = backup(p.job, p.DirRoot, backupFiles, backupDirs)
 	if err != nil {
-		return errors.Join(err, cleanup(p.progresses[3], p.Targets, true), p.onAfterImport())
+		p.job.fail(err)
+		return err
 	}
 
-	err = fromZip(p.progresses[2], filename, p.DirRoot)
-	return errors.Join(err, cleanup(p.progresses[3], p.Targets, err != nil), p.onAfterImport())
-}
-
-// Marks all pending progress steps as skipped.
-func (p *Porter) exit() {
-	for _, prog := range p.progresses {
-		if prog.Status == status.Pending {
-			prog.Status = status.Skiped
+	// GATE 3: Extract
+	p.job.msg("Extracting archive...")
+	err = fromZip(p.job, path, p.DirRoot, opts)
+	if err != nil {
+		p.job.msg("Extraction failed, rolling back...")
+		rollbackErr := rollback(p.job, p.DirRoot, timestamp, backupFiles, backupDirs)
+		p.job.fail(err)
+		if rollbackErr != nil {
+			return fmt.Errorf("porter: %w (rollback: %v)", err, rollbackErr)
 		}
+		return err
 	}
+
+	// GATE 4: Cleanup backups
+	p.job.msg("Cleaning up backups...")
+if err := cleanupBackups(p.job, p.DirRoot, timestamp); err != nil {
+		p.job.msg(fmt.Sprintf("Warning: cleanup issue: %v", err))
+	}
+
+	p.job.complete()
+	return nil
 }
 
-func (p *Porter) onAfterImport() error {
-	if p.OnAfterImport != nil {
-		return p.OnAfterImport()
+// ImportFromURL imports from the temp file left by DownloadAndValidate.
+func (p *Porter) ImportFromURL(opts ImportOptions) error {
+	if p.tempPath == "" {
+		return fmt.Errorf("porter: no downloaded file — call DownloadAndValidate first")
+	}
+
+	defer func() {
+		os.Remove(p.tempPath)
+		p.tempPath = ""
+	}()
+
+	return p.ImportFromFile(p.tempPath, opts)
+}
+
+// RecoverOrphanedBackups restores leftover .porter-* folders from interrupted imports. Called on startup.
+func (p *Porter) RecoverOrphanedBackups() error {
+	matches, _ := filepath.Glob(filepath.Join(p.DirRoot, ".porter-*"))
+	for _, backupDir := range matches {
+		filepath.Walk(backupDir, func(path string, info os.FileInfo, err error) error {
+			if err != nil || path == backupDir || info.IsDir() {
+				return nil
+			}
+			rel, err := filepath.Rel(backupDir, path)
+			if err != nil {
+				return nil
+			}
+			original := filepath.Join(p.DirRoot, rel)
+			if _, statErr := os.Stat(original); statErr == nil {
+				os.Remove(original)
+			}
+			os.MkdirAll(filepath.Dir(original), os.ModePerm)
+			os.Rename(path, original)
+			return nil
+		})
+		os.RemoveAll(backupDir)
 	}
 	return nil
 }
