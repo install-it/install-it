@@ -1,7 +1,6 @@
 {
   "recommendations": [
     "golang.go",
-    "ms-vscode.vscode-typescript-next",
     "Vue.volar",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
