@@ -1,40 +1,12 @@
 // Package storage_test provides fuzz tests for the storage package.
-// Run with: go test -fuzz=FuzzFileStore_Read -fuzztime=30s ./pkg/storage/
 package storage_test
 
 import (
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"testing"
 
 	"install-it/pkg/storage"
 )
-
-// FuzzFileStore_Read verifies that FileStore.Read never panics regardless of
-// the bytes written into the backing file.
-func FuzzFileStore_Read(f *testing.F) {
-	f.Add([]byte(`{}`))
-	f.Add([]byte(`{"name":"test","value":42}`))
-	f.Add([]byte(`[1,2,3]`))
-	f.Add([]byte(`null`))
-	f.Add([]byte(`"just a string"`))
-	f.Add([]byte(``))
-	f.Add([]byte(`{not valid json`))
-	f.Add([]byte("\x00\x01\x02\x03"))
-
-	f.Fuzz(func(t *testing.T, data []byte) {
-		dir := t.TempDir()
-		path := filepath.Join(dir, "fuzz.json")
-		if err := os.WriteFile(path, data, 0644); err != nil {
-			t.Skip()
-		}
-
-		store := &storage.FileStore{Path: path}
-		var v any
-		_ = store.Read(&v)
-	})
-}
 
 // FuzzAppSetting_JSONRoundtrip verifies that a JSON string parsed into
 // AppSetting and re-marshaled produces a consistent result (no panic).

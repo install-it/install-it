@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // import { storage } from '@/wailsjs/go/models'
-import * as matchRuleStorage from '@/wailsjs/go/storage/MatchRuleStorage'
+import * as ruleSetStorage from '@/wailsjs/go/storage/RuleSetStorage'
 import { useRouter } from 'vue-router'
 
 const toast = useToast()
@@ -59,8 +59,8 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
               class="h-6"
               :title="$t('common.clone')"
               @click="
-                matchRuleStorage.Clone(rs.id).then(() =>
-                  matchRuleStorage
+                ruleSetStorage.Clone(rs.id).then(() =>
+                  ruleSetStorage
                     .All()
                     .then(rs => (ruleStore.ruleSets = rs))
                     .catch(() => {
@@ -79,8 +79,8 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
               class="h-6"
               :title="$t('common.delete')"
               @click="
-                matchRuleStorage.Remove(rs.id).then(() =>
-                  matchRuleStorage
+                ruleSetStorage.Remove(rs.id).then(() =>
+                  ruleSetStorage
                     .All()
                     .then(rs => (ruleStore.ruleSets = rs))
                     .catch(() => {

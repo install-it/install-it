@@ -36,12 +36,16 @@ vi.mock('@/wailsjs/go/storage/DriverGroupStorage', () => ({
   IndexOf: vi.fn(),
 }))
 
-vi.mock('@/wailsjs/go/storage/MatchRuleStorage', () => ({
+vi.mock('@/wailsjs/go/storage/RuleSetStorage', () => ({
   All: vi.fn(),
   Get: vi.fn(),
   Add: vi.fn(),
   Update: vi.fn(),
   Remove: vi.fn(),
+}))
+
+vi.mock('@/wailsjs/go/matching/Matcher', () => ({
+  MatchedGroupIds: vi.fn(),
 }))
 
 vi.mock('@/wailsjs/go/execute/CommandExecutor', () => ({

@@ -2,6 +2,7 @@ package storage
 
 import (
 	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -44,16 +45,16 @@ func populateIncompatibleIds(d *Driver) {
 }
 
 type DriverGroupStorage struct {
-	DB *gorm.DB
+	db *Database
 }
 
-func NewDriverGroupStorage(db *gorm.DB) *DriverGroupStorage {
-	return &DriverGroupStorage{DB: db}
+func NewDriverGroupStorage(db *Database) *DriverGroupStorage {
+	return &DriverGroupStorage{db: db}
 }
 
 func (s *DriverGroupStorage) All() ([]DriverGroup, error) {
 	var groups []*DriverGroup
-	if err := s.DB.Preload("Drivers.Incompatibles").Order("position").Find(&groups).Error; err != nil {
+	if err := s.db.DB().Preload("Drivers.Incompatibles").Order("position").Find(&groups).Error; err != nil {
 		return nil, err
 	}
 	result := make([]DriverGroup, len(groups))
@@ -68,12 +69,11 @@ func (s *DriverGroupStorage) All() ([]DriverGroup, error) {
 
 func (s *DriverGroupStorage) Get(id uint) (DriverGroup, error) {
 	var group DriverGroup
-	result := s.DB.Preload("Drivers.Incompatibles").First(&group, id)
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return DriverGroup{}, errors.New("store: no item with the same ID was found")
+	if err := s.db.DB().Preload("Drivers.Incompatibles").First(&group, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return DriverGroup{}, fmt.Errorf("driver group: %w", ErrNotFound)
 		}
-		return DriverGroup{}, result.Error
+		return DriverGroup{}, err
 	}
 	for _, d := range group.Drivers {
 		populateIncompatibleIds(d)
@@ -82,14 +82,16 @@ func (s *DriverGroupStorage) Get(id uint) (DriverGroup, error) {
 }
 
 func (s *DriverGroupStorage) Add(group DriverGroup) error {
-	var maxPos int
-	s.DB.Model(&DriverGroup{}).Select("COALESCE(MAX(position), -1)").Scan(&maxPos)
-	group.Position = maxPos + 1
-	return s.DB.Create(&group).Error
+	return s.db.DB().Transaction(func(tx *gorm.DB) error {
+		var maxPos int
+		tx.Model(&DriverGroup{}).Select("COALESCE(MAX(position), -1)").Scan(&maxPos)
+		group.Position = maxPos + 1
+		return tx.Create(&group).Error
+	})
 }
 
 func (s *DriverGroupStorage) Update(group DriverGroup) error {
-	return s.DB.Transaction(func(tx *gorm.DB) error {
+	return s.db.DB().Transaction(func(tx *gorm.DB) error {
 		var existing []*Driver
 		if err := tx.Where("group_id = ?", group.Id).Find(&existing).Error; err != nil {
 			return err
@@ -148,24 +150,24 @@ func (s *DriverGroupStorage) Update(group DriverGroup) error {
 }
 
 func (s *DriverGroupStorage) Remove(id uint) error {
-	return s.DB.Transaction(func(tx *gorm.DB) error {
+	return s.db.DB().Transaction(func(tx *gorm.DB) error {
 		result := tx.Delete(&DriverGroup{}, id)
 		if result.Error != nil {
 			return result.Error
 		}
 		if result.RowsAffected == 0 {
-			return errors.New("store: no item with the same ID was found")
+			return ErrNotFound
 		}
 		return nil
 	})
 }
 
 func (s *DriverGroupStorage) Clone(id uint) error {
-	return s.DB.Transaction(func(tx *gorm.DB) error {
+	return s.db.DB().Transaction(func(tx *gorm.DB) error {
 		var original DriverGroup
 		if err := tx.Preload("Drivers.Incompatibles").First(&original, id).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return errors.New("store: no item with the same ID was found")
+				return fmt.Errorf("driver group: %w", ErrNotFound)
 			}
 			return err
 		}
@@ -223,7 +225,7 @@ func (s *DriverGroupStorage) Clone(id uint) error {
 }
 
 func (s *DriverGroupStorage) MoveBehind(id uint, index int) error {
-	return s.DB.Transaction(func(tx *gorm.DB) error {
+	return s.db.DB().Transaction(func(tx *gorm.DB) error {
 		var srcPos int
 		if err := tx.Model(&DriverGroup{}).Select("position").Where("id = ?", id).Scan(&srcPos).Error; err != nil {
 			return err

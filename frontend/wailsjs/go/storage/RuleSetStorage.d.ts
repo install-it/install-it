@@ -10,8 +10,6 @@ export function Clone(arg1:number):Promise<void>;
 
 export function Get(arg1:number):Promise<storage.RuleSet>;
 
-export function MatchedGroupIds():Promise<Array<number>>;
-
 export function Remove(arg1:number):Promise<void>;
 
 export function Update(arg1:storage.RuleSet):Promise<void>;

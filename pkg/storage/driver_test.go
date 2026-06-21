@@ -1,30 +1,22 @@
 package storage
 
 import (
-	"path/filepath"
 	"testing"
-
-	"gorm.io/gorm"
 )
 
-// openTestDB creates an isolated SQLite database in the test's temp directory
-// and runs all migrations, giving each test a clean schema.
-func openTestDB(t *testing.T) *gorm.DB {
+// openTestDB creates an in-memory SQLite database and runs all migrations,
+// giving each test a clean schema.
+func openTestDB(t *testing.T) *Database {
 	t.Helper()
-	db, err := OpenDB(filepath.Join(t.TempDir(), "test.db"))
+	db, err := Open(":memory:")
 	if err != nil {
 		t.Fatalf("openTestDB: %v", err)
 	}
-	if err := RunMigrations(db); err != nil {
-		t.Fatalf("openTestDB RunMigrations: %v", err)
+	if err := db.Migrate(); err != nil {
+		t.Fatalf("openTestDB Migrate: %v", err)
 	}
 	t.Cleanup(func() {
-		sqlDB, err := db.DB()
-		if err != nil {
-			t.Logf("failed to get underlying SQL DB: %v", err)
-			return
-		}
-		if err := sqlDB.Close(); err != nil {
+		if err := db.Close(); err != nil {
 			t.Logf("failed to close database: %v", err)
 		}
 	})

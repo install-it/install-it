@@ -2,7 +2,7 @@
 import DriverSelector from '@/components/DriverSelector.vue'
 import MatchRuleInputModal from '@/components/MatchRuleInputModal.vue'
 import { storage } from '@/wailsjs/go/models'
-import * as matchRuleStorage from '@/wailsjs/go/storage/MatchRuleStorage'
+import * as ruleSetStorage from '@/wailsjs/go/storage/RuleSetStorage'
 import { computed, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
@@ -39,19 +39,19 @@ function handleSubmit() {
   const handleSuccess = () => {
     toast.add({ title: t('toast.updated'), color: 'success' })
 
-    matchRuleStorage.All().then(newMatchRule => {
+    ruleSetStorage.All().then(newMatchRule => {
       ruleStore.ruleSets = newMatchRule
       $router.push({ path: '/match-rules/' })
     })
   }
 
   if (!ruleSet.value.id) {
-    matchRuleStorage
+    ruleSetStorage
       .Add(ruleSet.value)
       .then(handleSuccess)
       .catch(reason => toast.add({ title: reason.toString(), color: 'error' }))
   } else {
-    matchRuleStorage
+    ruleSetStorage
       .Update(ruleSet.value)
       .then(handleSuccess)
       .catch(reason => toast.add({ title: reason.toString(), color: 'error' }))

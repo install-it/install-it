@@ -1,4 +1,4 @@
-// Package storage_test provides external black-box tests for MatchRuleStorage.
+// Package storage_test provides external black-box tests for RuleSetStorage.
 package storage_test
 
 import (
@@ -7,13 +7,13 @@ import (
 	"install-it/pkg/storage"
 )
 
-// TestMatchRuleStorage_AllEmpty verifies that an empty store returns a non-nil
+// TestRuleSetStorage_AllEmpty verifies that an empty store returns a non-nil
 // empty slice.
-func TestMatchRuleStorage_AllEmpty(t *testing.T) {
+func TestRuleSetStorage_AllEmpty(t *testing.T) {
 	db := openExternalTestDB(t)
-	mrs := storage.NewMatchRuleStorage(db)
+	rss := storage.NewRuleSetStorage(db)
 
-	results, err := mrs.All()
+	results, err := rss.All()
 	if err != nil {
 		t.Fatalf("All: %v", err)
 	}
@@ -25,19 +25,19 @@ func TestMatchRuleStorage_AllEmpty(t *testing.T) {
 	}
 }
 
-// TestMatchRuleStorage_AddGetUpdate performs a full CRUD round-trip.
-func TestMatchRuleStorage_AddGetUpdate(t *testing.T) {
+// TestRuleSetStorage_AddGetUpdate performs a full CRUD round-trip.
+func TestRuleSetStorage_AddGetUpdate(t *testing.T) {
 	db := openExternalTestDB(t)
-	mrs := storage.NewMatchRuleStorage(db)
+	rss := storage.NewRuleSetStorage(db)
 
-	if err := mrs.Add(storage.RuleSet{
+	if err := rss.Add(storage.RuleSet{
 		Name:         "CRUD Test",
 		ShouldHitAll: true,
 	}); err != nil {
 		t.Fatalf("Add: %v", err)
 	}
 
-	all, err := mrs.All()
+	all, err := rss.All()
 	if err != nil {
 		t.Fatalf("All after Add: %v", err)
 	}
@@ -49,7 +49,7 @@ func TestMatchRuleStorage_AddGetUpdate(t *testing.T) {
 		t.Fatal("expected non-zero autoincrement ID")
 	}
 
-	got, err := mrs.Get(id)
+	got, err := rss.Get(id)
 	if err != nil {
 		t.Fatalf("Get: %v", err)
 	}
@@ -62,11 +62,11 @@ func TestMatchRuleStorage_AddGetUpdate(t *testing.T) {
 
 	got.Name = "Updated CRUD Test"
 	got.ShouldHitAll = false
-	if err := mrs.Update(got); err != nil {
+	if err := rss.Update(got); err != nil {
 		t.Fatalf("Update: %v", err)
 	}
 
-	final, err := mrs.Get(id)
+	final, err := rss.Get(id)
 	if err != nil {
 		t.Fatalf("Get after update: %v", err)
 	}
@@ -78,11 +78,11 @@ func TestMatchRuleStorage_AddGetUpdate(t *testing.T) {
 	}
 }
 
-// TestMatchRuleStorage_AddPreservesRuleFields verifies all Rule fields survive
+// TestRuleSetStorage_AddPreservesRuleFields verifies all Rule fields survive
 // the Add → Get cycle.
-func TestMatchRuleStorage_AddPreservesRuleFields(t *testing.T) {
+func TestRuleSetStorage_AddPreservesRuleFields(t *testing.T) {
 	db := openExternalTestDB(t)
-	mrs := storage.NewMatchRuleStorage(db)
+	rss := storage.NewRuleSetStorage(db)
 
 	rules := []storage.Rule{
 		{
@@ -106,7 +106,7 @@ func TestMatchRuleStorage_AddPreservesRuleFields(t *testing.T) {
 		},
 	}
 
-	if err := mrs.Add(storage.RuleSet{
+	if err := rss.Add(storage.RuleSet{
 		Name:         "Fields Test",
 		Rules:        rules,
 		ShouldHitAll: true,
@@ -114,8 +114,8 @@ func TestMatchRuleStorage_AddPreservesRuleFields(t *testing.T) {
 		t.Fatalf("Add: %v", err)
 	}
 
-	all, _ := mrs.All()
-	got, err := mrs.Get(all[0].Id)
+	all, _ := rss.All()
+	got, err := rss.Get(all[0].Id)
 	if err != nil {
 		t.Fatalf("Get: %v", err)
 	}
@@ -149,12 +149,12 @@ func TestMatchRuleStorage_AddPreservesRuleFields(t *testing.T) {
 	}
 }
 
-// TestMatchRuleStorage_RemovePurgesOrphanedGroupIds verifies that removing a
+// TestRuleSetStorage_RemovePurgesOrphanedGroupIds verifies that removing a
 // DriverGroup also removes it from RuleSet associations via FK CASCADE.
-func TestMatchRuleStorage_RemovePurgesOrphanedGroupIds(t *testing.T) {
+func TestRuleSetStorage_RemovePurgesOrphanedGroupIds(t *testing.T) {
 	db := openExternalTestDB(t)
 	dgs := storage.NewDriverGroupStorage(db)
-	mrs := storage.NewMatchRuleStorage(db)
+	rss := storage.NewRuleSetStorage(db)
 
 	groupID := addTestGroup(t, dgs, storage.DriverGroup{
 		Name:    "Temp Group",
@@ -166,20 +166,20 @@ func TestMatchRuleStorage_RemovePurgesOrphanedGroupIds(t *testing.T) {
 		Type: storage.Display,
 	})
 
-	if err := mrs.Add(storage.RuleSet{
+	if err := rss.Add(storage.RuleSet{
 		Name:           "Purge Test",
 		DriverGroupIds: []uint{groupID, keepID},
 	}); err != nil {
-		t.Fatalf("mrs.Add: %v", err)
+		t.Fatalf("rss.Add: %v", err)
 	}
 
 	if err := dgs.Remove(groupID); err != nil {
 		t.Fatalf("dgs.Remove: %v", err)
 	}
 
-	all, err := mrs.All()
+	all, err := rss.All()
 	if err != nil {
-		t.Fatalf("mrs.All: %v", err)
+		t.Fatalf("rss.All: %v", err)
 	}
 	rs := all[0]
 	if containsUint(rs.DriverGroupIds, groupID) {
@@ -190,20 +190,20 @@ func TestMatchRuleStorage_RemovePurgesOrphanedGroupIds(t *testing.T) {
 	}
 }
 
-// TestMatchRuleStorage_UpdateRuleSet verifies Update persists rule changes.
-func TestMatchRuleStorage_UpdateRuleSet(t *testing.T) {
+// TestRuleSetStorage_UpdateRuleSet verifies Update persists rule changes.
+func TestRuleSetStorage_UpdateRuleSet(t *testing.T) {
 	db := openExternalTestDB(t)
-	mrs := storage.NewMatchRuleStorage(db)
+	rss := storage.NewRuleSetStorage(db)
 
-	if err := mrs.Add(storage.RuleSet{
+	if err := rss.Add(storage.RuleSet{
 		Name:  "Before Update",
 		Rules: []storage.Rule{{Source: storage.Memory, Operator: storage.Equal, Values: []string{"8GB"}}},
 	}); err != nil {
 		t.Fatalf("Add: %v", err)
 	}
 
-	all, _ := mrs.All()
-	original, err := mrs.Get(all[0].Id)
+	all, _ := rss.All()
+	original, err := rss.Get(all[0].Id)
 	if err != nil {
 		t.Fatalf("Get: %v", err)
 	}
@@ -214,11 +214,11 @@ func TestMatchRuleStorage_UpdateRuleSet(t *testing.T) {
 		{Source: storage.Motherboard, Operator: storage.Regex, Values: []string{`^ASUS.*`}},
 	}
 
-	if err := mrs.Update(original); err != nil {
+	if err := rss.Update(original); err != nil {
 		t.Fatalf("Update: %v", err)
 	}
 
-	persisted, err := mrs.Get(all[0].Id)
+	persisted, err := rss.Get(all[0].Id)
 	if err != nil {
 		t.Fatalf("Get after update: %v", err)
 	}
@@ -230,30 +230,30 @@ func TestMatchRuleStorage_UpdateRuleSet(t *testing.T) {
 	}
 }
 
-// TestMatchRuleStorage_RemoveNonExistent verifies that removing a non-existent
+// TestRuleSetStorage_RemoveNonExistent verifies that removing a non-existent
 // ID returns an error.
-func TestMatchRuleStorage_RemoveNonExistent(t *testing.T) {
+func TestRuleSetStorage_RemoveNonExistent(t *testing.T) {
 	db := openExternalTestDB(t)
-	mrs := storage.NewMatchRuleStorage(db)
+	rss := storage.NewRuleSetStorage(db)
 
-	if err := mrs.Remove(9999); err == nil {
+	if err := rss.Remove(9999); err == nil {
 		t.Error("expected error when removing non-existent id, got nil")
 	}
 }
 
-// TestMatchRuleStorage_AllReturnsAllAdded verifies All() returns every added ruleset.
-func TestMatchRuleStorage_AllReturnsAllAdded(t *testing.T) {
+// TestRuleSetStorage_AllReturnsAllAdded verifies All() returns every added ruleset.
+func TestRuleSetStorage_AllReturnsAllAdded(t *testing.T) {
 	db := openExternalTestDB(t)
-	mrs := storage.NewMatchRuleStorage(db)
+	rss := storage.NewRuleSetStorage(db)
 
 	names := []string{"Alpha", "Beta", "Gamma"}
 	for _, name := range names {
-		if err := mrs.Add(storage.RuleSet{Name: name}); err != nil {
+		if err := rss.Add(storage.RuleSet{Name: name}); err != nil {
 			t.Fatalf("Add %s: %v", name, err)
 		}
 	}
 
-	all, err := mrs.All()
+	all, err := rss.All()
 	if err != nil {
 		t.Fatalf("All: %v", err)
 	}
@@ -262,24 +262,24 @@ func TestMatchRuleStorage_AllReturnsAllAdded(t *testing.T) {
 	}
 }
 
-// TestMatchRuleStorage_DriverGroupIds_RoundTrip verifies that DriverGroupIds
+// TestRuleSetStorage_DriverGroupIds_RoundTrip verifies that DriverGroupIds
 // are persisted and returned correctly via the M2M join table.
-func TestMatchRuleStorage_DriverGroupIds_RoundTrip(t *testing.T) {
+func TestRuleSetStorage_DriverGroupIds_RoundTrip(t *testing.T) {
 	db := openExternalTestDB(t)
 	dgs := storage.NewDriverGroupStorage(db)
-	mrs := storage.NewMatchRuleStorage(db)
+	rss := storage.NewRuleSetStorage(db)
 
 	g1 := addTestGroup(t, dgs, storage.DriverGroup{Name: "Net", Type: storage.Network})
 	g2 := addTestGroup(t, dgs, storage.DriverGroup{Name: "Disp", Type: storage.Display})
 
-	if err := mrs.Add(storage.RuleSet{
+	if err := rss.Add(storage.RuleSet{
 		Name:           "IDs Test",
 		DriverGroupIds: []uint{g1, g2},
 	}); err != nil {
 		t.Fatalf("Add: %v", err)
 	}
 
-	all, _ := mrs.All()
+	all, _ := rss.All()
 	rs := all[0]
 	if !containsUint(rs.DriverGroupIds, g1) || !containsUint(rs.DriverGroupIds, g2) {
 		t.Errorf("DriverGroupIds %v missing g1=%d or g2=%d", rs.DriverGroupIds, g1, g2)
