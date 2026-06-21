@@ -7,9 +7,12 @@ import { useI18n } from 'vue-i18n'
 
 const isOpen = ref(false)
 
+const mode = ref<'export' | 'import'>('export')
+
 defineExpose({
   export: (destination: string) => {
     isOpen.value = true
+    mode.value = 'export'
     title.value = t('porter.export')
     progress.value = null
     messages.value = []
@@ -27,6 +30,7 @@ defineExpose({
   },
   import: (from: 'url' | 'file', source: string) => {
     isOpen.value = true
+    mode.value = 'import'
     title.value = `${t('porter.import')} (${t(`porter.${from}`)})`
     progress.value = null
     messages.value = []
@@ -110,18 +114,11 @@ function toastErrMsg(err: string) {
   <UModal
     v-model:open="isOpen"
     :title="t('porter.progress')"
-    :close="progress?.status.includes('ed')"
+    :close="progress?.status.includes('ed') && !(mode == 'import' && progress?.status == 'completed')"
     :ui="{
       content: 'h-[80vh] max-h-150',
       body: 'flex flex-col overflow-hidden'
     }"
-    @close="
-      () => {
-        if (progress?.status == 'completed') {
-          runtime.WindowReloadApp()
-        }
-      }
-    "
   >
     <template #body>
       <div class="flex min-h-0 flex-1 flex-col gap-y-2">
@@ -166,7 +163,7 @@ function toastErrMsg(err: string) {
           </p>
         </div>
 
-        <div class="flex justify-end">
+        <div class="flex justify-end gap-x-2">
           <div v-show="progress?.status == 'pending' || progress?.status == 'running'">
             <UButton
               type="button"
@@ -178,6 +175,21 @@ function toastErrMsg(err: string) {
               "
             >
               {{ $t('common.cancel') }}
+            </UButton>
+          </div>
+
+          <div v-show="mode == 'import' && progress?.status == 'completed'">
+            <UButton
+              type="button"
+              color="primary"
+              @click="
+                () => {
+                  isOpen = false
+                  runtime.WindowReloadApp()
+                }
+              "
+            >
+              {{ $t('common.refresh') }}
             </UButton>
           </div>
         </div>
