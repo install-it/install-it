@@ -123,14 +123,10 @@ defineExpose({
 
 function updateProgress() {
   return programPorter.Progress().then(p => {
-    let scroll = false
-    if (
+    const scroll =
       messageBox.value &&
-      messageBox.value.scrollTop + messageBox.value.clientHeight >=
-        messageBox.value.scrollHeight * 0.99
-    ) {
-      scroll = true
-    }
+      messageBox.value.scrollHeight - messageBox.value.scrollTop - messageBox.value.clientHeight <
+        15
 
     snapshot.value = p
     messages.value.push(...(p.messages ?? []).filter(m => m !== ''))
