@@ -22,21 +22,20 @@ type job struct {
 	status   status.Status
 	step     string
 	progress float64
-	// messages field removed — frontend drains messageCh directly
-	startAt time.Time
+	startAt  time.Time
 
-	ctx       context.Context
-	cancel    context.CancelFunc
-	messageCh chan string // buffered channel for receiving messages from worker
+	ctx      context.Context
+	cancel   context.CancelFunc
+	messages chan string // buffered channel for receiving messages from worker
 }
 
 func newJob() *job {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &job{
-		status:    status.Pending,
-		ctx:       ctx,
-		cancel:    cancel,
-		messageCh: make(chan string, 4096),
+		status:   status.Pending,
+		ctx:      ctx,
+		cancel:   cancel,
+		messages: make(chan string, 4096),
 	}
 }
 
@@ -66,10 +65,10 @@ func (j *job) setProgress(p float64) {
 }
 
 // msg sends a message to the channel (non-blocking). Messages are dropped when the
-// buffer is full — the frontend must poll Progress() to drain.
+// buffer is full — the consumer must poll snapshot() to drain.
 func (j *job) msg(s string) {
 	select {
-	case j.messageCh <- s:
+	case j.messages <- s:
 	default:
 	}
 }
@@ -92,9 +91,10 @@ func (j *job) fail(err error) {
 	j.mu.Unlock()
 }
 
-// snapshot drains messageCh and returns a point-in-time view of the job.
-// Messages is the delta since the last snapshot call — the frontend accumulates.
-// Single-poller assumption: the frontend calls Progress() sequentially.
+// snapshot drains messages (destructive) and returns a point-in-time view of the job.
+// Messages is the delta since the last snapshot call — the consumer accumulates.
+//
+// Single-poller assumption: the consumer calls snapshot() sequentially.
 func (j *job) snapshot() JobSnapshot {
 	j.mu.Lock()
 	defer j.mu.Unlock()
@@ -114,7 +114,7 @@ func (j *job) snapshot() JobSnapshot {
 	var msgs []string
 	for {
 		select {
-		case m := <-j.messageCh:
+		case m := <-j.messages:
 			msgs = append(msgs, m)
 		default:
 			goto done

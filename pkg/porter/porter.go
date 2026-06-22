@@ -16,8 +16,8 @@ type ImportPreview struct {
 	ExportedAt  time.Time `json:"exportedAt"`
 	HasSettings bool      `json:"hasSettings"`
 	HasData     bool      `json:"hasData"`
-	HasDatabase bool      `json:"hasDatabase"` // for warning UI
-	HasDrivers  bool      `json:"hasDrivers"`  // for warning UI
+	HasDatabase bool      `json:"hasDatabase"`
+	HasDrivers  bool      `json:"hasDrivers"`
 	DriverCount int       `json:"driverCount"`
 	DriverSize  int64     `json:"driverSize"`
 }
@@ -202,7 +202,6 @@ func (p *Porter) ImportFromFile(path string, opts ImportOptions) (err error) {
 		}
 	}()
 
-	// GATE 1: Validate the ZIP and determine what to import
 	preview, err := validateZipContents(path)
 	if err != nil {
 		p.job.fail(err)
@@ -250,7 +249,6 @@ func (p *Porter) ImportFromFile(path string, opts ImportOptions) (err error) {
 		return err
 	}
 
-	// Check if data.db is in the backup set — if so, close DB
 	for _, f := range backupFiles {
 		if strings.HasSuffix(f, "conf/data.db") || strings.HasSuffix(f, "conf\\data.db") {
 			dbClosed = true
@@ -266,7 +264,6 @@ func (p *Porter) ImportFromFile(path string, opts ImportOptions) (err error) {
 		}
 	}
 
-	// GATE 2: Backup
 	p.job.msg("Backing up existing files...")
 	timestamp, err = backup(p.job, p.DirRoot, backupFiles, backupDirs)
 	if err != nil {
@@ -274,7 +271,6 @@ func (p *Porter) ImportFromFile(path string, opts ImportOptions) (err error) {
 		return err
 	}
 
-	// GATE 3: Extract
 	p.job.msg("Extracting archive...")
 	err = fromZip(p.job, path, p.DirRoot, opts)
 	if err != nil {
@@ -287,7 +283,6 @@ func (p *Porter) ImportFromFile(path string, opts ImportOptions) (err error) {
 		return err
 	}
 
-	// GATE 4: Cleanup backups
 	p.job.msg("Cleaning up backups...")
 	if err := cleanupBackups(p.job, p.DirRoot, timestamp); err != nil {
 		p.job.msg(fmt.Sprintf("Warning: cleanup issue: %v", err))
