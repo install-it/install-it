@@ -50,7 +50,13 @@ func toZip(j *job, dest string, dirRoot string, targets []string) (err error) {
 	if err != nil {
 		return fmt.Errorf("porter: cannot create zip file: %w", err)
 	}
-	defer file.Close()
+	defer func() {
+		file.Close()
+
+		if err != nil {
+			os.Remove(zipPath)
+		}
+	}()
 
 	zw := zip.NewWriter(file)
 	defer zw.Close()
@@ -289,7 +295,6 @@ func cleanupBackups(j *job, dirRoot string, timestamp string) error {
 // rollback restores backed-up files and directories, then removes the backup folder.
 // Returns a summary of all errors encountered. If any step fails, the backup folder is preserved.
 func rollback(j *job, dirRoot string, timestamp string, files []string, dirs []string) error {
-	j.setStep("cleanup")
 	j.msg("Rolling back...")
 
 	backupDir := filepath.Join(dirRoot, ".porter-"+timestamp)
