@@ -12,15 +12,14 @@ import (
 	"time"
 )
 
-// dirSize calculates the total size of a directory and its subdirectories.
-// If exclDir is true, directory sizes are excluded from the total.
-func dirSize(target string, exclDir bool) (int64, error) {
+// dirSize calculates the total size of files in a directory and its subdirectories.
+func dirSize(target string) (int64, error) {
 	var size int64
 	err := filepath.Walk(target, func(_ string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if !info.IsDir() || (!exclDir && info.IsDir()) {
+		if !info.IsDir() {
 			size += info.Size()
 		}
 		return nil
@@ -36,7 +35,7 @@ func toZip(j *job, dest string, dirRoot string, targets []string) (err error) {
 
 	var totalSize int64
 	for _, dir := range targets {
-		size, err := dirSize(dir, false)
+		size, err := dirSize(dir)
 		if err != nil {
 			return fmt.Errorf("porter: cannot calculate size of %s: %w", dir, err)
 		}
@@ -87,7 +86,6 @@ func toZip(j *job, dest string, dirRoot string, targets []string) (err error) {
 			if err != nil {
 				return fmt.Errorf("porter: cannot open source file %s: %w", filePath, err)
 			}
-			defer srcFile.Close()
 
 			zipEntry, err := zw.Create(entryName)
 			if err != nil {
@@ -241,8 +239,17 @@ func backup(j *job, dirRoot string, files []string, dirs []string) (timestamp st
 	var moved []string
 	defer func() {
 		if err != nil && len(moved) > 0 {
+			var rollbackErr error
 			for _, item := range moved {
-				os.Rename(filepath.Join(backupDir, item), filepath.Join(dirRoot, item))
+				if rErr := os.Rename(filepath.Join(backupDir, item), filepath.Join(dirRoot, item)); rErr != nil {
+					rollbackErr = rErr
+					break
+				}
+			}
+			if rollbackErr != nil {
+				// Leave backup dir in place for manual recovery
+				err = fmt.Errorf("porter: %w (rollback failed: %v, backup at %s)", err, rollbackErr, backupDir)
+				return
 			}
 			os.RemoveAll(backupDir)
 		}
@@ -335,7 +342,6 @@ func download(j *job, url string) (path string, err error) {
 	if err != nil {
 		return "", fmt.Errorf("porter: cannot create temp file: %w", err)
 	}
-	defer tmpFile.Close()
 
 	var total int64
 	if resp.ContentLength > 0 {
@@ -350,8 +356,11 @@ func download(j *job, url string) (path string, err error) {
 		total:  total,
 	})
 	if err != nil {
+		tmpFile.Close()
+		os.Remove(tmpFile.Name())
 		return "", fmt.Errorf("porter: download interrupted: %w", err)
 	}
+	tmpFile.Close()
 
 	if total > 0 {
 		j.setProgress(1.0)
@@ -368,10 +377,10 @@ func download(j *job, url string) (path string, err error) {
 
 // downloadReader wraps an io.Reader and updates job progress on each Read.
 type downloadReader struct {
-	reader  io.Reader
-	job     *job
-	read    int64
-	total   int64
+	reader io.Reader
+	job    *job
+	read   int64
+	total  int64
 }
 
 func (r *downloadReader) Read(p []byte) (int, error) {

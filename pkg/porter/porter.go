@@ -37,7 +37,9 @@ type Porter struct {
 	OnAfterImport  func() error // Called after import to reopen DB
 
 	job      *job   // Current job, nil when idle
-	tempPath string // Temp file from DownloadAndValidate, cleaned up after ImportFromURL
+	tempPath string // Temp file from DownloadAndValidate, cleaned up after ImportFromURL.
+	// NOTE: tempPath is not synchronized — assumes single-caller sequential access
+	// (DownloadAndValidate → ImportFromURL). No concurrent calls from frontend.
 }
 
 func (p *Porter) Status() status.Status {
@@ -171,7 +173,7 @@ func (p *Porter) DownloadAndValidate(url string) (preview ImportPreview, err err
 }
 
 // ImportFromFile backs up existing files, extracts selected categories, and cleans up or rolls back on failure.
-func (p *Porter) ImportFromFile(path string, opts ImportOptions) error {
+func (p *Porter) ImportFromFile(path string, opts ImportOptions) (err error) {
 	p.job = newJob()
 	p.job.start()
 
@@ -181,10 +183,10 @@ func (p *Porter) ImportFromFile(path string, opts ImportOptions) error {
 	)
 
 	defer func() {
-		// If db was closed and we haven't re-opened yet, do it now
-		if dbClosed {
-			if p.OnAfterImport != nil {
-				p.OnAfterImport()
+		if dbClosed && p.OnAfterImport != nil {
+			if reopenErr := p.OnAfterImport(); reopenErr != nil && err == nil {
+				// Main operation succeeded but DB reopen failed — surface it
+				err = fmt.Errorf("porter: import succeeded but failed to reopen database: %w", reopenErr)
 			}
 		}
 	}()
@@ -204,8 +206,6 @@ func (p *Porter) ImportFromFile(path string, opts ImportOptions) error {
 			if _, statErr := os.Stat(filepath.Join(p.DirRoot, "conf", "setting.json")); statErr == nil {
 				backupFiles = append(backupFiles, filepath.Join("conf", "setting.json"))
 			}
-		} else {
-			opts.Settings = false
 		}
 	}
 
@@ -226,7 +226,7 @@ func (p *Porter) ImportFromFile(path string, opts ImportOptions) error {
 			}
 		}
 	} else {
-		if !opts.Settings {
+		if !opts.Settings || !preview.HasSettings {
 			err := fmt.Errorf("porter: nothing to import — no categories selected")
 			p.job.fail(err)
 			return err
@@ -278,7 +278,7 @@ func (p *Porter) ImportFromFile(path string, opts ImportOptions) error {
 
 	// GATE 4: Cleanup backups
 	p.job.msg("Cleaning up backups...")
-if err := cleanupBackups(p.job, p.DirRoot, timestamp); err != nil {
+	if err := cleanupBackups(p.job, p.DirRoot, timestamp); err != nil {
 		p.job.msg(fmt.Sprintf("Warning: cleanup issue: %v", err))
 	}
 
@@ -304,22 +304,26 @@ func (p *Porter) ImportFromURL(opts ImportOptions) error {
 func (p *Porter) RecoverOrphanedBackups() error {
 	matches, _ := filepath.Glob(filepath.Join(p.DirRoot, ".porter-*"))
 	for _, backupDir := range matches {
-		filepath.Walk(backupDir, func(path string, info os.FileInfo, err error) error {
+		walkErr := filepath.Walk(backupDir, func(path string, info os.FileInfo, err error) error {
 			if err != nil || path == backupDir || info.IsDir() {
 				return nil
 			}
 			rel, err := filepath.Rel(backupDir, path)
 			if err != nil {
-				return nil
+				return err
 			}
 			original := filepath.Join(p.DirRoot, rel)
 			if _, statErr := os.Stat(original); statErr == nil {
 				os.Remove(original)
 			}
 			os.MkdirAll(filepath.Dir(original), os.ModePerm)
-			os.Rename(path, original)
-			return nil
+			return os.Rename(path, original)
 		})
+
+		if walkErr != nil {
+			// Leave backup dir for manual recovery or next startup retry
+			continue
+		}
 		os.RemoveAll(backupDir)
 	}
 	return nil
