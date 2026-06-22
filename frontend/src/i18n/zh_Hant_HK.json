@@ -133,9 +133,11 @@
   "porter": {
     "backup": "備份",
     "cleanup": "清理檔案",
+    "complete": "完成",
     "compression": "壓縮檔案",
     "decompression": "解壓縮檔案",
     "download": "下載檔案",
+    "extract": "解壓縮",
     "export": "匯出",
     "exportDestination": "輸出資料夾",
     "exportToFile": "匯出至檔案",

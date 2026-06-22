@@ -2,6 +2,7 @@ package porter
 
 import (
 	"context"
+	"errors"
 	"install-it/pkg/status"
 	"sync"
 	"time"
@@ -83,7 +84,7 @@ func (j *job) complete() {
 // fail sets status=Failed (or Aborted if err is context.Canceled).
 func (j *job) fail(err error) {
 	j.mu.Lock()
-	if err == context.Canceled {
+	if errors.Is(err, context.Canceled) {
 		j.status = status.Aborted
 	} else {
 		j.status = status.Failed
@@ -98,6 +99,18 @@ func (j *job) snapshot() JobSnapshot {
 	j.mu.Lock()
 	defer j.mu.Unlock()
 
+	// If the context was cancelled, override the returned status
+	// so the caller sees Aborting/Aborted even if complete() raced ahead.
+	snapStatus := j.status
+	if j.ctx.Err() == context.Canceled {
+		switch j.status {
+		case status.Running, status.Aborting:
+			snapStatus = status.Aborting
+		default:
+			snapStatus = status.Aborted
+		}
+	}
+
 	var msgs []string
 	for {
 		select {
@@ -110,7 +123,7 @@ func (j *job) snapshot() JobSnapshot {
 done:
 
 	return JobSnapshot{
-		Status:   j.status,
+		Status:   snapStatus,
 		Step:     j.step,
 		Progress: j.progress,
 		Messages: msgs,

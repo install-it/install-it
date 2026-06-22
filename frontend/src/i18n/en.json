@@ -131,9 +131,11 @@
   "porter": {
     "backup": "Backup",
     "cleanup": "Cleanup",
+    "complete": "Complete",
     "compression": "Compression",
     "decompression": "Decompression",
     "download": "Download",
+    "extract": "Extract",
     "export": "Export",
     "exportDestination": "Destination",
     "exportToFile": "Export To File",

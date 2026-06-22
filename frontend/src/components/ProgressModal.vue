@@ -2,14 +2,27 @@
 import { porter } from '@/wailsjs/go/models'
 import * as programPorter from '@/wailsjs/go/porter/Porter'
 import * as runtime from '@/wailsjs/runtime'
-import { nextTick, onUnmounted, ref, useTemplateRef } from 'vue'
+import { computed, nextTick, onUnmounted, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const isOpen = ref(false)
 
-const mode = ref<'export' | 'import'>('export')
+const mode = ref<'export' | 'import' | 'download'>('export')
 
 const snapshot = ref<porter.JobSnapshot | null>(null)
+
+const steps = computed(() => {
+  switch (mode.value) {
+    case 'export':
+      return ['initialisation', 'compression', 'complete']
+    case 'download':
+      return ['initialisation', 'download', 'complete']
+    case 'import':
+      return ['initialisation', 'backup', 'extract', 'cleanup', 'complete']
+    default:
+      return []
+  }
+})
 
 const messages = ref<string[]>([])
 
@@ -56,7 +69,7 @@ defineExpose({
   download: (url: string): Promise<porter.ImportPreview> => {
     return new Promise((resolve, reject) => {
       isOpen.value = true
-      mode.value = 'import'
+      mode.value = 'download'
       title.value = t('porter.download')
       snapshot.value = null
       messages.value = []
@@ -120,7 +133,7 @@ function updateProgress() {
     }
 
     snapshot.value = p
-    messages.value.push(...p.messages.slice(messages.value.length).filter(m => m !== ''))
+    messages.value.push(...(p.messages ?? []).filter(m => m !== ''))
 
     if (scroll && messageBox.value) {
       nextTick(() => {
@@ -136,8 +149,7 @@ function toastErrMsg(err: string) {
     toast.add({ title: t('toast.pathNotFind'), color: 'error' })
   else if (err.includes('unsupported protocol scheme'))
     toast.add({ title: t('toast.unsupportUrlProtocal'), color: 'error' })
-  else if (err.includes('no such host'))
-    toast.add({ title: t('toast.noSuchHost'), color: 'error' })
+  else if (err.includes('no such host')) toast.add({ title: t('toast.noSuchHost'), color: 'error' })
   else if (err == 'zip: not a valid zip file')
     toast.add({ title: t('toast.invalidZipFile'), color: 'error' })
   else if (err.includes('porter: nothing to import'))
@@ -154,7 +166,10 @@ function toastErrMsg(err: string) {
   <UModal
     v-model:open="isOpen"
     :title="t('porter.progress')"
-    :close="snapshot?.status.includes('ed') && !(mode == 'import' && snapshot?.status == 'completed')"
+    :dismissible="false"
+    :close="
+      snapshot?.status.includes('ed') && !(mode == 'import' && snapshot?.status == 'completed')
+    "
     :ui="{
       content: 'h-[80vh] max-h-150',
       body: 'flex flex-col overflow-hidden'
@@ -170,11 +185,12 @@ function toastErrMsg(err: string) {
           </p>
         </div>
 
-        <UProgress :model-value="(snapshot?.progress ?? 0) * 100" color="primary" />
-
-        <p v-if="snapshot?.step" class="text-sm text-gray-600">
-          {{ $t(`porter.step.${snapshot.step}`) }}
-        </p>
+        <ProgressStepper
+          :steps="steps"
+          :current-step="snapshot?.step ?? ''"
+          :job-status="snapshot?.status"
+          :progress="snapshot?.progress ?? 0"
+        />
 
         <div
           ref="message-box"
