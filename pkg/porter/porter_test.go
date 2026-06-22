@@ -53,16 +53,20 @@ func createExportZip(t *testing.T, path string, files map[string][]byte) error {
 	w := zip.NewWriter(f)
 	defer w.Close()
 
-	// Write manifest as first entry
-	manifest := map[string]interface{}{
-		"format_version": 1,
-		"exported_at":    time.Now().Format(time.RFC3339),
+	// Write manifest as first entry using the Manifest struct
+	manifest := porter.Manifest{
+		FormatVersion: porter.CurrentFormatVersion,
+		ExportedAt:    time.Now(),
+	}
+	data, err := json.Marshal(manifest)
+	if err != nil {
+		return err
 	}
 	entry, err := w.Create("manifest.json")
 	if err != nil {
 		return err
 	}
-	if err := json.NewEncoder(entry).Encode(manifest); err != nil {
+	if _, err := entry.Write(data); err != nil {
 		return err
 	}
 
@@ -480,10 +484,6 @@ func TestPorter_ExportImportRoundtrip(t *testing.T) {
 // ==================== Rollback ====================
 
 func TestPorter_RollbackOnExtractionFailure(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("skipping permission-based rollback test on Windows (os.Chmod on directories is ineffective)")
-	}
-
 	base := t.TempDir()
 	confDir := filepath.Join(base, "conf")
 	if err := os.MkdirAll(confDir, 0755); err != nil {
@@ -504,11 +504,23 @@ func TestPorter_RollbackOnExtractionFailure(t *testing.T) {
 		t.Fatalf("createExportZip: %v", err)
 	}
 
-	// After backup renames the original away, make conf non-writable so extraction fails.
-	if err := os.Chmod(confDir, 0500); err != nil {
-		t.Fatalf("Chmod: %v", err)
+	// Inject a failure that prevents the backup rename from succeeding:
+	//   - On Unix: make the conf directory non-writable (0500). os.Rename of a file
+	//     out of the directory requires write permission on the directory.
+	//   - On Windows: hold an open file handle. Go opens without FILE_SHARE_DELETE,
+	//     so os.Rename of the open file fails with ERROR_SHARING_VIOLATION.
+	if runtime.GOOS != "windows" {
+		if err := os.Chmod(confDir, 0500); err != nil {
+			t.Fatalf("Chmod: %v", err)
+		}
+		defer os.Chmod(confDir, 0755)
+	} else {
+		f, err := os.Open(filepath.Join(confDir, "setting.json"))
+		if err != nil {
+			t.Fatalf("Open: %v", err)
+		}
+		defer f.Close()
 	}
-	defer os.Chmod(confDir, 0755)
 
 	p := &porter.Porter{
 		DirRoot: base,
@@ -520,8 +532,10 @@ func TestPorter_RollbackOnExtractionFailure(t *testing.T) {
 		t.Fatal("expected error when destination is read-only, got nil")
 	}
 
-	// Restore permissions to read the file
-	os.Chmod(confDir, 0755)
+	// On Unix, restore permissions to read the file
+	if runtime.GOOS != "windows" {
+		os.Chmod(confDir, 0755)
+	}
 
 	// Original should be restored from backup
 	settingData, readErr := os.ReadFile(filepath.Join(confDir, "setting.json"))

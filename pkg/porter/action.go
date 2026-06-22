@@ -2,6 +2,7 @@ package porter
 
 import (
 	"archive/zip"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -266,7 +267,7 @@ func backup(j *job, dirRoot string, files []string, dirs []string) (timestamp st
 		}
 		j.msg(fmt.Sprintf("Backing up: %s", original))
 		if err := os.Rename(original, backupPath); err != nil {
-			return timestamp, fmt.Errorf("porter: cannot backup %s: %w", original, err)
+			return timestamp, fmt.Errorf("porter: cannot backup %s → %s: %w", original, backupPath, err)
 		}
 		moved = append(moved, item)
 	}
@@ -286,33 +287,50 @@ func cleanupBackups(j *job, dirRoot string, timestamp string) error {
 }
 
 // rollback restores backed-up files and directories, then removes the backup folder.
+// Returns a summary of all errors encountered. If any step fails, the backup folder is preserved.
 func rollback(j *job, dirRoot string, timestamp string, files []string, dirs []string) error {
 	j.setStep("cleanup")
 	j.msg("Rolling back...")
 
 	backupDir := filepath.Join(dirRoot, ".porter-"+timestamp)
 
+	var errs []error
+
 	for _, d := range dirs {
 		original := filepath.Join(dirRoot, d)
 		if _, statErr := os.Stat(original); statErr == nil {
-			os.RemoveAll(original)
+			if err := os.RemoveAll(original); err != nil {
+				errs = append(errs, fmt.Errorf("porter: rollback: cannot remove %s: %w", original, err))
+			}
 		}
 		backupPath := filepath.Join(backupDir, d)
 		if _, statErr := os.Stat(backupPath); statErr == nil {
-			os.Rename(backupPath, original)
+			if err := os.Rename(backupPath, original); err != nil {
+				errs = append(errs, fmt.Errorf("porter: rollback: cannot rename %s → %s: %w", backupPath, original, err))
+			}
 		}
 	}
 
 	for _, f := range files {
 		original := filepath.Join(dirRoot, f)
 		if _, statErr := os.Stat(original); statErr == nil {
-			os.Remove(original)
+			if err := os.Remove(original); err != nil {
+				errs = append(errs, fmt.Errorf("porter: rollback: cannot remove %s: %w", original, err))
+			}
 		}
 		backupPath := filepath.Join(backupDir, f)
 		if _, statErr := os.Stat(backupPath); statErr == nil {
-			os.MkdirAll(filepath.Dir(original), os.ModePerm)
-			os.Rename(backupPath, original)
+			if err := os.MkdirAll(filepath.Dir(original), os.ModePerm); err != nil {
+				errs = append(errs, fmt.Errorf("porter: rollback: cannot create directory for %s: %w", original, err))
+			}
+			if err := os.Rename(backupPath, original); err != nil {
+				errs = append(errs, fmt.Errorf("porter: rollback: cannot rename %s → %s: %w", backupPath, original, err))
+			}
 		}
+	}
+
+	if len(errs) > 0 {
+		return errors.Join(errs...)
 	}
 
 	return os.RemoveAll(backupDir)

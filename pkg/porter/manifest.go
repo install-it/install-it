@@ -12,7 +12,7 @@ type Manifest struct {
 	ExportedAt    time.Time `json:"exported_at"`
 }
 
-const currentFormatVersion = 1
+const CurrentFormatVersion = 1
 
 func newManifest() Manifest {
 	return Manifest{
