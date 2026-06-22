@@ -2,7 +2,7 @@
 import { porter } from '@/wailsjs/go/models'
 import * as programPorter from '@/wailsjs/go/porter/Porter'
 import * as runtime from '@/wailsjs/runtime'
-import { nextTick, ref, useTemplateRef } from 'vue'
+import { nextTick, onUnmounted, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const isOpen = ref(false)
@@ -27,6 +27,8 @@ function resetInterval() {
   clearInterval(interval)
   interval = -1
 }
+
+onUnmounted(() => resetInterval())
 
 function startPolling() {
   updateProgress()
@@ -138,6 +140,12 @@ function toastErrMsg(err: string) {
     toast.add({ title: t('toast.noSuchHost'), color: 'error' })
   else if (err == 'zip: not a valid zip file')
     toast.add({ title: t('toast.invalidZipFile'), color: 'error' })
+  else if (err.includes('porter: nothing to import'))
+    toast.add({ title: t('porter.error.noCategories'), color: 'error' })
+  else if (err.includes('porter: selected categories not found'))
+    toast.add({ title: t('porter.error.categoriesNotFound'), color: 'error' })
+  else if (err.includes('porter: nothing to backup or import'))
+    toast.add({ title: t('porter.error.nothingToImport'), color: 'error' })
   else toast.add({ title: err, color: 'error' })
 }
 </script>

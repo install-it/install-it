@@ -28,6 +28,9 @@ type ImportOptions struct {
 	Data     bool `json:"data"`
 }
 
+// Porter is NOT safe for concurrent use. All methods must be called sequentially
+// from a single goroutine (Wails serializes frontend-to-Go calls).
+//
 // Porter manages the porting process including export, import, and progress tracking.
 type Porter struct {
 	DirRoot string   // Root directory for import/export operations
@@ -98,8 +101,8 @@ func validateZipContents(path string) (ImportPreview, error) {
 		return ImportPreview{}, err
 	}
 
-	if m.FormatVersion > currentFormatVersion {
-		return ImportPreview{}, fmt.Errorf("porter: archive format version %d is too new (max: %d)", m.FormatVersion, currentFormatVersion)
+	if m.FormatVersion != CurrentFormatVersion {
+		return ImportPreview{}, fmt.Errorf("porter: unsupported archive format version %d (expected %d)", m.FormatVersion, CurrentFormatVersion)
 	}
 
 	preview := ImportPreview{
@@ -141,6 +144,11 @@ func (p *Porter) ValidateZip(path string) (ImportPreview, error) {
 
 // DownloadAndValidate downloads a ZIP from a URL, validates it, and stores the temp path for ImportFromURL.
 func (p *Porter) DownloadAndValidate(url string) (preview ImportPreview, err error) {
+	if p.tempPath != "" {
+		os.Remove(p.tempPath)
+		p.tempPath = ""
+	}
+
 	p.job = newJob()
 	p.job.start()
 	defer func() {
@@ -184,9 +192,12 @@ func (p *Porter) ImportFromFile(path string, opts ImportOptions) (err error) {
 
 	defer func() {
 		if dbClosed && p.OnAfterImport != nil {
-			if reopenErr := p.OnAfterImport(); reopenErr != nil && err == nil {
-				// Main operation succeeded but DB reopen failed — surface it
-				err = fmt.Errorf("porter: import succeeded but failed to reopen database: %w", reopenErr)
+			if reopenErr := p.OnAfterImport(); reopenErr != nil {
+				if err == nil {
+					err = fmt.Errorf("porter: import succeeded but failed to reopen database: %w", reopenErr)
+				} else {
+					err = fmt.Errorf("porter: %w (additionally, failed to reopen database: %v)", err, reopenErr)
+				}
 			}
 		}
 	}()
