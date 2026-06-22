@@ -88,8 +88,8 @@ func (p *Porter) Export(dest string) (err error) {
 	return toZip(p.job, dest, p.DirRoot, p.Targets)
 }
 
-// validateZipContents reads the manifest and scans ZIP entries for recognized data.
-func validateZipContents(path string) (ImportPreview, error) {
+// ValidateZip reads the manifest and scans ZIP entries for recognized data.
+func (p *Porter) ValidateZip(path string) (ImportPreview, error) {
 	zr, err := zip.OpenReader(path)
 	if err != nil {
 		return ImportPreview{}, fmt.Errorf("porter: cannot open zip: %w", err)
@@ -137,11 +137,6 @@ func validateZipContents(path string) (ImportPreview, error) {
 	return preview, nil
 }
 
-// ValidateZip reads a ZIP and returns an ImportPreview. No job needed (instant).
-func (p *Porter) ValidateZip(path string) (ImportPreview, error) {
-	return validateZipContents(path)
-}
-
 // DownloadAndValidate downloads a ZIP from a URL, validates it, and stores the temp path for ImportFromURL.
 func (p *Porter) DownloadAndValidate(url string) (preview ImportPreview, err error) {
 	if p.tempPath != "" {
@@ -170,7 +165,7 @@ func (p *Porter) DownloadAndValidate(url string) (preview ImportPreview, err err
 
 	p.tempPath = path
 
-	preview, err = validateZipContents(path)
+	preview, err = p.ValidateZip(path)
 	if err != nil {
 		os.Remove(path)
 		p.tempPath = ""
@@ -202,7 +197,7 @@ func (p *Porter) ImportFromFile(path string, opts ImportOptions) (err error) {
 		}
 	}()
 
-	preview, err := validateZipContents(path)
+	preview, err := p.ValidateZip(path)
 	if err != nil {
 		p.job.fail(err)
 		return err
