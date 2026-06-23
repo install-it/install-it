@@ -27,27 +27,43 @@ export namespace execute {
 
 export namespace porter {
 	
-	export class Progress {
-	    name: string;
-	    status: status.Status;
-	    total: number;
-	    current: number;
-	    // Go type: time
-	    startAt: any;
-	    error: any;
+	export class ImportOptions {
+	    settings: boolean;
+	    data: boolean;
 	
 	    static createFrom(source: any = {}) {
-	        return new Progress(source);
+	        return new ImportOptions(source);
 	    }
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.name = source["name"];
-	        this.status = source["status"];
-	        this.total = source["total"];
-	        this.current = source["current"];
-	        this.startAt = this.convertValues(source["startAt"], null);
-	        this.error = source["error"];
+	        this.settings = source["settings"];
+	        this.data = source["data"];
+	    }
+	}
+	export class ImportPreview {
+	    // Go type: time
+	    exportedAt: any;
+	    hasSettings: boolean;
+	    hasData: boolean;
+	    hasDatabase: boolean;
+	    hasDrivers: boolean;
+	    driverCount: number;
+	    driverSize: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new ImportPreview(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.exportedAt = this.convertValues(source["exportedAt"], null);
+	        this.hasSettings = source["hasSettings"];
+	        this.hasData = source["hasData"];
+	        this.hasDatabase = source["hasDatabase"];
+	        this.hasDrivers = source["hasDrivers"];
+	        this.driverCount = source["driverCount"];
+	        this.driverSize = source["driverSize"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -68,39 +84,23 @@ export namespace porter {
 		    return a;
 		}
 	}
-	export class Progresses {
-	    tasks: Progress[];
-	    messages: string[];
+	export class JobSnapshot {
 	    status: status.Status;
+	    step: string;
+	    progress: number;
+	    messages: string[];
 	
 	    static createFrom(source: any = {}) {
-	        return new Progresses(source);
+	        return new JobSnapshot(source);
 	    }
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.tasks = this.convertValues(source["tasks"], Progress);
-	        this.messages = source["messages"];
 	        this.status = source["status"];
+	        this.step = source["step"];
+	        this.progress = source["progress"];
+	        this.messages = source["messages"];
 	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
 	}
 
 }

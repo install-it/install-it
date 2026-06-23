@@ -90,6 +90,21 @@ func main() {
 	ruleSetStorage = storage.NewRuleSetStorage(db)
 	matcher = matching.NewMatcher(ruleSetStorage, matching.WMIHardwareQuerier{})
 
+	// Porter instance shared between Bind and OnStartup
+	porterInstance := &porter.Porter{
+		DirRoot: dirRoot,
+		Targets: []string{dirConf, dirDir},
+		OnBeforeBackup: func() error {
+			return db.Close()
+		},
+		OnAfterImport: func() error {
+			if err := db.Reopen(); err != nil {
+				return err
+			}
+			return db.Migrate()
+		},
+	}
+
 	err = wails.Run(&options.App{
 		Title:     "install-it",
 		Width:     768,
@@ -114,6 +129,9 @@ func main() {
 				}
 			}
 
+			// Recover orphaned backups from interrupted imports
+			porterInstance.RecoverOrphanedBackups()
+
 			app.SetContext(ctx)
 			mgt.SetContext(ctx)
 		},
@@ -125,20 +143,7 @@ func main() {
 			groupStorage,
 			ruleSetStorage,
 			matcher,
-			&porter.Porter{
-				DirRoot: dirRoot,
-				Message: make(chan string, 512),
-				Targets: []string{dirConf, dirDir},
-				OnBeforeBackup: func() error {
-					return db.Close()
-				},
-				OnAfterImport: func() error {
-					if err := db.Reopen(); err != nil {
-						return err
-					}
-					return db.Migrate()
-				},
-			},
+			porterInstance,
 			&sysinfo.SysInfo{},
 		},
 		EnumBind: []interface{}{

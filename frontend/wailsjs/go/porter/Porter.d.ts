@@ -5,12 +5,18 @@ import {status} from '../models';
 
 export function Abort():Promise<void>;
 
+export function DownloadAndValidate(arg1:string):Promise<porter.ImportPreview>;
+
 export function Export(arg1:string):Promise<void>;
 
-export function ImportFromFile(arg1:string):Promise<void>;
+export function ImportFromFile(arg1:string,arg2:porter.ImportOptions):Promise<void>;
 
-export function ImportFromURL(arg1:string):Promise<void>;
+export function ImportFromURL(arg1:porter.ImportOptions):Promise<void>;
 
-export function Progress():Promise<porter.Progresses>;
+export function Progress():Promise<porter.JobSnapshot>;
+
+export function RecoverOrphanedBackups():Promise<void>;
 
 export function Status():Promise<status.Status>;
+
+export function ValidateZip(arg1:string):Promise<porter.ImportPreview>;
