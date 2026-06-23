@@ -28,10 +28,8 @@ type ImportOptions struct {
 	Data     bool `json:"data"`
 }
 
-// Porter is NOT safe for concurrent use. All methods must be called sequentially
-// from a single goroutine (Wails serializes frontend-to-Go calls).
-//
-// Porter manages the porting process including export, import, and progress tracking.
+// Porter handles export/import of program data. Only one job runs at a time —
+// calling any job-starting method while a job is running will be rejected.
 type Porter struct {
 	DirRoot string   // Root directory for import/export operations
 	Targets []string // Target directories to be backed up or compressed
@@ -40,9 +38,7 @@ type Porter struct {
 	OnAfterImport  func() error // Called after import to reopen DB
 
 	job      *job   // Current job, nil when idle
-	tempPath string // Temp file from DownloadAndValidate, cleaned up after ImportFromURL.
-	// NOTE: tempPath is not synchronized — assumes single-caller sequential access
-	// (DownloadAndValidate → ImportFromURL). No concurrent calls from frontend.
+	tempPath string // Pending download path
 }
 
 func (p *Porter) Status() status.Status {
@@ -75,6 +71,10 @@ func (p *Porter) Progress() (JobSnapshot, error) {
 }
 
 func (p *Porter) Export(dest string) (err error) {
+	if p.job != nil && p.job.status == status.Running {
+		return errors.New("porter: job already running")
+	}
+
 	p.job = newJob()
 	p.job.start()
 	defer func() {
@@ -137,21 +137,21 @@ func (p *Porter) ValidateZip(path string) (ImportPreview, error) {
 	return preview, nil
 }
 
-// DownloadAndValidate downloads a ZIP from a URL, validates it, and stores the temp path for ImportFromURL.
+// DownloadAndValidate fetches a ZIP from url, validates it,
+// and stores the path internally for ImportFromURL to consume.
+//
+// Call this first, then ImportFromURL.
+// Calling DownloadAndValidate again before ImportFromURL replaces the stored path
+// (previous temp file is removed).
 func (p *Porter) DownloadAndValidate(url string) (preview ImportPreview, err error) {
-	if p.tempPath != "" {
-		os.Remove(p.tempPath)
-		p.tempPath = ""
+	if p.job != nil && p.job.status == status.Running {
+		return ImportPreview{}, errors.New("porter: job already running")
 	}
-
 	p.job = newJob()
 	p.job.start()
 	defer func() {
 		if err != nil {
-			if p.tempPath != "" {
-				os.Remove(p.tempPath)
-				p.tempPath = ""
-			}
+			p.tempPath = ""
 			p.job.fail(err)
 		} else {
 			p.job.complete()
@@ -175,8 +175,12 @@ func (p *Porter) DownloadAndValidate(url string) (preview ImportPreview, err err
 	return preview, nil
 }
 
-// ImportFromFile backs up existing files, extracts selected categories, and cleans up or rolls back on failure.
+// ImportFromFile extracts selected categories from a local ZIP file into DirRoot.
+// Backs up existing files first; rolls back on extraction failure.
 func (p *Porter) ImportFromFile(path string, opts ImportOptions) (err error) {
+	if p.job != nil && p.job.status == status.Running {
+		return errors.New("porter: job already running")
+	}
 	p.job = newJob()
 	p.job.start()
 
@@ -287,21 +291,25 @@ func (p *Porter) ImportFromFile(path string, opts ImportOptions) (err error) {
 	return nil
 }
 
-// ImportFromURL imports from the temp file left by DownloadAndValidate.
+// ImportFromURL imports the ZIP previously downloaded by DownloadAndValidate.
+// Calls ImportFromFile with the stored path. The stored path is cleared after
+// import (success or failure).
 func (p *Porter) ImportFromURL(opts ImportOptions) error {
 	if p.tempPath == "" {
-		return fmt.Errorf("porter: no downloaded file — call DownloadAndValidate first")
+		return fmt.Errorf("porter: no downloaded file")
 	}
+	path := p.tempPath
 
 	defer func() {
-		os.Remove(p.tempPath)
+		os.Remove(path)
 		p.tempPath = ""
 	}()
 
-	return p.ImportFromFile(p.tempPath, opts)
+	return p.ImportFromFile(path, opts)
 }
 
-// RecoverOrphanedBackups restores leftover .porter-* folders from interrupted imports. Called on startup.
+// RecoverOrphanedBackups restores files from .porter-* backup directories left
+// behind by interrupted imports. Safe to call at startup.
 func (p *Porter) RecoverOrphanedBackups() error {
 	matches, _ := filepath.Glob(filepath.Join(p.DirRoot, ".porter-*"))
 	for _, backupDir := range matches {

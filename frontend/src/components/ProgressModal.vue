@@ -76,7 +76,7 @@ defineExpose({
 
       programPorter
         .DownloadAndValidate(url)
-        .then(preview => {
+        .then((preview: porter.ImportPreview) => {
           resolve(preview)
           isOpen.value = false
         })
