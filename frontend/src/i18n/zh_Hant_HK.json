@@ -133,9 +133,11 @@
   "porter": {
     "backup": "備份",
     "cleanup": "清理檔案",
+    "complete": "完成",
     "compression": "壓縮檔案",
     "decompression": "解壓縮檔案",
     "download": "下載檔案",
+    "extract": "解壓縮",
     "export": "匯出",
     "exportDestination": "輸出資料夾",
     "exportToFile": "匯出至檔案",
@@ -145,10 +147,35 @@
     "importFromFile": "從檔案",
     "importFromNetwork": "從網絡",
     "initialisation": "初始化",
+    "preview": "匯入預覽",
+    "previewContains": "檔案包含：",
+    "previewCreated": "建立日期",
+    "previewData": "資料",
+    "previewDatabase": "資料庫",
+    "previewDrivers": "軀動程式",
+    "previewNoSelection": "請至少選擇一項匯入。",
+    "previewNotAvailable": "不可用",
+    "previewSelectImport": "選擇要匯入的項目：",
+    "previewSettings": "設定",
     "progress": "進度",
+    "step": {
+      "backup": "備份中",
+      "cleanup": "清理中",
+      "compression": "壓縮中",
+      "download": "下載中",
+      "extract": "解壓縮中"
+    },
     "title": "匯入／匯出資料",
     "titleHint": "將程式設定及軀動程式匯入／匯出",
-    "url": "下載網址"
+    "url": "下載網址",
+    "validate": "驗證",
+    "warningDbNoDrivers": "此檔案包含資料庫但沒有軀動程式。現有的軀動程式將會保留。",
+    "warningDriversNoDb": "此檔案包含軀動程式但沒有資料庫。現有的資料庫將會保留。",
+    "error": {
+      "noCategories": "沒有可匯入的內容 — 未選擇任何類別",
+      "categoriesNotFound": "所選類別在封存檔中找不到",
+      "nothingToImport": "沒有可備份或匯入的內容"
+    }
   },
   "setting": {
     "autoCheckUpdate": "自動檢查更新",

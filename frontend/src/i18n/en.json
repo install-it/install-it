@@ -131,9 +131,11 @@
   "porter": {
     "backup": "Backup",
     "cleanup": "Cleanup",
+    "complete": "Complete",
     "compression": "Compression",
     "decompression": "Decompression",
     "download": "Download",
+    "extract": "Extract",
     "export": "Export",
     "exportDestination": "Destination",
     "exportToFile": "Export To File",
@@ -143,10 +145,35 @@
     "importFromFile": "File",
     "importFromNetwork": "URL",
     "initialisation": "Initialisation",
+    "preview": "Import Preview",
+    "previewContains": "This file contains:",
+    "previewCreated": "Created",
+    "previewData": "Data",
+    "previewDatabase": "Database",
+    "previewDrivers": "Drivers",
+    "previewNoSelection": "Please select at least one category to import.",
+    "previewNotAvailable": "not available",
+    "previewSelectImport": "Select what to import:",
+    "previewSettings": "Settings",
     "progress": "Progress",
+    "step": {
+      "backup": "Backing up",
+      "cleanup": "Cleaning up",
+      "compression": "Compressing",
+      "download": "Downloading",
+      "extract": "Extracting"
+    },
     "title": "Import/Export",
     "titleHint": "Import/Export drivers and app settings.",
-    "url": "URL"
+    "url": "URL",
+    "validate": "Validate",
+    "warningDbNoDrivers": "This file contains a database but no drivers. Your existing drivers will be preserved.",
+    "warningDriversNoDb": "This file contains drivers but no database. Your existing database will be preserved.",
+    "error": {
+      "noCategories": "Nothing to import — no categories selected.",
+      "categoriesNotFound": "Selected categories not found in archive.",
+      "nothingToImport": "Nothing to backup or import."
+    }
   },
   "setting": {
     "autoCheckUpdate": "Automatically Check for Updates",

@@ -2,61 +2,31 @@
 import { porter } from '@/wailsjs/go/models'
 import * as programPorter from '@/wailsjs/go/porter/Porter'
 import * as runtime from '@/wailsjs/runtime'
-import { nextTick, ref, useTemplateRef } from 'vue'
+import { computed, nextTick, onUnmounted, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const isOpen = ref(false)
 
-const mode = ref<'export' | 'import'>('export')
+const mode = ref<'export' | 'import' | 'download'>('export')
 
-defineExpose({
-  export: (destination: string) => {
-    isOpen.value = true
-    mode.value = 'export'
-    title.value = t('porter.export')
-    progress.value = null
-    messages.value = []
+const snapshot = ref<porter.JobSnapshot | null>(null)
 
-    programPorter
-      .Export(destination)
-      .catch(toastErrMsg)
-      .finally(() => {
-        clearInterval(interval)
-        updateProgress()
-      })
-
-    updateProgress()
-    interval = setInterval(updateProgress, 300)
-  },
-  import: (from: 'url' | 'file', source: string) => {
-    isOpen.value = true
-    mode.value = 'import'
-    title.value = `${t('porter.import')} (${t(`porter.${from}`)})`
-    progress.value = null
-    messages.value = []
-
-    if (from == 'url') {
-      programPorter
-        .ImportFromURL(source)
-        .catch(toastErrMsg)
-        .finally(() => {
-          clearInterval(interval)
-          updateProgress()
-        })
-    } else {
-      programPorter
-        .ImportFromFile(source)
-        .catch(toastErrMsg)
-        .finally(() => {
-          clearInterval(interval)
-          updateProgress()
-        })
-    }
-
-    updateProgress()
-    interval = setInterval(updateProgress, 300)
+const steps = computed(() => {
+  switch (mode.value) {
+    case 'export':
+      return ['initialisation', 'compression', 'complete']
+    case 'download':
+      return ['initialisation', 'download', 'complete']
+    case 'import':
+      return ['initialisation', 'backup', 'extract', 'cleanup', 'complete']
+    default:
+      return []
   }
 })
+
+const messages = ref<string[]>([])
+
+const title = ref<string>('')
 
 const messageBox = useTemplateRef('message-box')
 
@@ -66,26 +36,102 @@ const toast = useToast()
 
 let interval: ReturnType<typeof setInterval> | number = -1
 
-const messages = ref<Array<string>>([])
+function resetInterval() {
+  clearInterval(interval)
+  interval = -1
+}
 
-const progress = ref<porter.Progresses | null>(null)
+onUnmounted(() => resetInterval())
 
-const title = ref<string>()
+function startPolling() {
+  updateProgress()
+  interval = setInterval(updateProgress, 300)
+}
+
+defineExpose({
+  export: (destination: string) => {
+    isOpen.value = true
+    mode.value = 'export'
+    title.value = t('porter.export')
+    snapshot.value = null
+    messages.value = []
+
+    programPorter
+      .Export(destination)
+      .catch(toastErrMsg)
+      .finally(() => {
+        resetInterval()
+        updateProgress()
+      })
+
+    startPolling()
+  },
+  download: (url: string): Promise<porter.ImportPreview> => {
+    return new Promise((resolve, reject) => {
+      isOpen.value = true
+      mode.value = 'download'
+      title.value = t('porter.download')
+      snapshot.value = null
+      messages.value = []
+
+      programPorter
+        .DownloadAndValidate(url)
+        .then((preview: porter.ImportPreview) => {
+          resolve(preview)
+          isOpen.value = false
+        })
+        .catch(err => {
+          toastErrMsg(err)
+          reject(err)
+        })
+        .finally(() => {
+          resetInterval()
+          updateProgress()
+        })
+
+      startPolling()
+    })
+  },
+  import: (from: 'url' | 'file', source: string, opts: porter.ImportOptions) => {
+    isOpen.value = true
+    mode.value = 'import'
+    title.value = `${t('porter.import')} (${t(`porter.${from}`)})`
+    snapshot.value = null
+    messages.value = []
+
+    if (from === 'url') {
+      programPorter
+        .ImportFromURL(opts)
+        .catch(toastErrMsg)
+        .finally(() => {
+          resetInterval()
+          updateProgress()
+        })
+    } else {
+      programPorter
+        .ImportFromFile(source, opts)
+        .catch(toastErrMsg)
+        .finally(() => {
+          resetInterval()
+          updateProgress()
+        })
+    }
+
+    startPolling()
+  }
+})
 
 function updateProgress() {
   return programPorter.Progress().then(p => {
-    let scroll = false
-    if (
-      messageBox.value!.scrollTop + messageBox.value!.clientHeight >=
-      messageBox.value!.scrollHeight * 0.99
-    ) {
-      scroll = true
-    }
+    const scroll =
+      messageBox.value &&
+      messageBox.value.scrollHeight - messageBox.value.scrollTop - messageBox.value.clientHeight <
+        15
 
-    progress.value = p
-    messages.value.push(...p.messages.filter(m => m !== ''))
+    snapshot.value = p
+    messages.value.push(...(p.messages ?? []).filter(m => m !== ''))
 
-    if (scroll) {
+    if (scroll && messageBox.value) {
       nextTick(() => {
         messageBox.value!.scrollTop = messageBox.value!.scrollHeight
       })
@@ -94,19 +140,21 @@ function updateProgress() {
 }
 
 function toastErrMsg(err: string) {
-  if (err.includes('context canceled')) {
-    return
-  } else if (err.includes('The system cannot find the path specified.')) {
+  if (err.includes('context canceled')) return
+  if (err.includes('The system cannot find the path specified.'))
     toast.add({ title: t('toast.pathNotFind'), color: 'error' })
-  } else if (err.includes('unsupported protocol scheme')) {
+  else if (err.includes('unsupported protocol scheme'))
     toast.add({ title: t('toast.unsupportUrlProtocal'), color: 'error' })
-  } else if (err.includes('no such host')) {
-    toast.add({ title: t('toast.noSuchHost'), color: 'error' })
-  } else if (err == 'zip: not a valid zip file') {
+  else if (err.includes('no such host')) toast.add({ title: t('toast.noSuchHost'), color: 'error' })
+  else if (err == 'zip: not a valid zip file')
     toast.add({ title: t('toast.invalidZipFile'), color: 'error' })
-  } else {
-    toast.add({ title: err, color: 'error' })
-  }
+  else if (err.includes('porter: nothing to import'))
+    toast.add({ title: t('porter.error.noCategories'), color: 'error' })
+  else if (err.includes('porter: selected categories not found'))
+    toast.add({ title: t('porter.error.categoriesNotFound'), color: 'error' })
+  else if (err.includes('porter: nothing to backup or import'))
+    toast.add({ title: t('porter.error.nothingToImport'), color: 'error' })
+  else toast.add({ title: err, color: 'error' })
 }
 </script>
 
@@ -114,49 +162,35 @@ function toastErrMsg(err: string) {
   <UModal
     v-model:open="isOpen"
     :title="t('porter.progress')"
-    :close="progress?.status.includes('ed') && !(mode == 'import' && progress?.status == 'completed')"
+    :dismissible="false"
+    :close="
+      snapshot?.status.includes('ed') && !(mode == 'import' && snapshot?.status == 'completed')
+    "
     :ui="{
       content: 'h-[80vh] max-h-150',
       body: 'flex flex-col overflow-hidden'
     }"
   >
     <template #body>
-      <div class="flex min-h-0 flex-1 flex-col gap-y-2">
+      <div class="flex min-h-0 flex-1 flex-col gap-y-4">
         <div class="flex items-center gap-x-3">
           <h2 class="text-lg font-bold">{{ title }}</h2>
 
-          <p class="proc-badge h-6" :class="[`proc-badge-${progress?.status}`]">
-            <span class="truncate capitalize">{{ $t(`status.${progress?.status}`) }}</span>
+          <p class="proc-badge h-6" :class="[`proc-badge-${snapshot?.status}`]">
+            <span class="truncate capitalize">{{ $t(`status.${snapshot?.status}`) }}</span>
           </p>
         </div>
 
-        <ol class="flex w-full items-center">
-          <ProgressNode v-for="(task, i) in progress?.tasks ?? []" :key="i" :progress="task">
-            <i class="text-xs lg:text-base">
-              <Icon v-if="task.status == 'pending'" icon="mdi:hourglass" />
-
-              <Icon
-                v-else-if="task.status.includes('ing')"
-                icon="mdi:loading"
-                class="animate-spin"
-              />
-
-              <Icon v-else-if="task.status == 'completed'" icon="mdi:check" />
-
-              <Icon v-else icon="mdi:alert" />
-            </i>
-          </ProgressNode>
-
-          <ProgressNode>
-            <i class="text-xs lg:text-base">
-              <Icon icon="mdi:goal" />
-            </i>
-          </ProgressNode>
-        </ol>
+        <ProgressStepper
+          :steps="steps"
+          :current-step="snapshot?.step ?? ''"
+          :job-status="snapshot?.status"
+          :progress="snapshot?.progress ?? 0"
+        />
 
         <div
           ref="message-box"
-          class="flex flex-1 flex-col gap-y-2 overflow-y-auto rounded-sm border p-1"
+          class="flex flex-1 flex-col gap-y-2 overflow-y-auto rounded-sm border p-2"
         >
           <p v-for="(m, i) in messages" :key="i" class="text-xs break-all text-gray-400">
             {{ m }}
@@ -164,7 +198,7 @@ function toastErrMsg(err: string) {
         </div>
 
         <div class="flex justify-end gap-x-2">
-          <div v-show="progress?.status == 'pending' || progress?.status == 'running'">
+          <div v-show="snapshot?.status == 'pending' || snapshot?.status == 'running'">
             <UButton
               type="button"
               color="error"
@@ -178,7 +212,7 @@ function toastErrMsg(err: string) {
             </UButton>
           </div>
 
-          <div v-show="mode == 'import' && progress?.status == 'completed'">
+          <div v-show="mode == 'import' && snapshot?.status == 'completed'">
             <UButton
               type="button"
               color="primary"

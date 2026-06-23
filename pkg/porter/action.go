@@ -2,25 +2,25 @@ package porter
 
 import (
 	"archive/zip"
-	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
+	"slices"
 	"strings"
+	"time"
 )
 
-// Calculates the total size of a directory and its subdirectories.
-// If exclDir is true, directory sizes are excluded from the total.
-func dirSize(target string, exclDir bool) (int64, error) {
+// dirSize calculates the total size of files in a directory and its subdirectories.
+func dirSize(target string) (int64, error) {
 	var size int64
 	err := filepath.Walk(target, func(_ string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if !info.IsDir() || (!exclDir && info.IsDir()) {
+		if !info.IsDir() {
 			size += info.Size()
 		}
 		return nil
@@ -28,70 +28,88 @@ func dirSize(target string, exclDir bool) (int64, error) {
 	return size, err
 }
 
-// Finalises the progress tracker based on the presence of an error.
-func updateProgress(progress *Progress, err error) {
-	if err != nil {
-		if err != context.Canceled {
-			progress.message <- err.Error()
-		}
-		progress.Fail(err)
-	} else {
-		progress.Complete()
-	}
-}
+// toZip compresses target directories into install-it.zip at dest, writing
+// manifest.json as the first entry. Progress is reported via the job.
+func toZip(j *job, dest string, dirRoot string, targets []string) (err error) {
+	j.setStep("compression")
+	j.msg("Calculating total size...")
 
-// Compresses the specified directories into a single ZIP file at the destination path.
-func toZip(tracker *Progress, dest string, directories ...string) (err error) {
-	tracker.Start(0)
-	defer func() { updateProgress(tracker, err) }()
-
-	for _, dir := range directories {
-		if size, err := dirSize(dir, false); err == nil {
-			tracker.Total += size
+	var totalSize int64
+	for _, dir := range targets {
+		size, err := dirSize(dir)
+		if err != nil {
+			return fmt.Errorf("porter: cannot calculate size of %s: %w", dir, err)
 		}
+		totalSize += size
 	}
 
-	file, err := os.Create(path.Join(dest, "install-it.zip"))
+	zipPath := filepath.Join(dest, "install-it.zip")
+	j.msg(fmt.Sprintf("Creating archive: %s", zipPath))
+
+	file, err := os.Create(zipPath)
 	if err != nil {
+		return fmt.Errorf("porter: cannot create zip file: %w", err)
+	}
+	defer func() {
+		file.Close()
+
+		if err != nil {
+			os.Remove(zipPath)
+		}
+	}()
+
+	zw := zip.NewWriter(file)
+	defer zw.Close()
+
+	if err := writeManifest(zw, newManifest()); err != nil {
 		return err
 	}
-	defer file.Close()
 
-	zwriter := zip.NewWriter(file)
-	defer zwriter.Close()
-
-	for _, dir := range directories {
+	var written int64
+	for _, dir := range targets {
 		err = filepath.Walk(dir, func(filePath string, info os.FileInfo, err error) error {
-			if tracker.context.Err() == context.Canceled {
-				return tracker.context.Err()
+			if j.ctx.Err() != nil {
+				return j.ctx.Err()
 			}
 			if err != nil {
 				return err
 			}
 
-			tracker.message <- fmt.Sprintf("Packing: %s", filePath)
+			j.msg(fmt.Sprintf("Packing: %s", filePath))
 
 			if info.IsDir() {
-				tracker.Accumulate(info.Size())
 				return nil
 			}
 
+			// Compute relative path from dirRoot
+			rel, err := filepath.Rel(dirRoot, filePath)
+			if err != nil {
+				return fmt.Errorf("porter: cannot compute relative path: %w", err)
+			}
+			// Normalize to forward slashes for ZIP
+			entryName := filepath.ToSlash(rel)
+
 			srcFile, err := os.Open(filePath)
 			if err != nil {
-				return err
+				return fmt.Errorf("porter: cannot open source file %s: %w", filePath, err)
 			}
-			defer srcFile.Close()
 
-			zipEntry, err := zwriter.Create(filePath)
+			zipEntry, err := zw.Create(entryName)
 			if err != nil {
-				return err
+				srcFile.Close()
+				return fmt.Errorf("porter: cannot create zip entry %s: %w", entryName, err)
 			}
 
 			if _, err = io.Copy(zipEntry, srcFile); err != nil {
-				return err
+				srcFile.Close()
+				return fmt.Errorf("porter: cannot write to zip entry %s: %w", entryName, err)
 			}
+			srcFile.Close()
 
-			tracker.Accumulate(info.Size())
+			written += info.Size()
+			if totalSize > 0 {
+				j.setProgress(float64(written) / float64(totalSize))
+			}
 			return nil
 		})
 
@@ -100,160 +118,299 @@ func toZip(tracker *Progress, dest string, directories ...string) (err error) {
 		}
 	}
 
-	tracker.message <- fmt.Sprintf("All files were packed into: %s", file.Name())
+	j.msg(fmt.Sprintf("All files packed into: %s", zipPath))
 	return nil
 }
 
-// fromZip extracts a ZIP archive to the specified destination directory.
-func fromZip(tracker *Progress, orig string, dest string) (err error) {
-	tracker.Start(0)
-	defer func() { updateProgress(tracker, err) }()
+// fromZip extracts entries from a ZIP archive to dest, filtered by ImportOptions.
+// It skips manifest.json and only extracts entries matching the opts selection.
+func fromZip(j *job, orig string, dest string, opts ImportOptions) (err error) {
+	j.setStep("extract")
+	j.msg("Opening archive...")
 
-	zreader, err := zip.OpenReader(orig)
+	zr, err := zip.OpenReader(orig)
 	if err != nil {
-		return err
+		return fmt.Errorf("porter: cannot open archive: %w", err)
 	}
-	defer zreader.Close()
+	defer zr.Close()
 
-	os.MkdirAll(dest, os.ModePerm)
+	if err := os.MkdirAll(dest, os.ModePerm); err != nil {
+		return fmt.Errorf("porter: cannot create destination directory: %w", err)
+	}
 
-	// Closure to address file descriptors issue with all the deferred .Close() methods
+	// Count total extractable bytes for progress tracking
+	type entryInfo struct {
+		file *zip.File
+		size int64
+	}
+	var entries []entryInfo
+	var totalBytes int64
+
+	for _, zf := range zr.File {
+		name := filepath.ToSlash(zf.Name)
+		if name == "manifest.json" {
+			continue
+		}
+
+		shouldExtract := false
+		switch {
+		case opts.Settings && name == "conf/setting.json":
+			shouldExtract = true
+		case opts.Data && name == "conf/data.db":
+			shouldExtract = true
+		case opts.Data && strings.HasPrefix(name, "drivers/"):
+			shouldExtract = true
+		}
+
+		if !shouldExtract {
+			continue
+		}
+
+		entries = append(entries, entryInfo{file: zf, size: int64(zf.FileInfo().Size())})
+		totalBytes += int64(zf.FileInfo().Size())
+	}
+
+	if totalBytes == 0 {
+		return fmt.Errorf("porter: no matching entries found in archive for the selected options")
+	}
+
+	var extracted int64
 	extractAndWriteFile := func(zf *zip.File) error {
-		if tracker.context.Err() == context.Canceled {
-			return tracker.context.Err()
+		if j.ctx.Err() != nil {
+			return j.ctx.Err()
 		}
 
 		zfreader, err := zf.Open()
 		if err != nil {
-			return err
+			return fmt.Errorf("porter: cannot open zip entry %s: %w", zf.Name, err)
 		}
 		defer zfreader.Close()
 
-		extractPath := filepath.Join(dest, zf.Name)
+		// Use forward-slash name consistently
+		name := filepath.ToSlash(zf.Name)
+		extractPath := filepath.Join(dest, name)
 
-		// Prevent ZipSlip vulnerability
-		if !strings.HasPrefix(extractPath, filepath.Clean(dest)+string(os.PathSeparator)) {
-			return fmt.Errorf("porting: illegal file path: %s", extractPath)
+		// ZipSlip protection
+		cleanDest := filepath.Clean(dest)
+		if !strings.HasPrefix(filepath.Clean(extractPath), cleanDest+string(os.PathSeparator)) && filepath.Clean(extractPath) != cleanDest {
+			return fmt.Errorf("porter: illegal file path: %s", extractPath)
 		}
 
-		tracker.message <- fmt.Sprintf("Unpacking: %s", zf.Name)
+		j.msg(fmt.Sprintf("Extracting: %s", name))
 
 		if zf.FileInfo().IsDir() {
 			return os.MkdirAll(extractPath, zf.Mode())
 		}
 
-		os.MkdirAll(filepath.Dir(extractPath), zf.Mode())
+		if err := os.MkdirAll(filepath.Dir(extractPath), os.ModePerm); err != nil {
+			return fmt.Errorf("porter: cannot create directory %s: %w", filepath.Dir(extractPath), err)
+		}
+
 		outFile, err := os.OpenFile(extractPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, zf.Mode())
 		if err != nil {
-			return err
+			return fmt.Errorf("porter: cannot create file %s: %w", extractPath, err)
 		}
 		defer outFile.Close()
 
 		_, err = io.Copy(outFile, zfreader)
-		return err
+		if err != nil {
+			return fmt.Errorf("porter: error writing file %s: %w", extractPath, err)
+		}
+
+		extracted += zf.FileInfo().Size()
+		if totalBytes > 0 {
+			j.setProgress(float64(extracted) / float64(totalBytes))
+		}
+		return nil
 	}
 
-	for _, zf := range zreader.File {
-		tracker.Total += zf.FileInfo().Size()
-	}
-
-	for _, zf := range zreader.File {
-		if err := extractAndWriteFile(zf); err != nil {
+	for _, entry := range entries {
+		if err := extractAndWriteFile(entry.file); err != nil {
 			return err
 		}
-		tracker.Accumulate(zf.FileInfo().Size())
 	}
 
-	tracker.Complete()
+	j.msg("Extraction complete")
 	return nil
 }
 
-// Fetches a ZIP file from the given URL and saves it to a temporary file.
-func download(tracker *Progress, url string) (path string, err error) {
-	tracker.Start(0)
-	defer func() { updateProgress(tracker, err) }()
+// backup moves the specified files and directories into a single .porter-{timestamp}/ folder.
+// The timestamp is returned for cleanup/rollback. If any move fails, already-moved items are restored.
+func backup(j *job, dirRoot string, files []string, dirs []string) (timestamp string, err error) {
+	j.setStep("backup")
+	j.msg("Creating backups...")
 
-	req, err := http.NewRequestWithContext(tracker.context, "GET", url, nil)
+	timestamp = time.Now().Format("20060102T150405")
+	backupDir := filepath.Join(dirRoot, ".porter-"+timestamp)
+
+	var moved []string
+	defer func() {
+		if err != nil && len(moved) > 0 {
+			var rollbackErr error
+			for _, item := range moved {
+				if rErr := os.Rename(filepath.Join(backupDir, item), filepath.Join(dirRoot, item)); rErr != nil {
+					rollbackErr = rErr
+					break
+				}
+			}
+			if rollbackErr != nil {
+				// Leave backup dir in place for manual recovery
+				err = fmt.Errorf("porter: %w (rollback failed: %v, backup at %s)", err, rollbackErr, backupDir)
+				return
+			}
+			os.RemoveAll(backupDir)
+		}
+	}()
+
+	for _, item := range slices.Concat(files, dirs) {
+		original := filepath.Join(dirRoot, item)
+		if _, statErr := os.Stat(original); os.IsNotExist(statErr) {
+			continue
+		}
+		backupPath := filepath.Join(backupDir, item)
+		if err := os.MkdirAll(filepath.Dir(backupPath), os.ModePerm); err != nil {
+			return timestamp, fmt.Errorf("porter: cannot create backup directory: %w", err)
+		}
+		j.msg(fmt.Sprintf("Backing up: %s", original))
+		if err := os.Rename(original, backupPath); err != nil {
+			return timestamp, fmt.Errorf("porter: cannot backup %s → %s: %w", original, backupPath, err)
+		}
+		moved = append(moved, item)
+	}
+
+	if len(moved) == 0 {
+		j.msg("No existing files to backup")
+	} else {
+		j.msg(fmt.Sprintf("Backup complete (timestamp: %s)", timestamp))
+	}
+	return timestamp, nil
+}
+
+func cleanupBackups(j *job, dirRoot string, timestamp string) error {
+	j.setStep("cleanup")
+	j.msg("Cleaning up backups...")
+	return os.RemoveAll(filepath.Join(dirRoot, ".porter-"+timestamp))
+}
+
+// rollback restores backed-up files and directories, then removes the backup folder.
+// Returns a summary of all errors encountered. If any step fails, the backup folder is preserved.
+func rollback(j *job, dirRoot string, timestamp string, files []string, dirs []string) error {
+	j.msg("Rolling back...")
+
+	backupDir := filepath.Join(dirRoot, ".porter-"+timestamp)
+
+	var errs []error
+
+	for _, d := range dirs {
+		original := filepath.Join(dirRoot, d)
+		if _, statErr := os.Stat(original); statErr == nil {
+			if err := os.RemoveAll(original); err != nil {
+				errs = append(errs, fmt.Errorf("porter: rollback: cannot remove %s: %w", original, err))
+			}
+		}
+		backupPath := filepath.Join(backupDir, d)
+		if _, statErr := os.Stat(backupPath); statErr == nil {
+			if err := os.Rename(backupPath, original); err != nil {
+				errs = append(errs, fmt.Errorf("porter: rollback: cannot rename %s → %s: %w", backupPath, original, err))
+			}
+		}
+	}
+
+	for _, f := range files {
+		original := filepath.Join(dirRoot, f)
+		if _, statErr := os.Stat(original); statErr == nil {
+			if err := os.Remove(original); err != nil {
+				errs = append(errs, fmt.Errorf("porter: rollback: cannot remove %s: %w", original, err))
+			}
+		}
+		backupPath := filepath.Join(backupDir, f)
+		if _, statErr := os.Stat(backupPath); statErr == nil {
+			if err := os.MkdirAll(filepath.Dir(original), os.ModePerm); err != nil {
+				errs = append(errs, fmt.Errorf("porter: rollback: cannot create directory for %s: %w", original, err))
+			}
+			if err := os.Rename(backupPath, original); err != nil {
+				errs = append(errs, fmt.Errorf("porter: rollback: cannot rename %s → %s: %w", backupPath, original, err))
+			}
+		}
+	}
+
+	if len(errs) > 0 {
+		return errors.Join(errs...)
+	}
+
+	return os.RemoveAll(backupDir)
+}
+
+// download fetches a ZIP from a URL to a temp file, reporting progress via the job.
+func download(j *job, url string) (path string, err error) {
+	j.setStep("download")
+	j.msg(fmt.Sprintf("Downloading: %s", url))
+
+	req, err := http.NewRequestWithContext(j.ctx, "GET", url, nil)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("porter: cannot create request: %w", err)
 	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("porter: download failed: %w", err)
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("porter: download returned status %d", resp.StatusCode)
+	}
+
 	tmpFile, err := os.CreateTemp("", "*.zip")
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("porter: cannot create temp file: %w", err)
 	}
-	defer tmpFile.Close()
 
+	var total int64
 	if resp.ContentLength > 0 {
-		tracker.Total = resp.ContentLength
-	}
-	tracker.message <- "Downloading..."
-
-	if _, err = io.Copy(tmpFile, io.TeeReader(resp.Body, tracker)); err != nil {
-		return "", err
+		total = resp.ContentLength
 	}
 
-	if tracker.Total <= 0 {
-		tracker.Total = tracker.Current
+	j.msg("Downloading...")
+
+	written, err := io.Copy(tmpFile, &downloadReader{
+		reader: resp.Body,
+		job:    j,
+		total:  total,
+	})
+	if err != nil {
+		tmpFile.Close()
+		os.Remove(tmpFile.Name())
+		return "", fmt.Errorf("porter: download interrupted: %w", err)
+	}
+	tmpFile.Close()
+
+	if total > 0 {
+		j.setProgress(1.0)
 	}
 
-	return filepath.Abs(tmpFile.Name())
+	absPath, err := filepath.Abs(tmpFile.Name())
+	if err != nil {
+		return "", fmt.Errorf("porter: cannot resolve temp file path: %w", err)
+	}
+
+	j.msg(fmt.Sprintf("Downloaded %d bytes to %s", written, absPath))
+	return absPath, nil
 }
 
-// Renames each target directory by appending "_old" to create a backup.
-func backup(tracker *Progress, targets []string) (err error) {
-	tracker.Start(2)
-	defer func() { updateProgress(tracker, err) }()
-
-	tracker.message <- "Creating backups..."
-
-	for _, d := range targets {
-		if err := os.Rename(d, fmt.Sprintf("%s_old", d)); err != nil {
-			return err
-		}
-		tracker.message <- fmt.Sprintf("%[1]s -> %[1]s_old", d)
-		tracker.Accumulate(1)
-	}
-	return nil
+// downloadReader wraps an io.Reader and updates job progress on each Read.
+type downloadReader struct {
+	reader io.Reader
+	job    *job
+	read   int64
+	total  int64
 }
 
-// Removes or restores backup directories based on the restore flag.
-func cleanup(tracker *Progress, targets []string, restore bool) (err error) {
-	tracker.Start(int64(len(targets)))
-	defer func() { updateProgress(tracker, err) }()
-
-	if restore {
-		tracker.message <- "Restoring backups..."
-		for _, d := range targets {
-			if err := os.RemoveAll(d); err != nil {
-				return err
-			}
-			if err := os.Rename(fmt.Sprintf("%s_old", d), d); err != nil {
-				return err
-			}
-
-			tracker.message <- fmt.Sprintf("%[1]s_old -> %[1]s", d)
-			tracker.Accumulate(1)
-		}
-	} else {
-		tracker.message <- "Removing backups..."
-		for _, d := range targets {
-			path := fmt.Sprintf("%s_old", d)
-			tracker.message <- fmt.Sprintf("Removing: %s", path)
-
-			if err := os.RemoveAll(path); err != nil {
-				tracker.message <- err.Error()
-				tracker.message <- fmt.Sprintf("⚠️ Unable to remove backup \"%s\", please consider removing it manually", d)
-			} else {
-				tracker.Accumulate(1)
-			}
-		}
+func (r *downloadReader) Read(p []byte) (int, error) {
+	n, err := r.reader.Read(p)
+	r.read += int64(n)
+	if r.total > 0 {
+		r.job.setProgress(float64(r.read) / float64(r.total))
 	}
-	return nil
+	return n, err
 }
