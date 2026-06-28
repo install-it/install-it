@@ -38,11 +38,11 @@ function statusShortKey(status: string): string {
       <!-- messages -->
       <template v-if="props.process.status == 'speeded' || props.process.status == 'failed'">
         <div class="line-clamp-3 text-sm break-all">
-          {{ $t('executeExitCode', { code: props.process.result?.exitCode }) }}
+          {{ $t('msgExitCode', { code: props.process.result?.exitCode }) }}
 
           <p v-if="props.process.status == 'speeded'" class="text-xs text-orange-300">
             {{
-              $t('executeEarlyExit', {
+              $t('msgEarlyExit', {
                 second: `${(props.process.result?.lapse ?? -1).toFixed(1)}/${props.process.command.config.minExeTime}`
               })
             }}
@@ -60,7 +60,7 @@ function statusShortKey(status: string): string {
               props.process.result.error.includes('file does not exist') ||
               props.process.result.error.includes('The system cannot find the file specified.') ||
               props.process.result.error.includes('The system cannot find the path specified.')
-                ? $t('executeFileNotExist')
+                ? $t('errFileNotFound')
                 : props.process.result.error.split(':').slice(1).join(':').trim()
             }}
           </p>
@@ -75,7 +75,7 @@ function statusShortKey(status: string): string {
         <div class="line-clamp-2 font-mono text-sm break-all">
           {{
             props.process.result?.error?.split(':').slice(1).join(':').trim() ??
-            $t('executeStartFailed')
+            $t('errStartFailed')
           }}
         </div>
       </template>
@@ -83,13 +83,11 @@ function statusShortKey(status: string): string {
       <template v-else-if="props.process.status == 'completed'">
         <div class="text-xs text-gray-300">
           <p class="truncate">
-            {{ $t('executeExitCode', { code: props.process.result?.exitCode }) }}
+            {{ $t('msgExitCode', { code: props.process.result?.exitCode }) }}
           </p>
 
           <p class="truncate">
-            {{
-              $t('executeExecuteTime', { second: Math.round(props.process.result?.lapse ?? -1) })
-            }}
+            {{ $t('msgExecuteTime', { second: Math.round(props.process.result?.lapse ?? -1) }) }}
           </p>
         </div>
       </template>
@@ -100,7 +98,7 @@ function statusShortKey(status: string): string {
         class="ms-auto font-normal"
       >
         <UButton size="xs" @click="$emit('abort')">
-          {{ $t('executeAbort') }}
+          {{ $t('actionAbort') }}
         </UButton>
       </div>
     </div>

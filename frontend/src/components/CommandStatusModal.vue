@@ -162,7 +162,7 @@ async function handleAbort(process: Process) {
   <UModal
     v-model:open="isOpen"
     :dismissible="false"
-    :title="$t('executeTitle')"
+    :title="$t('titleExecutionStatus')"
     :close="!processes.some(cmd => ['pending', 'running', 'aborting'].includes(cmd.status))"
   >
     <template #body>
@@ -191,7 +191,7 @@ async function handleAbort(process: Process) {
           "
         >
           <Icon icon="mdi:arrow-right" />
-          {{ $t('executeForceComplete') }}
+          {{ $t('actionForceComplete') }}
         </UButton>
       </div>
     </template>
