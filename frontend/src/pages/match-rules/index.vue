@@ -21,11 +21,11 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
 
 <template>
   <div class="flex h-full flex-col gap-y-2">
-    <div>
-      <h1 class="font-bold">{{ $t('matchRule.matchRule') }}</h1>
-
-      <p class="text-xs">{{ $t('matchRule.matchRuleHelp') }}</p>
-    </div>
+    <PageHeader
+      variant="compact"
+      :title="$t('matchRule.matchRule')"
+      :description="$t('matchRule.matchRuleHelp')"
+    />
 
     <div
       ref="scrollContainer"

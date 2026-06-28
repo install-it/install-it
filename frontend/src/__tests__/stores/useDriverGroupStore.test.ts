@@ -78,7 +78,7 @@ describe('useDriverGroupStore', () => {
 
   it('notFoundDrivers only lists missing drivers when some exist and some do not', async () => {
     vi.mocked(App.ExecutableExists)
-      .mockResolvedValueOnce(true)  // driver-exists  → found
+      .mockResolvedValueOnce(true) // driver-exists  → found
       .mockResolvedValueOnce(false) // driver-missing → not found
 
     const store = useDriverGroupStore()

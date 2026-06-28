@@ -31,7 +31,7 @@ export async function latestRelease(currentVersion: string, binaryType?: string)
         url: body.html_url as string,
         version: version,
         assetUrl,
-        webviewAssetUrl,
+        webviewAssetUrl
       }
     })
 }

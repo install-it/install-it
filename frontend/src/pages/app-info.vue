@@ -101,122 +101,126 @@ function checkUpdate() {
 </script>
 
 <template>
-  <div class="flex h-full flex-col gap-y-6">
-    <h1 class="text-lg font-bold">{{ $t('info.about') }} install-it</h1>
+  <div class="flex h-full flex-col gap-y-6 overflow-y-auto p-2">
+    <PageHeader variant="normal" :title="`${$t('info.about')} install-it`" />
 
-    <div>
-      <h2 class="font-bold">{{ $t('info.thisSoftware') }}</h2>
+    <div class="flex flex-col gap-y-6">
+      <div>
+        <h2 class="mb-2 font-bold">{{ $t('info.thisSoftware') }}</h2>
 
-      <div class="grid grid-cols-7 gap-4">
-        <div class="col-span-2">{{ $t('info.version') }}</div>
+        <div class="grid grid-cols-7 gap-4">
+          <div class="col-span-2">{{ $t('info.version') }}</div>
 
-        <div class="col-span-5 flex items-center gap-x-5">
-          <p>
-            {{ info.app.version }}
-          </p>
+          <div class="col-span-5 flex items-center gap-x-5">
+            <p>
+              {{ info.app.version }}
+            </p>
 
-          <UButton
-            color="neutral"
-            variant="outline"
-            size="xs"
-            :disabled="onCheck"
-            @click="checkUpdate()"
-          >
-            {{ $t('info.checkUpdate') }}
-          </UButton>
+            <UButton
+              color="neutral"
+              variant="outline"
+              size="xs"
+              :disabled="onCheck"
+              @click="checkUpdate()"
+            >
+              {{ $t('info.checkUpdate') }}
+            </UButton>
+          </div>
         </div>
-      </div>
 
-      <div class="grid grid-cols-7 gap-4">
-        <div class="col-span-2">{{ $t('info.buildType') }}</div>
+        <div class="grid grid-cols-7 gap-4">
+          <div class="col-span-2">{{ $t('info.buildType') }}</div>
 
-        <div class="col-span-5">{{ $t(`info.${info.app.buildType}`) }}</div>
-      </div>
-
-      <div class="grid grid-cols-7 gap-4">
-        <div class="col-span-2">{{ $t('info.pathDriver') }}</div>
-
-        <div class="col-span-5 break-all">
-          {{ info.app.pathDriver }}
-
-          <UButton
-            type="button"
-            color="neutral"
-            variant="link"
-            size="md"
-            @click="RunAndOutput('cmd', ['/c', `explorer.exe ${info.app.pathDriver}`], true)"
-          >
-            <Icon icon="mdi:open-in-new" />
-          </UButton>
+          <div class="col-span-5">{{ $t(`info.${info.app.buildType}`) }}</div>
         </div>
-      </div>
-    </div>
 
-    <div>
-      <h2 class="font-bold">Microsoft Edge WebView2</h2>
+        <div class="grid grid-cols-7 gap-4">
+          <div class="col-span-2">{{ $t('info.pathDriver') }}</div>
 
-      <div class="grid grid-cols-7 gap-4">
-        <div class="col-span-2">{{ $t('info.version') }}</div>
-
-        <div class="col-span-5">{{ info.webview.version }}</div>
-      </div>
-
-      <div class="grid grid-cols-7 gap-4">
-        <div class="col-span-2">{{ $t('info.path') }}</div>
-
-        <div class="col-span-5">
-          {{ info.webview.location || $t('info.usingBuiltInWebView2') }}
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <h2 class="font-bold">{{ $t('info.development') }}</h2>
-
-      <div class="grid grid-cols-7 gap-4">
-        <div class="col-span-2">{{ $t('info.sourceCode') }}</div>
-
-        <div class="col-span-5">
-          <a
-            href="https://github.com/install-it/install-it"
-            class="text-sky-700 underline"
-            @click.prevent="event => BrowserOpenURL((event.target as HTMLAnchorElement).href)"
-          >
-            https://github.com/install-it/install-it
-          </a>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-7 gap-4">
-        <div class="col-span-2">{{ $t('info.reportBug') }}</div>
-
-        <div class="col-span-5">
-          <a
-            href="https://github.com/install-it/install-it/issues"
-            class="text-sky-700 underline"
-            @click.prevent="event => BrowserOpenURL((event.target as HTMLAnchorElement).href)"
-          >
-            https://github.com/install-it/install-it/issues
-          </a>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-7 gap-4">
-        <div class="col-span-2">{{ $t('info.license') }}</div>
-
-        <div class="col-span-5">
-          <div class="flex">
-            <p class="inline font-mono">GNU General Public License v2.0</p>
+          <div class="col-span-5 break-all">
+            {{ info.app.pathDriver }}
 
             <UButton
               type="button"
               color="neutral"
               variant="link"
               size="md"
-              @click="BrowserOpenURL('https://github.com/install-it/install-it/blob/main/LICENSE')"
+              @click="RunAndOutput('cmd', ['/c', `explorer.exe ${info.app.pathDriver}`], true)"
             >
               <Icon icon="mdi:open-in-new" />
             </UButton>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="mb-2 font-bold">Microsoft Edge WebView2</h2>
+
+        <div class="grid grid-cols-7 gap-4">
+          <div class="col-span-2">{{ $t('info.version') }}</div>
+
+          <div class="col-span-5">{{ info.webview.version }}</div>
+        </div>
+
+        <div class="grid grid-cols-7 gap-4">
+          <div class="col-span-2">{{ $t('info.path') }}</div>
+
+          <div class="col-span-5">
+            {{ info.webview.location || $t('info.usingBuiltInWebView2') }}
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="mb-2 font-bold">{{ $t('info.development') }}</h2>
+
+        <div class="grid grid-cols-7 gap-4">
+          <div class="col-span-2">{{ $t('info.sourceCode') }}</div>
+
+          <div class="col-span-5">
+            <a
+              href="https://github.com/install-it/install-it"
+              class="text-sky-700 underline"
+              @click.prevent="event => BrowserOpenURL((event.target as HTMLAnchorElement).href)"
+            >
+              https://github.com/install-it/install-it
+            </a>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-7 gap-4">
+          <div class="col-span-2">{{ $t('info.reportBug') }}</div>
+
+          <div class="col-span-5">
+            <a
+              href="https://github.com/install-it/install-it/issues"
+              class="text-sky-700 underline"
+              @click.prevent="event => BrowserOpenURL((event.target as HTMLAnchorElement).href)"
+            >
+              https://github.com/install-it/install-it/issues
+            </a>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-7 gap-4">
+          <div class="col-span-2">{{ $t('info.license') }}</div>
+
+          <div class="col-span-5">
+            <div class="flex">
+              <p class="inline font-mono">GNU General Public License v2.0</p>
+
+              <UButton
+                type="button"
+                color="neutral"
+                variant="link"
+                size="md"
+                @click="
+                  BrowserOpenURL('https://github.com/install-it/install-it/blob/main/LICENSE')
+                "
+              >
+                <Icon icon="mdi:open-in-new" />
+              </UButton>
+            </div>
           </div>
         </div>
       </div>
