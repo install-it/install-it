@@ -73,8 +73,8 @@ onBeforeMount(() => {
   })
 })
 
-function infoKey(suffix: string): string {
-  return `info${suffix.charAt(0).toUpperCase() + suffix.slice(1)}`
+function buildTypeKey(suffix: string): string {
+  return `buildType${suffix.charAt(0).toUpperCase() + suffix.slice(1)}`
 }
 
 function checkUpdate() {
@@ -106,14 +106,14 @@ function checkUpdate() {
 
 <template>
   <div class="flex h-full flex-col gap-y-6 overflow-y-auto p-2">
-    <PageHeader variant="normal" :title="`${$t('infoAbout')} install-it`" />
+    <PageHeader variant="normal" :title="`${$t('titleAbout')} install-it`" />
 
     <div class="flex flex-col gap-y-6">
       <div>
-        <h2 class="mb-2 font-bold">{{ $t('infoThisSoftware') }}</h2>
+        <h2 class="mb-2 font-bold">{{ $t('labelThisSoftware') }}</h2>
 
         <div class="grid grid-cols-7 gap-4">
-          <div class="col-span-2">{{ $t('infoVersion') }}</div>
+          <div class="col-span-2">{{ $t('version') }}</div>
 
           <div class="col-span-5 flex items-center gap-x-5">
             <p>
@@ -127,19 +127,19 @@ function checkUpdate() {
               :disabled="onCheck"
               @click="checkUpdate()"
             >
-              {{ $t('infoCheckUpdate') }}
+              {{ $t('labelUpdate') }}
             </UButton>
           </div>
         </div>
 
         <div class="grid grid-cols-7 gap-4">
-          <div class="col-span-2">{{ $t('infoBuildType') }}</div>
+          <div class="col-span-2">{{ $t('labelBuildType') }}</div>
 
-          <div class="col-span-5">{{ $t(infoKey(info.app.buildType)) }}</div>
+          <div class="col-span-5">{{ $t(buildTypeKey(info.app.buildType)) }}</div>
         </div>
 
         <div class="grid grid-cols-7 gap-4">
-          <div class="col-span-2">{{ $t('infoPathDriver') }}</div>
+          <div class="col-span-2">{{ $t('labelDriverPath') }}</div>
 
           <div class="col-span-5 break-all">
             {{ info.app.pathDriver }}
@@ -161,25 +161,25 @@ function checkUpdate() {
         <h2 class="mb-2 font-bold">Microsoft Edge WebView2</h2>
 
         <div class="grid grid-cols-7 gap-4">
-          <div class="col-span-2">{{ $t('infoVersion') }}</div>
+          <div class="col-span-2">{{ $t('version') }}</div>
 
           <div class="col-span-5">{{ info.webview.version }}</div>
         </div>
 
         <div class="grid grid-cols-7 gap-4">
-          <div class="col-span-2">{{ $t('infoPath') }}</div>
+          <div class="col-span-2">{{ $t('path') }}</div>
 
           <div class="col-span-5">
-            {{ info.webview.location || $t('infoUsingBuiltInWebView2') }}
+            {{ info.webview.location || $t('msgUsingBuiltInWebView2') }}
           </div>
         </div>
       </div>
 
       <div>
-        <h2 class="mb-2 font-bold">{{ $t('infoDevelopment') }}</h2>
+        <h2 class="mb-2 font-bold">{{ $t('labelDevelopment') }}</h2>
 
         <div class="grid grid-cols-7 gap-4">
-          <div class="col-span-2">{{ $t('infoSourceCode') }}</div>
+          <div class="col-span-2">{{ $t('labelSourceCode') }}</div>
 
           <div class="col-span-5">
             <a
@@ -193,7 +193,7 @@ function checkUpdate() {
         </div>
 
         <div class="grid grid-cols-7 gap-4">
-          <div class="col-span-2">{{ $t('infoReportBug') }}</div>
+          <div class="col-span-2">{{ $t('labelReportBug') }}</div>
 
           <div class="col-span-5">
             <a
@@ -207,7 +207,7 @@ function checkUpdate() {
         </div>
 
         <div class="grid grid-cols-7 gap-4">
-          <div class="col-span-2">{{ $t('infoLicense') }}</div>
+          <div class="col-span-2">{{ $t('license') }}</div>
 
           <div class="col-span-5">
             <div class="flex">

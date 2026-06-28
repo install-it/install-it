@@ -67,13 +67,13 @@ watch(
 </script>
 
 <template>
-  <UModal v-model:open="isOpen" :title="$t('infoUpdateInfoTitle')">
+  <UModal v-model:open="isOpen" :title="$t('titleUpdateInfo')">
     <template #body>
       <div class="flex flex-col gap-y-3">
         <div class="flex grow flex-col gap-y-2">
           <div class="flex">
             <h1 class="min-w-34 font-medium">
-              {{ $t('infoCurrentVersion') }}
+              {{ $t('labelCurrentVersion') }}
             </h1>
 
             <p>{{ currentVersion }}</p>
@@ -81,7 +81,7 @@ watch(
 
           <div class="flex">
             <h1 class="min-w-34 font-medium">
-              {{ $t('infoLatestVersion') }}
+              {{ $t('labelLatestVersion') }}
             </h1>
 
             <p>
@@ -93,13 +93,13 @@ watch(
 
           <div class="flex grow flex-col">
             <h1 class="mb-1 min-w-32 font-medium">
-              {{ $t('infoUpdateInfo') }}
+              {{ $t('labelUpdateInfo') }}
             </h1>
 
             <div
               id="release-notes"
               class="rounded-lg border px-1"
-               v-html="parsedNotes || `<i>${$t('infoNoUpdateInfo')}</i>`"
+              v-html="parsedNotes || `<i>${$t('msgNoUpdateInfo')}</i>`"
             ></div>
           </div>
 
@@ -107,13 +107,13 @@ watch(
 
           <div class="flex flex-col">
             <h1 class="font-medium">
-              {{ $t('infoUpdateOption') }}
+              {{ $t('labelUpdateOptions') }}
             </h1>
 
             <label class="flex w-full cursor-pointer items-center select-none">
               <UCheckbox v-model="webviewVersion" name="webview_version" color="primary" />
 
-              <span class="ms-1.5">{{ $t('infoDownloadBuiltInWebView2Version') }}</span>
+              <span class="ms-1.5">{{ $t('labelDownloadWebView2') }}</span>
             </label>
           </div>
         </div>
@@ -143,7 +143,7 @@ watch(
             }
           "
         >
-          {{ $t('infoUpdate') }}
+          {{ $t('labelUpdate') }}
         </UButton>
       </div>
     </template>

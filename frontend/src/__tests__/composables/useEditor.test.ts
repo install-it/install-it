@@ -194,7 +194,7 @@ describe('useEditor', () => {
   // ─── getter source ────────────────────────────────────────────────────────
 
   it('accepts a getter function as source', () => {
-    let raw = { value: 10 }
+    const raw = { value: 10 }
     const editor = useEditor({ source: () => raw })
 
     expect(editor.data.value).toEqual({ value: 10 })

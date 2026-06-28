@@ -41,26 +41,29 @@ const input = ref<{ _id: number | undefined } & storage.Rule>({
 })
 
 const sourceItems = computed(() =>
-  Object.entries(storage.RuleSource).map(([, value]) => ({     label: t(`common${value.charAt(0).toUpperCase() + value.slice(1)}`), value }))
+  Object.entries(storage.RuleSource).map(([, value]) => ({
+    label: t(`hw${value.charAt(0).toUpperCase() + value.slice(1)}`),
+    value
+  }))
 )
 
 const operatorItems = computed(() =>
   Object.entries(storage.RuleOperator).map(([, value]) => ({
-    label: t(`matchRule${value.charAt(0).toUpperCase() + value.slice(1)}`),
+    label: t(`op${value.charAt(0).toUpperCase() + value.slice(1)}`),
     value
   }))
 )
 </script>
 
 <template>
-  <UModal v-model:open="isOpen" :title="$t('matchRuleMatchRule')">
+  <UModal v-model:open="isOpen" :title="$t('titleMatchRule')">
     <template #body>
       <form
         autocomplete="off"
         @submit.prevent="
           () => {
             if (input.values.length == 0) {
-              toast.add({ title: t('toastAddAtLeastOnePattern'), color: 'warning' })
+              toast.add({ title: t('toastAddPatternRequired'), color: 'warning' })
             } else {
               $emit('submit', input)
               isOpen = false
@@ -72,7 +75,7 @@ const operatorItems = computed(() =>
           <div class="flex gap-1">
             <fieldset class="fieldset flex-1">
               <legend class="fieldset-legend text-sm">
-                {{ $t('matchRuleSource') }}
+                {{ $t('fieldSource') }}
               </legend>
 
               <USelect
@@ -86,7 +89,7 @@ const operatorItems = computed(() =>
 
             <fieldset class="fieldset flex-1">
               <legend class="fieldset-legend text-sm">
-                {{ $t('matchRuleOperator') }}
+                {{ $t('fieldOperator') }}
               </legend>
 
               <USelect
@@ -102,7 +105,7 @@ const operatorItems = computed(() =>
           <div class="flex">
             <fieldset class="fieldset flex-1">
               <legend class="fieldset-legend text-sm">
-                {{ $t('matchRuleCaseSensitive') }}
+                {{ $t('labelCaseSensitive') }}
               </legend>
 
               <label class="flex cursor-pointer items-center select-none">
@@ -113,28 +116,28 @@ const operatorItems = computed(() =>
                   :disabled="input.operator === 'regex'"
                 />
 
-                <span class="ms-1.5">{{ $t('commonEnable') }}</span>
+                <span class="ms-1.5">{{ $t('enable') }}</span>
               </label>
             </fieldset>
 
             <fieldset class="fieldset flex-1">
               <legend class="fieldset-legend text-sm">
-                {{ $t('matchRuleMultiPatternMatching') }}
+                {{ $t('labelMultiPatternMatching') }}
               </legend>
 
               <label class="flex cursor-pointer items-center select-none">
                 <UCheckbox v-model="input.should_hit_all" color="primary" size="sm" />
 
-                <span class="ms-1.5">{{ $t('matchRuleHitAllPatterns') }}</span>
+                <span class="ms-1.5">{{ $t('fieldHitAllPatterns') }}</span>
               </label>
 
-              <p class="text-hint">{{ $t('matchRuleMultiPatternMatchingHelp') }}</p>
+              <p class="text-hint">{{ $t('descMultiPatternMatching') }}</p>
             </fieldset>
           </div>
 
           <fieldset class="input-bordered w-full rounded border py-1">
             <legend class="text-required fieldset-legend text-sm">
-              {{ $t('matchRulePattern') }}
+              {{ $t('fieldPattern') }}
             </legend>
 
             <TaggedInput v-model="input.values"></TaggedInput>
@@ -143,7 +146,7 @@ const operatorItems = computed(() =>
 
         <div class="flex gap-x-2 border-t pt-2">
           <UButton type="submit" color="secondary" size="sm" block class="justify-center">
-            {{ $t('commonSave') }}
+            {{ $t('save') }}
           </UButton>
         </div>
       </form>

@@ -33,6 +33,7 @@ Canonical conventions for install-it. Applies to all code in the repository unle
 | Constants (TS/Go) | `UPPER_SNAKE_CASE` | `MAX_RETRIES` |
 | CSS classes | `kebab-case` | `gap-x-2` |
 | Database columns / JSON fields | `snake_case` | `driver_group_id` |
+| i18n translation keys | flat `camelCase` with semantic prefix | `toastSaved`, `hwCpu`, `opContain` |
 
 Go uses casing for visibility: `camelCase` is unexported, `PascalCase` is exported.
 
@@ -140,15 +141,35 @@ ruleSetStorage.Add(ruleSet.value)
 
 ### i18n
 
-Use `useI18n()` with destructured `t` in `<script setup>`. Use `$t` in templates (globally available).
+Flat camelCase keys. No nesting, no dots. Prefix describes **what the string is**, not where it appears.
+
+| Prefix | Nature | Example |
+|--------|--------|---------|
+| *(none)* | Universal UI atoms | `save`, `cancel`, `name`, `path` |
+| `action` | User-triggerable actions | `actionShutdown`, `actionReboot` |
+| `buildType` | Build/variant identifiers | `buildTypeDev`, `buildTypeProduction` |
+| `category` | Classification labels | `categoryDisplay`, `categoryNetwork` |
+| `desc` | Help text, hints, tooltips | `descMutuallyExclusive` |
+| `err` | Error/failure messages | `errStartFailed`, `errNothingToImport` |
+| `field` | Form/table column labels | `fieldAllowedExitCode`, `fieldSource` |
+| `hw` | Hardware component names | `hwCpu`, `hwGpu`, `hwNic` |
+| `label` | Generic display labels | `labelPleaseSelect`, `labelNA` |
+| `msg` | Informational messages | `msgUnsavedChanges`, `msgExitCode` |
+| `op` | Match rule operators | `opContain`, `opNotEqual`, `opRegex` |
+| `setting` | Setting/config labels | `settingLanguage`, `settingAutoCheckUpdate` |
+| `status` / `statusShort` | Execution status (full / abbreviated) | `statusPending`, `statusShortPending` |
+| `step` | Workflow/progress step labels | `stepBackup`, `stepExtract` |
+| `title` | Page/section/modal titles | `titleSettings`, `titleExecutionStatus` |
+| `toast` | Toast notification messages | `toastSaved`, `toastNoUpdate` |
+| `tool` | System utility/tool names | `toolDeviceManager`, `toolBluetooth` |
+| `warn` | Warning messages | `warnDbNoDrivers` |
+
+Dynamic keys (status values, operator enums, hardware parts) use a helper function — never backtick template literals in Vue template `{{ }}`:
 
 ```typescript
-const { t } = useI18n()
-toast.add({ title: t('toast.saved'), color: 'success' })
-```
-
-```vue
-<span>{{ $t('common.back') }}</span>
+function hwKey(part: string): string {
+  return `hw${part.charAt(0).toUpperCase() + part.slice(1)}`
+}
 ```
 
 ### Pinia Stores

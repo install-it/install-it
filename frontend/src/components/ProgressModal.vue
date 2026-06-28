@@ -56,7 +56,7 @@ defineExpose({
   export: (destination: string) => {
     isOpen.value = true
     mode.value = 'export'
-    title.value = t('porterExport')
+    title.value = t('labelExport')
     snapshot.value = null
     messages.value = []
 
@@ -74,7 +74,7 @@ defineExpose({
     return new Promise((resolve, reject) => {
       isOpen.value = true
       mode.value = 'download'
-      title.value = t('porterDownload')
+      title.value = t('labelUpdate')
       snapshot.value = null
       messages.value = []
 
@@ -99,7 +99,7 @@ defineExpose({
   import: (from: 'url' | 'file', source: string, opts: porter.ImportOptions) => {
     isOpen.value = true
     mode.value = 'import'
-    title.value = `${t('porterImport')} (${t(`porter${from.charAt(0).toUpperCase() + from.slice(1)}`)})`
+    title.value = `${t('labelImport')} (${t(from === 'file' ? 'file' : 'url')})`
     snapshot.value = null
     messages.value = []
 
@@ -153,11 +153,11 @@ function toastErrMsg(err: string) {
   else if (err == 'zip: not a valid zip file')
     toast.add({ title: t('toastInvalidZipFile'), color: 'error' })
   else if (err.includes('porter: nothing to import'))
-    toast.add({ title: t('porterErrorNoCategories'), color: 'error' })
+    toast.add({ title: t('errNoCategoriesSelected'), color: 'error' })
   else if (err.includes('porter: selected categories not found'))
-    toast.add({ title: t('porterErrorCategoriesNotFound'), color: 'error' })
+    toast.add({ title: t('errCategoriesNotFound'), color: 'error' })
   else if (err.includes('porter: nothing to backup or import'))
-    toast.add({ title: t('porterErrorNothingToImport'), color: 'error' })
+    toast.add({ title: t('errNothingToImport'), color: 'error' })
   else toast.add({ title: err, color: 'error' })
 }
 </script>
@@ -165,7 +165,7 @@ function toastErrMsg(err: string) {
 <template>
   <UModal
     v-model:open="isOpen"
-    :title="t('porterProgress')"
+    :title="t('progress')"
     :dismissible="false"
     :close="
       snapshot?.status.includes('ed') && !(mode == 'import' && snapshot?.status == 'completed')
@@ -212,7 +212,7 @@ function toastErrMsg(err: string) {
                 }
               "
             >
-              {{ $t('commonCancel') }}
+              {{ $t('cancel') }}
             </UButton>
           </div>
 
@@ -227,7 +227,7 @@ function toastErrMsg(err: string) {
                 }
               "
             >
-              {{ $t('commonRefresh') }}
+              {{ $t('refresh') }}
             </UButton>
           </div>
         </div>

@@ -5,8 +5,8 @@ import * as groupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-function driverCategoryKey(type: string): string {
-  return `driverCategory${type.charAt(0).toUpperCase() + type.slice(1)}`
+function categoryKey(type: string): string {
+  return `category${type.charAt(0).toUpperCase() + type.slice(1)}`
 }
 
 const toast = useToast()
@@ -31,8 +31,8 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
   <div class="flex h-full flex-col gap-y-2">
     <PageHeader
       variant="compact"
-      :title="$t('driverFormInstallOption')"
-      :description="$t('driverFormInstallOptionHelp')"
+      :title="$t('fieldInstallOption')"
+      :description="$t('descInstallOption')"
     >
       <div class="flex w-1/3 flex-wrap justify-center gap-0.5 px-0.5 text-xs select-none">
         <router-link
@@ -44,7 +44,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
           }"
           draggable="false"
         >
-          {{ $t('commonAll') }}
+          {{ $t('all') }}
         </router-link>
 
         <router-link
@@ -58,7 +58,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
           }"
           draggable="false"
         >
-          {{ $t(driverCategoryKey(type)) }}
+          {{ $t(categoryKey(type)) }}
         </router-link>
       </div>
     </PageHeader>
@@ -131,7 +131,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
           </div>
 
           <div class="flex gap-x-1.5 py-1">
-            <RouterLink :to="`/drivers/${g.id}/edit`" :title="$t('commonEdit')">
+            <RouterLink :to="`/drivers/${g.id}/edit`" :title="$t('edit')">
               <UButton color="neutral" variant="outline" size="xs" class="h-6">
                 <Icon icon="mdi:pencil" class="text-gray-500" />
               </UButton>
@@ -142,14 +142,14 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
               variant="outline"
               size="xs"
               class="h-6"
-              :title="$t('commonClone')"
+              :title="$t('clone')"
               @click="
                 groupStorage.Clone(g.id).then(() =>
                   driverGroupStorage
                     .All()
                     .then(gs => (groupStore.groups = gs))
                     .catch(() => {
-                      toast.add({ title: $t('toastReadDriverFailed'), color: 'error' })
+                      toast.add({ title: $t('toastReadDriversFailed'), color: 'error' })
                     })
                 )
               "
@@ -162,14 +162,14 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
               variant="outline"
               size="xs"
               class="h-6"
-              :title="$t('commonDelete')"
+              :title="$t('delete')"
               @click="
                 groupStorage.Remove(g.id).then(() =>
                   driverGroupStorage
                     .All()
                     .then(gs => (groupStore.groups = gs))
                     .catch(() => {
-                      toast.add({ title: $t('toastReadDriverFailed'), color: 'error' })
+                      toast.add({ title: $t('toastReadDriversFailed'), color: 'error' })
                     })
                 )
               "
@@ -180,14 +180,14 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
         </div>
 
         <div class="grid grid-cols-12 gap-1 bg-gray-100 py-1 text-xs">
-            <div class="col-span-2 font-medium lg:col-span-3">{{ $t('driverFormName') }}</div>
+          <div class="col-span-2 font-medium lg:col-span-3">{{ $t('name') }}</div>
 
-            <div class="col-span-5 font-medium lg:col-span-5">{{ $t('driverFormPath') }}</div>
+          <div class="col-span-5 font-medium lg:col-span-5">{{ $t('path') }}</div>
 
-            <div class="col-span-3 font-medium lg:col-span-3">{{ $t('driverFormArgument') }}</div>
+          <div class="col-span-3 font-medium lg:col-span-3">{{ $t('fieldArgument') }}</div>
 
-            <div class="col-span-2 font-medium lg:col-span-1">
-              {{ $t('driverFormOtherSetting') }}
+          <div class="col-span-2 font-medium lg:col-span-1">
+            {{ $t('fieldOther') }}
           </div>
         </div>
 
@@ -211,7 +211,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
             <span
               v-show="g.mutuallyExclusive"
               class="inline-block max-h-5 rounded-xs bg-orange-300 p-0.5"
-              :title="$t('driverFormMutuallyExclusive')"
+              :title="$t('fieldMutuallyExclusive')"
             >
               <Icon icon="mdi:chart-timeline" />
             </span>
@@ -219,7 +219,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
             <span
               v-show="d.incompatibles.length > 0"
               class="inline-block max-h-5 rounded-xs bg-yellow-300 p-0.5"
-              :title="$t('driverFormIncompatibleWith')"
+              :title="$t('labelIncompatibleWith')"
             >
               <Icon icon="mdi:source-merge" />
             </span>
@@ -227,7 +227,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
             <span
               v-show="d.allowRtCodes.length > 0"
               class="inline-block max-h-5 rounded-xs bg-blue-300 p-0.5"
-              :title="$t('driverFormAllowedExitCode')"
+              :title="$t('fieldAllowedExitCode')"
             >
               <Icon icon="mdi:numeric-1-box-outline" />
             </span>
@@ -249,13 +249,13 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
           "
           @click="reordering = !reordering"
         >
-          {{ reordering ? $t('driverFormView') : $t('driverFormOrder') }}
+          {{ reordering ? $t('view') : $t('fieldOrder') }}
         </UButton>
       </div>
 
       <RouterLink :to="{ path: '/drivers/create', query: { type: $route.query.type } }">
         <UButton color="primary" size="sm">
-          {{ $t('commonCreate') }}
+          {{ $t('create') }}
         </UButton>
       </RouterLink>
     </div>

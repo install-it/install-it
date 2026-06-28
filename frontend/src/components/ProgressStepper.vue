@@ -8,8 +8,17 @@ const props = defineProps<{
   progress: number
 }>()
 
-function porterKey(name: string): string {
-  return `porter${name.charAt(0).toUpperCase() + name.slice(1)}`
+function stepKey(name: string): string {
+  const map: Record<string, string> = {
+    initialisation: 'stepInit',
+    compression: 'stepCompression',
+    complete: 'complete',
+    download: 'stepDownload',
+    backup: 'stepBackup',
+    extract: 'stepExtract',
+    cleanup: 'stepCleanup'
+  }
+  return map[name] ?? name
 }
 
 const processedSteps = computed(() => {
@@ -95,7 +104,7 @@ const processedSteps = computed(() => {
           class="mt-1.5 w-full text-xs leading-tight wrap-break-word lg:text-sm"
           :class="{ 'text-gray-400': step.state === 'pending' }"
         >
-          {{ $t(porterKey(step.name)) }}
+          {{ $t(stepKey(step.name)) }}
         </span>
       </div>
     </template>
