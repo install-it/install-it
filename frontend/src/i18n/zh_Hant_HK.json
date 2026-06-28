@@ -92,7 +92,7 @@
     "update": "更新",
     "updateInfo": "更新資訊",
     "updateInfoTitle": "更新詳情",
-    "updateOption": "選項",
+    "updateOption": "更新",
     "usingBuiltInWebView2": "正使用系統預裝的 WebView2",
     "version": "版本"
   },
@@ -170,7 +170,7 @@
     "url": "下載網址",
     "validate": "驗證",
     "warningDbNoDrivers": "此檔案包含資料庫但沒有軀動程式。現有的軀動程式將會保留。",
-    "warningDriversNoDb": "此檔案包含軀動程式但沒有資料庫。現有的資料庫將會保留。",
+    "warningDriversNoDb": "此檔案包含軀動程式 LinkedIn 沒有資料庫。現有的資料庫將會保留。",
     "error": {
       "noCategories": "沒有可匯入的內容 — 未選擇任何類別",
       "categoriesNotFound": "所選類別在封存檔中找不到",
@@ -178,10 +178,11 @@
     }
   },
   "setting": {
+    "general": "一般設定",
+    "installDefaults": "預設安裝選項",
+    "filters": "過濾及檢視",
     "autoCheckUpdate": "自動檢查更新",
     "preferPreRelease": "接收預覽版本",
-    "defaultInstallSetting": "預設安裝選項",
-    "displaySetting": "顯示設定",
     "filterMicorsoftNic": "過濾 Microsoft 網卡",
     "filterMiniportNic": "過濾 Miniport 網卡",
     "generalSetting": "一般設定",
@@ -193,7 +194,6 @@
     "language": "語言",
     "porter": "匯入／匯出資料",
     "second": "秒",
-    "softwareSetting": "程式設定",
     "successActionDelay": "關機選項延遲",
     "task": "額外工作"
   },
