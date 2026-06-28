@@ -176,10 +176,11 @@
     }
   },
   "setting": {
+    "general": "General",
+    "installDefaults": "Install Defaults",
+    "filters": "Filters & Views",
     "autoCheckUpdate": "Automatically Check for Updates",
     "preferPreRelease": "Receive Pre-releases",
-    "defaultInstallSetting": "Install Setting Defaults",
-    "displaySetting": "Display Setting",
     "filterMicorsoftNic": "Filter Microsoft NICs",
     "filterMiniportNic": "Filter Miniport NICs",
     "generalSetting": "General",
@@ -191,7 +192,6 @@
     "language": "Language",
     "porter": "Import/Export",
     "second": "Second(s)",
-    "softwareSetting": "Software Setting",
     "successActionDelay": "Success Action Delay",
     "task": "Task"
   },
