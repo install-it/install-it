@@ -20,10 +20,10 @@ defineEmits<{ abort: [] }>()
       <!-- status badge -->
       <div class="w-[4.1rem] shrink-0">
         <UBadge
-          :class="[`proc-badge-${props.process.status}`]"
+          :class="{ 'animate-pulse': ['running', 'aborting'].includes(props.process.status) }"
           class="h-6 max-w-[96%]"
           size="md"
-          color="neutral"
+          :style="{ backgroundColor: `var(--color-${props.process.status})` }"
         >
           <span class="truncate text-sm">
             {{ $t(`status.@${props.process.status}`).toUpperCase() }}
