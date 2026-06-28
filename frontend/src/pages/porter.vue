@@ -65,7 +65,7 @@ function openPreview(p: porter.ImportPreview, from: 'file' | 'url', source: stri
 
 function handleValidateFile() {
   if (!importInput.value.filePath) {
-    toast.add({ title: t('toast.pathNotFind'), color: 'warning' })
+    toast.add({ title: t('toastPathNotFound'), color: 'warning' })
     return
   }
 
@@ -73,14 +73,14 @@ function handleValidateFile() {
     .then(p => openPreview(p, 'file', importInput.value.filePath))
     .catch(err => {
       if (err.includes('manifest.json not found'))
-        toast.add({ title: t('toast.invalidZipFile'), color: 'error' })
+        toast.add({ title: t('toastInvalidZipFile'), color: 'error' })
       else toast.add({ title: err, color: 'error' })
     })
 }
 
 async function handleDownloadUrl() {
   if (!importInput.value.url) {
-    toast.add({ title: t('toast.unsupportUrlProtocal'), color: 'warning' })
+    toast.add({ title: t('toastUnsupportedUrlProtocol'), color: 'warning' })
     return
   }
 
@@ -96,7 +96,7 @@ async function handleDownloadUrl() {
 
 function handleImport() {
   if (!importOpts.value.data && !importOpts.value.settings) {
-    toast.add({ title: t('porter.previewNoSelection'), color: 'warning' })
+    toast.add({ title: t('porterPreviewNoSelection'), color: 'warning' })
     return
   }
 
@@ -114,16 +114,16 @@ function handleImport() {
   <div class="flex h-full flex-col gap-y-6 p-2">
     <PageHeader
       variant="normal"
-      :title="$t('porter.title')"
-      :description="$t('porter.titleHint')"
+      :title="$t('porterTitle')"
+      :description="$t('porterTitleHint')"
     />
 
     <div class="flex flex-col gap-y-3">
-      <h2 class="mb-1 font-medium">{{ $t('porter.exportToFile') }}</h2>
+      <h2 class="mb-1 font-medium">{{ $t('porterExportToFile') }}</h2>
 
       <div class="flex gap-x-6">
         <label class="w-24 content-center text-gray-900">
-          {{ $t('porter.exportDestination') }}
+          {{ $t('porterExportDestination') }}
         </label>
 
         <div class="flex w-full gap-x-2">
@@ -148,7 +148,7 @@ function handleImport() {
               }
             "
           >
-            {{ $t('common.select') }}
+            {{ $t('commonSelect') }}
           </UButton>
         </div>
       </div>
@@ -161,14 +161,14 @@ function handleImport() {
           @click="
             () => {
               if (!exportDirectory) {
-                toast.add({ title: $t('toast.enterExportPath'), color: 'warning' })
+                toast.add({ title: $t('toastEnterExportPath'), color: 'warning' })
               } else {
                 progressModal?.export(exportDirectory)
               }
             }
           "
         >
-          {{ $t('porter.export') }}
+          {{ $t('porterExport') }}
         </UButton>
       </div>
     </div>
@@ -176,7 +176,7 @@ function handleImport() {
     <div class="flex flex-col gap-y-3">
       <div class="flex gap-x-4">
         <h2 class="mb-1 font-medium">
-          {{ $t('porter.import') }}
+          {{ $t('porterImport') }}
         </h2>
 
         <div class="relative inline-flex rounded-3xl border p-0.5">
@@ -184,14 +184,14 @@ function handleImport() {
             class="z-10 rounded-3xl px-3 text-center text-xs select-none"
             @click="importInput.from = 'file'"
           >
-            {{ $t('porter.importFromFile') }}
+            {{ $t('porterImportFromFile') }}
           </button>
 
           <button
             class="z-10 rounded-3xl px-3 text-center text-xs select-none"
             @click="importInput.from = 'url'"
           >
-            {{ $t('porter.importFromNetwork') }}
+            {{ $t('porterImportFromNetwork') }}
           </button>
 
           <span
@@ -205,7 +205,7 @@ function handleImport() {
       <!-- from file -->
       <div v-if="importInput.from == 'file'" class="flex gap-x-6">
         <label class="w-24 content-center text-gray-900">
-          {{ $t('porter.file') }}
+          {{ $t('porterFile') }}
         </label>
 
         <div class="flex w-full gap-x-2">
@@ -231,7 +231,7 @@ function handleImport() {
               }
             "
           >
-            {{ $t('common.select') }}
+            {{ $t('commonSelect') }}
           </UButton>
         </div>
       </div>
@@ -239,7 +239,7 @@ function handleImport() {
       <!-- from url -->
       <div v-else class="flex gap-x-6">
         <label class="w-24 content-center text-gray-900">
-          {{ $t('porter.url') }}
+          {{ $t('porterUrl') }}
         </label>
 
         <div class="flex w-full gap-x-2">
@@ -260,14 +260,14 @@ function handleImport() {
           class="mt-3 w-28 justify-center"
           @click="importInput.from == 'file' ? handleValidateFile() : handleDownloadUrl()"
         >
-          {{ importInput.from == 'file' ? $t('porter.validate') : $t('porter.download') }}
+          {{ importInput.from == 'file' ? $t('porterValidate') : $t('porterDownload') }}
         </UButton>
       </div>
     </div>
   </div>
 
   <!-- Preview Modal -->
-  <UModal v-model:open="previewOpen" :title="$t('porter.preview')">
+  <UModal v-model:open="previewOpen" :title="$t('porterPreview')">
     <template #body>
       <div v-if="preview" class="flex flex-col gap-y-4">
         <div>
@@ -277,13 +277,13 @@ function handleImport() {
           </p>
 
           <p class="text-sm text-gray-500">
-            {{ $t('porter.previewCreated') }}:
+            {{ $t('porterPreviewCreated') }}:
             {{ new Date(preview.exportedAt).toLocaleDateString() }}
           </p>
         </div>
 
         <div>
-          <p class="mb-1 font-medium">{{ $t('porter.previewContains') }}</p>
+          <p class="mb-1 font-medium">{{ $t('porterPreviewContains') }}</p>
 
           <ul class="space-y-1 text-sm">
             <li class="flex items-center gap-x-2">
@@ -293,15 +293,15 @@ function handleImport() {
               />
 
               <span>
-                {{ $t('porter.previewData') }}
+                {{ $t('porterPreviewData') }}
                 <template v-if="preview.hasData && (preview.hasDatabase || preview.hasDrivers)">
                   —
-                  <template v-if="preview.hasDatabase">{{ $t('porter.previewDatabase') }}</template>
+                  <template v-if="preview.hasDatabase">{{ $t('porterPreviewDatabase') }}</template>
 
                   <template v-if="preview.hasDatabase && preview.hasDrivers">, </template>
 
                   <template v-if="preview.hasDrivers">
-                    {{ $t('porter.previewDrivers') }} ({{ preview.driverCount }} files,
+                    {{ $t('porterPreviewDrivers') }} ({{ preview.driverCount }} files,
                     {{ formatBytes(preview.driverSize) }})
                   </template>
                 </template>
@@ -314,7 +314,7 @@ function handleImport() {
                 :class="preview.hasSettings ? 'text-green-500' : 'text-gray-400'"
               />
 
-              <span>{{ $t('porter.previewSettings') }}</span>
+              <span>{{ $t('porterPreviewSettings') }}</span>
             </li>
           </ul>
         </div>
@@ -325,7 +325,7 @@ function handleImport() {
         >
           <Icon icon="mdi:alert" class="shrink-0" />
 
-          <span>{{ $t('porter.warningDriversNoDb') }}</span>
+          <span>{{ $t('porterWarningDriversNoDb') }}</span>
         </div>
 
         <div
@@ -334,11 +334,11 @@ function handleImport() {
         >
           <Icon icon="mdi:alert" class="shrink-0" />
 
-          <span>{{ $t('porter.warningDbNoDrivers') }}</span>
+          <span>{{ $t('porterWarningDbNoDrivers') }}</span>
         </div>
 
         <div>
-          <p class="mb-2 font-medium">{{ $t('porter.previewSelectImport') }}</p>
+          <p class="mb-2 font-medium">{{ $t('porterPreviewSelectImport') }}</p>
 
           <div class="flex flex-col gap-y-2">
             <label
@@ -352,10 +352,10 @@ function handleImport() {
                 class="me-2"
               />
 
-              <span>{{ $t('porter.previewData') }}</span>
+              <span>{{ $t('porterPreviewData') }}</span>
 
               <span v-if="!preview.hasData" class="ml-1 text-xs text-gray-400">
-                ({{ $t('porter.previewNotAvailable') }})
+                ({{ $t('porterPreviewNotAvailable') }})
               </span>
             </label>
 
@@ -370,10 +370,10 @@ function handleImport() {
                 class="me-2"
               />
 
-              <span>{{ $t('porter.previewSettings') }}</span>
+              <span>{{ $t('porterPreviewSettings') }}</span>
 
               <span v-if="!preview.hasSettings" class="ml-1 text-xs text-gray-400">
-                ({{ $t('porter.previewNotAvailable') }})
+                ({{ $t('porterPreviewNotAvailable') }})
               </span>
             </label>
           </div>
@@ -381,11 +381,11 @@ function handleImport() {
 
         <div class="flex justify-end gap-x-2">
           <UButton color="neutral" variant="outline" @click="previewOpen = false">
-            {{ $t('common.cancel') }}
+            {{ $t('commonCancel') }}
           </UButton>
 
           <UButton color="primary" @click="handleImport">
-            {{ $t('porter.import') }}
+            {{ $t('porterImport') }}
           </UButton>
         </div>
       </div>

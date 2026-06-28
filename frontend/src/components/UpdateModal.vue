@@ -67,13 +67,13 @@ watch(
 </script>
 
 <template>
-  <UModal v-model:open="isOpen" :title="$t('info.updateInfoTitle')">
+  <UModal v-model:open="isOpen" :title="$t('infoUpdateInfoTitle')">
     <template #body>
       <div class="flex flex-col gap-y-3">
         <div class="flex grow flex-col gap-y-2">
           <div class="flex">
             <h1 class="min-w-34 font-medium">
-              {{ $t('info.currentVersion') }}
+              {{ $t('infoCurrentVersion') }}
             </h1>
 
             <p>{{ currentVersion }}</p>
@@ -81,7 +81,7 @@ watch(
 
           <div class="flex">
             <h1 class="min-w-34 font-medium">
-              {{ $t('info.latestVersion') }}
+              {{ $t('infoLatestVersion') }}
             </h1>
 
             <p>
@@ -93,13 +93,13 @@ watch(
 
           <div class="flex grow flex-col">
             <h1 class="mb-1 min-w-32 font-medium">
-              {{ $t('info.updateInfo') }}
+              {{ $t('infoUpdateInfo') }}
             </h1>
 
             <div
               id="release-notes"
               class="rounded-lg border px-1"
-              v-html="parsedNotes || `<i>${$t('info.noUpdateInfo')}</i>`"
+               v-html="parsedNotes || `<i>${$t('infoNoUpdateInfo')}</i>`"
             ></div>
           </div>
 
@@ -107,13 +107,13 @@ watch(
 
           <div class="flex flex-col">
             <h1 class="font-medium">
-              {{ $t('info.updateOption') }}
+              {{ $t('infoUpdateOption') }}
             </h1>
 
             <label class="flex w-full cursor-pointer items-center select-none">
               <UCheckbox v-model="webviewVersion" name="webview_version" color="primary" />
 
-              <span class="ms-1.5">{{ $t('info.downloadBuiltInWebView2Version') }}</span>
+              <span class="ms-1.5">{{ $t('infoDownloadBuiltInWebView2Version') }}</span>
             </label>
           </div>
         </div>
@@ -125,12 +125,12 @@ watch(
           @click="
             () => {
               if (!selectedUrl) {
-                toast.add({ title: $t('toast.noAssetUrl'), color: 'error' })
+                toast.add({ title: $t('toastNoAssetUrl'), color: 'error' })
                 return
               }
 
               toast.add({
-                title: $t('toast.downloadingUpdater'),
+                title: $t('toastDownloadingUpdater'),
                 color: 'info',
                 duration: 60 * 1000
               })
@@ -143,7 +143,7 @@ watch(
             }
           "
         >
-          {{ $t('info.update') }}
+          {{ $t('infoUpdate') }}
         </UButton>
       </div>
     </template>

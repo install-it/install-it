@@ -8,6 +8,10 @@ const props = defineProps<{
   progress: number
 }>()
 
+function porterKey(name: string): string {
+  return `porter${name.charAt(0).toUpperCase() + name.slice(1)}`
+}
+
 const processedSteps = computed(() => {
   const idx = props.steps.indexOf(props.currentStep)
   const st = props.jobStatus
@@ -91,7 +95,7 @@ const processedSteps = computed(() => {
           class="mt-1.5 w-full text-xs leading-tight wrap-break-word lg:text-sm"
           :class="{ 'text-gray-400': step.state === 'pending' }"
         >
-          {{ $t(`porter.${step.name}`) }}
+          {{ $t(porterKey(step.name)) }}
         </span>
       </div>
     </template>

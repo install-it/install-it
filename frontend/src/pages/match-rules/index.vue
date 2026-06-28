@@ -9,6 +9,14 @@ const router = useRouter()
 
 const [ruleStore, driverStore] = [useMatchRuleStore(), useDriverGroupStore()]
 
+function commonKey(suffix: string): string {
+  return `common${suffix.charAt(0).toUpperCase() + suffix.slice(1)}`
+}
+
+function matchRuleKey(suffix: string): string {
+  return `matchRule${suffix.charAt(0).toUpperCase() + suffix.slice(1)}`
+}
+
 const { scrollContainer } = useScrollPosition('matchRule', () =>
   ['/match-rules/create', '/match-rules/:id/edit'].some(
     v =>
@@ -23,8 +31,8 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
   <div class="flex h-full flex-col gap-y-2">
     <PageHeader
       variant="compact"
-      :title="$t('matchRule.matchRule')"
-      :description="$t('matchRule.matchRuleHelp')"
+      :title="$t('matchRuleMatchRule')"
+      :description="$t('matchRuleMatchRuleHelp')"
     />
 
     <div
@@ -39,14 +47,14 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
         <div class="flex justify-between">
           <div class="flex min-w-0 items-center gap-1">
             <UBadge v-if="rs.should_hit_all" size="sm" class="bg-rose-400 text-nowrap text-white">
-              {{ $t('matchRule.hitAll') }}
+              {{ $t('matchRuleHitAll') }}
             </UBadge>
 
             <h2 class="truncate">{{ rs.name }}</h2>
           </div>
 
           <div class="flex gap-x-1.5 py-1">
-            <RouterLink :to="`/match-rules/${rs.id}/edit`" :title="$t('common.edit')">
+            <RouterLink :to="`/match-rules/${rs.id}/edit`" :title="$t('commonEdit')">
               <UButton color="neutral" variant="outline" size="xs" class="h-6">
                 <Icon icon="mdi:pencil" class="text-gray-500" />
               </UButton>
@@ -57,14 +65,14 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
               variant="outline"
               size="xs"
               class="h-6"
-              :title="$t('common.clone')"
+              :title="$t('commonClone')"
               @click="
                 ruleSetStorage.Clone(rs.id).then(() =>
                   ruleSetStorage
                     .All()
                     .then(rs => (ruleStore.ruleSets = rs))
                     .catch(() => {
-                      toast.add({ title: $t('toast.readDriverFailed'), color: 'error' })
+                      toast.add({ title: $t('toastReadDriverFailed'), color: 'error' })
                     })
                 )
               "
@@ -77,14 +85,14 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
               variant="outline"
               size="xs"
               class="h-6"
-              :title="$t('common.delete')"
+              :title="$t('commonDelete')"
               @click="
                 ruleSetStorage.Remove(rs.id).then(() =>
                   ruleSetStorage
                     .All()
                     .then(rs => (ruleStore.ruleSets = rs))
                     .catch(() => {
-                      toast.add({ title: $t('toast.readDriverFailed'), color: 'error' })
+                      toast.add({ title: $t('toastReadDriverFailed'), color: 'error' })
                     })
                 )
               "
@@ -95,11 +103,11 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
         </div>
 
         <div class="grid grid-cols-10 gap-1 bg-gray-100 py-1 text-xs">
-          <div class="col-span-2 font-semibold">{{ $t('matchRule.source') }}</div>
+          <div class="col-span-2 font-semibold">{{ $t('matchRuleSource') }}</div>
 
-          <div class="col-span-2 font-semibold">{{ $t('matchRule.operator') }}</div>
+          <div class="col-span-2 font-semibold">{{ $t('matchRuleOperator') }}</div>
 
-          <div class="col-span-6 font-semibold">{{ $t('matchRule.pattern') }}</div>
+          <div class="col-span-6 font-semibold">{{ $t('matchRulePattern') }}</div>
         </div>
 
         <div
@@ -108,12 +116,12 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
           class="grid grid-cols-10 items-center gap-1 py-1 text-xs"
         >
           <div class="col-span-2">
-            {{ $t(`common.${r.source}`) }}
+            {{ $t(commonKey(r.source)) }}
           </div>
 
           <div class="col-span-2">
             <span class="font-mono">
-              {{ $t(`matchRule.${r.operator}`) }}
+              {{ $t(matchRuleKey(r.operator)) }}
             </span>
           </div>
 
@@ -124,7 +132,7 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
                 size="sm"
                 class="me-0.5 bg-rose-400 text-white md:me-1"
               >
-                {{ $t('matchRule.hitAll') }}
+                {{ $t('matchRuleHitAll') }}
               </UBadge>
 
               <UBadge
@@ -151,7 +159,7 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
         <hr class="my-1" />
 
         <div class="flex gap-2 text-xs">
-          <p class="content-center font-semibold">{{ $t('matchRule.matchTo') }}</p>
+          <p class="content-center font-semibold">{{ $t('matchRuleMatchTo') }}</p>
 
           <div class="line-clamp-2 flex-1">
             <UBadge
@@ -173,7 +181,7 @@ const { scrollContainer } = useScrollPosition('matchRule', () =>
     <div class="flex justify-end gap-x-3">
       <RouterLink :to="{ path: '/match-rules/create' }">
         <UButton color="primary" size="sm">
-          {{ $t('common.create') }}
+          {{ $t('commonCreate') }}
         </UButton>
       </RouterLink>
     </div>

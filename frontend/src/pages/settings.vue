@@ -7,6 +7,14 @@ import { useI18n } from 'vue-i18n'
 const { t, locale } = useI18n()
 const toast = useToast()
 
+function settingKey(key: string): string {
+  return `setting${key.charAt(0).toUpperCase() + key.slice(1)}`
+}
+
+function successActionKey(action: string): string {
+  return `successAction${action.charAt(0).toUpperCase() + action.slice(1)}`
+}
+
 const tabs = ref({ general: true, installDefaults: false, filters: false })
 
 const settingStore = useAppSettingStore()
@@ -37,17 +45,17 @@ function handleSubmit() {
     })
     .then(() => {
       locale.value = settings.value.language
-      toast.add({ title: t('toast.saved'), color: 'success' })
+      toast.add({ title: t('toastSaved'), color: 'success' })
     })
     .catch(() => {
-      toast.add({ title: t('toast.failedToSave'), color: 'error' })
+      toast.add({ title: t('toastFailedToSave'), color: 'error' })
     })
 }
 </script>
 
 <template>
   <div class="flex h-full flex-col gap-y-4 bg-transparent p-2 text-gray-900 dark:text-gray-100">
-    <PageHeader variant="normal" :title="$t('setting.title')" />
+    <PageHeader variant="normal" :title="$t('settingTitle')" />
 
     <nav class="flex gap-x-1.5">
       <UButton
@@ -66,7 +74,7 @@ function handleSubmit() {
           })
         "
       >
-        {{ $t(`setting.${key}`) }}
+        {{ $t(settingKey(key)) }}
       </UButton>
     </nav>
 
@@ -74,10 +82,10 @@ function handleSubmit() {
       <div class="max-w-3xl">
         <div v-show="tabs.general" class="flex flex-col gap-y-4">
           <section>
-            <h3 class="mb-3 text-lg font-bold">{{ $t('setting.generalSetting') }}</h3>
+            <h3 class="mb-3 text-lg font-bold">{{ $t('settingGeneralSetting') }}</h3>
 
             <div class="flex flex-col gap-y-1">
-              <label>{{ $t('setting.language') }}</label>
+              <label>{{ $t('settingLanguage') }}</label>
               <USelect
                 v-model="settings.language"
                 name="language"
@@ -95,7 +103,7 @@ function handleSubmit() {
           <hr class="border-gray-100 dark:border-gray-800" />
 
           <section>
-            <h3 class="mb-3 text-lg font-bold">{{ $t('info.updateOption') }}</h3>
+            <h3 class="mb-3 text-lg font-bold">{{ $t('infoUpdateOption') }}</h3>
 
             <div class="flex flex-col gap-y-3">
               <label class="flex w-fit cursor-pointer items-center select-none">
@@ -105,7 +113,7 @@ function handleSubmit() {
                   color="primary"
                   class="me-2"
                 />
-                <span>{{ $t('setting.autoCheckUpdate') }}</span>
+                <span>{{ $t('settingAutoCheckUpdate') }}</span>
               </label>
 
               <label class="flex w-fit cursor-pointer items-center select-none">
@@ -115,7 +123,7 @@ function handleSubmit() {
                   color="primary"
                   class="me-2"
                 />
-                <span>{{ $t('setting.preferPreRelease') }}</span>
+                <span>{{ $t('settingPreferPreRelease') }}</span>
               </label>
             </div>
           </section>
@@ -123,10 +131,10 @@ function handleSubmit() {
           <hr class="border-gray-100 dark:border-gray-800" />
 
           <section>
-            <h3 class="mb-3 text-lg font-bold">{{ $t('setting.porter') }}</h3>
+            <h3 class="mb-3 text-lg font-bold">{{ $t('settingPorter') }}</h3>
 
             <div class="flex flex-col gap-y-1">
-              <label>{{ $t('setting.importUrl') }}</label>
+              <label>{{ $t('settingImportUrl') }}</label>
               <UTextarea
                 v-model="settings.driver_download_url"
                 name="driver_download_url"
@@ -141,7 +149,7 @@ function handleSubmit() {
 
         <div v-show="tabs.installDefaults" class="flex flex-col gap-y-4">
           <section>
-            <h3 class="mb-3 text-lg font-bold">{{ $t('setting.task') }}</h3>
+            <h3 class="mb-3 text-lg font-bold">{{ $t('settingTask') }}</h3>
 
             <div class="flex flex-col gap-y-3">
               <label class="flex w-fit cursor-pointer items-center select-none">
@@ -151,7 +159,7 @@ function handleSubmit() {
                   color="primary"
                   class="me-2"
                 />
-                <span>{{ $t('installSetting.createPartition') }}</span>
+                <span>{{ $t('installSettingCreatePartition') }}</span>
               </label>
 
               <div class="flex flex-col gap-y-2">
@@ -162,7 +170,7 @@ function handleSubmit() {
                     color="primary"
                     class="me-2"
                   />
-                  <span>{{ $t('installSetting.setPassword') }}</span>
+                  <span>{{ $t('installSettingSetPassword') }}</span>
                 </label>
 
                 <div
@@ -186,7 +194,7 @@ function handleSubmit() {
           <hr class="border-gray-100 dark:border-gray-800" />
 
           <section>
-            <h3 class="mb-3 text-lg font-bold">{{ $t('setting.installSetting') }}</h3>
+            <h3 class="mb-3 text-lg font-bold">{{ $t('settingInstallSetting') }}</h3>
 
             <div class="flex flex-col gap-y-4">
               <label class="flex w-fit cursor-pointer items-center select-none">
@@ -196,12 +204,12 @@ function handleSubmit() {
                   color="primary"
                   class="me-2"
                 />
-                <span>{{ $t('installSetting.parallelInstall') }}</span>
+                <span>{{ $t('installSettingParallelInstall') }}</span>
               </label>
 
               <div class="flex flex-wrap items-start gap-4">
                 <div class="flex flex-col gap-y-1">
-                  <label>{{ $t('installSetting.successAction') }}</label>
+                  <label>{{ $t('installSettingSuccessAction') }}</label>
                   <USelect
                     v-model="settings.success_action"
                     name="success_action"
@@ -209,7 +217,7 @@ function handleSubmit() {
                     class="w-56"
                     :items="
                       Object.values(storage.SuccessAction).map((action: string) => ({
-                        label: $t(`successAction.${action}`),
+                        label: $t(successActionKey(action)),
                         value: action
                       }))
                     "
@@ -222,7 +230,7 @@ function handleSubmit() {
                     'pointer-events-none opacity-40': settings.success_action === 'nothing'
                   }"
                 >
-                  <label>{{ $t('setting.successActionDelay') }}</label>
+                  <label>{{ $t('settingSuccessActionDelay') }}</label>
                   <div class="flex items-center gap-x-2">
                     <UInput
                       v-model="settings.success_action_delay"
@@ -234,7 +242,7 @@ function handleSubmit() {
                       :disabled="settings.success_action === 'nothing'"
                       required
                     />
-                    <span class="text-sm text-gray-500">{{ $t('setting.second') }}</span>
+                    <span class="text-sm text-gray-500">{{ $t('settingSecond') }}</span>
                   </div>
                 </div>
               </div>
@@ -244,7 +252,7 @@ function handleSubmit() {
 
         <div v-show="tabs.filters" class="flex flex-col gap-y-4">
           <section>
-            <h3 class="mb-3 text-lg font-bold">{{ $t('setting.hardwareInfo') }}</h3>
+            <h3 class="mb-3 text-lg font-bold">{{ $t('settingHardwareInfo') }}</h3>
 
             <div class="flex flex-col gap-y-3">
               <label class="flex w-fit cursor-pointer items-center select-none">
@@ -254,7 +262,7 @@ function handleSubmit() {
                   color="primary"
                   class="me-2"
                 />
-                <span>{{ $t('setting.filterMiniportNic') }}</span>
+                <span>{{ $t('settingFilterMiniportNic') }}</span>
               </label>
 
               <label class="flex w-fit cursor-pointer items-center select-none">
@@ -264,7 +272,7 @@ function handleSubmit() {
                   color="primary"
                   class="me-2"
                 />
-                <span>{{ $t('setting.filterMicorsoftNic') }}</span>
+                <span>{{ $t('settingFilterMicrosoftNic') }}</span>
               </label>
             </div>
           </section>
@@ -272,7 +280,7 @@ function handleSubmit() {
           <hr class="border-gray-100 dark:border-gray-800" />
 
           <section>
-            <h3 class="mb-3 text-lg font-bold">{{ $t('setting.installOption') }}</h3>
+            <h3 class="mb-3 text-lg font-bold">{{ $t('settingInstallOption') }}</h3>
 
             <div class="flex flex-col gap-y-3">
               <label class="flex w-fit cursor-pointer items-center select-none">
@@ -282,7 +290,7 @@ function handleSubmit() {
                   color="primary"
                   class="me-2"
                 />
-                <span>{{ $t('setting.hideNotFound') }}</span>
+                <span>{{ $t('settingHideNotFound') }}</span>
               </label>
             </div>
           </section>
@@ -292,7 +300,7 @@ function handleSubmit() {
 
     <div class="flex shrink-0 items-center justify-end">
       <UButton type="button" color="secondary" class="px-6 font-medium" @click="handleSubmit">
-        {{ $t('common.save') }}
+        {{ $t('commonSave') }}
       </UButton>
     </div>
   </div>

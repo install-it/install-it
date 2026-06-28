@@ -51,14 +51,14 @@ const groupItems = computed(() =>
   <div>
     <div class="mb-1 line-clamp-1 text-xs">
       <span class="inline">
-        {{ $t('driverForm.selectedWithCount', { count: model?.length ?? 0 }) }}
+        {{ $t('driverFormSelectedWithCount', { count: model?.length ?? 0 }) }}
       </span>
     </div>
 
     <div class="mb-2 flex gap-x-2">
       <UInput
         v-model="searchPhrase"
-        :placeholder="$t('driverForm.search')"
+        :placeholder="$t('driverFormSearch')"
         class="ms-1 grow"
         variant="none"
         :ui="{ base: 'border-none bg-gray-100 focus:outline-gray-200' }"
@@ -68,7 +68,7 @@ const groupItems = computed(() =>
         type="button"
         class="px-2 text-white"
         style="--btn-color: var(--color-powder-blue-800)"
-        :title="$t('driverForm.selectAll')"
+        :title="$t('driverFormSelectAll')"
         @click="
           () => {
             model =
@@ -85,7 +85,7 @@ const groupItems = computed(() =>
         type="button"
         class="px-2 text-white"
         style="--btn-color: var(--color-rose-400)"
-        :title="$t('driverForm.selectNone')"
+        :title="$t('driverFormSelectNone')"
         @click="model = []"
       >
         <Icon icon="mdi:checkbox-blank-outline" />
