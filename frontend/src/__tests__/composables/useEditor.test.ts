@@ -90,8 +90,12 @@ describe('useEditor', () => {
 
   it('reset() invokes onAfterReset after restoring', async () => {
     const order: string[] = []
-    const onBeforeReset = vi.fn(() => { order.push('before') })
-    const onAfterReset = vi.fn(() => { order.push('after') })
+    const onBeforeReset = vi.fn(() => {
+      order.push('before')
+    })
+    const onAfterReset = vi.fn(() => {
+      order.push('after')
+    })
     const editor = useEditor({ source: { x: 1 }, onBeforeReset, onAfterReset })
 
     await editor.reset()
@@ -105,7 +109,9 @@ describe('useEditor', () => {
       await new Promise<void>(resolve => setTimeout(resolve, 0))
       calls.push('before')
     })
-    const onAfterReset = vi.fn(() => { calls.push('after') })
+    const onAfterReset = vi.fn(() => {
+      calls.push('after')
+    })
     const editor = useEditor({ source: { x: 1 }, onBeforeReset, onAfterReset })
 
     await editor.reset()

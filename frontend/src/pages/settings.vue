@@ -46,38 +46,33 @@ function handleSubmit() {
 </script>
 
 <template>
-  <form
-    class="flex h-full flex-col bg-transparent text-gray-900 dark:text-gray-100"
-    @submit.prevent="handleSubmit"
-  >
-    <header
-      class="shrink-0 border-b border-gray-200 bg-gray-50/50 px-6 py-2.5 dark:border-gray-800 dark:bg-gray-900/20"
-    >
-      <nav class="flex gap-x-1.5">
-        <UButton
-          v-for="key in Object.keys(tabs)"
-          :key="key"
-          type="button"
-          :color="tabs[key as keyof typeof tabs] ? 'secondary' : 'neutral'"
-          :variant="tabs[key as keyof typeof tabs] ? 'solid' : 'ghost'"
-          class="font-semibold"
-          @click="
-            askLeave().then(leave => {
-              if (leave) {
-                reset()
-                Object.keys(tabs).forEach(k => (tabs[k as keyof typeof tabs] = k === key))
-              }
-            })
-          "
-        >
-          {{ $t(`setting.${key}`) }}
-        </UButton>
-      </nav>
-    </header>
+  <div class="flex h-full flex-col gap-y-4 bg-transparent p-2 text-gray-900 dark:text-gray-100">
+    <PageHeader variant="normal" :title="$t('setting.title')" />
 
-    <main class="flex-1 overflow-y-auto px-6 py-6">
+    <nav class="flex gap-x-1.5">
+      <UButton
+        v-for="key in Object.keys(tabs)"
+        :key="key"
+        type="button"
+        :color="tabs[key as keyof typeof tabs] ? 'secondary' : 'neutral'"
+        :variant="tabs[key as keyof typeof tabs] ? 'solid' : 'ghost'"
+        class="font-semibold"
+        @click="
+          askLeave().then(leave => {
+            if (leave) {
+              reset()
+              Object.keys(tabs).forEach(k => (tabs[k as keyof typeof tabs] = k === key))
+            }
+          })
+        "
+      >
+        {{ $t(`setting.${key}`) }}
+      </UButton>
+    </nav>
+
+    <div class="flex flex-1 flex-col overflow-y-auto px-4 py-4">
       <div class="max-w-3xl">
-        <div v-show="tabs.general" class="flex flex-col gap-y-6">
+        <div v-show="tabs.general" class="flex flex-col gap-y-4">
           <section>
             <h3 class="mb-3 text-lg font-bold">{{ $t('setting.generalSetting') }}</h3>
 
@@ -144,7 +139,7 @@ function handleSubmit() {
           </section>
         </div>
 
-        <div v-show="tabs.installDefaults" class="flex flex-col gap-y-6">
+        <div v-show="tabs.installDefaults" class="flex flex-col gap-y-4">
           <section>
             <h3 class="mb-3 text-lg font-bold">{{ $t('setting.task') }}</h3>
 
@@ -247,7 +242,7 @@ function handleSubmit() {
           </section>
         </div>
 
-        <div v-show="tabs.filters" class="flex flex-col gap-y-6">
+        <div v-show="tabs.filters" class="flex flex-col gap-y-4">
           <section>
             <h3 class="mb-3 text-lg font-bold">{{ $t('setting.hardwareInfo') }}</h3>
 
@@ -293,14 +288,12 @@ function handleSubmit() {
           </section>
         </div>
       </div>
-    </main>
+    </div>
 
-    <footer
-      class="flex shrink-0 items-center justify-end border-t border-gray-200 bg-gray-50/50 px-6 py-3 dark:border-gray-800 dark:bg-gray-900/20"
-    >
-      <UButton type="submit" color="secondary" class="px-6 font-medium">
+    <div class="flex shrink-0 items-center justify-end">
+      <UButton type="button" color="secondary" class="px-6 font-medium" @click="handleSubmit">
         {{ $t('common.save') }}
       </UButton>
-    </footer>
-  </form>
+    </div>
+  </div>
 </template>
