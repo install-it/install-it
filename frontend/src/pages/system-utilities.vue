@@ -27,13 +27,11 @@ function confirmPowerAction() {
 
 <template>
   <div class="flex h-full flex-col gap-y-6 overflow-y-auto p-2">
-    <div>
-      <h1 class="text-lg font-bold">{{ $t('systemUtility.title') }}</h1>
-
-      <p class="text-gray-400">{{ $t('systemUtility.subtitle') }}</p>
-
-      <hr class="mt-2 -mb-3" />
-    </div>
+    <PageHeader
+      variant="normal"
+      :title="$t('systemUtility.title')"
+      :description="$t('systemUtility.subtitle')"
+    />
 
     <div>
       <div class="mt-4">

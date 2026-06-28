@@ -176,6 +176,7 @@
     }
   },
   "setting": {
+    "title": "Settings",
     "general": "General",
     "installDefaults": "Install Defaults",
     "filters": "Filters & Views",
