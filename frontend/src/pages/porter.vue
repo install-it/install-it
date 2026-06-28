@@ -112,13 +112,11 @@ function handleImport() {
 
 <template>
   <div class="flex h-full flex-col gap-y-6 p-2">
-    <div>
-      <h1 class="text-lg font-bold">{{ $t('porter.title') }}</h1>
-
-      <p class="text-gray-400">{{ $t('porter.titleHint') }}</p>
-
-      <hr class="mt-2 -mb-3" />
-    </div>
+    <PageHeader
+      variant="normal"
+      :title="$t('porter.title')"
+      :description="$t('porter.titleHint')"
+    />
 
     <div class="flex flex-col gap-y-3">
       <h2 class="mb-1 font-medium">{{ $t('porter.exportToFile') }}</h2>

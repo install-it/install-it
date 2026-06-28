@@ -26,22 +26,38 @@ describe('testMatchRule', () => {
 
   describe('CONTAIN operator', () => {
     it('returns true when value is found in input', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.CONTAIN, values: ['Intel'], is_case_sensitive: true })
+      const rule = makeRule({
+        operator: storage.RuleOperator.CONTAIN,
+        values: ['Intel'],
+        is_case_sensitive: true
+      })
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(true)
     })
 
     it('returns false when value is not found in input', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.CONTAIN, values: ['AMD'], is_case_sensitive: true })
+      const rule = makeRule({
+        operator: storage.RuleOperator.CONTAIN,
+        values: ['AMD'],
+        is_case_sensitive: true
+      })
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(false)
     })
 
     it('is case-insensitive when is_case_sensitive is false', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.CONTAIN, values: ['INTEL'], is_case_sensitive: false })
+      const rule = makeRule({
+        operator: storage.RuleOperator.CONTAIN,
+        values: ['INTEL'],
+        is_case_sensitive: false
+      })
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(true)
     })
 
     it('is case-sensitive when is_case_sensitive is true', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.CONTAIN, values: ['INTEL'], is_case_sensitive: true })
+      const rule = makeRule({
+        operator: storage.RuleOperator.CONTAIN,
+        values: ['INTEL'],
+        is_case_sensitive: true
+      })
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(false)
     })
   })
@@ -50,17 +66,29 @@ describe('testMatchRule', () => {
 
   describe('NOT_CONTAIN operator', () => {
     it('returns true when value is absent from input', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.NOT_CONTAIN, values: ['AMD'], is_case_sensitive: true })
+      const rule = makeRule({
+        operator: storage.RuleOperator.NOT_CONTAIN,
+        values: ['AMD'],
+        is_case_sensitive: true
+      })
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(true)
     })
 
     it('returns false when value is present in input', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.NOT_CONTAIN, values: ['Intel'], is_case_sensitive: true })
+      const rule = makeRule({
+        operator: storage.RuleOperator.NOT_CONTAIN,
+        values: ['Intel'],
+        is_case_sensitive: true
+      })
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(false)
     })
 
     it('is case-insensitive when is_case_sensitive is false', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.NOT_CONTAIN, values: ['intel'], is_case_sensitive: false })
+      const rule = makeRule({
+        operator: storage.RuleOperator.NOT_CONTAIN,
+        values: ['intel'],
+        is_case_sensitive: false
+      })
       // lowercased input 'intel core i9' contains 'intel', so NOT_CONTAIN → false
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(false)
     })
@@ -70,22 +98,38 @@ describe('testMatchRule', () => {
 
   describe('EQUAL operator', () => {
     it('returns true for exact match', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.EQUAL, values: ['Intel Core i9'], is_case_sensitive: true })
+      const rule = makeRule({
+        operator: storage.RuleOperator.EQUAL,
+        values: ['Intel Core i9'],
+        is_case_sensitive: true
+      })
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(true)
     })
 
     it('returns false for partial match', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.EQUAL, values: ['Intel'], is_case_sensitive: true })
+      const rule = makeRule({
+        operator: storage.RuleOperator.EQUAL,
+        values: ['Intel'],
+        is_case_sensitive: true
+      })
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(false)
     })
 
     it('is case-insensitive when is_case_sensitive is false', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.EQUAL, values: ['intel core i9'], is_case_sensitive: false })
+      const rule = makeRule({
+        operator: storage.RuleOperator.EQUAL,
+        values: ['intel core i9'],
+        is_case_sensitive: false
+      })
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(true)
     })
 
     it('is case-sensitive when is_case_sensitive is true', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.EQUAL, values: ['intel core i9'], is_case_sensitive: true })
+      const rule = makeRule({
+        operator: storage.RuleOperator.EQUAL,
+        values: ['intel core i9'],
+        is_case_sensitive: true
+      })
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(false)
     })
   })
@@ -94,17 +138,29 @@ describe('testMatchRule', () => {
 
   describe('NOT_EQUAL operator', () => {
     it('returns true when input does not equal value', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.NOT_EQUAL, values: ['AMD Ryzen 9'], is_case_sensitive: true })
+      const rule = makeRule({
+        operator: storage.RuleOperator.NOT_EQUAL,
+        values: ['AMD Ryzen 9'],
+        is_case_sensitive: true
+      })
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(true)
     })
 
     it('returns false when input equals value', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.NOT_EQUAL, values: ['Intel Core i9'], is_case_sensitive: true })
+      const rule = makeRule({
+        operator: storage.RuleOperator.NOT_EQUAL,
+        values: ['Intel Core i9'],
+        is_case_sensitive: true
+      })
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(false)
     })
 
     it('is case-insensitive when is_case_sensitive is false', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.NOT_EQUAL, values: ['intel core i9'], is_case_sensitive: false })
+      const rule = makeRule({
+        operator: storage.RuleOperator.NOT_EQUAL,
+        values: ['intel core i9'],
+        is_case_sensitive: false
+      })
       // lowercased input matches, so NOT_EQUAL → false
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(false)
     })
@@ -114,24 +170,40 @@ describe('testMatchRule', () => {
 
   describe('REGEX operator', () => {
     it('returns true when pattern matches', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.REGEX, values: ['Intel.+i\\d'], is_case_sensitive: true })
+      const rule = makeRule({
+        operator: storage.RuleOperator.REGEX,
+        values: ['Intel.+i\\d'],
+        is_case_sensitive: true
+      })
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(true)
     })
 
     it('returns false when pattern does not match', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.REGEX, values: ['^AMD'], is_case_sensitive: true })
+      const rule = makeRule({
+        operator: storage.RuleOperator.REGEX,
+        values: ['^AMD'],
+        is_case_sensitive: true
+      })
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(false)
     })
 
     it('does not throw and returns false for an invalid regex pattern', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.REGEX, values: ['[invalid'], is_case_sensitive: false })
+      const rule = makeRule({
+        operator: storage.RuleOperator.REGEX,
+        values: ['[invalid'],
+        is_case_sensitive: false
+      })
       expect(() => testMatchRule(rule, 'Intel Core i9')).not.toThrow()
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(false)
     })
 
     it('applies case-insensitive flag when is_case_sensitive is false', () => {
       // Pattern is lowercase; input starts with uppercase 'I'. With 'i' flag it still matches.
-      const rule = makeRule({ operator: storage.RuleOperator.REGEX, values: ['^intel'], is_case_sensitive: false })
+      const rule = makeRule({
+        operator: storage.RuleOperator.REGEX,
+        values: ['^intel'],
+        is_case_sensitive: false
+      })
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(true)
     })
 
@@ -186,12 +258,20 @@ describe('testMatchRule', () => {
 
   describe('edge cases', () => {
     it('empty values with should_hit_all=true returns true (vacuous truth)', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.CONTAIN, values: [], should_hit_all: true })
+      const rule = makeRule({
+        operator: storage.RuleOperator.CONTAIN,
+        values: [],
+        should_hit_all: true
+      })
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(true)
     })
 
     it('empty values with should_hit_all=false returns false', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.CONTAIN, values: [], should_hit_all: false })
+      const rule = makeRule({
+        operator: storage.RuleOperator.CONTAIN,
+        values: [],
+        should_hit_all: false
+      })
       expect(testMatchRule(rule, 'Intel Core i9')).toBe(false)
     })
 
@@ -207,12 +287,20 @@ describe('testMatchRule', () => {
     })
 
     it('empty input string with CONTAIN returns false', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.CONTAIN, values: ['Intel'], is_case_sensitive: false })
+      const rule = makeRule({
+        operator: storage.RuleOperator.CONTAIN,
+        values: ['Intel'],
+        is_case_sensitive: false
+      })
       expect(testMatchRule(rule, '')).toBe(false)
     })
 
     it('empty input string with NOT_CONTAIN returns true', () => {
-      const rule = makeRule({ operator: storage.RuleOperator.NOT_CONTAIN, values: ['Intel'], is_case_sensitive: false })
+      const rule = makeRule({
+        operator: storage.RuleOperator.NOT_CONTAIN,
+        values: ['Intel'],
+        is_case_sensitive: false
+      })
       expect(testMatchRule(rule, '')).toBe(true)
     })
   })

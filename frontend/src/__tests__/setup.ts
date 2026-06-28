@@ -18,12 +18,12 @@ vi.mock('@/wailsjs/go/main/App', () => ({
   SetContext: vi.fn().mockResolvedValue(undefined),
   Update: vi.fn().mockResolvedValue(undefined),
   WebView2Version: vi.fn().mockResolvedValue('110.0.1'),
-  WebView2Path: vi.fn().mockResolvedValue('C:/bin/WebView2'),
+  WebView2Path: vi.fn().mockResolvedValue('C:/bin/WebView2')
 }))
 
 vi.mock('@/wailsjs/go/storage/AppSettingStorage', () => ({
   All: vi.fn(),
-  Update: vi.fn(),
+  Update: vi.fn()
 }))
 
 vi.mock('@/wailsjs/go/storage/DriverGroupStorage', () => ({
@@ -33,7 +33,7 @@ vi.mock('@/wailsjs/go/storage/DriverGroupStorage', () => ({
   Update: vi.fn(),
   Remove: vi.fn(),
   MoveBehind: vi.fn(),
-  IndexOf: vi.fn(),
+  IndexOf: vi.fn()
 }))
 
 vi.mock('@/wailsjs/go/storage/RuleSetStorage', () => ({
@@ -41,17 +41,17 @@ vi.mock('@/wailsjs/go/storage/RuleSetStorage', () => ({
   Get: vi.fn(),
   Add: vi.fn(),
   Update: vi.fn(),
-  Remove: vi.fn(),
+  Remove: vi.fn()
 }))
 
 vi.mock('@/wailsjs/go/matching/Matcher', () => ({
-  MatchedGroupIds: vi.fn(),
+  MatchedGroupIds: vi.fn()
 }))
 
 vi.mock('@/wailsjs/go/execute/CommandExecutor', () => ({
   Run: vi.fn(),
   RunAndOutput: vi.fn(),
-  Abort: vi.fn(),
+  Abort: vi.fn()
 }))
 
 vi.mock('@/wailsjs/go/porter/Porter', () => ({
@@ -60,7 +60,7 @@ vi.mock('@/wailsjs/go/porter/Porter', () => ({
   Progress: vi.fn(),
   Export: vi.fn(),
   ImportFromFile: vi.fn(),
-  ImportFromURL: vi.fn(),
+  ImportFromURL: vi.fn()
 }))
 
 vi.mock('@/wailsjs/go/sysinfo/SysInfo', () => ({
@@ -69,7 +69,7 @@ vi.mock('@/wailsjs/go/sysinfo/SysInfo', () => ({
   GpuInfo: vi.fn().mockResolvedValue([]),
   NicInfo: vi.fn().mockResolvedValue([]),
   DiskInfo: vi.fn().mockResolvedValue([]),
-  MemoryInfo: vi.fn().mockResolvedValue([]),
+  MemoryInfo: vi.fn().mockResolvedValue([])
 }))
 
 vi.mock('@/wailsjs/runtime/runtime', () => ({
@@ -85,5 +85,5 @@ vi.mock('@/wailsjs/runtime/runtime', () => ({
   EventsOffAll: vi.fn(),
   EventsOnce: vi.fn(),
   EventsEmit: vi.fn(),
-  BrowserOpenURL: vi.fn(),
+  BrowserOpenURL: vi.fn()
 }))

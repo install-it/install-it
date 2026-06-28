@@ -25,13 +25,11 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
 
 <template>
   <div class="flex h-full flex-col gap-y-2">
-    <div class="flex">
-      <div class="w-2/3">
-        <h1 class="font-bold">{{ $t('driverForm.installOption') }}</h1>
-
-        <p class="text-xs">{{ $t('driverForm.installOptionHelp') }}</p>
-      </div>
-
+    <PageHeader
+      variant="compact"
+      :title="$t('driverForm.installOption')"
+      :description="$t('driverForm.installOptionHelp')"
+    >
       <div class="flex w-1/3 flex-wrap justify-center gap-0.5 px-0.5 text-xs select-none">
         <router-link
           :to="{ path: '/drivers' }"
@@ -59,7 +57,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
           {{ $t(`driverCatetory.${type}`) }}
         </router-link>
       </div>
-    </div>
+    </PageHeader>
 
     <div
       ref="scrollContainer"

@@ -178,6 +178,7 @@
     }
   },
   "setting": {
+    "title": "設定",
     "general": "一般設定",
     "installDefaults": "預設安裝選項",
     "filters": "過濾及檢視",
