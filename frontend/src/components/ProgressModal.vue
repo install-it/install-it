@@ -176,9 +176,9 @@ function toastErrMsg(err: string) {
         <div class="flex items-center gap-x-3">
           <h2 class="text-lg font-bold">{{ title }}</h2>
 
-          <p class="proc-badge h-6" :class="[`proc-badge-${snapshot?.status}`]">
+          <UBadge class="h-6" :style="{ backgroundColor: `var(--color-${snapshot?.status})` }">
             <span class="truncate capitalize">{{ $t(`status.${snapshot?.status}`) }}</span>
-          </p>
+          </UBadge>
         </div>
 
         <ProgressStepper
