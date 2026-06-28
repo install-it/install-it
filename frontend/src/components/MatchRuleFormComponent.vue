@@ -15,6 +15,14 @@ const { t } = useI18n()
 
 const $router = useRouter()
 
+function commonKey(suffix: string): string {
+  return `common${suffix.charAt(0).toUpperCase() + suffix.slice(1)}`
+}
+
+function matchRuleKey(suffix: string): string {
+  return `matchRule${suffix.charAt(0).toUpperCase() + suffix.slice(1)}`
+}
+
 const toast = useToast()
 
 const [ruleStore, groupStore] = [useMatchRuleStore(), useDriverGroupStore()]
@@ -32,12 +40,12 @@ const { data: ruleSet } = useEditor({
 
 function handleSubmit() {
   if (ruleSet.value.rules.length == 0) {
-    toast.add({ title: t('toast.addAtLeastOneRule'), color: 'warning' })
+    toast.add({ title: t('toastAddAtLeastOneRule'), color: 'warning' })
     return
   }
 
   const handleSuccess = () => {
-    toast.add({ title: t('toast.updated'), color: 'success' })
+    toast.add({ title: t('toastUpdated'), color: 'success' })
 
     ruleSetStorage.All().then(newMatchRule => {
       ruleStore.ruleSets = newMatchRule
@@ -63,12 +71,12 @@ function handleSubmit() {
   <form class="size-full overflow-y-auto" autocomplete="off" @submit.prevent="handleSubmit">
     <div class="mx-auto h-full max-w-full content-center space-y-3 lg:max-w-2xl xl:max-w-4xl">
       <h1 class="mb-2 text-xl font-bold">
-        {{ $t('matchRule.createRule') }}
+        {{ $t('matchRuleCreateRule') }}
       </h1>
 
       <fieldset class="fieldset">
         <legend class="fieldset-legend text-sm">
-          {{ $t('matchRule.name') }}
+          {{ $t('matchRuleName') }}
         </legend>
 
         <UInput v-model="ruleSet.name" type="text" class="ms-1" />
@@ -76,19 +84,19 @@ function handleSubmit() {
 
       <fieldset class="fieldset">
         <legend class="text-required fieldset-legend text-sm">
-          {{ $t('matchRule.rule') }}
+          {{ $t('matchRuleRule') }}
         </legend>
 
         <div>
           <div class="grid-rows grid text-sm">
             <div class="grid grid-cols-6 gap-2 border-y py-1.5">
-              <div class="col-span-1">{{ $t('matchRule.source') }}</div>
+              <div class="col-span-1">{{ $t('matchRuleSource') }}</div>
 
-              <div class="col-span-1">{{ $t('matchRule.operator') }}</div>
+              <div class="col-span-1">{{ $t('matchRuleOperator') }}</div>
 
-              <div class="col-span-3">{{ $t('matchRule.pattern') }}</div>
+              <div class="col-span-3">{{ $t('matchRulePattern') }}</div>
 
-              <div class="col-span-1">{{ $t('common.action') }}</div>
+              <div class="col-span-1">{{ $t('commonAction') }}</div>
             </div>
 
             <div class="max-h-38 overflow-y-auto">
@@ -107,13 +115,13 @@ function handleSubmit() {
               >
                 <div class="col-span-1">
                   <p class="line-clamp-2 break-all">
-                    {{ $t(`common.${r.source}`) }}
+                    {{ $t(commonKey(r.source)) }}
                   </p>
                 </div>
 
                 <div class="col-span-1">
                   <span class="font-mono">
-                    {{ $t(`matchRule.${r.operator}`) }}
+                    {{ $t(matchRuleKey(r.operator)) }}
                   </span>
                 </div>
 
@@ -124,7 +132,7 @@ function handleSubmit() {
                       size="sm"
                       class="me-0.5 bg-rose-400 text-white md:me-1"
                     >
-                      {{ $t('matchRule.hitAll') }}
+                      {{ $t('matchRuleHitAll') }}
                     </UBadge>
 
                     <UBadge
@@ -151,7 +159,7 @@ function handleSubmit() {
                   <div class="flex gap-x-2">
                     <button
                       type="button"
-                      :title="$t('common.edit')"
+                      :title="$t('commonEdit')"
                       @click="inputModal?.show(JSON.parse(JSON.stringify({ ...r, _id: i })))"
                     >
                       <Icon icon="mdi:pencil" class="size-4" />
@@ -159,7 +167,7 @@ function handleSubmit() {
 
                     <button
                       type="button"
-                      :title="$t('common.delete')"
+                      :title="$t('commonDelete')"
                       @click="ruleSet.rules.splice(i, 1)"
                     >
                       <Icon icon="mdi:trash-can" class="size-4" />
@@ -181,21 +189,21 @@ function handleSubmit() {
       </fieldset>
 
       <fieldset class="fieldset">
-        <legend class="fieldset-legend text-sm">{{ $t('matchRule.multiRuleMatching') }}</legend>
+        <legend class="fieldset-legend text-sm">{{ $t('matchRuleMultiRuleMatching') }}</legend>
 
         <label class="flex w-full cursor-pointer items-center select-none">
           <UCheckbox v-model="ruleSet.should_hit_all" class="me-1.5" />
-          {{ $t('matchRule.hitAllRule') }}
+          {{ $t('matchRuleHitAllRule') }}
         </label>
 
-        <p class="text-hint">{{ $t('matchRule.multiRuleMatchingHelp') }}</p>
+        <p class="text-hint">{{ $t('matchRuleMultiRuleMatchingHelp') }}</p>
       </fieldset>
 
       <hr />
 
       <fieldset class="fieldset">
         <legend class="text-required fieldset-legend text-sm">
-          {{ $t('matchRule.matchTo') }}
+          {{ $t('matchRuleMatchTo') }}
         </legend>
 
         <DriverSelector
@@ -214,11 +222,11 @@ function handleSubmit() {
           style="--btn-color: var(--color-gray-100)"
           @click="$router.back()"
         >
-          {{ $t('common.back') }}
+          {{ $t('commonBack') }}
         </UButton>
 
         <UButton type="submit" class="grow justify-center" color="secondary">
-          {{ $t('common.save') }}
+          {{ $t('commonSave') }}
         </UButton>
       </div>
     </div>

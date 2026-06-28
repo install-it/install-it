@@ -131,8 +131,8 @@ export namespace storage {
 	export enum RuleOperator {
 	    CONTAIN = "contain",
 	    EQUAL = "equal",
-	    NOT_CONTAIN = "not_contain",
-	    NOT_EQUAL = "not_equal",
+	    NOT_CONTAIN = "notContain",
+	    NOT_EQUAL = "notEqual",
 	    REGEX = "regex",
 	}
 	export enum RuleSource {

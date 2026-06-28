@@ -52,9 +52,9 @@ runtime.EventsOn('execute:exited', async (id: string, result: NonNullable<Proces
   dispatchCommand().then(() => {
     if (processes.value.every(c => c.status === 'completed')) {
       emit('completed')
-      toast.add({ title: t('toast.finished'), color: 'success' })
+      toast.add({ title: t('toastFinished'), color: 'success' })
     } else if (processes.value.every(c => !c.status.includes('ing'))) {
-      toast.add({ title: t('toast.finished'), color: 'info' })
+      toast.add({ title: t('toastFinished'), color: 'info' })
     }
   })
 })
@@ -120,7 +120,7 @@ async function handleAbort(process: Process) {
       executor.Abort(process.procId!).catch(error => {
         if (error.includes('process does not exist')) {
           toast.add({
-            title: t('toast.cancelCompletedFailed', {
+            title: t('toastCancelCompletedFailed', {
               name: getProcessName(process)
             }),
             color: 'warning'
@@ -134,7 +134,7 @@ async function handleAbort(process: Process) {
           .forEach((err: string) => {
             if (err.includes('abort failed')) {
               toast.add({
-                title: t('toast.cancelFailed', {
+                title: t('toastCancelFailed', {
                   name: getProcessName(process)
                 }),
                 color: 'warning'
@@ -162,7 +162,7 @@ async function handleAbort(process: Process) {
   <UModal
     v-model:open="isOpen"
     :dismissible="false"
-    :title="$t('execute.title')"
+    :title="$t('executeTitle')"
     :close="!processes.some(cmd => ['pending', 'running', 'aborting'].includes(cmd.status))"
   >
     <template #body>
@@ -183,7 +183,7 @@ async function handleAbort(process: Process) {
           @click="
             (event: MouseEvent) => {
               $emit('completed')
-              toast.add({ title: t('toast.finished'), color: 'success' })
+              toast.add({ title: t('toastFinished'), color: 'success' })
 
               // @ts-ignore
               event.currentTarget?.remove()
@@ -191,7 +191,7 @@ async function handleAbort(process: Process) {
           "
         >
           <Icon icon="mdi:arrow-right" />
-          {{ $t('execute.forceComplete') }}
+          {{ $t('executeForceComplete') }}
         </UButton>
       </div>
     </template>
