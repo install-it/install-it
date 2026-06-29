@@ -68,7 +68,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
       class="flex min-h-48 grow flex-col overflow-y-scroll rounded-md p-1.5 shadow-md"
     >
       <div
-        v-for="(g, i) in groupStore.groups.filter(
+        v-for="g in groupStore.groups.filter(
           g => $route.query.type == undefined || g.type == $route.query.type
         )"
         :key="g.id"
