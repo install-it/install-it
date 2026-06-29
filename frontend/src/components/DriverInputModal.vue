@@ -89,19 +89,19 @@ function handleSubmit() {
 <template>
   <UModal
     v-model:open="isOpen"
-    :title="driver.name ? $t('driverForm.editDriver') : $t('driverForm.createDriver')"
+    :title="driver.name ? $t('titleEditDriver') : $t('titleCreateDriver')"
   >
     <template #body>
       <div ref="modalBody">
         <form class="flex flex-col gap-y-2" autocomplete="off" @submit.prevent="handleSubmit">
           <fieldset class="fieldset">
-            <legend class="fieldset-legend text-sm">{{ $t('driverForm.name') }}</legend>
+            <legend class="fieldset-legend text-sm">{{ $t('name') }}</legend>
 
             <UInput v-model="driver.name" type="text" name="name" color="primary" class="w-full" />
           </fieldset>
 
           <fieldset class="fieldset">
-            <legend class="fieldset-legend text-sm">{{ $t('driverForm.path') }}</legend>
+            <legend class="fieldset-legend text-sm">{{ $t('path') }}</legend>
 
             <div class="flex gap-2">
               <UButton
@@ -114,7 +114,7 @@ function handleSubmit() {
                   })
                 "
               >
-                {{ $t('driverForm.selectFile') }}
+                {{ $t('labelSelectFile') }}
               </UButton>
 
               <UInput
@@ -130,12 +130,12 @@ function handleSubmit() {
           </fieldset>
 
           <fieldset class="fieldset">
-            <legend class="fieldset-legend text-sm">{{ $t('driverForm.argument') }}</legend>
+            <legend class="fieldset-legend text-sm">{{ $t('fieldArgument') }}</legend>
 
             <div class="flex items-center gap-2">
               <UDropdownMenu :items="[flagItems]" :ui="{ content: 'max-h-58 overflow-y-auto' }">
                 <UButton color="neutral" variant="outline">
-                  {{ $t('common.select') }}
+                  {{ $t('select') }}
                 </UButton>
               </UDropdownMenu>
 
@@ -149,14 +149,14 @@ function handleSubmit() {
             </div>
 
             <p class="text-hint">
-              {{ $t('driverForm.commaSeparated') }}
+              {{ $t('descCommaSeparated') }}
             </p>
           </fieldset>
 
           <div class="flex gap-x-3">
             <fieldset class="fieldset flex-1">
               <legend class="fieldset-legend text-sm">
-                {{ $t('driverForm.minExecuteTime') }}
+                {{ $t('fieldMinExecuteTime') }}
               </legend>
 
               <UInput
@@ -169,13 +169,13 @@ function handleSubmit() {
               />
 
               <p class="text-hint">
-                {{ $t('driverForm.minExecuteTimeHelp') }}
+                {{ $t('descMinExecuteTime') }}
               </p>
             </fieldset>
 
             <fieldset class="fieldset flex-1">
               <legend class="fieldset-legend text-sm">
-                {{ $t('driverForm.allowedExitCode') }}
+                {{ $t('fieldAllowedExitCode') }}
               </legend>
 
               <UInput
@@ -186,7 +186,7 @@ function handleSubmit() {
               />
 
               <p class="text-hint">
-                {{ $t('driverForm.commaSeparated') }}
+                {{ $t('descCommaSeparated') }}
               </p>
             </fieldset>
           </div>
@@ -198,7 +198,7 @@ function handleSubmit() {
           ></DriverSelector>
 
           <UButton type="submit" color="secondary" block class="justify-center">
-            {{ $t('common.save') }}
+            {{ $t('save') }}
           </UButton>
         </form>
       </div>

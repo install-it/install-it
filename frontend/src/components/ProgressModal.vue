@@ -34,6 +34,10 @@ const { t } = useI18n()
 
 const toast = useToast()
 
+function statusKey(status: string | undefined): string {
+  return status ? `status${status.charAt(0).toUpperCase() + status.slice(1)}` : ''
+}
+
 let interval: ReturnType<typeof setInterval> | number = -1
 
 function resetInterval() {
@@ -52,7 +56,7 @@ defineExpose({
   export: (destination: string) => {
     isOpen.value = true
     mode.value = 'export'
-    title.value = t('porter.export')
+    title.value = t('labelExport')
     snapshot.value = null
     messages.value = []
 
@@ -70,7 +74,7 @@ defineExpose({
     return new Promise((resolve, reject) => {
       isOpen.value = true
       mode.value = 'download'
-      title.value = t('porter.download')
+      title.value = t('labelUpdate')
       snapshot.value = null
       messages.value = []
 
@@ -95,7 +99,7 @@ defineExpose({
   import: (from: 'url' | 'file', source: string, opts: porter.ImportOptions) => {
     isOpen.value = true
     mode.value = 'import'
-    title.value = `${t('porter.import')} (${t(`porter.${from}`)})`
+    title.value = `${t('labelImport')} (${t(from === 'file' ? 'file' : 'url')})`
     snapshot.value = null
     messages.value = []
 
@@ -142,18 +146,18 @@ function updateProgress() {
 function toastErrMsg(err: string) {
   if (err.includes('context canceled')) return
   if (err.includes('The system cannot find the path specified.'))
-    toast.add({ title: t('toast.pathNotFind'), color: 'error' })
+    toast.add({ title: t('toastPathNotFound'), color: 'error' })
   else if (err.includes('unsupported protocol scheme'))
-    toast.add({ title: t('toast.unsupportUrlProtocal'), color: 'error' })
-  else if (err.includes('no such host')) toast.add({ title: t('toast.noSuchHost'), color: 'error' })
+    toast.add({ title: t('toastUnsupportedUrlProtocol'), color: 'error' })
+  else if (err.includes('no such host')) toast.add({ title: t('toastNoSuchHost'), color: 'error' })
   else if (err == 'zip: not a valid zip file')
-    toast.add({ title: t('toast.invalidZipFile'), color: 'error' })
+    toast.add({ title: t('toastInvalidZipFile'), color: 'error' })
   else if (err.includes('porter: nothing to import'))
-    toast.add({ title: t('porter.error.noCategories'), color: 'error' })
+    toast.add({ title: t('errNoCategoriesSelected'), color: 'error' })
   else if (err.includes('porter: selected categories not found'))
-    toast.add({ title: t('porter.error.categoriesNotFound'), color: 'error' })
+    toast.add({ title: t('errCategoriesNotFound'), color: 'error' })
   else if (err.includes('porter: nothing to backup or import'))
-    toast.add({ title: t('porter.error.nothingToImport'), color: 'error' })
+    toast.add({ title: t('errNothingToImport'), color: 'error' })
   else toast.add({ title: err, color: 'error' })
 }
 </script>
@@ -161,7 +165,7 @@ function toastErrMsg(err: string) {
 <template>
   <UModal
     v-model:open="isOpen"
-    :title="t('porter.progress')"
+    :title="t('progress')"
     :dismissible="false"
     :close="
       snapshot?.status.includes('ed') && !(mode == 'import' && snapshot?.status == 'completed')
@@ -177,7 +181,7 @@ function toastErrMsg(err: string) {
           <h2 class="text-lg font-bold">{{ title }}</h2>
 
           <UBadge class="h-6" :style="{ backgroundColor: `var(--color-${snapshot?.status})` }">
-            <span class="truncate capitalize">{{ $t(`status.${snapshot?.status}`) }}</span>
+            <span class="truncate capitalize">{{ $t(statusKey(snapshot?.status)) }}</span>
           </UBadge>
         </div>
 
@@ -208,7 +212,7 @@ function toastErrMsg(err: string) {
                 }
               "
             >
-              {{ $t('common.cancel') }}
+              {{ $t('cancel') }}
             </UButton>
           </div>
 
@@ -223,7 +227,7 @@ function toastErrMsg(err: string) {
                 }
               "
             >
-              {{ $t('common.refresh') }}
+              {{ $t('refresh') }}
             </UButton>
           </div>
         </div>

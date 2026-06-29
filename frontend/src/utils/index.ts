@@ -78,11 +78,11 @@ export function testMatchRule(rule: storage.Rule, input: string) {
     switch (rule.operator) {
       case 'contain':
         return input.includes(v)
-      case 'not_contain':
+      case 'notContain':
         return !input.includes(v)
       case 'equal':
         return input === v
-      case 'not_equal':
+      case 'notEqual':
         return input !== v
       case 'regex': {
         try {
