@@ -1,6 +1,7 @@
 {
   "action": "動作",
   "actionAbort": "取消",
+  "actionCheckUpdate": "檢查更新",
   "actionExecute": "執行",
   "actionFirmware": "進入 BIOS/UEFI",
   "actionForceComplete": "強制完成",
