@@ -123,7 +123,7 @@ function handleSubmit() {
                 color="primary"
                 placeholder="https://"
                 class="w-full max-w-lg"
-                :rows="2"
+                :rows="3"
               />
             </div>
           </section>
