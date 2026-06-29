@@ -8,6 +8,19 @@ const props = defineProps<{
   progress: number
 }>()
 
+function stepKey(name: string): string {
+  const map: Record<string, string> = {
+    initialisation: 'stepInit',
+    compression: 'stepCompression',
+    complete: 'complete',
+    download: 'stepDownload',
+    backup: 'stepBackup',
+    extract: 'stepExtract',
+    cleanup: 'stepCleanup'
+  }
+  return map[name] ?? name
+}
+
 const processedSteps = computed(() => {
   const idx = props.steps.indexOf(props.currentStep)
   const st = props.jobStatus
@@ -91,7 +104,7 @@ const processedSteps = computed(() => {
           class="mt-1.5 w-full text-xs leading-tight wrap-break-word lg:text-sm"
           :class="{ 'text-gray-400': step.state === 'pending' }"
         >
-          {{ $t(`porter.${step.name}`) }}
+          {{ $t(stepKey(step.name)) }}
         </span>
       </div>
     </template>

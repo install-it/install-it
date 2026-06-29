@@ -22,9 +22,9 @@ type RuleOperator string
 
 const (
 	Contain    RuleOperator = "contain"
-	NotContain RuleOperator = "not_contain"
+	NotContain RuleOperator = "notContain"
 	Equal      RuleOperator = "equal"
-	NotEqual   RuleOperator = "not_equal"
+	NotEqual   RuleOperator = "notEqual"
 	Regex      RuleOperator = "regex"
 )
 

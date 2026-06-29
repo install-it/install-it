@@ -28,7 +28,7 @@ Promise.all([
     .All()
     .then(gs => (groupStore.groups = gs))
     .catch(() => {
-      toast.add({ title: t('toast.readDriverFailed'), color: 'error' })
+      toast.add({ title: t('toastReadDriversFailed'), color: 'error' })
     }),
   appSettingStorage
     .All()
@@ -37,7 +37,7 @@ Promise.all([
       locale.value = s.language
     })
     .catch(() => {
-      toast.add({ title: t('toast.readAppSettingFailed'), color: 'error' })
+      toast.add({ title: t('toastReadAppSettingsFailed'), color: 'error' })
     }),
   ruleSetStorage
     .All()
@@ -45,7 +45,7 @@ Promise.all([
       matchStore.ruleSets = rs
     })
     .catch(() => {
-      toast.add({ title: t('toast.readAppSettingFailed'), color: 'error' })
+      toast.add({ title: t('toastReadAppSettingsFailed'), color: 'error' })
     })
 ])
   .then(() => {
@@ -55,7 +55,7 @@ Promise.all([
           latestRelease(version).then(release => {
             hasUpdate.value = release.hasUpdate
             if (release.hasUpdate) {
-              toast.add({ title: t('toast.updateAvailable'), color: 'info', duration: 1000 })
+              toast.add({ title: t('toastUpdateAvailable'), color: 'info', duration: 1000 })
             }
           })
         )

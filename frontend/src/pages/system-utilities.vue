@@ -29,13 +29,13 @@ function confirmPowerAction() {
   <div class="flex h-full flex-col gap-y-6 overflow-y-auto p-2">
     <PageHeader
       variant="normal"
-      :title="$t('systemUtility.title')"
-      :description="$t('systemUtility.subtitle')"
+      :title="$t('titleSetupTools')"
+      :description="$t('descSetupTools')"
     />
 
     <div>
       <div class="mt-4">
-        <h2 class="mb-2 font-semibold">{{ $t('systemUtility.computerManagement') }}</h2>
+        <h2 class="mb-2 font-semibold">{{ $t('toolComputerManagement') }}</h2>
 
         <div class="grid grid-cols-2 gap-2">
           <UButton
@@ -46,7 +46,7 @@ function confirmPowerAction() {
             @click="
               executor.RunAndOutput('mmc.exe', ['compmgmt.msc'], false).catch(error =>
                 toast.add({
-                  title: t('systemUtility.openFailed'),
+                  title: t('errToolOpenFailed'),
                   description: String(error),
                   color: 'error',
                   icon: 'mdi:cross-circle-outline'
@@ -54,7 +54,7 @@ function confirmPowerAction() {
               )
             "
           >
-            {{ $t('systemUtility.computerManagement') }}
+            {{ $t('toolComputerManagement') }}
           </UButton>
 
           <UButton
@@ -65,7 +65,7 @@ function confirmPowerAction() {
             @click="
               executor.RunAndOutput('mmc.exe', ['devmgmt.msc'], false).catch(error =>
                 toast.add({
-                  title: t('systemUtility.openFailed'),
+                  title: t('errToolOpenFailed'),
                   description: String(error),
                   color: 'error',
                   icon: 'mdi:cross-circle-outline'
@@ -73,7 +73,7 @@ function confirmPowerAction() {
               )
             "
           >
-            {{ $t('systemUtility.deviceManager') }}
+            {{ $t('toolDeviceManager') }}
           </UButton>
 
           <UButton
@@ -84,7 +84,7 @@ function confirmPowerAction() {
             @click="
               executor.RunAndOutput('mmc.exe', ['diskmgmt.msc'], false).catch(error =>
                 toast.add({
-                  title: t('systemUtility.openFailed'),
+                  title: t('errToolOpenFailed'),
                   description: String(error),
                   color: 'error',
                   icon: 'mdi:cross-circle-outline'
@@ -92,13 +92,13 @@ function confirmPowerAction() {
               )
             "
           >
-            {{ $t('systemUtility.diskManager') }}
+            {{ $t('toolDiskManager') }}
           </UButton>
         </div>
       </div>
 
       <div class="mt-6">
-        <h2 class="mb-2 font-semibold">{{ $t('systemUtility.settings') }}</h2>
+        <h2 class="mb-2 font-semibold">{{ $t('toolSettings') }}</h2>
 
         <div class="grid grid-cols-2 gap-2">
           <UButton
@@ -109,7 +109,7 @@ function confirmPowerAction() {
             @click="
               executor.RunAndOutput('cmd', ['/c', 'start', 'ms-settings:'], false).catch(error =>
                 toast.add({
-                  title: t('systemUtility.openFailed'),
+                  title: t('errToolOpenFailed'),
                   description: String(error),
                   color: 'error',
                   icon: 'mdi:cross-circle-outline'
@@ -117,7 +117,7 @@ function confirmPowerAction() {
               )
             "
           >
-            {{ $t('systemUtility.windowsSettings') }}
+            {{ $t('toolWindowsSettings') }}
           </UButton>
 
           <UButton
@@ -130,7 +130,7 @@ function confirmPowerAction() {
                 .RunAndOutput('cmd', ['/c', 'start', 'ms-settings:activation'], false)
                 .catch(error =>
                   toast.add({
-                    title: t('systemUtility.openFailed'),
+                    title: t('errToolOpenFailed'),
                     description: String(error),
                     color: 'error',
                     icon: 'mdi:cross-circle-outline'
@@ -138,7 +138,7 @@ function confirmPowerAction() {
                 )
             "
           >
-            {{ $t('systemUtility.activation') }}
+            {{ $t('toolWindowsActivation') }}
           </UButton>
 
           <UButton
@@ -151,7 +151,7 @@ function confirmPowerAction() {
                 .RunAndOutput('cmd', ['/c', 'start', 'ms-settings:windowsupdate'], false)
                 .catch(error =>
                   toast.add({
-                    title: t('systemUtility.openFailed'),
+                    title: t('errToolOpenFailed'),
                     description: String(error),
                     color: 'error',
                     icon: 'mdi:cross-circle-outline'
@@ -159,7 +159,7 @@ function confirmPowerAction() {
                 )
             "
           >
-            {{ $t('systemUtility.windowsUpdate') }}
+            {{ $t('toolWindowsUpdate') }}
           </UButton>
 
           <UButton
@@ -172,7 +172,7 @@ function confirmPowerAction() {
                 .RunAndOutput('cmd', ['/c', 'start', 'ms-settings:appsfeatures'], false)
                 .catch(error =>
                   toast.add({
-                    title: t('systemUtility.openFailed'),
+                    title: t('errToolOpenFailed'),
                     description: String(error),
                     color: 'error',
                     icon: 'mdi:cross-circle-outline'
@@ -180,7 +180,7 @@ function confirmPowerAction() {
                 )
             "
           >
-            {{ $t('systemUtility.installedApps') }}
+            {{ $t('toolInstalledApps') }}
           </UButton>
 
           <UButton
@@ -193,7 +193,7 @@ function confirmPowerAction() {
                 .RunAndOutput('cmd', ['/c', 'start', 'ms-settings:network-wifi'], false)
                 .catch(error =>
                   toast.add({
-                    title: t('systemUtility.openFailed'),
+                    title: t('errToolOpenFailed'),
                     description: String(error),
                     color: 'error',
                     icon: 'mdi:cross-circle-outline'
@@ -201,7 +201,7 @@ function confirmPowerAction() {
                 )
             "
           >
-            {{ $t('systemUtility.wifi') }}
+            {{ $t('toolWifi') }}
           </UButton>
 
           <UButton
@@ -214,7 +214,7 @@ function confirmPowerAction() {
                 .RunAndOutput('cmd', ['/c', 'start', 'ms-settings:bluetooth'], false)
                 .catch(error =>
                   toast.add({
-                    title: t('systemUtility.openFailed'),
+                    title: t('errToolOpenFailed'),
                     description: String(error),
                     color: 'error',
                     icon: 'mdi:cross-circle-outline'
@@ -222,7 +222,7 @@ function confirmPowerAction() {
                 )
             "
           >
-            {{ $t('systemUtility.bluetooth') }}
+            {{ $t('toolBluetooth') }}
           </UButton>
         </div>
       </div>
@@ -230,7 +230,7 @@ function confirmPowerAction() {
 
     <!-- Power Actions Section -->
     <div>
-      <h1 class="font-bold">{{ $t('systemUtility.shutdownOptions') }}</h1>
+      <h1 class="font-bold">{{ $t('titleShutdownOptions') }}</h1>
 
       <div class="mt-4 grid grid-cols-3 gap-2">
         <UButton
@@ -245,7 +245,7 @@ function confirmPowerAction() {
             }
           "
         >
-          {{ $t('successAction.shutdown') }}
+          {{ $t('actionShutdown') }}
         </UButton>
 
         <UButton
@@ -260,7 +260,7 @@ function confirmPowerAction() {
             }
           "
         >
-          {{ $t('successAction.reboot') }}
+          {{ $t('actionReboot') }}
         </UButton>
 
         <UButton
@@ -275,7 +275,7 @@ function confirmPowerAction() {
             }
           "
         >
-          {{ $t('successAction.firmware') }}
+          {{ $t('actionFirmware') }}
         </UButton>
       </div>
     </div>
@@ -287,21 +287,25 @@ function confirmPowerAction() {
             <UIcon name="i-lucide-alert-triangle" class="mt-0.5 h-6 w-6 shrink-0 text-yellow-500" />
 
             <div class="flex-1">
-              <h2 class="text-lg font-semibold">{{ t(`successAction.${powerActionType}`) }}?</h2>
+              <h2 class="text-lg font-semibold">
+                {{
+                  t(`action${powerActionType.charAt(0).toUpperCase() + powerActionType.slice(1)}`)
+                }}?
+              </h2>
 
               <p class="mt-1 text-sm text-gray-600">
-                {{ $t('systemUtility.powerActionsConfirm') }}
+                {{ $t('msgPowerActionsConfirm') }}
               </p>
             </div>
           </div>
 
           <div class="mt-6 flex justify-end gap-x-3">
             <UButton color="neutral" variant="ghost" @click="powerActionModal = false">
-              {{ $t('common.cancel') }}
+              {{ $t('cancel') }}
             </UButton>
 
             <UButton color="warning" variant="soft" @click="confirmPowerAction">
-              {{ $t('common.confirm') }}
+              {{ $t('confirm') }}
             </UButton>
           </div>
         </div>
@@ -309,4 +313,3 @@ function confirmPowerAction() {
     </UModal>
   </div>
 </template>
-{{ $t('successAction.reboot') }}

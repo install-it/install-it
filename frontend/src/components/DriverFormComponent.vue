@@ -12,6 +12,10 @@ const props = defineProps<{ id?: number }>()
 const { t } = useI18n()
 
 const $route = useRoute()
+
+function categoryKey(type: string): string {
+  return `category${type.charAt(0).toUpperCase() + type.slice(1)}`
+}
 const $router = useRouter()
 const toast = useToast()
 
@@ -60,12 +64,12 @@ watch(
 
 function handleSubmit() {
   if (group.value.drivers.length == 0) {
-    toast.add({ title: t('toast.addAtLeastOneDriver'), color: 'warning' })
+    toast.add({ title: t('toastAddDriverRequired'), color: 'warning' })
     return
   }
 
   const handleSuccess = () => {
-    toast.add({ title: t('toast.updated'), color: 'success' })
+    toast.add({ title: t('toastUpdated'), color: 'success' })
     groupStorage
       .All()
       .then(newDriverGroups => {
@@ -101,7 +105,7 @@ function handleSubmit() {
     <div class="flex gap-x-3 px-1">
       <div class="w-32">
         <fieldset class="fieldset">
-          <legend class="fieldset-legend text-sm">{{ $t('driverForm.type') }}</legend>
+          <legend class="fieldset-legend text-sm">{{ $t('fieldDriverType') }}</legend>
 
           <USelect
             v-model="group.type"
@@ -109,7 +113,7 @@ function handleSubmit() {
             class="w-full"
             :items="
               Object.values(storage.DriverType).map(type => ({
-                label: $t(`driverCatetory.${type}`),
+                label: $t(categoryKey(type)),
                 value: type
               }))
             "
@@ -120,7 +124,7 @@ function handleSubmit() {
 
       <div class="grow">
         <fieldset class="fieldset">
-          <legend class="fieldset-legend text-sm">{{ $t('driverForm.name') }}</legend>
+          <legend class="fieldset-legend text-sm">{{ $t('name') }}</legend>
 
           <UInput v-model="group.name" type="text" class="w-full" required />
         </fieldset>
@@ -130,26 +134,26 @@ function handleSubmit() {
     <div>
       <label class="flex w-full cursor-pointer items-center select-none">
         <UCheckbox v-model="group.mutuallyExclusive" class="me-1.5" />
-        {{ $t('driverForm.mutuallyExclusive') }}
+        {{ $t('fieldMutuallyExclusive') }}
       </label>
 
-      <p class="text-hint text-xs">{{ $t('driverForm.mutuallyExclusiveHelp') }}</p>
+      <p class="text-hint text-xs">{{ $t('descMutuallyExclusive') }}</p>
     </div>
 
     <fieldset class="fieldset">
-      <legend class="fieldset-legend text-sm">{{ $t('driverForm.driver') }}</legend>
+      <legend class="fieldset-legend text-sm">{{ $t('fieldDriver') }}</legend>
 
       <div>
         <div class="max-h-[40vh] overflow-y-auto">
           <div class="grid-rows grid text-sm">
             <div class="grid grid-cols-10 gap-2 border-y py-1.5">
-              <div class="col-span-2">{{ $t('driverForm.name') }}</div>
+              <div class="col-span-2">{{ $t('name') }}</div>
 
-              <div class="col-span-3">{{ $t('driverForm.path') }}</div>
+              <div class="col-span-3">{{ $t('path') }}</div>
 
-              <div class="col-span-2">{{ $t('driverForm.argument') }}</div>
+              <div class="col-span-2">{{ $t('fieldArgument') }}</div>
 
-              <div class="col-span-2">{{ $t('driverForm.otherSetting') }}</div>
+              <div class="col-span-2">{{ $t('fieldOther') }}</div>
             </div>
 
             <div v-if="group.drivers.length == 0" class="py-1 text-center last:border-b">N/A</div>
@@ -186,7 +190,7 @@ function handleSubmit() {
                 <span
                   v-show="d.incompatibles.length > 0"
                   class="inline-block max-h-5 rounded-xs bg-yellow-300 p-0.5"
-                  :title="$t('driverForm.incompatibleWith')"
+                  :title="$t('labelIncompatibleWith')"
                 >
                   <Icon icon="mdi:source-merge" />
                 </span>
@@ -194,7 +198,7 @@ function handleSubmit() {
                 <span
                   v-show="d.allowRtCodes.length > 0"
                   class="inline-block max-h-5 rounded-xs bg-blue-300 p-0.5"
-                  :title="$t('driverForm.allowedExitCode')"
+                  :title="$t('fieldAllowedExitCode')"
                 >
                   <Icon icon="mdi:numeric-0-box-outline" />
                 </span>
@@ -202,15 +206,11 @@ function handleSubmit() {
 
               <div>
                 <div class="flex gap-x-2">
-                  <button type="button" :title="$t('common.edit')" @click="inputModal?.show(d)">
+                  <button type="button" :title="$t('edit')" @click="inputModal?.show(d)">
                     <Icon icon="mdi:pencil" class="size-4" />
                   </button>
 
-                  <button
-                    type="button"
-                    :title="$t('common.delete')"
-                    @click="group.drivers.splice(i, 1)"
-                  >
+                  <button type="button" :title="$t('delete')" @click="group.drivers.splice(i, 1)">
                     <Icon icon="mdi:trash-can" class="size-4" />
                   </button>
                 </div>
@@ -219,7 +219,7 @@ function handleSubmit() {
           </div>
 
           <p class="text-hint">
-            {{ $t('driverForm.driverGroupHelp') }}
+            {{ $t('descDriverGroup') }}
           </p>
         </div>
 
@@ -240,11 +240,11 @@ function handleSubmit() {
         style="--btn-color: var(--color-gray-100)"
         @click="$router.back()"
       >
-        {{ $t('common.back') }}
+        {{ $t('back') }}
       </UButton>
 
       <UButton type="submit" class="grow justify-center" color="secondary">
-        {{ $t('common.save') }}
+        {{ $t('save') }}
       </UButton>
     </div>
   </form>

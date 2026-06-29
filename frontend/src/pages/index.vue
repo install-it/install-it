@@ -11,6 +11,10 @@ const { t } = useI18n()
 
 const toast = useToast()
 
+function hwKey(part: string): string {
+  return `hw${part.charAt(0).toUpperCase() + part.slice(1)}`
+}
+
 const [statusModal, form] = [useTemplateRef('statusModal'), useTemplateRef('form')]
 
 const [groupStore, settingStore] = [useDriverGroupStore(), useAppSettingStore()]
@@ -57,7 +61,7 @@ function selectMatchedOptions() {
         }
       })
     })
-    .catch(() => toast.add({ title: t('toast.noHardwareInfo'), color: 'error' }))
+    .catch(() => toast.add({ title: t('toastNoHardwareInfo'), color: 'error' }))
 }
 
 function resetSelection() {
@@ -72,7 +76,7 @@ async function handleSubmit() {
   if (settingStore.settings.set_password) {
     commands.push({
       id: 'set_password',
-      groupName: t('task.setPassword'),
+      groupName: t('taskSetPassword'),
       config: {
         program: 'powershell',
         options: [
@@ -95,7 +99,7 @@ async function handleSubmit() {
   if (settingStore.settings.create_partition) {
     commands.push({
       id: 'create_partition',
-      groupName: t('task.createPartitions'),
+      groupName: t('taskCreatePartitions'),
       config: {
         program: 'powershell',
         options: [
@@ -153,7 +157,7 @@ async function handleSubmit() {
   })
 
   if (commands.length == 0) {
-    toast.add({ title: t('toast.noInputWarning'), color: 'warning' })
+    toast.add({ title: t('toastNoInputWarning'), color: 'warning' })
     return
   }
 
@@ -166,7 +170,7 @@ async function handleSubmit() {
     <div class="flex flex-1 flex-col gap-y-1 overflow-y-auto rounded-sm border p-1">
       <template v-if="hwinfos !== null">
         <div v-for="[part, names] in Object.entries(hwinfos)" :key="part">
-          <h2 class="text-sm font-bold">{{ $t(`common.${part}`) }}</h2>
+          <h2 class="text-sm font-bold">{{ $t(hwKey(part)) }}</h2>
 
           <p
             v-for="(name, i) in names.filter(
@@ -202,14 +206,14 @@ async function handleSubmit() {
           <label
             class="pointer-events-none absolute inset-s-4 top-0 h-full translate-y-1 text-xs text-gray-500"
           >
-            {{ $t('driverCatetory.network') }}
+            {{ $t('categoryNetwork') }}
           </label>
 
           <select
             v-model="selectedNetwork"
             class="w-full rounded-lg border border-apple-green-300 bg-white px-3 pt-5 pb-1 text-sm focus:border-apple-green-600 focus:ring-1 focus:ring-apple-green-600 focus:outline-none"
           >
-            <option :value="0">{{ $t('common.pleaseSelect') }}</option>
+            <option :value="0">{{ $t('labelPleaseSelect') }}</option>
 
             <option v-for="g in groups.filter(g => g.type == 'network')" :key="g.id" :value="g.id">
               {{ g.name }}
@@ -221,14 +225,14 @@ async function handleSubmit() {
           <label
             class="pointer-events-none absolute inset-s-4 top-0 h-full translate-y-1 text-xs text-gray-500"
           >
-            {{ $t('driverCatetory.display') }}
+            {{ $t('categoryDisplay') }}
           </label>
 
           <select
             v-model="selectedDisplay"
             class="w-full rounded-lg border border-apple-green-300 bg-white px-3 pt-5 pb-1 text-sm focus:border-apple-green-600 focus:ring-1 focus:ring-apple-green-600 focus:outline-none"
           >
-            <option :value="0">{{ $t('common.pleaseSelect') }}</option>
+            <option :value="0">{{ $t('labelPleaseSelect') }}</option>
 
             <option v-for="g in groups.filter(g => g.type == 'display')" :key="g.id" :value="g.id">
               {{ g.name }}
@@ -242,7 +246,7 @@ async function handleSubmit() {
           <label
             class="pointer-events-none absolute top-1 left-3 origin-top-left -translate-y-[0.55rem] scale-[0.9] bg-white px-2 text-xs text-gray-500"
           >
-            {{ $t('driverCatetory.miscellaneous') }}
+            {{ $t('categoryMiscellaneous') }}
           </label>
 
           <div class="h-full overflow-y-scroll rounded-lg border border-apple-green-300 px-2 pt-3">
@@ -274,7 +278,7 @@ async function handleSubmit() {
 
     <div class="flex gap-x-6">
       <div class="flex flex-col">
-        <p class="font-semibold">{{ $t('installSetting.title') }}</p>
+        <p class="font-semibold">{{ $t('titleTasksAndSettings') }}</p>
 
         <div class="flex flex-1 flex-col justify-around">
           <div class="flex gap-x-4">
@@ -284,7 +288,7 @@ async function handleSubmit() {
                 name="create_partition"
                 color="primary"
               />
-              {{ $t('installSetting.createPartition') }}
+              {{ $t('settingCreatePartitions') }}
             </label>
 
             <label class="flex cursor-pointer items-center gap-x-1.5 select-none">
@@ -293,7 +297,7 @@ async function handleSubmit() {
                 name="parallel_install"
                 color="primary"
               />
-              {{ $t('installSetting.parallelInstall') }}
+              {{ $t('settingParallelInstall') }}
             </label>
           </div>
 
@@ -304,7 +308,7 @@ async function handleSubmit() {
                 name="set_password"
                 color="primary"
               />
-              {{ $t('installSetting.setPassword') }}
+              {{ $t('settingSetPassword') }}
             </label>
 
             <UInput
@@ -323,7 +327,7 @@ async function handleSubmit() {
       <div class="flex grow flex-col justify-between">
         <div>
           <label class="mb-1 block text-sm text-gray-900">
-            {{ $t('installSetting.successAction') }}
+            {{ $t('settingSuccessAction') }}
           </label>
 
           <USelect
@@ -332,25 +336,25 @@ async function handleSubmit() {
             class="w-full"
             color="primary"
             :items="[
-              { label: $t('successAction.nothing'), value: 'nothing' },
-              { label: $t('successAction.shutdown'), value: 'shutdown' },
-              { label: $t('successAction.reboot'), value: 'reboot' },
-              { label: $t('successAction.firmware'), value: 'firmware' }
+              { label: $t('actionNothing'), value: 'nothing' },
+              { label: $t('actionShutdown'), value: 'shutdown' },
+              { label: $t('actionReboot'), value: 'reboot' },
+              { label: $t('actionFirmware'), value: 'firmware' }
             ]"
           />
         </div>
 
         <div class="mt-2 flex h-8 flex-row items-center justify-end gap-x-3">
           <UButton type="button" color="neutral" variant="outline" @click="selectMatchedOptions">
-            {{ $t('matchRule.match') }}
+            {{ $t('labelMatch') }}
           </UButton>
 
           <UButton type="button" color="secondary" variant="outline" @click="resetSelection">
-            {{ $t('installSetting.reset') }}
+            {{ $t('actionReset') }}
           </UButton>
 
           <UButton color="secondary" @click="handleSubmit">
-            {{ $t('installSetting.execute') }}
+            {{ $t('actionExecute') }}
           </UButton>
         </div>
       </div>

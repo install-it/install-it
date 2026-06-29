@@ -19,9 +19,9 @@ defineExpose({
 </script>
 
 <template>
-  <UModal v-model:open="isOpen" :title="$t('common.unsaveConfirmTitle')">
+  <UModal v-model:open="isOpen" :title="$t('titleUnsavedChanges')">
     <template #body>
-      <p>{{ $t('common.unsaveConfirmMessage') }}</p>
+      <p>{{ $t('msgUnsavedChanges') }}</p>
     </template>
 
     <template #footer>
@@ -38,7 +38,7 @@ defineExpose({
             }
           "
         >
-          {{ $t('common.confirm') }}
+          {{ $t('confirm') }}
         </UButton>
 
         <UButton
@@ -54,7 +54,7 @@ defineExpose({
             }
           "
         >
-          {{ $t('common.cancel') }}
+          {{ $t('cancel') }}
         </UButton>
       </div>
     </template>
