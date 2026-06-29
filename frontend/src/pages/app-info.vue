@@ -127,7 +127,7 @@ function checkUpdate() {
               :disabled="onCheck"
               @click="checkUpdate()"
             >
-              {{ $t('labelUpdate') }}
+              {{ $t('actionCheckUpdate') }}
             </UButton>
           </div>
         </div>

@@ -1,6 +1,7 @@
 {
   "action": "Action",
   "actionAbort": "Abort",
+  "actionCheckUpdate": "Check for Update",
   "actionExecute": "Execute",
   "actionFirmware": "Reboot to BIOS/UEFI",
   "actionForceComplete": "Force Complete",
