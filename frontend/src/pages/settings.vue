@@ -15,7 +15,7 @@ function actionKey(action: string): string {
   return `action${action.charAt(0).toUpperCase() + action.slice(1)}`
 }
 
-const tabs = ref({ general: true, install: false, hardwareInfo: false })
+const tabs = ref({ general: true, defaults: false, display: false })
 
 const settingStore = useAppSettingStore()
 const {
@@ -82,26 +82,6 @@ function handleSubmit() {
       <div class="max-w-3xl">
         <div v-show="tabs.general" class="flex flex-col gap-y-4">
           <section>
-            <div class="flex flex-col gap-y-1">
-              <label>{{ $t('settingLanguage') }}</label>
-
-              <USelect
-                v-model="settings.language"
-                name="language"
-                color="primary"
-                variant="outline"
-                class="w-56"
-                :items="[
-                  { label: 'English', value: 'en' },
-                  { label: '繁體中文', value: 'zh_Hant_HK' }
-                ]"
-              />
-            </div>
-          </section>
-
-          <hr class="border-gray-100 dark:border-gray-800" />
-
-          <section>
             <h3 class="mb-3 text-lg font-bold">{{ $t('labelUpdateOptions') }}</h3>
 
             <div class="flex flex-col gap-y-3">
@@ -149,7 +129,7 @@ function handleSubmit() {
           </section>
         </div>
 
-        <div v-show="tabs.install" class="flex flex-col gap-y-4">
+        <div v-show="tabs.defaults" class="flex flex-col gap-y-4">
           <section>
             <h3 class="mb-3 text-lg font-bold">{{ $t('settingTask') }}</h3>
 
@@ -258,7 +238,27 @@ function handleSubmit() {
           </section>
         </div>
 
-        <div v-show="tabs.hardwareInfo" class="flex flex-col gap-y-4">
+        <div v-show="tabs.display" class="flex flex-col gap-y-4">
+          <section>
+            <h3 class="mb-3 text-lg font-bold">{{ $t('settingLanguage') }}</h3>
+
+            <div class="flex flex-col gap-y-1">
+              <USelect
+                v-model="settings.language"
+                name="language"
+                color="primary"
+                variant="outline"
+                class="w-56"
+                :items="[
+                  { label: 'English', value: 'en' },
+                  { label: '繁體中文', value: 'zh_Hant_HK' }
+                ]"
+              />
+            </div>
+          </section>
+
+          <hr class="border-gray-100 dark:border-gray-800" />
+
           <section>
             <h3 class="mb-3 text-lg font-bold">{{ $t('settingHardwareInfo') }}</h3>
 
@@ -271,7 +271,7 @@ function handleSubmit() {
                   class="me-2"
                 />
 
-                <span>{{ $t('settingFilterMiniportNic') }}</span>
+                <span>{{ $t('settingHideMiniportNic') }}</span>
               </label>
 
               <label class="flex w-fit cursor-pointer items-center select-none">
@@ -282,7 +282,7 @@ function handleSubmit() {
                   class="me-2"
                 />
 
-                <span>{{ $t('settingFilterMicrosoftNic') }}</span>
+                <span>{{ $t('settingHideMicrosoftNic') }}</span>
               </label>
             </div>
           </section>
