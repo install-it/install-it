@@ -115,8 +115,8 @@ onUnmounted(() => {
 })
 
 function handleSubmit() {
-  if (!driver.value.name?.trim() || !driver.value.path?.trim()) {
-    toast.add({ title: t('toastNameAndPathRequired'), color: 'warning' })
+  if (!driver.value.path?.trim()) {
+    toast.add({ title: t('toastPathRequired'), color: 'warning' })
     return
   }
 
@@ -152,17 +152,10 @@ function handleSubmit() {
             <label
               class="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase xl:mb-2 xl:text-sm"
             >
-              {{ t('name') }} <span class="text-red-500">*</span>
+              {{ t('name') }}
             </label>
 
-            <UInput
-              v-model="driver.name"
-              type="text"
-              name="name"
-              color="primary"
-              class="w-full"
-              required
-            />
+            <UInput v-model="driver.name" type="text" name="name" color="primary" class="w-full" />
           </fieldset>
 
           <fieldset>

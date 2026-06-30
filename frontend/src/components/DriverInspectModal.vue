@@ -37,9 +37,13 @@ function categoryKey(type: string): string {
           <div>
             <span class="block text-[10px] font-bold text-gray-400 uppercase xl:text-xs">Type</span>
 
-            <span class="text-xs font-bold xl:text-sm" :style="`color: var(--color-${group.type})`">
+            <UBadge
+              size="sm"
+              class="mt-0.5 text-zinc-600"
+              :style="`background-color: var(--color-${group.type})`"
+            >
               {{ $t(categoryKey(group.type)) }}
-            </span>
+            </UBadge>
           </div>
 
           <div class="border-x border-gray-100">
@@ -112,7 +116,7 @@ function categoryKey(type: string): string {
                 }}</span>
 
                 <span class="mt-0.5 block font-mono text-[11px] font-bold text-gray-700 xl:text-sm">
-                  {{ d.flags.length > 0 ? d.flags.join(' ') : 'None' }}
+                  {{ d.flags.length > 0 ? d.flags.join(' ') : '--' }}
                 </span>
               </div>
 
@@ -122,7 +126,7 @@ function categoryKey(type: string): string {
                 }}</span>
 
                 <span class="mt-0.5 block font-mono text-[11px] font-bold text-gray-700 xl:text-sm">
-                  {{ d.allowRtCodes.length > 0 ? d.allowRtCodes.join(', ') : 'Any' }}
+                  {{ d.allowRtCodes.length > 0 ? d.allowRtCodes.join(', ') : '--' }}
                 </span>
               </div>
 
@@ -131,8 +135,9 @@ function categoryKey(type: string): string {
                   $t('fieldMinExecuteTime')
                 }}</span>
 
-                <span class="mt-0.5 block font-mono text-[11px] font-bold text-gray-700 xl:text-sm"
-                  >{{ d.minExeTime }}s</span
+                <span
+                  class="mt-0.5 block font-mono text-[11px] font-bold text-gray-700 xl:text-sm"
+                  >{{ d.minExeTime > 0 ? d.minExeTime + 's' : '--' }}</span
                 >
               </div>
 
@@ -142,7 +147,7 @@ function categoryKey(type: string): string {
                 }}</span>
 
                 <span class="mt-0.5 block font-mono text-[11px] font-bold text-gray-700 xl:text-sm">
-                  {{ d.incompatibles.length > 0 ? d.incompatibles.length + ' set' : 'None' }}
+                  {{ d.incompatibles.length > 0 ? d.incompatibles.length : '--' }}
                 </span>
               </div>
             </div>

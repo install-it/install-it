@@ -64,6 +64,11 @@ watch(
 )
 
 function handleSubmit() {
+  if (!group.value.name?.trim()) {
+    toast.add({ title: t('toastGroupNameRequired'), color: 'warning' })
+    return
+  }
+
   if (group.value.drivers.length == 0) {
     toast.add({ title: t('toastAddDriverRequired'), color: 'warning' })
     return
