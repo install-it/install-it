@@ -150,29 +150,38 @@ function handleRemove() {
         <div class="mt-1.5 flex flex-wrap gap-1.5">
           <span
             v-if="driver.flags.length"
-            class="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[10px] text-gray-600 xl:text-xs"
+            class="inline-flex items-center gap-1 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-600 xl:text-xs"
+            :title="$t('fieldArgument')"
           >
-            {{ driver.flags.join(' ') }}
+            <Icon icon="mdi:console" class="h-3 w-3" />
+
+            <span class="font-mono">{{ driver.flags.join(' ') }}</span>
           </span>
 
           <span
             v-if="driver.allowRtCodes?.length"
-            class="rounded bg-purple-50 px-1.5 py-0.5 text-[10px] font-semibold text-purple-600 xl:text-xs"
+            class="inline-flex items-center gap-1 rounded bg-purple-50 px-1.5 py-0.5 text-[10px] font-semibold text-purple-600 xl:text-xs"
+            :title="$t('fieldAllowedExitCode')"
           >
+            <Icon icon="mdi:alert-circle-success-outline" class="h-3 w-3" />
             {{ driver.allowRtCodes.join(', ') }}
           </span>
 
           <span
             v-if="driver.incompatibles.length"
-            class="rounded bg-yellow-100 px-1.5 py-0.5 text-[10px] font-semibold text-yellow-700 xl:text-xs"
+            class="inline-flex items-center gap-1 rounded bg-yellow-100 px-1.5 py-0.5 text-[10px] font-semibold text-yellow-700 xl:text-xs"
+            :title="$t('labelIncompatibleWith')"
           >
-            {{ $t('labelIncompatibleWith') }}: {{ driver.incompatibles.length }}
+            <Icon icon="mdi:source-merge" class="h-3 w-3" />
+            {{ driver.incompatibles.length }}
           </span>
 
           <span
             v-if="driver.minExeTime > 0"
-            class="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold text-blue-600 xl:text-xs"
+            class="inline-flex items-center gap-1 rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold text-blue-600 xl:text-xs"
+            :title="$t('fieldMinExecuteTime')"
           >
+            <Icon icon="mdi:timer-outline" class="h-3 w-3" />
             {{ driver.minExeTime }}s
           </span>
         </div>
