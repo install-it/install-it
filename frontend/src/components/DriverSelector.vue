@@ -97,7 +97,7 @@ const groupItems = computed(() =>
         <!-- "No matches" empty state -->
         <div
           v-if="groupItems.length === 0 && searchPhrase"
-          class="py-4 text-center text-sm italic text-gray-400"
+          class="py-4 text-center text-sm text-gray-400 italic"
         >
           {{ $t('msgNoMatches') }}
         </div>

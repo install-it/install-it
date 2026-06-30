@@ -98,91 +98,158 @@ function handleSubmit() {
 </script>
 
 <template>
-  <form class="mx-auto flex h-full max-w-full flex-col gap-y-5 overflow-y-auto lg:max-w-2xl xl:max-w-4xl" autocomplete="off" @submit.prevent="handleSubmit">
+  <form
+    class="mx-auto flex h-full max-w-full flex-col gap-y-5 overflow-y-auto lg:max-w-2xl xl:max-w-4xl"
+    autocomplete="off"
+    @submit.prevent="handleSubmit"
+  >
     <!-- Basic Info Row -->
     <div class="flex gap-4">
       <div class="w-48 shrink-0">
-        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+        <label class="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase">
           {{ $t('fieldDriverType') }} <span class="text-red-500">*</span>
         </label>
-        <USelect v-model="group.type" name="type" class="w-full"
-          :items="Object.values(storage.DriverType).map(type => ({ label: $t(categoryKey(type)), value: type }))"
-          required />
+
+        <USelect
+          v-model="group.type"
+          name="type"
+          class="w-full"
+          :items="
+            Object.values(storage.DriverType).map(type => ({
+              label: $t(categoryKey(type)),
+              value: type
+            }))
+          "
+          required
+        />
       </div>
+
       <div class="flex-1">
-        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+        <label class="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase">
           {{ $t('name') }} <span class="text-red-500">*</span>
         </label>
+
         <UInput v-model="group.name" type="text" class="w-full" required />
       </div>
     </div>
 
     <!-- Mutually Exclusive Card -->
     <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-      <label class="flex items-start gap-3 cursor-pointer">
+      <label class="flex cursor-pointer items-start gap-3">
         <UCheckbox v-model="group.mutuallyExclusive" class="mt-1" />
+
         <div>
-          <span class="block text-sm font-bold text-gray-800">{{ $t('fieldMutuallyExclusive') }}</span>
-          <p class="text-xs text-gray-500 mt-0.5">{{ $t('descMutuallyExclusive') }}</p>
+          <span class="block text-sm font-bold text-gray-800">{{
+            $t('fieldMutuallyExclusive')
+          }}</span>
+
+          <p class="mt-0.5 text-xs text-gray-500">{{ $t('descMutuallyExclusive') }}</p>
         </div>
       </label>
     </div>
 
     <!-- Drivers Stack -->
     <div class="flex flex-col">
-      <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+      <label class="mb-2 block text-xs font-bold tracking-wider text-gray-500 uppercase">
         {{ $t('fieldDriver') }}
       </label>
-      <div class="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden flex flex-col">
+
+      <div
+        class="flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm"
+      >
         <!-- List area -->
-        <div class="divide-y divide-gray-100 max-h-64 overflow-y-auto">
+        <div class="max-h-64 divide-y divide-gray-100 overflow-y-auto">
           <!-- Empty state -->
-          <div v-if="group.drivers.length === 0" class="py-10 text-center text-gray-400 flex flex-col items-center">
-            <Icon icon="mdi:package-variant" class="text-4xl mb-2 opacity-50" />
+          <div
+            v-if="group.drivers.length === 0"
+            class="flex flex-col items-center py-10 text-center text-gray-400"
+          >
+            <Icon icon="mdi:package-variant" class="mb-2 text-4xl opacity-50" />
+
             <span class="text-sm font-medium">{{ $t('msgNoDriversInGroup') }}</span>
           </div>
 
           <!-- Driver rows -->
-          <div v-for="(d, i) in group.drivers" v-else :key="d.id"
-            class="p-4 hover:bg-gray-50 flex items-start gap-4 transition-colors group/row"
-            :class="{ 'bg-lime-50': d.id <= 0 }">
-            <span class="w-8 h-8 rounded bg-gray-100 text-sm font-bold text-gray-500 flex items-center justify-center mt-0.5 shrink-0">
+          <div
+            v-for="(d, i) in group.drivers"
+            v-else
+            :key="d.id"
+            class="group/row flex items-start gap-4 p-4 transition-colors hover:bg-gray-50"
+            :class="{ 'bg-lime-50': d.id <= 0 }"
+          >
+            <span
+              class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-100 text-sm font-bold text-gray-500"
+            >
               {{ i + 1 }}
             </span>
-            <div class="flex-1 min-w-0">
+
+            <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2">
-                <span class="font-bold text-base text-gray-800">{{ d.name }}</span>
-                <span v-if="notFoundDrivers.includes(d.id)"
-                  class="rounded bg-red-100 border border-red-200 px-1.5 py-0.5 text-xs font-bold text-red-600">
+                <span class="text-base font-bold text-gray-800">{{ d.name }}</span>
+
+                <span
+                  v-if="notFoundDrivers.includes(d.id)"
+                  class="rounded border border-red-200 bg-red-100 px-1.5 py-0.5 text-xs font-bold text-red-600"
+                >
                   File Not Found
                 </span>
               </div>
-              <p class="font-mono text-sm text-gray-500 mt-1 break-all">{{ $t('labelPathPrefix') }}: {{ d.path }}</p>
-              <div class="flex gap-2 mt-2 flex-wrap">
-                <span v-if="d.flags.length"
-                  class="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-mono text-gray-600">
+
+              <p class="mt-1 font-mono text-sm break-all text-gray-500">
+                {{ $t('labelPathPrefix') }}: {{ d.path }}
+              </p>
+
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span
+                  v-if="d.flags.length"
+                  class="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs text-gray-600"
+                >
                   {{ $t('labelFlagsPrefix') }}: {{ d.flags.join(', ') }}
                 </span>
-                <span v-if="d.allowRtCodes?.length"
-                  class="rounded bg-purple-50 text-purple-600 px-1.5 py-0.5 text-xs font-semibold flex items-center gap-1">
-                  <Icon icon="mdi:shield-check-outline" /> {{ $t('fieldAllowedExitCode') }}: {{ d.allowRtCodes.join(', ') }}
+
+                <span
+                  v-if="d.allowRtCodes?.length"
+                  class="flex items-center gap-1 rounded bg-purple-50 px-1.5 py-0.5 text-xs font-semibold text-purple-600"
+                >
+                  <Icon icon="mdi:shield-check-outline" /> {{ $t('fieldAllowedExitCode') }}:
+                  {{ d.allowRtCodes.join(', ') }}
                 </span>
-                <span v-if="d.incompatibles.length"
-                  class="rounded bg-yellow-100 text-yellow-700 px-1.5 py-0.5 text-xs font-semibold flex items-center gap-1">
-                  <Icon icon="mdi:source-merge" /> {{ $t('labelIncompatibleWith') }}: {{ d.incompatibles.length }}
+
+                <span
+                  v-if="d.incompatibles.length"
+                  class="flex items-center gap-1 rounded bg-yellow-100 px-1.5 py-0.5 text-xs font-semibold text-yellow-700"
+                >
+                  <Icon icon="mdi:source-merge" /> {{ $t('labelIncompatibleWith') }}:
+                  {{ d.incompatibles.length }}
                 </span>
-                <span class="rounded bg-blue-50 text-blue-600 px-1.5 py-0.5 text-xs font-semibold flex items-center gap-1">
+
+                <span
+                  class="flex items-center gap-1 rounded bg-blue-50 px-1.5 py-0.5 text-xs font-semibold text-blue-600"
+                >
                   <Icon icon="mdi:timer-outline" /> {{ $t('labelMinPrefix') }}: {{ d.minExeTime }}s
                 </span>
               </div>
             </div>
-            <div class="flex gap-1 opacity-0 group-hover/row:opacity-100 transition-opacity">
-              <button type="button" :title="$t('edit')" @click="editingDriver = d; isModalOpen = true"
-                class="w-8 h-8 rounded hover:bg-gray-200 flex items-center justify-center text-gray-600">
+
+            <div class="flex gap-1 opacity-0 transition-opacity group-hover/row:opacity-100">
+              <button
+                type="button"
+                :title="$t('edit')"
+                class="flex h-8 w-8 items-center justify-center rounded text-gray-600 hover:bg-gray-200"
+                @click="
+                  editingDriver = d
+                  isModalOpen = true
+                "
+              >
                 <Icon icon="mdi:pencil" />
               </button>
-              <button type="button" :title="$t('delete')" @click="group.drivers.splice(i, 1)"
-                class="w-8 h-8 rounded hover:bg-red-100 flex items-center justify-center text-red-500">
+
+              <button
+                type="button"
+                :title="$t('delete')"
+                class="flex h-8 w-8 items-center justify-center rounded text-red-500 hover:bg-red-100"
+                @click="group.drivers.splice(i, 1)"
+              >
                 <Icon icon="mdi:trash-can" />
               </button>
             </div>
@@ -190,11 +257,19 @@ function handleSubmit() {
         </div>
 
         <!-- Footer bar -->
-        <div class="bg-gray-50 border-t border-gray-200 p-4 flex items-center justify-between">
+        <div class="flex items-center justify-between border-t border-gray-200 bg-gray-50 p-4">
           <span class="text-sm text-gray-500 italic">{{ $t('descDriverGroup') }}</span>
-          <UButton type="button" color="primary" size="sm"
-            @click="editingDriver = undefined; isModalOpen = true">
-            <Icon icon="mdi:plus-circle-outline" class="text-sm mr-1" />
+
+          <UButton
+            type="button"
+            color="primary"
+            size="sm"
+            @click="
+              editingDriver = undefined
+              isModalOpen = true
+            "
+          >
+            <Icon icon="mdi:plus-circle-outline" class="mr-1 text-sm" />
             {{ $t('labelAddDriver') }}
           </UButton>
         </div>
@@ -202,10 +277,17 @@ function handleSubmit() {
     </div>
 
     <!-- Master Form Actions -->
-    <div class="border-t border-gray-200 pt-4 mt-4 flex gap-4 shrink-0">
-      <UButton type="button" color="neutral" variant="outline" class="flex-1 justify-center text-sm" @click="$router.back()">
+    <div class="mt-4 flex shrink-0 gap-4 border-t border-gray-200 pt-4">
+      <UButton
+        type="button"
+        color="neutral"
+        variant="outline"
+        class="flex-1 justify-center text-sm"
+        @click="$router.back()"
+      >
         {{ $t('back') }}
       </UButton>
+
       <UButton type="submit" color="secondary" class="flex-1 justify-center text-sm">
         {{ $t('save') }}
       </UButton>
@@ -215,13 +297,14 @@ function handleSubmit() {
   <DriverInputModal
     v-model:open="isModalOpen"
     :edit-data="editingDriver"
-    @submit="newDriver => {
-      if (newDriver.id) {
-        group.drivers = group.drivers.map(d => (d.id === newDriver.id ? newDriver : d))
-      } else {
-        group.drivers.push({ ...newDriver, id: -Date.now() })
+    @submit="
+      newDriver => {
+        if (newDriver.id) {
+          group.drivers = group.drivers.map(d => (d.id === newDriver.id ? newDriver : d))
+        } else {
+          group.drivers.push({ ...newDriver, id: -Date.now() })
+        }
       }
-    }"
+    "
   />
 </template>
-

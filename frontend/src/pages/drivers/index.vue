@@ -73,7 +73,9 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
       :title="$t('fieldInstallOption')"
       :description="$t('descInstallOption')"
     >
-      <div class="flex w-1/3 flex-wrap justify-center gap-0.5 px-0.5 text-sm select-none">
+      <div
+        class="flex flex-wrap justify-center gap-0.5 px-0.5 text-xs select-none md:w-1/3 md:text-sm"
+      >
         <router-link
           :to="{ path: '/drivers' }"
           class="flex-1/3 truncate rounded-sm text-center font-bold uppercase shadow-xs"
@@ -108,17 +110,17 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
     >
       <template v-for="g in filteredGroups" :key="g.id">
         <div
-          class="driver-card m-1 cursor-pointer rounded-lg border border-gray-200 px-4 py-3 shadow-sm"
+          class="driver-card m-1 cursor-pointer rounded-lg border border-gray-200 px-4 py-3 shadow-sm transition-colors hover:border-half-baked-300"
           :class="{
             'select-none': reordering,
             'border-half-baked-500 ring-1 ring-half-baked-500': dragOverId === g.id
           }"
           role="button"
           tabindex="0"
+          :draggable="reordering"
           @click="!reordering && (inspectGroupId = g.id)"
           @keydown.enter.prevent="!reordering && (inspectGroupId = g.id)"
           @keydown.space.prevent="!reordering && (inspectGroupId = g.id)"
-          :draggable="reordering"
           @dragstart="
             event => {
               if (!reordering) {
@@ -167,18 +169,18 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
               </UBadge>
 
               <div class="min-w-0">
-                <h2 class="truncate text-lg font-semibold">
+                <h2 class="truncate text-base font-semibold md:text-lg">
                   {{ g.name }}
                 </h2>
 
-                <div class="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+                <div class="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs md:text-sm">
                   <span class="text-gray-600">
                     {{ $t('labelDriverCount', { count: g.drivers.length }) }}
                   </span>
 
                   <span
                     v-if="!groupStore.isAllDriversExist(g)"
-                    class="inline-flex animate-pulse items-center gap-0.5 rounded border border-red-200 bg-red-100 px-1.5 py-0.5 text-xs font-semibold text-red-600"
+                    class="inline-flex animate-pulse items-center gap-0.5 rounded border border-red-200 bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-600 md:text-xs"
                     :title="
                       $t('labelPathMissing', {
                         count: g.drivers.filter(d => groupStore.notFoundDrivers.includes(d.id))
@@ -224,23 +226,6 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
             </div>
 
             <div class="flex shrink-0 items-center gap-1.5" @click.stop>
-              <span
-                class="mr-2 hidden items-center gap-1 rounded border border-half-baked-200 bg-half-baked-50 px-2 py-1 text-xs font-semibold text-half-baked-600 transition-colors lg:inline-flex"
-              >
-                Inspect <Icon icon="mdi:arrow-right" />
-              </span>
-
-              <UButton
-                color="neutral"
-                variant="outline"
-                size="sm"
-                class="h-8 w-8"
-                :title="$t('labelInspect')"
-                @click="inspectGroupId = g.id"
-              >
-                <Icon icon="mdi:eye" class="text-base" />
-              </UButton>
-
               <RouterLink :to="`/drivers/${g.id}/edit`" :title="$t('edit')">
                 <UButton color="neutral" variant="outline" size="sm" class="h-8 w-8">
                   <Icon icon="mdi:pencil" class="text-base" />
@@ -286,9 +271,9 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
       >
         <Icon icon="mdi:package-variant-closed" class="mb-3 text-4xl" />
 
-        <p class="text-base font-medium text-gray-600">{{ $t('msgNoDriverGroups') }}</p>
+        <p class="text-sm font-medium text-gray-600 md:text-base">{{ $t('msgNoDriverGroups') }}</p>
 
-        <p class="mt-1 text-sm text-gray-400">{{ $t('descNoDriverGroups') }}</p>
+        <p class="mt-1 text-xs text-gray-400 md:text-sm">{{ $t('descNoDriverGroups') }}</p>
       </div>
     </div>
 

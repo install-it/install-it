@@ -19,9 +19,7 @@ const isOpen = computed({
   }
 })
 
-const group = computed(() =>
-  groupStore.groups.find(g => g.id === props.groupId)
-)
+const group = computed(() => groupStore.groups.find(g => g.id === props.groupId))
 
 function categoryKey(type: string): string {
   return `category${type.charAt(0).toUpperCase() + type.slice(1)}`
@@ -33,72 +31,109 @@ function categoryKey(type: string): string {
     <template #body>
       <div v-if="group" class="flex flex-col gap-y-4">
         <!-- Metrics strip: 3-col grid in white card -->
-        <div class="grid grid-cols-3 gap-2 bg-white p-3 rounded-lg border border-gray-200 text-center shadow-sm">
+        <div
+          class="grid grid-cols-3 gap-2 rounded-lg border border-gray-200 bg-white p-3 text-center shadow-sm"
+        >
           <div>
-            <span class="block text-[10px] text-gray-400 font-bold uppercase">Type</span>
-            <span class="text-xs font-bold" :style="`color: var(--color-${group.type})`">{{ $t(categoryKey(group.type)) }}</span>
+            <span class="block text-[10px] font-bold text-gray-400 uppercase">Type</span>
+
+            <span class="text-xs font-bold" :style="`color: var(--color-${group.type})`">{{
+              $t(categoryKey(group.type))
+            }}</span>
           </div>
+
           <div class="border-x border-gray-100">
-            <span class="block text-[10px] text-gray-400 font-bold uppercase">Exclusive Flow</span>
-            <span class="text-xs font-bold text-gray-800">{{ group.mutuallyExclusive ? 'Yes' : 'No' }}</span>
+            <span class="block text-[10px] font-bold text-gray-400 uppercase">Exclusive Flow</span>
+
+            <span class="text-xs font-bold text-gray-800">{{
+              group.mutuallyExclusive ? 'Yes' : 'No'
+            }}</span>
           </div>
+
           <div>
-            <span class="block text-[10px] text-gray-400 font-bold uppercase">Drivers</span>
+            <span class="block text-[10px] font-bold text-gray-400 uppercase">Drivers</span>
+
             <span class="text-xs font-bold text-gray-800">{{ group.drivers.length }}</span>
           </div>
         </div>
 
         <!-- Per-driver cards -->
-        <div v-for="(d, i) in group.drivers" :key="d.id"
-          class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm space-y-3 relative overflow-hidden"
+        <div
+          v-for="(d, i) in group.drivers"
+          :key="d.id"
+          class="relative space-y-3 overflow-hidden rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
         >
           <!-- Left edge accent -->
-          <div class="absolute top-0 left-0 w-1 h-full"
-            :class="groupStore.notFoundDrivers.includes(d.id) ? 'bg-red-400' : 'bg-gray-200'" />
+          <div
+            class="absolute top-0 left-0 h-full w-1"
+            :class="groupStore.notFoundDrivers.includes(d.id) ? 'bg-red-400' : 'bg-gray-200'"
+          />
 
           <!-- Header -->
           <div class="flex items-center justify-between pl-2">
-            <h4 class="font-bold text-sm text-gray-900 flex items-center gap-2">
+            <h4 class="flex items-center gap-2 text-sm font-bold text-gray-900">
               <span class="text-gray-400">#{{ i + 1 }}</span>
               {{ d.name }}
             </h4>
             <!-- Only show badge when path is MISSING, not when valid -->
-            <span v-if="groupStore.notFoundDrivers.includes(d.id)"
-              class="px-2 py-0.5 rounded bg-red-100 text-red-700 text-[10px] font-bold border border-red-200">
+            <span
+              v-if="groupStore.notFoundDrivers.includes(d.id)"
+              class="rounded border border-red-200 bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-700"
+            >
               Missing Exe
             </span>
           </div>
 
           <!-- Path -->
-          <div class="pl-2 space-y-2">
+          <div class="space-y-2 pl-2">
             <div>
               <span class="text-[9px] font-bold text-gray-400 uppercase">{{ $t('path') }}</span>
-              <div class="bg-gray-50 border border-gray-100 p-2 rounded text-[11px] font-mono text-gray-700 break-all">
+
+              <div
+                class="rounded border border-gray-100 bg-gray-50 p-2 font-mono text-[11px] break-all text-gray-700"
+              >
                 {{ d.path }}
               </div>
             </div>
 
             <!-- Details grid -->
-            <div class="grid grid-cols-2 gap-3 bg-gray-50/50 p-2 rounded border border-gray-100">
+            <div class="grid grid-cols-2 gap-3 rounded border border-gray-100 bg-gray-50/50 p-2">
               <div>
-                <span class="text-[9px] font-bold text-gray-400 uppercase block">{{ $t('fieldArgument') }}</span>
-                <span class="text-[11px] font-mono font-bold text-gray-700 mt-0.5 block">
+                <span class="block text-[9px] font-bold text-gray-400 uppercase">{{
+                  $t('fieldArgument')
+                }}</span>
+
+                <span class="mt-0.5 block font-mono text-[11px] font-bold text-gray-700">
                   {{ d.flags.length > 0 ? d.flags.join(' ') : 'None' }}
                 </span>
               </div>
+
               <div>
-                <span class="text-[9px] font-bold text-gray-400 uppercase block">{{ $t('fieldAllowedExitCode') }}</span>
-                <span class="text-[11px] font-mono font-bold text-gray-700 mt-0.5 block">
+                <span class="block text-[9px] font-bold text-gray-400 uppercase">{{
+                  $t('fieldAllowedExitCode')
+                }}</span>
+
+                <span class="mt-0.5 block font-mono text-[11px] font-bold text-gray-700">
                   {{ d.allowRtCodes.length > 0 ? d.allowRtCodes.join(', ') : 'Any' }}
                 </span>
               </div>
+
               <div>
-                <span class="text-[9px] font-bold text-gray-400 uppercase block">{{ $t('fieldMinExecuteTime') }}</span>
-                <span class="text-[11px] font-mono font-bold text-gray-700 mt-0.5 block">{{ d.minExeTime }}s</span>
+                <span class="block text-[9px] font-bold text-gray-400 uppercase">{{
+                  $t('fieldMinExecuteTime')
+                }}</span>
+
+                <span class="mt-0.5 block font-mono text-[11px] font-bold text-gray-700"
+                  >{{ d.minExeTime }}s</span
+                >
               </div>
+
               <div>
-                <span class="text-[9px] font-bold text-gray-400 uppercase block">{{ $t('labelIncompatibleWith') }}</span>
-                <span class="text-[11px] font-mono font-bold text-gray-700 mt-0.5 block">
+                <span class="block text-[9px] font-bold text-gray-400 uppercase">{{
+                  $t('labelIncompatibleWith')
+                }}</span>
+
+                <span class="mt-0.5 block font-mono text-[11px] font-bold text-gray-700">
                   {{ d.incompatibles.length > 0 ? d.incompatibles.length + ' set' : 'None' }}
                 </span>
               </div>
@@ -117,6 +152,7 @@ function categoryKey(type: string): string {
         <UButton color="neutral" variant="ghost" size="sm" @click="emit('close')">
           {{ $t('cancel') }}
         </UButton>
+
         <UButton v-if="group" color="primary" size="sm" @click="emit('edit', group.id)">
           {{ $t('edit') }}
         </UButton>

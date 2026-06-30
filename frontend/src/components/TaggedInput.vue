@@ -10,7 +10,7 @@ const input = ref<string>('')
 function pushTag() {
   const value = input.value.trim()
   if (value) {
-    if (!tags.value.some((t) => t.toLowerCase() === value.toLowerCase())) {
+    if (!tags.value.some(t => t.toLowerCase() === value.toLowerCase())) {
       tags.value.push(value)
     }
     input.value = ''
