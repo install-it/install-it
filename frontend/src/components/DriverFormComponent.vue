@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DriverInputModal from '@/components/DriverInputModal.vue'
+import DriverEditor from '@/components/DriverEditor.vue'
 import { ExecutableExists } from '@/wailsjs/go/main/App'
 import { storage } from '@/wailsjs/go/models'
 import * as groupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
@@ -19,12 +19,8 @@ function categoryKey(type: string): string {
 const $router = useRouter()
 const toast = useToast()
 
-const isModalOpen = ref(false)
-const editingDriver = ref<Partial<storage.Driver> | undefined>(undefined)
-
 const groupStore = useDriverGroupStore()
 
-// Create computed source for dynamic group lookup
 const sourceGroup = computed(
   () =>
     groupStore.groups.find(g => g.id === props.id) ??
@@ -45,7 +41,6 @@ const { data: group, reset } = useEditor({
   warnOnUnsavedLeave: true
 })
 
-// Track drivers that don't exist on system
 const notFoundDrivers = ref<number[]>([])
 
 const findNotExists = (drivers: Array<storage.Driver>) =>
@@ -63,6 +58,57 @@ watch(
   { immediate: true }
 )
 
+const expanded = ref<Set<number>>(new Set())
+const nextTempId = ref(-1)
+
+function addDriver() {
+  const id = nextTempId.value
+  nextTempId.value -= 1
+  group.value.drivers.push(
+    new storage.Driver({
+      id,
+      type: group.value.type,
+      name: '',
+      path: '',
+      flags: [],
+      minExeTime: 5,
+      allowRtCodes: [],
+      incompatibles: []
+    })
+  )
+  expanded.value.add(id)
+  expanded.value = new Set(expanded.value)
+}
+
+function removeDriver(id: number) {
+  group.value.drivers = group.value.drivers.filter(d => d.id !== id)
+  expanded.value.delete(id)
+  expanded.value = new Set(expanded.value)
+}
+
+function toggleDriver(id: number) {
+  const next = new Set(expanded.value)
+  if (next.has(id)) {
+    next.delete(id)
+  } else {
+    next.add(id)
+  }
+  expanded.value = next
+}
+
+const allExpanded = computed(() => {
+  if (group.value.drivers.length === 0) return false
+  return group.value.drivers.every(d => expanded.value.has(d.id))
+})
+
+function toggleAll() {
+  if (allExpanded.value) {
+    expanded.value = new Set()
+  } else {
+    expanded.value = new Set(group.value.drivers.map(d => d.id))
+  }
+}
+
 function handleSubmit() {
   if (!group.value.name?.trim()) {
     toast.add({ title: t('toastGroupNameRequired'), color: 'warning' })
@@ -71,6 +117,11 @@ function handleSubmit() {
 
   if (group.value.drivers.length == 0) {
     toast.add({ title: t('toastAddDriverRequired'), color: 'warning' })
+    return
+  }
+
+  if (group.value.drivers.some(d => !d.path?.trim())) {
+    toast.add({ title: t('toastPathRequired'), color: 'warning' })
     return
   }
 
@@ -104,11 +155,10 @@ function handleSubmit() {
 
 <template>
   <form
-    class="mx-auto flex h-full max-w-full flex-col gap-y-5 overflow-y-auto lg:max-w-2xl xl:max-w-4xl"
+    class="mx-auto flex h-full max-w-full flex-col gap-y-5 overflow-y-scroll lg:max-w-2xl xl:max-w-4xl"
     autocomplete="off"
     @submit.prevent="handleSubmit"
   >
-    <!-- Basic Info Row -->
     <div class="flex gap-4">
       <div class="w-48 shrink-0">
         <label class="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase">
@@ -138,7 +188,6 @@ function handleSubmit() {
       </div>
     </div>
 
-    <!-- Mutually Exclusive Card -->
     <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
       <label class="flex cursor-pointer items-start gap-3">
         <UCheckbox v-model="group.mutuallyExclusive" class="mt-1" />
@@ -153,139 +202,57 @@ function handleSubmit() {
       </label>
     </div>
 
-    <!-- Drivers Stack -->
-    <div class="flex flex-col">
-      <label class="mb-2 block text-xs font-bold tracking-wider text-gray-500 uppercase">
-        {{ $t('fieldDriver') }}
-      </label>
+    <div class="flex flex-col gap-3">
+      <div class="flex items-center justify-between gap-2">
+        <label class="block text-xs font-bold tracking-wider text-gray-500 uppercase">
+          {{ $t('fieldDriver') }}
+        </label>
 
-      <div
-        class="flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm"
-      >
-        <!-- List area -->
-        <div class="max-h-64 divide-y divide-gray-100 overflow-y-auto">
-          <!-- Empty state -->
-          <div
-            v-if="group.drivers.length === 0"
-            class="flex flex-col items-center py-10 text-center text-gray-400"
-          >
-            <Icon icon="mdi:package-variant" class="mb-2 text-4xl opacity-50" />
-
-            <span class="text-xs font-medium xl:text-sm">{{ $t('msgNoDriversInGroup') }}</span>
-          </div>
-
-          <!-- Driver rows -->
-          <div
-            v-for="(d, i) in group.drivers"
-            v-else
-            :key="d.id"
-            class="group/row flex items-start gap-4 p-4 transition-colors hover:bg-gray-50"
-            :class="{ 'bg-lime-50': d.id <= 0 }"
-          >
-            <span
-              class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-100 text-xs font-bold text-gray-500 xl:text-sm"
-            >
-              {{ i + 1 }}
-            </span>
-
-            <div class="min-w-0 flex-1">
-              <div class="flex items-center gap-2">
-                <span class="text-base font-bold text-gray-800">{{ d.name }}</span>
-
-                <span
-                  v-if="notFoundDrivers.includes(d.id)"
-                  class="rounded border border-red-200 bg-red-100 px-1.5 py-0.5 text-xs font-bold text-red-600"
-                >
-                  File Not Found
-                </span>
-              </div>
-
-              <p class="mt-1 font-mono text-xs break-all text-gray-500 xl:text-sm">
-                {{ $t('labelPathPrefix') }}: {{ d.path }}
-              </p>
-
-              <div class="mt-2 flex flex-wrap gap-2">
-                <span
-                  v-if="d.flags.length"
-                  class="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs text-gray-600"
-                >
-                  {{ $t('labelFlagsPrefix') }}: {{ d.flags.join(', ') }}
-                </span>
-
-                <span
-                  v-if="d.allowRtCodes?.length"
-                  class="flex items-center gap-1 rounded bg-purple-50 px-1.5 py-0.5 text-xs font-semibold text-purple-600"
-                >
-                  <Icon icon="mdi:shield-check-outline" /> {{ $t('fieldAllowedExitCode') }}:
-                  {{ d.allowRtCodes.join(', ') }}
-                </span>
-
-                <span
-                  v-if="d.incompatibles.length"
-                  class="flex items-center gap-1 rounded bg-yellow-100 px-1.5 py-0.5 text-xs font-semibold text-yellow-700"
-                >
-                  <Icon icon="mdi:source-merge" /> {{ $t('labelIncompatibleWith') }}:
-                  {{ d.incompatibles.length }}
-                </span>
-
-                <span
-                  class="flex items-center gap-1 rounded bg-blue-50 px-1.5 py-0.5 text-xs font-semibold text-blue-600"
-                >
-                  <Icon icon="mdi:timer-outline" /> {{ $t('labelMinPrefix') }}: {{ d.minExeTime }}s
-                </span>
-              </div>
-            </div>
-
-            <div class="flex gap-1 opacity-0 transition-opacity group-hover/row:opacity-100">
-              <button
-                type="button"
-                :title="$t('edit')"
-                class="flex h-8 w-8 items-center justify-center rounded text-gray-600 hover:bg-gray-200"
-                @click="
-                  () => {
-                    editingDriver = d
-                    isModalOpen = true
-                  }
-                "
-              >
-                <Icon icon="mdi:pencil" />
-              </button>
-
-              <button
-                type="button"
-                :title="$t('delete')"
-                class="flex h-8 w-8 items-center justify-center rounded text-red-500 hover:bg-red-100"
-                @click="group.drivers.splice(i, 1)"
-              >
-                <Icon icon="mdi:trash-can" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Footer bar -->
-        <div class="flex items-center justify-between border-t border-gray-200 bg-gray-50 p-4">
-          <span class="text-xs text-gray-500 italic xl:text-sm">{{ $t('descDriverGroup') }}</span>
-
+        <div class="flex items-center gap-2">
           <UButton
+            v-if="group.drivers.length > 0"
             type="button"
-            color="primary"
+            color="neutral"
+            variant="outline"
             size="sm"
-            @click="
-              () => {
-                editingDriver = undefined
-                isModalOpen = true
-              }
-            "
+            @click="toggleAll"
           >
+            <Icon
+              :icon="allExpanded ? 'mdi:unfold-less-horizontal' : 'mdi:unfold-more-horizontal'"
+              class="mr-1 text-xs xl:text-sm"
+            />
+            {{ allExpanded ? $t('labelCollapseAll') : $t('labelExpandAll') }}
+          </UButton>
+
+          <UButton type="button" color="primary" size="sm" @click="addDriver">
             <Icon icon="mdi:plus-circle-outline" class="mr-1 text-xs xl:text-sm" />
             {{ $t('labelAddDriver') }}
           </UButton>
         </div>
       </div>
+
+      <div
+        v-if="group.drivers.length === 0"
+        class="flex flex-col items-center rounded-lg border border-dashed border-gray-300 bg-white py-10 text-center text-gray-400"
+      >
+        <Icon icon="mdi:package-variant" class="mb-2 text-4xl opacity-50" />
+
+        <span class="text-xs font-medium xl:text-sm">{{ $t('msgNoDriversInGroup') }}</span>
+      </div>
+
+      <DriverEditor
+        v-for="(d, i) in group.drivers"
+        :key="d.id"
+        v-model:driver="group.drivers[i]"
+        :index="i"
+        :is-new="d.id < 0"
+        :not-found="notFoundDrivers.includes(d.id)"
+        :expanded="expanded.has(d.id)"
+        @remove="removeDriver"
+        @toggle="toggleDriver"
+      />
     </div>
 
-    <!-- Master Form Actions -->
     <div class="mt-4 flex shrink-0 gap-4 border-t border-gray-200 pt-4">
       <UButton
         type="button"
@@ -302,18 +269,4 @@ function handleSubmit() {
       </UButton>
     </div>
   </form>
-
-  <DriverInputModal
-    v-model:open="isModalOpen"
-    :edit-data="editingDriver"
-    @submit="
-      newDriver => {
-        if (newDriver.id) {
-          group.drivers = group.drivers.map(d => (d.id === newDriver.id ? newDriver : d))
-        } else {
-          group.drivers.push({ ...newDriver, id: -Date.now() })
-        }
-      }
-    "
-  />
 </template>
