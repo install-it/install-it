@@ -35,7 +35,7 @@ function categoryKey(type: string): string {
           class="grid grid-cols-3 gap-2 rounded-lg border border-gray-200 bg-white p-3 text-center shadow-sm"
         >
           <div>
-            <span class="block text-[10px] font-bold text-gray-400 uppercase xl:text-xs">Type</span>
+            <span class="block text-xs font-bold text-gray-400 uppercase xl:text-xs">Type</span>
 
             <UBadge
               size="sm"
@@ -47,21 +47,21 @@ function categoryKey(type: string): string {
           </div>
 
           <div class="border-x border-gray-100">
-            <span class="block text-[10px] font-bold text-gray-400 uppercase xl:text-xs">
+            <span class="block text-xs font-bold text-gray-400 uppercase xl:text-xs">
               Exclusive Flow
             </span>
 
-            <span class="text-xs font-bold text-gray-800 xl:text-sm">
+            <span class="text-sm font-bold text-gray-800 xl:text-sm">
               {{ group.mutuallyExclusive ? 'Yes' : 'No' }}
             </span>
           </div>
 
           <div>
-            <span class="block text-[10px] font-bold text-gray-400 uppercase xl:text-xs">
+            <span class="block text-xs font-bold text-gray-400 uppercase xl:text-xs">
               Drivers
             </span>
 
-            <span class="text-xs font-bold text-gray-800 xl:text-sm">{{
+            <span class="text-sm font-bold text-gray-800 xl:text-sm">{{
               group.drivers.length
             }}</span>
           </div>
@@ -81,14 +81,14 @@ function categoryKey(type: string): string {
 
           <!-- Header -->
           <div class="flex items-center justify-between pl-2">
-            <h4 class="flex items-center gap-2 text-sm font-bold text-gray-900 xl:text-base">
+            <h4 class="flex items-center gap-2 text-base font-bold text-gray-900 xl:text-base">
               <span class="text-gray-400">#{{ i + 1 }}</span>
               {{ d.name }}
             </h4>
             <!-- Only show badge when path is MISSING, not when valid -->
             <span
               v-if="groupStore.notFoundDrivers.includes(d.id)"
-              class="rounded border border-red-200 bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-700 xl:text-xs"
+              class="rounded border border-red-200 bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700 xl:text-xs"
             >
               Missing Exe
             </span>
@@ -97,12 +97,12 @@ function categoryKey(type: string): string {
           <!-- Path -->
           <div class="space-y-2 pl-2">
             <div>
-              <span class="text-[9px] font-bold text-gray-400 uppercase xl:text-xs">{{
+              <span class="text-xs font-bold text-gray-400 uppercase xl:text-xs">{{
                 $t('path')
               }}</span>
 
               <div
-                class="rounded border border-gray-100 bg-gray-50 p-2 font-mono text-[11px] break-all text-gray-700 xl:text-sm"
+                class="rounded border border-gray-100 bg-gray-50 p-2 font-mono text-xs break-all text-gray-700 xl:text-sm"
               >
                 {{ d.path }}
               </div>
@@ -111,42 +111,41 @@ function categoryKey(type: string): string {
             <!-- Details grid -->
             <div class="grid grid-cols-2 gap-3 rounded border border-gray-100 bg-gray-50/50 p-2">
               <div>
-                <span class="block text-[9px] font-bold text-gray-400 uppercase xl:text-xs">{{
+                <span class="block text-xs font-bold text-gray-400 uppercase xl:text-xs">{{
                   $t('fieldArgument')
                 }}</span>
 
-                <span class="mt-0.5 block font-mono text-[11px] font-bold text-gray-700 xl:text-sm">
+                <span class="mt-0.5 block font-mono text-xs font-bold text-gray-700 xl:text-sm">
                   {{ d.flags.length > 0 ? d.flags.join(' ') : '--' }}
                 </span>
               </div>
 
               <div>
-                <span class="block text-[9px] font-bold text-gray-400 uppercase xl:text-xs">{{
+                <span class="block text-xs font-bold text-gray-400 uppercase xl:text-xs">{{
                   $t('fieldAllowedExitCode')
                 }}</span>
 
-                <span class="mt-0.5 block font-mono text-[11px] font-bold text-gray-700 xl:text-sm">
+                <span class="mt-0.5 block font-mono text-xs font-bold text-gray-700 xl:text-sm">
                   {{ d.allowRtCodes.length > 0 ? d.allowRtCodes.join(', ') : '--' }}
                 </span>
               </div>
 
               <div>
-                <span class="block text-[9px] font-bold text-gray-400 uppercase xl:text-xs">{{
+                <span class="block text-xs font-bold text-gray-400 uppercase xl:text-xs">{{
                   $t('fieldMinExecuteTime')
                 }}</span>
 
-                <span
-                  class="mt-0.5 block font-mono text-[11px] font-bold text-gray-700 xl:text-sm"
-                  >{{ d.minExeTime > 0 ? d.minExeTime + 's' : '--' }}</span
-                >
+                <span class="mt-0.5 block font-mono text-xs font-bold text-gray-700 xl:text-sm">{{
+                  d.minExeTime > 0 ? d.minExeTime + 's' : '--'
+                }}</span>
               </div>
 
               <div>
-                <span class="block text-[9px] font-bold text-gray-400 uppercase xl:text-xs">{{
+                <span class="block text-xs font-bold text-gray-400 uppercase xl:text-xs">{{
                   $t('labelIncompatibleWith')
                 }}</span>
 
-                <span class="mt-0.5 block font-mono text-[11px] font-bold text-gray-700 xl:text-sm">
+                <span class="mt-0.5 block font-mono text-xs font-bold text-gray-700 xl:text-sm">
                   {{ d.incompatibles.length > 0 ? d.incompatibles.length : '--' }}
                 </span>
               </div>
@@ -155,7 +154,7 @@ function categoryKey(type: string): string {
         </div>
       </div>
 
-      <div v-else class="py-6 text-center text-sm text-gray-500 xl:text-base">
+      <div v-else class="py-6 text-center text-base text-gray-500 xl:text-base">
         {{ $t('msgGroupNotFound') }}
       </div>
     </template>
