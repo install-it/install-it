@@ -49,7 +49,7 @@ const groupItems = computed(() =>
 
 <template>
   <div>
-    <div class="mb-1 line-clamp-1 text-sm">
+    <div class="mb-1 line-clamp-1 text-sm xl:text-base">
       <span class="inline">
         {{ $t('labelSelectedCount', { count: model?.length ?? 0 }) }}
       </span>
@@ -97,7 +97,7 @@ const groupItems = computed(() =>
         <!-- "No matches" empty state -->
         <div
           v-if="groupItems.length === 0 && searchPhrase"
-          class="py-4 text-center text-sm text-gray-400 italic"
+          class="py-4 text-center text-sm text-gray-400 italic xl:text-base"
         >
           {{ $t('msgNoMatches') }}
         </div>
@@ -128,7 +128,7 @@ const groupItems = computed(() =>
               &nbsp;
             </UBadge>
 
-            <span class="ms-1.5 text-sm">{{ item.label }}</span>
+            <span class="ms-1.5 text-sm xl:text-base">{{ item.label }}</span>
           </label>
         </template>
       </div>

@@ -74,7 +74,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
       :description="$t('descInstallOption')"
     >
       <div
-        class="flex flex-wrap justify-center gap-0.5 px-0.5 text-xs select-none md:w-1/3 md:text-sm"
+        class="flex flex-wrap justify-center gap-0.5 px-0.5 text-xs select-none xl:w-1/3 xl:text-sm"
       >
         <router-link
           :to="{ path: '/drivers' }"
@@ -169,18 +169,18 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
               </UBadge>
 
               <div class="min-w-0">
-                <h2 class="truncate text-base font-semibold md:text-lg">
+                <h2 class="truncate text-base font-semibold xl:text-lg">
                   {{ g.name }}
                 </h2>
 
-                <div class="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs md:text-sm">
+                <div class="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs xl:text-sm">
                   <span class="text-gray-600">
                     {{ $t('labelDriverCount', { count: g.drivers.length }) }}
                   </span>
 
                   <span
                     v-if="!groupStore.isAllDriversExist(g)"
-                    class="inline-flex animate-pulse items-center gap-0.5 rounded border border-red-200 bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-600 md:text-xs"
+                    class="inline-flex animate-pulse items-center gap-0.5 rounded border border-red-200 bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-600 xl:text-xs"
                     :title="
                       $t('labelPathMissing', {
                         count: g.drivers.filter(d => groupStore.notFoundDrivers.includes(d.id))
@@ -271,9 +271,9 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
       >
         <Icon icon="mdi:package-variant-closed" class="mb-3 text-4xl" />
 
-        <p class="text-sm font-medium text-gray-600 md:text-base">{{ $t('msgNoDriverGroups') }}</p>
+        <p class="text-sm font-medium text-gray-600 xl:text-base">{{ $t('msgNoDriverGroups') }}</p>
 
-        <p class="mt-1 text-xs text-gray-400 md:text-sm">{{ $t('descNoDriverGroups') }}</p>
+        <p class="mt-1 text-xs text-gray-400 xl:text-sm">{{ $t('descNoDriverGroups') }}</p>
       </div>
     </div>
 

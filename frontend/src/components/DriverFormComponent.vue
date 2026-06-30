@@ -237,8 +237,10 @@ function handleSubmit() {
                 :title="$t('edit')"
                 class="flex h-8 w-8 items-center justify-center rounded text-gray-600 hover:bg-gray-200"
                 @click="
-                  editingDriver = d
-                  isModalOpen = true
+                  () => {
+                    editingDriver = d
+                    isModalOpen = true
+                  }
                 "
               >
                 <Icon icon="mdi:pencil" />
@@ -265,8 +267,10 @@ function handleSubmit() {
             color="primary"
             size="sm"
             @click="
-              editingDriver = undefined
-              isModalOpen = true
+              () => {
+                editingDriver = undefined
+                isModalOpen = true
+              }
             "
           >
             <Icon icon="mdi:plus-circle-outline" class="mr-1 text-sm" />

@@ -149,7 +149,9 @@ function handleSubmit() {
           @submit.prevent="handleSubmit"
         >
           <fieldset>
-            <label class="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase">
+            <label
+              class="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase xl:mb-2 xl:text-sm"
+            >
               {{ t('name') }} <span class="text-red-500">*</span>
             </label>
 
@@ -164,7 +166,9 @@ function handleSubmit() {
           </fieldset>
 
           <fieldset>
-            <label class="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase">
+            <label
+              class="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase xl:mb-2 xl:text-sm"
+            >
               {{ t('path') }} <span class="text-red-500">*</span>
             </label>
 
@@ -194,7 +198,9 @@ function handleSubmit() {
           </fieldset>
 
           <fieldset>
-            <label class="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase">
+            <label
+              class="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase xl:mb-2 xl:text-sm"
+            >
               {{ t('fieldArgument') }}
             </label>
 
@@ -208,14 +214,16 @@ function handleSubmit() {
 
             <TaggedInput v-model="driver.flags" :title="t('fieldArgument')" />
 
-            <p class="text-hint">
+            <p class="text-hint xl:text-xs">
               {{ t('descCommaSeparated') }}
             </p>
           </fieldset>
 
           <div class="flex gap-x-3">
             <fieldset class="flex-1">
-              <label class="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase">
+              <label
+                class="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase xl:mb-2 xl:text-sm"
+              >
                 {{ t('fieldMinExecuteTime') }}
               </label>
 
@@ -228,19 +236,21 @@ function handleSubmit() {
                 required
               />
 
-              <p class="text-hint">
+              <p class="text-hint xl:text-xs">
                 {{ t('descMinExecuteTime') }}
               </p>
             </fieldset>
 
             <fieldset class="flex-1">
-              <label class="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase">
+              <label
+                class="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase xl:mb-2 xl:text-sm"
+              >
                 {{ t('fieldAllowedExitCode') }}
               </label>
 
               <TaggedInput v-model="driver.allowRtCodes" :title="t('fieldAllowedExitCode')" />
 
-              <p class="text-hint">
+              <p class="text-hint xl:text-xs">
                 {{ t('descCommaSeparated') }}
               </p>
             </fieldset>
@@ -267,7 +277,9 @@ function handleSubmit() {
             </summary>
 
             <div class="border-t border-gray-200 bg-white p-3">
-              <p class="mb-2 text-xs font-medium text-gray-500">{{ t('descIncompatible') }}</p>
+              <p class="mb-2 text-xs font-medium text-gray-500 xl:text-sm">
+                {{ t('descIncompatible') }}
+              </p>
 
               <DriverSelector
                 v-model="driver.incompatibles"
