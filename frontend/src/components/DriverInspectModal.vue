@@ -35,7 +35,9 @@ function categoryKey(type: string): string {
           class="grid grid-cols-3 gap-2 rounded-lg border border-gray-200 bg-white p-3 text-center shadow-sm"
         >
           <div>
-            <span class="block text-xs font-bold text-gray-400 uppercase xl:text-xs">Type</span>
+            <span class="block text-xs font-bold text-gray-400 uppercase xl:text-xs">{{
+              $t('fieldDriverType')
+            }}</span>
 
             <UBadge
               size="sm"
@@ -48,17 +50,17 @@ function categoryKey(type: string): string {
 
           <div class="border-x border-gray-100">
             <span class="block text-xs font-bold text-gray-400 uppercase xl:text-xs">
-              Exclusive Flow
+              {{ $t('fieldExclusiveFlow') }}
             </span>
 
             <span class="text-sm font-bold text-gray-800 xl:text-sm">
-              {{ group.mutuallyExclusive ? 'Yes' : 'No' }}
+              {{ group.mutuallyExclusive ? $t('labelYes') : $t('labelNo') }}
             </span>
           </div>
 
           <div>
             <span class="block text-xs font-bold text-gray-400 uppercase xl:text-xs">
-              Drivers
+              {{ $t('fieldDriver') }}
             </span>
 
             <span class="text-sm font-bold text-gray-800 xl:text-sm">{{
@@ -90,7 +92,7 @@ function categoryKey(type: string): string {
               v-if="groupStore.notFoundDrivers.includes(d.id)"
               class="rounded border border-red-200 bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700 xl:text-xs"
             >
-              Missing Exe
+              {{ $t('labelMissingExe') }}
             </span>
           </div>
 

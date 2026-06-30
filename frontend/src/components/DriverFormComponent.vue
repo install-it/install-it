@@ -144,7 +144,7 @@ function handleSubmit() {
         <UCheckbox v-model="group.mutuallyExclusive" class="mt-1" />
 
         <div>
-          <span class="block text-sm font-bold text-gray-800">{{
+          <span class="block text-xs font-bold text-gray-800 xl:text-sm">{{
             $t('fieldMutuallyExclusive')
           }}</span>
 
@@ -171,7 +171,7 @@ function handleSubmit() {
           >
             <Icon icon="mdi:package-variant" class="mb-2 text-4xl opacity-50" />
 
-            <span class="text-sm font-medium">{{ $t('msgNoDriversInGroup') }}</span>
+            <span class="text-xs font-medium xl:text-sm">{{ $t('msgNoDriversInGroup') }}</span>
           </div>
 
           <!-- Driver rows -->
@@ -183,7 +183,7 @@ function handleSubmit() {
             :class="{ 'bg-lime-50': d.id <= 0 }"
           >
             <span
-              class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-100 text-sm font-bold text-gray-500"
+              class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-100 text-xs font-bold text-gray-500 xl:text-sm"
             >
               {{ i + 1 }}
             </span>
@@ -200,7 +200,7 @@ function handleSubmit() {
                 </span>
               </div>
 
-              <p class="mt-1 font-mono text-sm break-all text-gray-500">
+              <p class="mt-1 font-mono text-xs break-all text-gray-500 xl:text-sm">
                 {{ $t('labelPathPrefix') }}: {{ d.path }}
               </p>
 
@@ -265,7 +265,7 @@ function handleSubmit() {
 
         <!-- Footer bar -->
         <div class="flex items-center justify-between border-t border-gray-200 bg-gray-50 p-4">
-          <span class="text-sm text-gray-500 italic">{{ $t('descDriverGroup') }}</span>
+          <span class="text-xs text-gray-500 italic xl:text-sm">{{ $t('descDriverGroup') }}</span>
 
           <UButton
             type="button"
@@ -278,7 +278,7 @@ function handleSubmit() {
               }
             "
           >
-            <Icon icon="mdi:plus-circle-outline" class="mr-1 text-sm" />
+            <Icon icon="mdi:plus-circle-outline" class="mr-1 text-xs xl:text-sm" />
             {{ $t('labelAddDriver') }}
           </UButton>
         </div>
