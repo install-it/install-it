@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps<{
   groupId: number | null
@@ -13,13 +13,23 @@ const emit = defineEmits<{
 const groupStore = useDriverGroupStore()
 
 const group = computed(() => groupStore.groups.find(g => g.id === props.groupId))
+
+const isOpen = ref(props.groupId !== null)
+
+// v-model:open + @after:leave (not @update:open) keeps groupId non-null during
+// the leave animation, preventing "Group Not Found" from flashing on close.
+watch(
+  () => props.groupId,
+  val => {
+    isOpen.value = val !== null
+  }
+)
 </script>
 
 <template>
-  <UModal :open="props.groupId !== null" :title="$t('titleInspectGroup')" @after:leave="emit('close')">
+  <UModal v-model:open="isOpen" :title="$t('titleInspectGroup')" @after:leave="emit('close')">
     <template #body>
       <div v-if="group" class="flex flex-col gap-y-4">
-        <!-- Metrics strip: 3-col grid in white card -->
         <div
           class="grid grid-cols-3 gap-2 rounded-lg border border-gray-200 bg-white p-3 text-center shadow-sm"
         >
@@ -155,7 +165,7 @@ const group = computed(() => groupStore.groups.find(g => g.id === props.groupId)
 
     <template #footer>
       <div class="flex justify-end gap-2">
-        <UButton color="neutral" variant="ghost" size="sm" @click="emit('close')">
+        <UButton color="neutral" variant="ghost" size="sm" @click="isOpen = false">
           {{ $t('cancel') }}
         </UButton>
 
