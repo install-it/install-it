@@ -9,7 +9,6 @@ import { useI18n } from 'vue-i18n'
 defineProps<{
   index: number
   isNew?: boolean
-  notFound?: boolean
   expanded?: boolean
 }>()
 
@@ -68,8 +67,11 @@ watch(
           path.value.exists = false
         })
     }, 300)
-  }
+  },
+  { immediate: true }
 )
+
+const notFound = computed(() => path.value.exists === false)
 
 onUnmounted(() => {
   if (pathCheckTimeout) clearTimeout(pathCheckTimeout)

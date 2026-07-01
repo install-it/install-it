@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import DriverEditor from '@/components/DriverEditor.vue'
-import { ExecutableExists } from '@/wailsjs/go/main/App'
 import { storage } from '@/wailsjs/go/models'
 import * as groupStorage from '@/wailsjs/go/storage/DriverGroupStorage'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -36,23 +35,12 @@ const { data: group, reset } = useEditor({
 })
 
 const ui = ref<{
-  notFound: number[]
   expanded: Set<number>
   nextTempId: number
 }>({
-  notFound: [],
   expanded: new Set(),
   nextTempId: -1
 })
-
-watch(
-  () => group.value.drivers,
-  drivers =>
-    Promise.all(
-      drivers.map(d => ExecutableExists(d.path).then(exist => ({ id: d.id, exist })))
-    ).then(results => (ui.value.notFound = results.filter(r => !r.exist).map(r => r.id))),
-  { immediate: true }
-)
 
 function addDriver() {
   const id = ui.value.nextTempId
@@ -238,7 +226,6 @@ function handleSubmit() {
         v-model:driver="group.drivers[i]!"
         :index="i"
         :is-new="d.id < 0"
-        :not-found="ui.notFound.includes(d.id)"
         :expanded="ui.expanded.has(d.id)"
         @remove="removeDriver"
         @toggle="toggleDriver"
