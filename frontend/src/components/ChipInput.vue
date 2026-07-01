@@ -4,7 +4,7 @@ import { ref } from 'vue'
 withDefaults(
   defineProps<{
     placeholder?: string
-    commitKeys?: Array<'enter' | 'space' | 'tab' | 'comma'>
+    commitKeys?: Array<'enter' | ' ' | 'tab' | 'comma'>
     parse?: (raw: string) => string
     accept?: (parsed: string) => boolean
     popOnBackspace?: boolean
@@ -58,7 +58,7 @@ const input = ref('')
           '--hover-bg': 'var(--chip-close-bg-hover)',
           '--hover-text': 'var(--chip-text)'
         }"
-        @click="model.splice(i, 1)"
+        @click="model = model.filter((_, idx) => idx !== i)"
       >
         <Icon icon="mdi:close" class="h-3 w-3" />
       </button>
@@ -72,9 +72,7 @@ const input = ref('')
       :style="{ minWidth: minInputWidth, flex: '1 1 0%' }"
       @keydown="
         event => {
-          if (
-            !commitKeys.includes(event.key.toLowerCase() as 'enter' | 'space' | 'tab' | 'comma')
-          ) {
+          if (!commitKeys.includes(event.key.toLowerCase() as 'enter' | ' ' | 'tab' | 'comma')) {
             return
           }
           event.preventDefault()
@@ -84,12 +82,14 @@ const input = ref('')
             return
           }
           if (!model.includes(parsed)) {
-            model.push(parsed)
+            model = [...model, parsed]
           }
           input = ''
         }
       "
-      @keydown.backspace="popOnBackspace && input === '' && model.length > 0 && model.pop()"
+      @keydown.backspace="
+        popOnBackspace && input === '' && model.length > 0 && (model = model.slice(0, -1))
+      "
     />
 
     <slot />
