@@ -74,8 +74,8 @@ const group = computed(() => groupStore.groups.find(g => g.id === props.groupId)
           <!-- Left edge accent -->
           <div
             class="absolute top-0 left-0 h-full w-1"
-            :class="groupStore.notFoundDrivers.includes(d.id) ? 'bg-red-400' : 'bg-gray-200'"
-          />
+            :class="groupStore.notFoundDrivers.includes(d.id) ? 'bg-red-400' : 'bg-primary-200'"
+          ></div>
 
           <!-- Header -->
           <div class="flex items-center justify-between pl-2">
