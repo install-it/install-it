@@ -125,7 +125,10 @@ function handleRemove() {
 
       <div class="min-w-0 flex-1">
         <div class="flex flex-wrap items-center gap-1.5">
-          <span class="truncate text-sm font-bold text-gray-800 xl:text-base">
+          <span
+            class="truncate text-sm font-bold xl:text-base"
+            :class="driver.name ? 'text-gray-800' : 'text-gray-400'"
+          >
             {{ driver.name || $t('msgUnnamedDriver') }}
           </span>
 
@@ -162,21 +165,21 @@ function handleRemove() {
           </span>
 
           <span
-            v-if="driver.incompatibles.length"
-            class="inline-flex items-center gap-1 rounded bg-yellow-100 px-1.5 py-0.5 text-[10px] font-semibold text-yellow-700 xl:text-xs"
-            :title="$t('labelIncompatibleWith')"
-          >
-            <Icon icon="mdi:source-merge" class="h-3 w-3" />
-            {{ driver.incompatibles.length }}
-          </span>
-
-          <span
             v-if="driver.minExeTime > 0"
             class="inline-flex items-center gap-1 rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold text-blue-600 xl:text-xs"
             :title="$t('fieldMinExecuteTime')"
           >
             <Icon icon="mdi:timer-outline" class="h-3 w-3" />
             {{ driver.minExeTime }}s
+          </span>
+
+          <span
+            v-if="driver.incompatibles.length"
+            class="inline-flex items-center gap-1 rounded bg-yellow-100 px-1.5 py-0.5 text-[10px] font-semibold text-yellow-700 xl:text-xs"
+            :title="$t('labelIncompatibleWith')"
+          >
+            <Icon icon="mdi:source-merge" class="h-3 w-3" />
+            {{ driver.incompatibles.length }}
           </span>
         </div>
       </div>
