@@ -292,8 +292,9 @@ function handleRemove() {
 
           <ChipInput
             v-model="codeStrings"
-            placeholder="e.g. 0"
+            placeholder="e.g. 1 (Enter/Space)"
             min-input-width="80px"
+            :commit-keys="['enter', ' ']"
             :parse="(raw: string) => raw.trim()"
             :accept="(parsed: string) => /^-?\d+$/.test(parsed)"
             style="
