@@ -164,14 +164,6 @@ Flat camelCase keys. No nesting, no dots. Prefix describes **what the string is*
 | `tool` | System utility/tool names | `toolDeviceManager`, `toolBluetooth` |
 | `warn` | Warning messages | `warnDbNoDrivers` |
 
-Dynamic keys (status values, operator enums, hardware parts) use a helper function — never backtick template literals in Vue template `{{ }}`:
-
-```typescript
-function hwKey(part: string): string {
-  return `hw${part.charAt(0).toUpperCase() + part.slice(1)}`
-}
-```
-
 ### Pinia Stores
 
 Use setup stores (factory function returning refs). No Options API.

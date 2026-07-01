@@ -20,10 +20,6 @@ const isOpen = computed({
 })
 
 const group = computed(() => groupStore.groups.find(g => g.id === props.groupId))
-
-function categoryKey(type: string): string {
-  return `category${type.charAt(0).toUpperCase() + type.slice(1)}`
-}
 </script>
 
 <template>
@@ -44,7 +40,7 @@ function categoryKey(type: string): string {
               class="mt-0.5 text-zinc-600"
               :style="`background-color: var(--color-${group.type})`"
             >
-              {{ $t(categoryKey(group.type)) }}
+              {{ $t(`category${group.type.charAt(0).toUpperCase() + group.type.slice(1)}`) }}
             </UBadge>
           </div>
 

@@ -11,12 +11,8 @@ const props = defineProps<{ id?: number }>()
 
 const { t } = useI18n()
 
-const $route = useRoute()
+const [route, router] = [useRoute(), useRouter()]
 
-function categoryKey(type: string): string {
-  return `category${type.charAt(0).toUpperCase() + type.slice(1)}`
-}
-const $router = useRouter()
 const toast = useToast()
 
 const groupStore = useDriverGroupStore()
@@ -27,9 +23,7 @@ const sourceGroup = computed(
     new storage.DriverGroup({
       type:
         storage.DriverType[
-          (
-            $route.query.type as string | undefined
-          )?.toUpperCase() as keyof typeof storage.DriverType
+          (route.query.type as string | undefined)?.toUpperCase() as keyof typeof storage.DriverType
         ] ?? storage.DriverType.NETWORK,
       name: '',
       drivers: []
@@ -41,29 +35,28 @@ const { data: group, reset } = useEditor({
   warnOnUnsavedLeave: true
 })
 
-const notFoundDrivers = ref<number[]>([])
-
-const findNotExists = (drivers: Array<storage.Driver>) =>
-  Promise.all(
-    drivers.map(d => ExecutableExists(d.path).then(exist => ({ id: d.id, exist: exist })))
-  ).then(results => {
-    return results
-      .map(result => (result.exist ? undefined : result.id))
-      .filter(v => v !== undefined)
-  })
+const ui = ref<{
+  notFound: number[]
+  expanded: Set<number>
+  nextTempId: number
+}>({
+  notFound: [],
+  expanded: new Set(),
+  nextTempId: -1
+})
 
 watch(
   () => group.value.drivers,
-  newDrivers => findNotExists(newDrivers).then(ids => (notFoundDrivers.value = ids)),
+  drivers =>
+    Promise.all(
+      drivers.map(d => ExecutableExists(d.path).then(exist => ({ id: d.id, exist })))
+    ).then(results => (ui.value.notFound = results.filter(r => !r.exist).map(r => r.id))),
   { immediate: true }
 )
 
-const expanded = ref<Set<number>>(new Set())
-const nextTempId = ref(-1)
-
 function addDriver() {
-  const id = nextTempId.value
-  nextTempId.value -= 1
+  const id = ui.value.nextTempId
+  ui.value.nextTempId -= 1
   group.value.drivers.push(
     new storage.Driver({
       id,
@@ -76,36 +69,36 @@ function addDriver() {
       incompatibles: []
     })
   )
-  expanded.value.add(id)
-  expanded.value = new Set(expanded.value)
+  ui.value.expanded.add(id)
+  ui.value.expanded = new Set(ui.value.expanded)
 }
 
 function removeDriver(id: number) {
   group.value.drivers = group.value.drivers.filter(d => d.id !== id)
-  expanded.value.delete(id)
-  expanded.value = new Set(expanded.value)
+  ui.value.expanded.delete(id)
+  ui.value.expanded = new Set(ui.value.expanded)
 }
 
 function toggleDriver(id: number) {
-  const next = new Set(expanded.value)
+  const next = new Set(ui.value.expanded)
   if (next.has(id)) {
     next.delete(id)
   } else {
     next.add(id)
   }
-  expanded.value = next
+  ui.value.expanded = next
 }
 
 const allExpanded = computed(() => {
   if (group.value.drivers.length === 0) return false
-  return group.value.drivers.every(d => expanded.value.has(d.id))
+  return group.value.drivers.every(d => ui.value.expanded.has(d.id))
 })
 
 function toggleAll() {
   if (allExpanded.value) {
-    expanded.value = new Set()
+    ui.value.expanded = new Set()
   } else {
-    expanded.value = new Set(group.value.drivers.map(d => d.id))
+    ui.value.expanded = new Set(group.value.drivers.map(d => d.id))
   }
 }
 
@@ -134,7 +127,7 @@ function handleSubmit() {
         return reset()
       })
       .then(() => {
-        $router.back()
+        router.back()
       })
   }
 
@@ -144,9 +137,8 @@ function handleSubmit() {
       .then(handleSuccess)
       .catch(reason => toast.add({ title: reason.toString(), color: 'error' }))
   } else {
-    const updateGroup = group.value
     groupStorage
-      .Update(updateGroup)
+      .Update(group.value)
       .then(handleSuccess)
       .catch(reason => toast.add({ title: reason.toString(), color: 'error' }))
   }
@@ -171,7 +163,7 @@ function handleSubmit() {
           class="w-full"
           :items="
             Object.values(storage.DriverType).map(type => ({
-              label: $t(categoryKey(type)),
+              label: $t(`category${type.charAt(0).toUpperCase() + type.slice(1)}`),
               value: type
             }))
           "
@@ -243,11 +235,11 @@ function handleSubmit() {
       <DriverEditor
         v-for="(d, i) in group.drivers"
         :key="d.id"
-        v-model:driver="group.drivers[i]"
+        v-model:driver="group.drivers[i]!"
         :index="i"
         :is-new="d.id < 0"
-        :not-found="notFoundDrivers.includes(d.id)"
-        :expanded="expanded.has(d.id)"
+        :not-found="ui.notFound.includes(d.id)"
+        :expanded="ui.expanded.has(d.id)"
         @remove="removeDriver"
         @toggle="toggleDriver"
       />

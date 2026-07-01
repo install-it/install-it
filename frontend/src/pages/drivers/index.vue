@@ -6,10 +6,6 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
-function categoryKey(type: string): string {
-  return `category${type.charAt(0).toUpperCase() + type.slice(1)}`
-}
-
 const { t } = useI18n()
 
 const toast = useToast()
@@ -18,19 +14,17 @@ const [route, router] = [useRoute(), useRouter()]
 
 const groupStore = useDriverGroupStore()
 
-const reordering = ref(false)
-const dragOverId = ref<number | null>(null)
-const inspectGroupId = ref<number | null>(null)
-const deleteTargetId = ref<number | null>(null)
-
-const isDeleteModalOpen = computed({
-  get: () => deleteTargetId.value !== null,
-  set: val => {
-    if (!val) deleteTargetId.value = null
-  }
+const drag = ref<{ reordering: boolean; overId: number | null }>({
+  reordering: false,
+  overId: null
 })
 
-function reloadGroups() {
+const modal = ref<{ inspectId: number | null; deleteId: number | null }>({
+  inspectId: null,
+  deleteId: null
+})
+
+async function reloadGroups() {
   return groupStorage
     .All()
     .then(gs => (groupStore.groups = gs))
@@ -44,15 +38,15 @@ const filteredGroups = computed(() =>
 )
 
 function confirmDelete() {
-  if (deleteTargetId.value === null) return
+  if (modal.value.deleteId === null) return
   groupStorage
-    .Remove(deleteTargetId.value)
+    .Remove(modal.value.deleteId)
     .then(() => reloadGroups())
     .catch(() => {
       toast.add({ title: t('toastDeleteFailed'), color: 'error' })
     })
     .finally(() => {
-      deleteTargetId.value = null
+      modal.value.deleteId = null
     })
 }
 
@@ -99,7 +93,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
           }"
           draggable="false"
         >
-          {{ $t(categoryKey(type)) }}
+          {{ $t(`category${type.charAt(0).toUpperCase() + type.slice(1)}`) }}
         </router-link>
       </div>
     </PageHeader>
@@ -112,18 +106,18 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
         <div
           class="driver-card m-1 cursor-pointer rounded-lg border border-gray-200 px-4 py-3 shadow-sm transition-colors hover:border-half-baked-300"
           :class="{
-            'select-none': reordering,
-            'border-half-baked-500 ring-1 ring-half-baked-500': dragOverId === g.id
+            'select-none': drag.reordering,
+            'border-half-baked-500 ring-1 ring-half-baked-500': drag.overId === g.id
           }"
           role="button"
           tabindex="0"
-          :draggable="reordering"
-          @click="!reordering && (inspectGroupId = g.id)"
-          @keydown.enter.prevent="!reordering && (inspectGroupId = g.id)"
-          @keydown.space.prevent="!reordering && (inspectGroupId = g.id)"
+          :draggable="drag.reordering"
+          @click="!drag.reordering && (modal.inspectId = g.id)"
+          @keydown.enter.prevent="!drag.reordering && (modal.inspectId = g.id)"
+          @keydown.space.prevent="!drag.reordering && (modal.inspectId = g.id)"
           @dragstart="
             event => {
-              if (!reordering) {
+              if (!drag.reordering) {
                 return event.preventDefault()
               }
 
@@ -132,18 +126,18 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
               event.dataTransfer!.setData('index', fullIdx.toString())
             }
           "
-          @dragover.prevent="dragOverId = g.id"
+          @dragover.prevent="drag.overId = g.id"
           @dragleave="
             event => {
               const el = event.currentTarget as HTMLElement
               if (!el.contains(event.relatedTarget as Node)) {
-                dragOverId = null
+                drag.overId = null
               }
             }
           "
           @drop="
             event => {
-              dragOverId = null
+              drag.overId = null
 
               // async function will cause event.dataTransfer to lose data
               const sourceId = parseInt(event.dataTransfer!.getData('id'))
@@ -255,7 +249,7 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
                 size="sm"
                 class="h-8 w-8"
                 :title="$t('delete')"
-                @click="deleteTargetId = g.id"
+                @click="modal.deleteId = g.id"
               >
                 <Icon icon="mdi:trash-can" class="text-base" />
               </UButton>
@@ -283,13 +277,13 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
           size="md"
           class="text-white"
           :style="
-            reordering
+            drag.reordering
               ? '--btn-color: var(--color-apple-green-800); animation: var(--animate-blink-75);'
               : '--btn-color: #D9BD68'
           "
-          @click="reordering = !reordering"
+          @click="drag.reordering = !drag.reordering"
         >
-          {{ reordering ? $t('view') : $t('fieldOrder') }}
+          {{ drag.reordering ? $t('view') : $t('fieldOrder') }}
         </UButton>
       </div>
 
@@ -300,14 +294,22 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
       </RouterLink>
     </div>
 
-    <UModal v-model:open="isDeleteModalOpen" :title="$t('confirmDeleteGroup')">
+    <UModal
+      :title="$t('confirmDeleteGroup')"
+      :open="modal.deleteId !== null"
+      @update:open="
+        val => {
+          if (!val) modal.deleteId = null
+        }
+      "
+    >
       <template #body>
         <p>{{ $t('descDeleteGroup') }}</p>
       </template>
 
       <template #footer>
         <div class="flex justify-end gap-2">
-          <UButton color="neutral" variant="ghost" @click="deleteTargetId = null">
+          <UButton color="neutral" variant="ghost" @click="modal.deleteId = null">
             {{ $t('cancel') }}
           </UButton>
 
@@ -319,11 +321,11 @@ const { scrollContainer } = useScrollPosition('driverGroup', () =>
     </UModal>
 
     <DriverInspectModal
-      :group-id="inspectGroupId"
-      @close="inspectGroupId = null"
+      :group-id="modal.inspectId"
+      @close="modal.inspectId = null"
       @edit="
         id => {
-          inspectGroupId = null
+          modal.inspectId = null
           router.push(`/drivers/${id}/edit`)
         }
       "

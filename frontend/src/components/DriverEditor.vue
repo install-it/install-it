@@ -45,27 +45,27 @@ const flagItems = Object.entries(FLAGS).map(([name, flags]) => ({
   }
 }))
 
-const pathExists = ref<boolean | null>(null)
+const path = ref<{ exists: boolean | null }>({ exists: null })
 let pathCheckTimeout: ReturnType<typeof setTimeout> | null = null
 
 watch(
   () => driver.value.path,
-  path => {
-    pathExists.value = null
+  newPath => {
+    path.value.exists = null
 
     if (pathCheckTimeout) {
       clearTimeout(pathCheckTimeout)
     }
 
-    if (!path) return
+    if (!newPath) return
 
     pathCheckTimeout = setTimeout(() => {
-      ExecutableExists(path)
+      ExecutableExists(newPath)
         .then(exists => {
-          pathExists.value = exists
+          path.value.exists = exists
         })
         .catch(() => {
-          pathExists.value = false
+          path.value.exists = false
         })
     }, 300)
   }
@@ -81,14 +81,6 @@ const codeStrings = computed({
     driver.value.allowRtCodes = v.map(s => parseInt(s)).filter(n => !Number.isNaN(n))
   }
 })
-
-function parseCode(raw: string) {
-  return raw.trim()
-}
-
-function acceptCode(parsed: string) {
-  return /^-?\d+$/.test(parsed)
-}
 
 function handleDone() {
   if (!driver.value.path?.trim()) {
@@ -260,7 +252,7 @@ function handleRemove() {
         </div>
 
         <p
-          v-if="pathExists === false"
+          v-if="path.exists === false"
           class="mt-1 inline-flex items-center gap-1 text-[10px] text-red-600 xl:text-xs"
         >
           <Icon icon="mdi:alert-circle" />
@@ -297,8 +289,8 @@ function handleRemove() {
             v-model="codeStrings"
             placeholder="e.g. 0"
             min-input-width="80px"
-            :parse="parseCode"
-            :accept="acceptCode"
+            :parse="(raw: string) => raw.trim()"
+            :accept="(parsed: string) => /^-?\d+$/.test(parsed)"
             style="
               --chip-bg: #f4f4f5;
               --chip-border: #e4e4e7;

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     placeholder?: string
     commitKeys?: Array<'enter' | 'space' | 'tab' | 'comma'>
@@ -23,32 +23,6 @@ const props = withDefaults(
 const model = defineModel<Array<string>>({ required: true })
 
 const input = ref('')
-
-function commit() {
-  const parsed = (props.parse ?? ((s: string) => s))(input.value)
-  if (!parsed) return
-  if (!(props.accept?.(parsed) ?? true)) return
-  if (!model.value.includes(parsed)) model.value.push(parsed)
-  input.value = ''
-}
-
-function remove(i: number) {
-  model.value.splice(i, 1)
-}
-
-function onBackspace() {
-  if (props.popOnBackspace && input.value === '' && model.value.length > 0) {
-    model.value.pop()
-  }
-}
-
-function onKeydown(event: KeyboardEvent) {
-  const key = event.key.toLowerCase()
-  if ((props.commitKeys ?? ['enter']).includes(key as 'enter' | 'space' | 'tab' | 'comma')) {
-    event.preventDefault()
-    commit()
-  }
-}
 </script>
 
 <template>
@@ -84,7 +58,7 @@ function onKeydown(event: KeyboardEvent) {
           '--hover-bg': 'var(--chip-close-bg-hover)',
           '--hover-text': 'var(--chip-text)'
         }"
-        @click="remove(i)"
+        @click="model.splice(i, 1)"
       >
         <Icon icon="mdi:close" class="h-3 w-3" />
       </button>
@@ -96,8 +70,26 @@ function onKeydown(event: KeyboardEvent) {
       :placeholder="placeholder"
       class="border-none bg-transparent px-2 py-1 font-mono text-xs text-gray-800 placeholder:text-gray-400 focus:ring-0 focus:outline-none xl:text-sm"
       :style="{ minWidth: minInputWidth, flex: '1 1 0%' }"
-      @keydown="onKeydown"
-      @keydown.backspace="onBackspace"
+      @keydown="
+        event => {
+          if (
+            !commitKeys.includes(event.key.toLowerCase() as 'enter' | 'space' | 'tab' | 'comma')
+          ) {
+            return
+          }
+          event.preventDefault()
+
+          const parsed = (parse ?? (s => s))(input)
+          if (!parsed || !(accept?.(parsed) ?? true)) {
+            return
+          }
+          if (!model.includes(parsed)) {
+            model.push(parsed)
+          }
+          input = ''
+        }
+      "
+      @keydown.backspace="popOnBackspace && input === '' && model.length > 0 && model.pop()"
     />
 
     <slot />
