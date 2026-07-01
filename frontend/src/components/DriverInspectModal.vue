@@ -12,18 +12,11 @@ const emit = defineEmits<{
 
 const groupStore = useDriverGroupStore()
 
-const isOpen = computed({
-  get: () => props.groupId !== null,
-  set: val => {
-    if (!val) emit('close')
-  }
-})
-
 const group = computed(() => groupStore.groups.find(g => g.id === props.groupId))
 </script>
 
 <template>
-  <UModal v-model:open="isOpen" :title="$t('titleInspectGroup')">
+  <UModal :open="props.groupId !== null" :title="$t('titleInspectGroup')" @after:leave="emit('close')">
     <template #body>
       <div v-if="group" class="flex flex-col gap-y-4">
         <!-- Metrics strip: 3-col grid in white card -->
@@ -79,9 +72,12 @@ const group = computed(() => groupStore.groups.find(g => g.id === props.groupId)
 
           <!-- Header -->
           <div class="flex items-center justify-between pl-2">
-            <h4 class="flex items-center gap-2 text-base font-bold text-gray-900 xl:text-base">
+            <h4
+              class="flex items-center gap-2 text-base font-bold xl:text-base"
+              :class="d.name ? 'text-gray-900' : 'text-gray-400'"
+            >
               <span class="text-gray-400">#{{ i + 1 }}</span>
-              {{ d.name }}
+              {{ d.name || $t('msgUnnamedDriver') }}
             </h4>
             <!-- Only show badge when path is MISSING, not when valid -->
             <span
