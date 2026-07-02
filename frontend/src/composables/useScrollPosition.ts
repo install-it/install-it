@@ -1,14 +1,11 @@
 import { nextTick, onMounted, ref, watch } from 'vue'
-import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
+import { onBeforeRouteLeave, useRoute } from 'vue-router'
 
 export type ScrollRecord = {
   from: string
   to: string
   position: number
 }
-
-let previousRoute = ''
-let hookInstalled = false
 
 export function useScrollPosition(
   name: string,
@@ -17,15 +14,7 @@ export function useScrollPosition(
 ) {
   const key = `scroll_${name}`
   const route = useRoute()
-  const router = useRouter()
   const scrollContainer = ref<HTMLDivElement | null>(null)
-
-  if (!hookInstalled) {
-    hookInstalled = true
-    router.afterEach((_to, from) => {
-      previousRoute = from.fullPath
-    })
-  }
 
   function restore(position: number) {
     if (scrollContainer.value) {
@@ -48,7 +37,7 @@ export function useScrollPosition(
       return
     }
 
-    if (previousRoute !== record?.to || shouldApply?.(record) === false) {
+    if (!record || shouldApply?.(record) === false) {
       return
     }
 
@@ -63,7 +52,7 @@ export function useScrollPosition(
         { immediate: true }
       )
     } else {
-      nextTick(() => restore(record!.position))
+      nextTick(() => restore(record.position))
     }
   })
 
