@@ -1,36 +1,69 @@
-import { onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 
-type ScrollRecord = {
+export type ScrollRecord = {
   from: string
   to: string
   position: number
 }
 
+let previousRoute = ''
+let hookInstalled = false
+
 export function useScrollPosition(
   name: string,
-  shouldApply?: (scroll: ScrollRecord | null) => boolean
+  shouldApply?: (record: ScrollRecord | null) => boolean,
+  source?: () => unknown
 ) {
   const key = `scroll_${name}`
-  const [route, router] = [useRoute(), useRouter()]
+  const route = useRoute()
+  const router = useRouter()
   const scrollContainer = ref<HTMLDivElement | null>(null)
 
-  onMounted(() => {
-    try {
-      const item = sessionStorage.getItem(key)
-      const record: ScrollRecord | null = item ? JSON.parse(item) : null
+  if (!hookInstalled) {
+    hookInstalled = true
+    router.afterEach((_to, from) => {
+      previousRoute = from.fullPath
+    })
+  }
 
-      if (
-        (shouldApply && shouldApply(record)) ||
-        (!shouldApply &&
-          record?.to ===
-            (router.options.history.state.forward ?? router.options.history.state.back) &&
-          record?.from === route.fullPath)
-      ) {
-        scrollContainer.value!.scrollTop = record?.position ?? 0
-      }
-    } finally {
-      sessionStorage.removeItem(key)
+  function restore(position: number) {
+    if (scrollContainer.value) {
+      scrollContainer.value.scrollTop = position
+    }
+  }
+
+  onMounted(() => {
+    const item = sessionStorage.getItem(key)
+    if (!item) {
+      return
+    }
+
+    sessionStorage.removeItem(key)
+
+    let record: ScrollRecord | null = null
+    try {
+      record = JSON.parse(item)
+    } catch {
+      return
+    }
+
+    if (previousRoute !== record?.to || shouldApply?.(record) === false) {
+      return
+    }
+
+    if (source) {
+      watch(
+        source,
+        val => {
+          if (Array.isArray(val) ? val.length > 0 : val) {
+            restore(record!.position)
+          }
+        },
+        { immediate: true }
+      )
+    } else {
+      nextTick(() => restore(record!.position))
     }
   })
 

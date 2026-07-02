@@ -50,13 +50,10 @@ function confirmDelete() {
     })
 }
 
-const { scrollContainer } = useScrollPosition('driverGroup', () =>
-  ['/drivers/create', '/drivers/:id/edit'].some(
-    v =>
-      (router.options.history.state.forward ?? router.options.history.state.back)
-        ?.toString()
-        .includes(v) ?? false
-  )
+const { scrollContainer } = useScrollPosition(
+  'driverGroup',
+  record => !!record?.to.match(/^\/drivers\/(create|\d+\/edit)$/),
+  () => groupStore.groups
 )
 </script>
 
